@@ -1,0 +1,21 @@
+{
+  "name": "extrapotions-ward",
+  "private": true,
+  "engines": {
+    "node": ">=24",
+    "npm": ">=10"
+  },
+  "description": "WARD V3 local retail-pressure protection with an Amazon adapter",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "build:check": "node scripts/build.cjs --check",
+    "visual:capture": "node scripts/capture-visuals.cjs",
+    "test:fallback": "node scripts/fallback-check.cjs",
+    "test": "node scripts/build.cjs && node --test tests-v3/*.test.cjs",
+    "release:check": "node scripts/release-check.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.55.1"
+  },
+  "version": "3.2.8"
+}

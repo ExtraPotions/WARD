@@ -1,0 +1,26 @@
+// ==UserScript==
+// @name         WARD
+// @namespace    https://github.com/ExtraPotions
+// @version      3.2.8
+// @description  Local retail-pressure protection, initially for Amazon.
+// @icon         __EXP_WARD_BADGE_DATA__
+// @tag          shopping
+// @tag          dark-patterns
+// @tag          privacy
+// @author       ExtraPotions
+// @license      PolyForm-Noncommercial-1.0.0
+// @homepageURL  https://github.com/ExtraPotions/WARD
+// @supportURL   https://github.com/ExtraPotions/WARD/issues
+// @updateURL    https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js
+// @downloadURL  https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js
+// @match        https://www.amazon.com/*
+// @match        https://smile.amazon.com/*
+// @run-at       document-start
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_xmlhttpRequest
+// @connect      api.github.com
+// ==/UserScript==
+// WARD Manager Metadata
+// Description: Local retail-pressure protection, initially for Amazon.
+// Tags: shopping, dark-patterns, privacy
