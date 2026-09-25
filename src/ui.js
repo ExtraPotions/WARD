@@ -97,6 +97,7 @@ EXP.UI = (() => {
     }
     list.hidden = !details.length;
     updateCard.querySelector('.update-action').hidden = complete || current;
+    updateCard.dataset.noticeKind = current ? 'current' : complete ? 'complete' : 'available';
     updateCard.dataset.placement = 'menu';
     updateCard.hidden = false;
     chrome?.layout();
@@ -667,7 +668,7 @@ EXP.UI = (() => {
     titleRow.append(el('strong','','WARD'));
 
     titleRow.append(
-      action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false) showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
+      action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false || updateCard.dataset.noticeKind !== 'current') showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
     );
 
     title.append(titleRow,el('small','','Amazon pressure and coupon controls'));
