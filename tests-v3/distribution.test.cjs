@@ -83,7 +83,7 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(result.modal, 'true');
   assert.equal(result.launcherExpanded, 'true');
   assert.equal(result.width, 260);
-  assert.equal(result.sections, 3);
+  assert.equal(result.sections, 4);
   assert.equal(result.visibleBodies, 0);
   assert.equal(result.changelogOutside, true);
   const notice = await page.locator('#exp-ward-root').evaluate((host) => {
@@ -105,7 +105,7 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(result.openRoute, undefined);
   const launcherChrome = await page.locator('#exp-ward-root').evaluate((host) => { const root=host.shadowRoot;const launcher=root.querySelector('.ward-launcher');return {button:Math.round(launcher.getBoundingClientRect().width),radius:getComputedStyle(launcher).borderRadius,hasRing:Boolean(root.querySelector('.launcher-ring')),icon:Math.round(root.querySelector('.launcher-icon').getBoundingClientRect().width),headerBadge:Math.round(root.querySelector('.header-icon .menu-icon').getBoundingClientRect().width)}; });
   assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:38});
-  for (const label of ['Protection','Appearance','Amazon']) assert.ok(result.nav.includes(label));
+  for (const label of ['Protection','Appearance','Amazon','System']) assert.ok(result.nav.includes(label));
   assert.equal(result.nav.includes('Settings'), false);
   assert.equal(result.nav.includes('Read'), false);
   assert.equal(result.nav.includes('Recover'), false);

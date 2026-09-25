@@ -1,3 +1,9 @@
+## 3.2.11 - 2026-09-25
+
+- Shows each automatic update notice once for that version instead of on every page load.
+- Stacks simultaneous notices beside the complete launcher grid.
+- Moves diagnostics and recovery actions under the final System menu.
+
 ## 3.2.10 - 2026-09-25
 
 - Keeps every launcher clickable when Dropper and multiple ExtraPotions products share the page.

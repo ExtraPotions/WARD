@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.10
+// @version      3.2.11
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -29,7 +29,7 @@
 'use strict';
 const EXP = Object.create(null);
 
-// Generated from the approved Dropper v3.2.20 install artifact. Do not edit.
+// Generated from the approved Dropper v3.2.21 install artifact. Do not edit.
 const DropperReference = (() => {
 const LAUNCHER_ORDER_KEY = "exp:v3:launcher-order";
 const LAUNCHER_GRID_DELTA_KEY = "exp:v3:launcher-grid-delta";
@@ -1402,15 +1402,22 @@ function createProductLifecycle(shared) {
   function focusMenuSurface(surface) { if (!(surface instanceof HTMLElement)) return false; if (!surface.hasAttribute('tabindex')) surface.setAttribute('tabindex', '-1'); surface.style.outline='none'; surface.focus({ preventScroll: true }); return true; }
 
   addEventListener('pagehide', () => { for (const cleanup of cleanups) { try { cleanup(); } catch {} } }, { once: true });
-  return Object.freeze({ VERSION, PROTOCOL, register, createScheduler, onNavigation, registerLauncher, announce, negotiate, safeError, diagnosticSnapshot, diagnostics: diagnosticSnapshot, focusMenuSurface, injectStyle });
+  return Object.freeze({
+    VERSION, PROTOCOL, register, createScheduler, onNavigation, registerLauncher, announce, negotiate, safeError,
+    diagnosticSnapshot, diagnostics: diagnosticSnapshot, focusMenuSurface, injectStyle,
+    registerFloatingNotice: shared.registerFloatingNotice,
+    layoutFloatingNotices: shared.layoutFloatingNotices,
+    claimNotice: shared.claimNotice,
+    consumeVersionChange: shared.consumeVersionChange,
+  });
 }
 
 // Product-neutral host for the code extracted from Dropper 3.2.10.
 // Product engines own their settings, content, and actions. Core owns shared UI.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.2.19';
-  const sourceVersion = '3.2.19';
+  const version = '3.2.20';
+  const sourceVersion = '3.2.21';
   const protocol = 'exp-core-coordination-v1';
   const gridProtocol = 'exp-launcher-grid-v3';
   const GRID_ORDER = 'exp:v3:launcher-order';
@@ -1418,6 +1425,7 @@ const ExtraPotionsCore = (() => {
   const PRIORITY = { shift: 100, dropper: 90, ward: 60, prisma: 40 };
   const THEME_PRIORITY = { dropper: 4, shift: 3, prisma: 2, ward: 1 };
   const registrations = new WeakMap();
+  const floatingNoticeRegistrations = new WeakMap();
   const controllers = new WeakMap();
   const tokenNames = ['bg', 'panel', 'line', 'text', 'muted', 'accent', 'accent2'];
   const partIds = {
@@ -1598,6 +1606,67 @@ const ExtraPotionsCore = (() => {
     products.forEach((node, index) => assign(node, (dropper ? 1 : 0) + index));
     write(GRID_ORDER, products.map(node => node.dataset.productId));
   }
+  function storageRead(key, fallback = null) {
+    try { if (typeof GM_getValue === 'function') return GM_getValue(key, fallback); } catch {}
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+  }
+  function storageWrite(key, value) {
+    try { if (typeof GM_setValue === 'function') { GM_setValue(key, value); return; } } catch {}
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+  }
+  function claimNotice(productId, changeId) {
+    const key = `exp:v3:${String(productId || 'product')}:notice:${String(changeId || 'change')}`;
+    if (storageRead(key, false) === true) return false;
+    storageWrite(key, true);
+    return true;
+  }
+  function consumeVersionChange(productId, currentVersion, legacyKey = '') {
+    const key = `exp:v3:${String(productId || 'product')}:installed-version`;
+    let previous = String(storageRead(key, '') || '');
+    if (!previous && legacyKey) { try { previous = String(localStorage.getItem(legacyKey) || ''); } catch {} }
+    storageWrite(key, String(currentVersion || ''));
+    return previous && previous !== currentVersion && claimNotice(productId, `updated:${currentVersion}`) ? previous : '';
+  }
+  function visibleFloatingNotices() {
+    return [...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')]
+      .flatMap(host => [...(host.shadowRoot?.querySelectorAll('[data-exp-floating-notice="1"]') || [])].map(notice => ({ host, notice })))
+      .filter(({ notice }) => !notice.hidden && notice.getClientRects().length)
+      .sort((a,b) => Number(a.host.dataset.launcherSlot || 0) - Number(b.host.dataset.launcherSlot || 0) || a.host.dataset.productId.localeCompare(b.host.dataset.productId));
+  }
+  function layoutFloatingNotices() {
+    const launchers = [...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')]
+      .map(host => host.shadowRoot?.querySelector('[data-exp-part="launcher"],.ward-launcher,.launcher,#tdh-settings-launcher'))
+      .filter(Boolean).map(node => node.getBoundingClientRect()).filter(box => box.width && box.height);
+    const notices = visibleFloatingNotices();
+    if (!launchers.length || !notices.length) return;
+    const anchor = document.documentElement.dataset.expLauncherAnchor === 'top' ? 'top' : 'bottom';
+    const gridTop = Math.min(...launchers.map(box => box.top));
+    const gridBottom = Math.max(...launchers.map(box => box.bottom));
+    const gridRight = Math.max(...launchers.map(box => box.right));
+    let cursor = anchor === 'top' ? gridBottom + 8 : gridTop - 8;
+    for (const { notice } of notices) {
+      const width = Math.min(notice.offsetWidth || notice.scrollWidth || 260, Math.max(0, innerWidth - 24));
+      const height = notice.offsetHeight || notice.scrollHeight || 72;
+      const top = anchor === 'top' ? cursor : cursor - height;
+      notice.style.setProperty('width', `${width}px`, 'important');
+      notice.style.setProperty('left', `${Math.max(8, Math.min(innerWidth - width - 8, gridRight - width))}px`, 'important');
+      notice.style.setProperty('right', 'auto', 'important');
+      notice.style.setProperty('top', `${Math.max(8, Math.min(innerHeight - height - 8, top))}px`, 'important');
+      notice.style.setProperty('bottom', 'auto', 'important');
+      cursor = anchor === 'top' ? top + height + 8 : top - 8;
+    }
+  }
+  function registerFloatingNotice(host, notice) {
+    if (!(host instanceof Element) || !(notice instanceof Element)) return () => {};
+    if (floatingNoticeRegistrations.has(notice)) return floatingNoticeRegistrations.get(notice);
+    notice.dataset.expFloatingNotice = '1';
+    const refresh = () => requestAnimationFrame(layoutFloatingNotices);
+    const mutation = new MutationObserver(refresh); mutation.observe(notice, { attributes:true, attributeFilter:['hidden','class'] });
+    const resize = new ResizeObserver(refresh); resize.observe(notice);
+    addEventListener('resize', refresh, { passive:true }); document.addEventListener('exp-core:coordination', refresh);
+    const dispose = () => { mutation.disconnect(); resize.disconnect(); removeEventListener('resize', refresh); document.removeEventListener('exp-core:coordination', refresh); floatingNoticeRegistrations.delete(notice); };
+    floatingNoticeRegistrations.set(notice, dispose); refresh(); return dispose;
+  }
   function registerLauncher(host, options = {}) {
     if (registrations.has(host)) return registrations.get(host);
     const id = options.productId || options.id || host.dataset.productId;
@@ -1643,6 +1712,7 @@ const ExtraPotionsCore = (() => {
   function focusMenuSurface(panel) { if (!(panel instanceof HTMLElement)) return false; panel.tabIndex = -1; panel.style.outline = 'none'; panel.focus({ preventScroll: true }); return true; }
   function createFloatingNotice(options = {}) {
     const { shadow, panel, notice, versionButton = null } = options;
+    const host = options.host || shadow?.host;
     if (!(shadow instanceof ShadowRoot) || !(panel instanceof Element) || !(notice instanceof Element)) return Object.freeze({ show() {}, hide() {}, toggle() {}, layout() {}, setMenuOpen() {}, destroy() {} });
     const durationMs = Math.max(0, Number(options.durationMs ?? 30000));
     const manageVersion = options.manageVersion !== false;
@@ -1654,7 +1724,7 @@ const ExtraPotionsCore = (() => {
     notice.classList.add('update-notice','exp-floating-update'); notice.setAttribute('role','status');
     let dismiss = notice.querySelector(':scope > .exp-floating-update-dismiss');
     if (!dismiss) { dismiss=document.createElement('button'); dismiss.type='button'; dismiss.className='exp-floating-update-dismiss'; dismiss.setAttribute('aria-label','Dismiss changelog'); dismiss.textContent='×'; notice.prepend(dismiss); }
-    shadow.append(notice);
+    shadow.append(notice); const unregisterNotice = registerFloatingNotice(host, notice);
     const themeSource = options.themeSource instanceof Element ? options.themeSource : panel;
     function syncTheme() {
       const theme=getComputedStyle(themeSource); const first=(names,fallback)=>names.map(name=>theme.getPropertyValue(name).trim()).find(Boolean)||fallback;
@@ -1664,15 +1734,15 @@ const ExtraPotionsCore = (() => {
       notice.style.setProperty('--exp-notice-text',first(['--exp-notice-text','--theme-text','--text','--mb-ink'],theme.color||'#f4f4f6'));
     }
     const clearTimer=()=>{clearTimeout(timer);timer=0;};
-    function layout(){if(destroyed||notice.hidden||!menuOpen)return;syncTheme();const r=panel.getBoundingClientRect();if(!r.width)return;const width=Math.min(r.width,innerWidth-24);notice.style.width=width+'px';notice.style.left=Math.max(8,Math.min(innerWidth-width-8,r.right-width))+'px';const height=notice.offsetHeight||notice.scrollHeight||72;const above=r.top-height-8;notice.style.top=(above>=8?above:Math.min(innerHeight-height-8,r.bottom+8))+'px';notice.style.right='auto';notice.style.bottom='auto';}
-    function hide(){clearTimer();notice.hidden=true;versionButton?.setAttribute('aria-expanded','false');}
-    function show(){notice.hidden=false;versionButton?.setAttribute('aria-expanded','true');clearTimer();if(durationMs)timer=setTimeout(hide,durationMs);requestAnimationFrame(layout);}
+    function layout(){if(destroyed||notice.hidden)return;syncTheme();layoutFloatingNotices();}
+    function hide(){clearTimer();notice.hidden=true;versionButton?.setAttribute('aria-expanded','false');layoutFloatingNotices();}
+    function show(){notice.hidden=false;versionButton?.setAttribute('aria-expanded','true');clearTimer();if(durationMs)timer=setTimeout(hide,durationMs);requestAnimationFrame(layoutFloatingNotices);}
     function toggle(){if(notice.hidden)show();else hide();}
     function versionClick(){if(manageVersion)toggle();else if(!notice.hidden)show();}
     function setMenuOpen(value){menuOpen=Boolean(value);if(!menuOpen)hide();else requestAnimationFrame(layout);}
     const coordination=()=>requestAnimationFrame(layout);
     dismiss.addEventListener('click',hide);versionButton?.addEventListener('click',versionClick);addEventListener('resize',layout,{passive:true});document.addEventListener('exp-core:coordination',coordination);
-    return Object.freeze({show,hide,toggle,layout,setMenuOpen,destroy(){destroyed=true;clearTimer();dismiss.removeEventListener('click',hide);versionButton?.removeEventListener('click',versionClick);removeEventListener('resize',layout);document.removeEventListener('exp-core:coordination',coordination);}});
+    return Object.freeze({show,hide,toggle,layout,setMenuOpen,destroy(){destroyed=true;clearTimer();unregisterNotice();dismiss.removeEventListener('click',hide);versionButton?.removeEventListener('click',versionClick);removeEventListener('resize',layout);document.removeEventListener('exp-core:coordination',coordination);}});
   }
   function applyTheme(host, value, choices) {
     const controller = controllers.get(host); if (!controller) return;
@@ -1737,7 +1807,7 @@ const ExtraPotionsCore = (() => {
     applyContentDrivenMenuLayout(shadow);
     applyMatteToggleChrome(shadow);
     const versionButton=panel.querySelector('.version,[data-exp-part="version"]');
-    const floatingNotices=[...themeRoot.querySelectorAll('.update-notice,.changelog')].map(notice=>createFloatingNotice({shadow,panel,notice,versionButton:notice.classList.contains('changelog')?versionButton:null,manageVersion:false,durationMs:30000}));
+    const floatingNotices=[...themeRoot.querySelectorAll('.update-notice,.changelog')].map(notice=>createFloatingNotice({host,shadow,panel,notice,versionButton:notice.classList.contains('changelog')?versionButton:null,manageVersion:false,durationMs:30000}));
     if (launcherSrc) panel.querySelectorAll('.header-icon img').forEach(image => image.src = launcherSrc);
     host.dataset.coreVersion = version; host.dataset.coreSource = 'Dropper/3.2.10';
     let choices = themes(productTheme), selected = choices.at(-1), open = false, destroyed = false, timer = 0, deadline = 0, frame = 0;
@@ -1855,7 +1925,7 @@ const ExtraPotionsCore = (() => {
   if(document.documentElement)startGrid();else addEventListener('DOMContentLoaded',startGrid,{once:true});
   document.addEventListener('exp-core:coordination',scheduleGrid);
   addEventListener('resize',scheduleGrid,{passive:true});
-  const api = Object.freeze({version,sourceVersion,protocol,gridProtocol,reference:DropperReference,css:canonicalCss,themes,create,createProduct,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,compareVersions:DropperReference.compareVersions});
+  const api = Object.freeze({version,sourceVersion,protocol,gridProtocol,reference:DropperReference,css:canonicalCss,themes,create,createProduct,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,compareVersions:DropperReference.compareVersions});
   return api;
 })();
 
@@ -2851,6 +2921,11 @@ EXP.Engine = (() => {
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.11': Object.freeze([
+      'Shows each automatic update notice once for that version instead of on every page load.',
+      'Stacks simultaneous notices beside the complete launcher grid.',
+      'Moves diagnostics and recovery actions under the final System menu.'
+    ]),
     '3.2.10': Object.freeze([
       'Keeps every launcher clickable when multiple ExtraPotions products share the page.',
       'Prevents transparent launcher containers from intercepting pointer input.'
@@ -2970,16 +3045,17 @@ EXP.UI = (() => {
 
   const UI_THEMES = ExtraPotionsCore.themes({"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#120b05 0 38%,#b66a16 38% 69%,#356f78 69% 100%)","canvas":"#120b05","surface":"#241409","primary":"#b66a16","companion":"#9d3131","counterpoint":"#356f78","interactive":"#d1842a","bg":"#120b05","panel":"#241409","line":"#53321f","text":"#f1dfc9","muted":"#b79e84","accent":"#b66a16","accent2":"#d1842a","skin":"linear-gradient(135deg,#b66a16 0%,#9d3131 52%,#356f78 100%)","skinVertical":"linear-gradient(180deg,#b66a16 0%,#9d3131 52%,#356f78 100%)"});
 
-  let host, shadow, launcher, shell, nav, content, utilityPanel, toast, chrome, updateCard;
+  let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard;
   let toastTimer, updateTimer, launcherCleanup, escapeHandler, pointerHandler;
+  let noticeCleanups = [];
   let activeView = '';
   let patternsOpen = false;
-  let utilitiesOpen = false;
 
   const views = [
     ['page', 'Protection'],
     ['look', 'Appearance'],
-    ['tools', 'Amazon']
+    ['tools', 'Amazon'],
+    ['system', 'System']
   ];
 
   const sourceToggles = [
@@ -3028,6 +3104,7 @@ EXP.UI = (() => {
   function hideUpdateCard(){clearTimeout(updateTimer);updateTimer=null;if(updateCard)updateCard.hidden=true;chrome?.layout();}
   function showUpdateCard(result={},complete=false,previous=''){
     if(!updateCard)return;
+    if(!complete&&!EXP.Core.claimNotice('ward',`available:${result.latest}`))return;
     updateCard.className='update-notice exp-floating-update ward-update-changelog';
     updateCard.innerHTML='<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker"></div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" href="https://github.com/ExtraPotions/WARD/releases" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" href="https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js" target="_blank" rel="noopener noreferrer">Install Update</a></div>';
     updateCard.querySelector('.update-dismiss').addEventListener('click',hideUpdateCard);
@@ -3046,11 +3123,9 @@ EXP.UI = (() => {
     clearTimeout(updateTimer);updateTimer=setTimeout(hideUpdateCard,30000);
   }
   function positionChangelog(notice) {
-    const pr=shell?.getBoundingClientRect(), lr=launcher?.getBoundingClientRect();
-    if(!notice||!lr)return;
-    const h=notice.offsetHeight||180, menuOpen=shell?.classList.contains('open'), anchor=menuOpen&&pr?.height?pr.top:lr.top;
-    notice.style.right=Math.max(12,innerWidth-(menuOpen&&pr?.width?pr.right:lr.right))+'px';
-    notice.style.top=Math.max(8,anchor-h-8)+'px'; notice.style.bottom='auto';
+    if(!notice)return;
+    notice.dataset.placement='launcher-grid';
+    EXP.Core.layoutFloatingNotices();
   }
 
   function updateNotice() {
@@ -3446,7 +3521,7 @@ EXP.UI = (() => {
     return fragment;
   }
 
-  function utilityView() {
+  function systemView() {
     const fragment = document.createDocumentFragment();
     const box = section('Diagnostics');
 
@@ -3493,6 +3568,9 @@ EXP.UI = (() => {
 
     box.append(transfers);
     fragment.append(box);
+    const recovery = section('Recovery');
+    recovery.append(row('Reset Amazon settings','Resets WARD Amazon settings and pattern overrides.',action('Reset',resetAmazon,'warn')));
+    fragment.append(recovery);
     return fragment;
   }
 
@@ -3510,14 +3588,6 @@ EXP.UI = (() => {
       'reset-amazon'
     );
     notify('Amazon settings reset.');
-  }
-
-  function renderUtilities() {
-    if (!utilityPanel) return;
-    utilityPanel.hidden = !utilitiesOpen;
-    utilityPanel.replaceChildren();
-    if (utilitiesOpen) utilityPanel.append(utilityView());
-    chrome?.layout();
   }
 
   function renderView() {
@@ -3544,7 +3614,8 @@ EXP.UI = (() => {
       const renderer = {
         page:() => pageView(settings),
         look:() => lookView(settings),
-        tools:() => toolsView(settings)
+        tools:() => toolsView(settings),
+        system:() => systemView()
       }[activeView];
 
       if (renderer) content.append(renderer());
@@ -3575,12 +3646,10 @@ EXP.UI = (() => {
   function setOpen(value, focus = true) {
     if (value) {
       activeView = '';
-      utilitiesOpen = false;
       shell.classList.add('open');
       shell.setAttribute('aria-hidden','false');
       launcher.setAttribute('aria-expanded','true');
       renderView();
-      renderUtilities();
       if (focus) EXP.Core.focusMenuSurface(shell);
     } else {
       shell.classList.remove('open');
@@ -3667,24 +3736,10 @@ EXP.UI = (() => {
       nav.append(panel);
     }
 
-    const footer = el('div','menu-footer');
-    footer.append(
-      action('Diagnostics',() => {
-        utilitiesOpen = !utilitiesOpen;
-        renderUtilities();
-      }),
-      action('Reset',resetAmazon,'warn')
-    );
-
-    utilityPanel = el('div','menu-utility');
-    utilityPanel.hidden = true;
-
     frame.append(
       header,
       el('div','header-divider'),
-      nav,
-      footer,
-      utilityPanel
+      nav
     );
     shell.append(frame);
 
@@ -3695,7 +3750,10 @@ EXP.UI = (() => {
     shadow.append(launcher,shell,updateCard,changelog,toast);
     document.documentElement.append(host);
 
-    try{const key='exp:v3:ward:last-version-v2',prev=localStorage.getItem(key);if(prev&&prev!==EXP.VERSION)showUpdateCard({},true,prev);localStorage.setItem(key,EXP.VERSION);}catch{}if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{if(r.available)showUpdateCard(r);});
+    noticeCleanups=[EXP.Core.registerFloatingNotice(host,updateCard),EXP.Core.registerFloatingNotice(host,changelog)];
+    const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
+    if(previous)showUpdateCard({},true,previous);
+    if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{if(r.available)showUpdateCard(r);});
     launcherCleanup = EXP.Core.registerLauncher(host,{productId:'ward'});
     chrome = EXP.MenuChrome.create({
       id:'ward',
@@ -3762,12 +3820,14 @@ EXP.UI = (() => {
 
   function cleanup() {
     launcherCleanup?.();
+    noticeCleanups.forEach(dispose=>dispose());
+    noticeCleanups=[];
     chrome?.destroy();
     clearTimeout(toastTimer);
     document.removeEventListener('keydown',escapeHandler);
     document.removeEventListener('pointerdown',pointerHandler,true);
     host?.remove();
-    host = shadow = launcher = shell = nav = content = utilityPanel = toast = chrome = null;
+    host = shadow = launcher = shell = nav = content = toast = chrome = null;
   }
 
   return Object.freeze({
@@ -3784,7 +3844,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.10';
+EXP.VERSION = '3.2.11';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

@@ -369,7 +369,7 @@ test('menu stays compact and Settings is not a top-level route while interventio
       menuWidth: node.dataset.menuWidth,
     };
   });
-  assert.deepEqual(facts.routes, ['Protection', 'Appearance', 'Amazon']);
+  assert.deepEqual(facts.routes, ['Protection', 'Appearance', 'Amazon', 'System']);
   assert.equal(facts.menuWidth, 'compact');
   assert.deepEqual(pageErrors, []);
 });
