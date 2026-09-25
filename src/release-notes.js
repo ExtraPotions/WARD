@@ -1,3 +1,5 @@
+EXP.VERSION = '3.2.13';
+
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
     '3.2.13': Object.freeze([
