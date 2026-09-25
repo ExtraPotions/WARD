@@ -2112,8 +2112,8 @@ const ExtraPotionsCore = (() => {
     }
     function normalize(state) {
       const next = { ...(state || {}) };
-      if (!next.lastCheckAt && next.checkedAt) next.lastCheckAt = Number(next.checkedAt) || 0;
-      if (!next.lastRemoteVersion && next.latest) next.lastRemoteVersion = String(next.latest || '');
+      if (!Object.hasOwn(next, 'lastCheckAt') && next.checkedAt) next.lastCheckAt = Number(next.checkedAt) || 0;
+      if (!Object.hasOwn(next, 'lastRemoteVersion') && next.latest) next.lastRemoteVersion = String(next.latest || '');
       if (!Array.isArray(next.details)) next.details = [];
       return next;
     }
@@ -3365,6 +3365,7 @@ EXP.Updates = ExtraPotionsCore.createReleaseUpdateChecker({
   onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),
 });
 
+// Dropper 3.2.8 is the canonical shared UI; product-specific color stays declarative.
 EXP.MenuChrome = Object.freeze({ create: options => ExtraPotionsCore.create({ ...options, launcherSrc: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg', productTheme: {"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","bg":"#101014","panel":"#19191e","line":"#3a3532","text":"#fffaf3","muted":"#b9afa7","accent":"#ffb000","accent2":"#ff4a35","skin":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","skinVertical":"linear-gradient(180deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)"} }) });
 
 /* Diagnostics reports and controls follow Dropper's shared implementation. */
