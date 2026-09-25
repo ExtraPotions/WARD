@@ -1,7 +1,6 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
@@ -14,7 +13,8 @@ test('distribution is reproducible and has clean V3 metadata', () => {
   const source = fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8');
   assert.match(source, /@name\s+WARD/);
   assert.match(source, new RegExp(`@version\\s+${pkg.version.replaceAll('.', '\\.')}`));
-  assert.deepEqual(Buffer.from(source.match(/^\/\/ @icon\s+data:image\/svg\+xml;base64,(.+)$/m)[1], 'base64'), fs.readFileSync(path.join(root, 'assets', 'ward.svg')));
+  assert.match(source, /^\/\/ @icon\s+https:\/\/raw\.githubusercontent\.com\/ExtraPotions\/WARD\/main\/assets\/ward-launcher\.svg$/m);
+  assert.doesNotMatch(source, /data:image\//u);
   assert.match(source, /@match\s+https:\/\/www\.amazon\.com\/\*/);
   assert.match(source, /@homepageURL\s+https:\/\/github\.com\/ExtraPotions\/WARD/);
   assert.match(source, /@updateURL\s+https:\/\/github\.com\/ExtraPotions\/WARD\/releases\/latest\/download\/ward\.user\.js/);
@@ -59,22 +59,13 @@ test('distribution is reproducible and has clean V3 metadata', () => {
   assert.match(source, /setInterval\(ensure, 2000\)/);
   assert.equal([...source.matchAll(/setInterval\s*\(/g)].length, 1);
   const launcher = fs.readFileSync(path.join(root, 'assets', 'ward-launcher.svg'), 'utf8');
-  const badge = fs.readFileSync(path.join(root, 'assets', 'ward.svg'));
-  assert.equal(crypto.createHash('sha256').update(badge).digest('hex'), '1a9d50bf274a0793f94d8117ef6cc3f68e4839edf5bc932d49c9ad7800bcb0f9');
-  assert.equal(crypto.createHash('sha256').update(launcher).digest('hex'), 'c1a12bad2c6145ce097dc139177293a5832824b97a251324da58b98dcf4a8702');
-  assert.ok(source.includes(`data:image/svg+xml;base64,${Buffer.from(launcher).toString('base64')}`));
+  assert.ok(source.includes('https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg'));
   assert.doesNotMatch(launcher, /<rect x="32"|<rect x="42"|id="border"/u);
   assert.doesNotMatch(source, /__EXP_WARD_LAUNCHER_DATA__/u);
-  assert.match(source, /createDiagnosticsReport\(\s*'WARD'/);
-});
-
-test('approved badge derivatives have exact pixel dimensions', () => {
-  for (const size of [128, 48, 32]) {
-    const png = fs.readFileSync(path.join(root, 'assets', `ward-${size}.png`));
-    assert.equal(png.subarray(1, 4).toString(), 'PNG');
-    assert.equal(png.readUInt32BE(16), size);
-    assert.equal(png.readUInt32BE(20), size);
+  for (const removed of ['ward.svg', 'ward-128.png', 'ward-48.png', 'ward-32.png']) {
+    assert.equal(fs.existsSync(path.join(root, 'assets', removed)), false, removed);
   }
+  assert.match(source, /createDiagnosticsReport\(\s*'WARD'/);
 });
 
 test('production menu uses switches and has every required navigation group', async (t) => {

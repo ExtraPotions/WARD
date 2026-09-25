@@ -22,10 +22,10 @@
 ## Install
 
 <p>
-  <a href="https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js?v=3.2.8">
+  <a href="https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js?v=3.2.9">
     <img alt="Install WARD" src="https://img.shields.io/badge/Install-WARD-7A1F2B?style=flat-square">
   </a>
-  <img alt="Version 3.2.8" src="https://img.shields.io/badge/version-3.2.8-22C55E?style=flat-square">
+  <img alt="Version 3.2.9" src="https://img.shields.io/badge/version-3.2.9-22C55E?style=flat-square">
   <a href="https://github.com/ExtraPotions/WARD/releases">
     <img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/ExtraPotions/WARD/total?style=flat-square&label=Downloads">
   </a>

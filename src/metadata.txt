@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.8
+// @version      3.2.9
 // @description  Local retail-pressure protection, initially for Amazon.
-// @icon         __EXP_WARD_BADGE_DATA__
+// @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
 // @tag          dark-patterns
 // @tag          privacy

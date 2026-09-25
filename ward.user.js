@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.8
+// @version      3.2.9
 // @description  Local retail-pressure protection, initially for Amazon.
-// @icon         data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJ0aXRsZSBkZXNjIj4KICA8dGl0bGUgaWQ9InRpdGxlIj5XQVJEIEljb248L3RpdGxlPjxkZXNjIGlkPSJkZXNjIj5BIHByb3RlY3RpdmUgZ29sZCwgb3JhbmdlLCBhbmQgcmVkIGZhY2V0ZWQgc2hpZWxkIGdlbSBpbiBhIG1hdGNoaW5nIGdyYWRpZW50IGJhZGdlLjwvZGVzYz4KICA8ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iIzFiMTYwZCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzE0MGMxMyIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJib3JkZXIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmNThhIi8+PHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iI2ZmYWQyNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2VlNDQ1MCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPgogIDxyZWN0IHg9IjMyIiB5PSIzMiIgd2lkdGg9Ijk2MCIgaGVpZ2h0PSI5NjAiIHJ4PSIxODUiIGZpbGw9InVybCgjYmcpIi8+PHJlY3QgeD0iNDIiIHk9IjQyIiB3aWR0aD0iOTQwIiBoZWlnaHQ9Ijk0MCIgcng9IjE3NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2JvcmRlcikiIHN0cm9rZS13aWR0aD0iMjgiLz4KICA8cG9seWdvbiBwb2ludHM9IjUxMiwxOTAgNzc2LDMwMiA3MzgsNjQwIDUxMiw4MzggMjg2LDY0MCAyNDgsMzAyIiBmaWxsPSIjM2ExNzE0Ii8+PHBvbHlnb24gcG9pbnRzPSI1MTIsMTkwIDUxMiw0NDIgMjQ4LDMwMiIgZmlsbD0iI2ZmZjU4YSIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDE5MCA3NzYsMzAyIDUxMiw0NDIiIGZpbGw9IiNmZmQyM2MiLz48cG9seWdvbiBwb2ludHM9IjI0OCwzMDIgNTEyLDQ0MiA0MDgsNTgyIDI4Niw2NDAiIGZpbGw9IiNmNmEzMTMiLz48cG9seWdvbiBwb2ludHM9Ijc3NiwzMDIgNzM4LDY0MCA2MTYsNTgyIDUxMiw0NDIiIGZpbGw9IiNmZjZkMzIiLz48cG9seWdvbiBwb2ludHM9IjI4Niw2NDAgNDA4LDU4MiA1MTIsODM4IiBmaWxsPSIjYjk0NzE5Ii8+PHBvbHlnb24gcG9pbnRzPSI3MzgsNjQwIDUxMiw4MzggNjE2LDU4MiIgZmlsbD0iIzlmMTc0NCIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDQ0MiA2MTYsNTgyIDUxMiw2OTAgNDA4LDU4MiIgZmlsbD0iIzY3MWIyZCIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDQ3NiA1ODAsNTc2IDUxMiw2NDYgNDQ0LDU3NiIgZmlsbD0iI2ZmZjJhNiIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDQ3NiA1ODAsNTc2IDUxMiw1NTgiIGZpbGw9IiNmZmJkMmUiLz48cG9seWdvbiBwb2ludHM9IjU4MCw1NzYgNTEyLDY0NiA1MTIsNTU4IiBmaWxsPSIjZWU0NDUwIi8+Cjwvc3ZnPgo=
+// @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
 // @tag          dark-patterns
 // @tag          privacy
@@ -29,7 +29,7 @@
 'use strict';
 const EXP = Object.create(null);
 
-// Generated from the approved Dropper v3.2.18 install artifact. Do not edit.
+// Generated from the approved Dropper v3.2.19 install artifact. Do not edit.
 const DropperReference = (() => {
 const LAUNCHER_ORDER_KEY = "exp:v3:launcher-order";
 const LAUNCHER_GRID_DELTA_KEY = "exp:v3:launcher-grid-delta";
@@ -1008,7 +1008,7 @@ const ExtraPotionsDiagnostics = (() => {
   return Object.freeze({ createReport, registerProduct, compatibility, bindControls, createControls, dispose });
 })();
 
-/* exp-core 3.2.17: canonical ExtraPotions shared runtime. */
+/* exp-core 3.2.18: canonical ExtraPotions shared runtime. */
 function createProductLifecycle(shared) {
   const VERSION = shared.version;
   const PROTOCOL = 'exp-core-coordination-v1';
@@ -1407,8 +1407,8 @@ function createProductLifecycle(shared) {
 // Product engines own their settings, content, and actions. Core owns shared UI.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.2.17';
-  const sourceVersion = '3.2.18';
+  const version = '3.2.18';
+  const sourceVersion = '3.2.19';
   const protocol = 'exp-core-coordination-v1';
   const gridProtocol = 'exp-launcher-grid-v3';
   const GRID_ORDER = 'exp:v3:launcher-order';
@@ -2849,6 +2849,11 @@ EXP.Engine = (() => {
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.9': Object.freeze([
+      'Uses the borderless WARD launcher artwork everywhere an icon is shown.',
+      'References the SVG by URL instead of embedding image bytes in the userscript.',
+      'Removes the superseded bordered SVG and raster badge files.'
+    ]),
     '3.2.8': Object.freeze([
       'Adds one global Automatic, Hide, or Dim choice for all protected content.',
       'Extends guarded Amazon ad and upsell coverage across home and order-history pages.',
@@ -2943,7 +2948,7 @@ EXP.Updates = (() => {
 })();
 
 // Dropper 3.2.8 is the canonical shared UI; product-specific color stays declarative.
-EXP.MenuChrome = Object.freeze({ create: options => ExtraPotionsCore.create({ ...options, launcherSrc: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJ0aXRsZSBkZXNjIj4KICA8dGl0bGUgaWQ9InRpdGxlIj5XQVJEIExhdW5jaGVyIEdlbTwvdGl0bGU+PGRlc2MgaWQ9ImRlc2MiPkEgYm9yZGVybGVzcyBwcm90ZWN0aXZlIHNoaWVsZCBjcnlzdGFsIGluIGdvbGQsIG9yYW5nZSwgYW5kIHJlZC48L2Rlc2M+CiAgPHBvbHlnb24gcG9pbnRzPSI1MTIsMTkwIDc3NiwzMDIgNzM4LDY0MCA1MTIsODM4IDI4Niw2NDAgMjQ4LDMwMiIgZmlsbD0iIzNhMTcxNCIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDE5MCA1MTIsNDQyIDI0OCwzMDIiIGZpbGw9IiNmZmY1OGEiLz48cG9seWdvbiBwb2ludHM9IjUxMiwxOTAgNzc2LDMwMiA1MTIsNDQyIiBmaWxsPSIjZmZkMjNjIi8+PHBvbHlnb24gcG9pbnRzPSIyNDgsMzAyIDUxMiw0NDIgNDA4LDU4MiAyODYsNjQwIiBmaWxsPSIjZjZhMzEzIi8+PHBvbHlnb24gcG9pbnRzPSI3NzYsMzAyIDczOCw2NDAgNjE2LDU4MiA1MTIsNDQyIiBmaWxsPSIjZmY2ZDMyIi8+PHBvbHlnb24gcG9pbnRzPSIyODYsNjQwIDQwOCw1ODIgNTEyLDgzOCIgZmlsbD0iI2I5NDcxOSIvPjxwb2x5Z29uIHBvaW50cz0iNzM4LDY0MCA1MTIsODM4IDYxNiw1ODIiIGZpbGw9IiM5ZjE3NDQiLz48cG9seWdvbiBwb2ludHM9IjUxMiw0NDIgNjE2LDU4MiA1MTIsNjkwIDQwOCw1ODIiIGZpbGw9IiM2NzFiMmQiLz48cG9seWdvbiBwb2ludHM9IjUxMiw0NzYgNTgwLDU3NiA1MTIsNjQ2IDQ0NCw1NzYiIGZpbGw9IiNmZmYyYTYiLz48cG9seWdvbiBwb2ludHM9IjUxMiw0NzYgNTgwLDU3NiA1MTIsNTU4IiBmaWxsPSIjZmZiZDJlIi8+PHBvbHlnb24gcG9pbnRzPSI1ODAsNTc2IDUxMiw2NDYgNTEyLDU1OCIgZmlsbD0iI2VlNDQ1MCIvPgo8L3N2Zz4K', productTheme: {"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","bg":"#101014","panel":"#19191e","line":"#3a3532","text":"#fffaf3","muted":"#b9afa7","accent":"#ffb000","accent2":"#ff4a35","skin":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","skinVertical":"linear-gradient(180deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)"} }) });
+EXP.MenuChrome = Object.freeze({ create: options => ExtraPotionsCore.create({ ...options, launcherSrc: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg', productTheme: {"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","bg":"#101014","panel":"#19191e","line":"#3a3532","text":"#fffaf3","muted":"#b9afa7","accent":"#ffb000","accent2":"#ff4a35","skin":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","skinVertical":"linear-gradient(180deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)"} }) });
 
 /* Diagnostics reports and controls follow Dropper's shared implementation. */
 EXP.Diagnostics = Object.freeze({
@@ -2953,8 +2958,9 @@ EXP.Diagnostics = Object.freeze({
 });
 
 EXP.UI = (() => {
-  const BADGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJ0aXRsZSBkZXNjIj4KICA8dGl0bGUgaWQ9InRpdGxlIj5XQVJEIEljb248L3RpdGxlPjxkZXNjIGlkPSJkZXNjIj5BIHByb3RlY3RpdmUgZ29sZCwgb3JhbmdlLCBhbmQgcmVkIGZhY2V0ZWQgc2hpZWxkIGdlbSBpbiBhIG1hdGNoaW5nIGdyYWRpZW50IGJhZGdlLjwvZGVzYz4KICA8ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iIzFiMTYwZCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzE0MGMxMyIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJib3JkZXIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmNThhIi8+PHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iI2ZmYWQyNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2VlNDQ1MCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPgogIDxyZWN0IHg9IjMyIiB5PSIzMiIgd2lkdGg9Ijk2MCIgaGVpZ2h0PSI5NjAiIHJ4PSIxODUiIGZpbGw9InVybCgjYmcpIi8+PHJlY3QgeD0iNDIiIHk9IjQyIiB3aWR0aD0iOTQwIiBoZWlnaHQ9Ijk0MCIgcng9IjE3NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2JvcmRlcikiIHN0cm9rZS13aWR0aD0iMjgiLz4KICA8cG9seWdvbiBwb2ludHM9IjUxMiwxOTAgNzc2LDMwMiA3MzgsNjQwIDUxMiw4MzggMjg2LDY0MCAyNDgsMzAyIiBmaWxsPSIjM2ExNzE0Ii8+PHBvbHlnb24gcG9pbnRzPSI1MTIsMTkwIDUxMiw0NDIgMjQ4LDMwMiIgZmlsbD0iI2ZmZjU4YSIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDE5MCA3NzYsMzAyIDUxMiw0NDIiIGZpbGw9IiNmZmQyM2MiLz48cG9seWdvbiBwb2ludHM9IjI0OCwzMDIgNTEyLDQ0MiA0MDgsNTgyIDI4Niw2NDAiIGZpbGw9IiNmNmEzMTMiLz48cG9seWdvbiBwb2ludHM9Ijc3NiwzMDIgNzM4LDY0MCA2MTYsNTgyIDUxMiw0NDIiIGZpbGw9IiNmZjZkMzIiLz48cG9seWdvbiBwb2ludHM9IjI4Niw2NDAgNDA4LDU4MiA1MTIsODM4IiBmaWxsPSIjYjk0NzE5Ii8+PHBvbHlnb24gcG9pbnRzPSI3MzgsNjQwIDUxMiw4MzggNjE2LDU4MiIgZmlsbD0iIzlmMTc0NCIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDQ0MiA2MTYsNTgyIDUxMiw2OTAgNDA4LDU4MiIgZmlsbD0iIzY3MWIyZCIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDQ3NiA1ODAsNTc2IDUxMiw2NDYgNDQ0LDU3NiIgZmlsbD0iI2ZmZjJhNiIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDQ3NiA1ODAsNTc2IDUxMiw1NTgiIGZpbGw9IiNmZmJkMmUiLz48cG9seWdvbiBwb2ludHM9IjU4MCw1NzYgNTEyLDY0NiA1MTIsNTU4IiBmaWxsPSIjZWU0NDUwIi8+Cjwvc3ZnPgo=';
-  const LAUNCHER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJ0aXRsZSBkZXNjIj4KICA8dGl0bGUgaWQ9InRpdGxlIj5XQVJEIExhdW5jaGVyIEdlbTwvdGl0bGU+PGRlc2MgaWQ9ImRlc2MiPkEgYm9yZGVybGVzcyBwcm90ZWN0aXZlIHNoaWVsZCBjcnlzdGFsIGluIGdvbGQsIG9yYW5nZSwgYW5kIHJlZC48L2Rlc2M+CiAgPHBvbHlnb24gcG9pbnRzPSI1MTIsMTkwIDc3NiwzMDIgNzM4LDY0MCA1MTIsODM4IDI4Niw2NDAgMjQ4LDMwMiIgZmlsbD0iIzNhMTcxNCIvPjxwb2x5Z29uIHBvaW50cz0iNTEyLDE5MCA1MTIsNDQyIDI0OCwzMDIiIGZpbGw9IiNmZmY1OGEiLz48cG9seWdvbiBwb2ludHM9IjUxMiwxOTAgNzc2LDMwMiA1MTIsNDQyIiBmaWxsPSIjZmZkMjNjIi8+PHBvbHlnb24gcG9pbnRzPSIyNDgsMzAyIDUxMiw0NDIgNDA4LDU4MiAyODYsNjQwIiBmaWxsPSIjZjZhMzEzIi8+PHBvbHlnb24gcG9pbnRzPSI3NzYsMzAyIDczOCw2NDAgNjE2LDU4MiA1MTIsNDQyIiBmaWxsPSIjZmY2ZDMyIi8+PHBvbHlnb24gcG9pbnRzPSIyODYsNjQwIDQwOCw1ODIgNTEyLDgzOCIgZmlsbD0iI2I5NDcxOSIvPjxwb2x5Z29uIHBvaW50cz0iNzM4LDY0MCA1MTIsODM4IDYxNiw1ODIiIGZpbGw9IiM5ZjE3NDQiLz48cG9seWdvbiBwb2ludHM9IjUxMiw0NDIgNjE2LDU4MiA1MTIsNjkwIDQwOCw1ODIiIGZpbGw9IiM2NzFiMmQiLz48cG9seWdvbiBwb2ludHM9IjUxMiw0NzYgNTgwLDU3NiA1MTIsNjQ2IDQ0NCw1NzYiIGZpbGw9IiNmZmYyYTYiLz48cG9seWdvbiBwb2ludHM9IjUxMiw0NzYgNTgwLDU3NiA1MTIsNTU4IiBmaWxsPSIjZmZiZDJlIi8+PHBvbHlnb24gcG9pbnRzPSI1ODAsNTc2IDUxMiw2NDYgNTEyLDU1OCIgZmlsbD0iI2VlNDQ1MCIvPgo8L3N2Zz4K';
+  const ICON_URL = 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg';
+  const BADGE = ICON_URL;
+  const LAUNCHER = ICON_URL;
 
   const UI_THEMES = ExtraPotionsCore.themes({"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#120b05 0 38%,#b66a16 38% 69%,#356f78 69% 100%)","canvas":"#120b05","surface":"#241409","primary":"#b66a16","companion":"#9d3131","counterpoint":"#356f78","interactive":"#d1842a","bg":"#120b05","panel":"#241409","line":"#53321f","text":"#f1dfc9","muted":"#b79e84","accent":"#b66a16","accent2":"#d1842a","skin":"linear-gradient(135deg,#b66a16 0%,#9d3131 52%,#356f78 100%)","skinVertical":"linear-gradient(180deg,#b66a16 0%,#9d3131 52%,#356f78 100%)"});
 
@@ -3772,7 +3778,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.8';
+EXP.VERSION = '3.2.9';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

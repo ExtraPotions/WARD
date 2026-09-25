@@ -40,6 +40,6 @@ jobs:
           ' CHANGELOG.md > release-notes.md
           gh release create "$TAG" \
             ward.user.js \
-            assets/ward.svg \
+            assets/ward-launcher.svg \
             --title "WARD $TAG" \
             --notes-file release-notes.md

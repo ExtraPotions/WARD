@@ -59,15 +59,10 @@ test('launcher measurements and badge assets match the shared suite contract', (
   assert.match(core, /\.header-icon \.menu-icon\{width:38px!important;height:38px!important\}/u);
   assert.match(core, /launcher\.replaceChildren\(mark\)/u);
   assert.doesNotMatch(core, /launcher\.append\(ring/u);
-  const badge = fs.readFileSync(path.join(root, 'assets', 'ward.svg'));
   const launcher = fs.readFileSync(path.join(root, 'assets', 'ward-launcher.svg'));
-  assert.equal(crypto.createHash('sha256').update(badge).digest('hex'), '1a9d50bf274a0793f94d8117ef6cc3f68e4839edf5bc932d49c9ad7800bcb0f9');
   assert.equal(crypto.createHash('sha256').update(launcher).digest('hex'), 'c1a12bad2c6145ce097dc139177293a5832824b97a251324da58b98dcf4a8702');
-  for (const size of [128, 48, 32]) {
-    const png = fs.readFileSync(path.join(root, 'assets', `ward-${size}.png`));
-    assert.equal(png.subarray(1, 4).toString(), 'PNG');
-    assert.equal(png.readUInt32BE(16), size);
-    assert.equal(png.readUInt32BE(20), size);
+  for (const removed of ['ward.svg', 'ward-128.png', 'ward-48.png', 'ward-32.png']) {
+    assert.equal(fs.existsSync(path.join(root, 'assets', removed)), false, removed);
   }
 });
 

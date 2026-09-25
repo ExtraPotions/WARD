@@ -1,5 +1,10 @@
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.9': Object.freeze([
+      'Uses the borderless WARD launcher artwork everywhere an icon is shown.',
+      'References the SVG by URL instead of embedding image bytes in the userscript.',
+      'Removes the superseded bordered SVG and raster badge files.'
+    ]),
     '3.2.8': Object.freeze([
       'Adds one global Automatic, Hide, or Dim choice for all protected content.',
       'Extends guarded Amazon ad and upsell coverage across home and order-history pages.',
