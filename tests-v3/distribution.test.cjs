@@ -143,3 +143,18 @@ test('version and update-complete cards show the concise current changelog', asy
   assert.equal(facts.current.visible,true);
   assert.deepEqual(facts.current.bullets,facts.completed.bullets);
 });
+
+test('WARD settings survive manager storage gaps and saved width is respected', () => {
+  const settings = fs.readFileSync(path.join(root, 'src', 'settings.js'), 'utf8');
+  const ui = fs.readFileSync(path.join(root, 'src', 'ui.js'), 'utf8');
+  assert.match(settings, /const value = GM_getValue\(storageKey, undefined\);\s*if \(value !== undefined\) return value;/u);
+  assert.match(settings, /const value = localStorage\.getItem\(storageKey\);\s*if \(value !== null\) \{/u);
+  assert.match(settings, /if \(typeof GM_setValue === 'function'\) GM_setValue\(storageKey, parsed\);/u);
+  assert.match(settings, /if \(typeof GM_setValue === 'function'\) GM_setValue\(storageKey, value\);/u);
+  assert.match(settings, /localStorage\.setItem\(storageKey, JSON\.stringify\(value\)\);/u);
+  assert.match(settings, /function load\(\) \{\s*const stored = read\('settings'\);\s*state = validate\(stored \|\| defaults\);\s*write\('settings', state\);/u);
+  assert.doesNotMatch(settings, /GM_setValue\(key\(name\), value\); return;/u);
+  assert.match(ui, /host\.dataset\.menuWidth = settings\.menuWidth;/u);
+  assert.doesNotMatch(ui, /host\.dataset\.menuWidth = 'compact';/u);
+});
+
