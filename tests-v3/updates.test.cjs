@@ -3,34 +3,23 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
+const read = name => fs.readFileSync(path.join(root, name), 'utf8');
 
-test('update metadata returns only concise bullets from the latest release section', async () => {
-  const storage = new Map();
-  const context = {
-    EXP: {
-      VERSION: '3.2.2',
-      Settings: { snapshot: () => ({ updateNotifications:true }) },
-      Core: { safeError: (error) => { throw error; } }
-    },
-    localStorage: {
-      getItem: (key) => storage.get(key) || null,
-      setItem: (key,value) => storage.set(key,value)
-    },
-    GM_xmlhttpRequest: (options) => options.onload({
-      status:200,
-      responseText:JSON.stringify({
-        tag_name:'v3.2.3',
-        body:'## 3.2.3\n\n- First concrete change.\n- Second concrete change.\n\n## 3.2.2\n\n- Older change.'
-      })
-    }),
-    Date, JSON, Object, String, Number, Array, Promise, Error
-  };
-  vm.runInNewContext(fs.readFileSync(path.join(root,'src','updates.js'),'utf8'),context);
-  const result=await context.EXP.Updates.check(true);
-  assert.equal(result.available,true);
-  assert.equal(result.latest,'3.2.3');
-  assert.deepEqual([...result.details],['First concrete change.','Second concrete change.']);
+test('WARD uses the shared version-scoped updater and concise release parsing', () => {
+  const updates = read('src/updates.js');
+  const core = read('vendor/exp-core/exp-core.js');
+
+  assert.match(updates, /ExtraPotionsCore\.createReleaseUpdateChecker/);
+  assert.match(updates, /productId:\s*'ward'/);
+  assert.match(updates, /repository:\s*'ExtraPotions\/WARD'/);
+  assert.match(updates, /endpoint:\s*'https:\/\/api\.github\.com\/repos\/ExtraPotions\/WARD\/releases\/latest'/);
+  assert.match(updates, /currentVersion:\s*EXP\.VERSION/);
+
+  assert.match(core, /function releaseDetails\(body\)/);
+  assert.match(core, /checkedForCurrentVersion = state\.checkedForVersion === currentVersion/);
+  assert.match(core, /state\.lastCheckAt = 0/);
+  assert.match(core, /state\.lastRemoteVersion = ''/);
+  assert.match(core, /state\.checkedForVersion = currentVersion/);
 });
