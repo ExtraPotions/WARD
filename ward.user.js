@@ -2072,7 +2072,7 @@ const ExtraPotionsCore = (() => {
     const onError = typeof options.onError === 'function' ? options.onError : () => {};
     if (!productId || !repository || !currentVersion) throw new Error('Incomplete update checker configuration');
 
-    const ENDPOINT = 'https://api.github.com/repos/' + repository + '/releases/latest';
+    const ENDPOINT = String(options.endpoint || ('https://api.github.com/repos/' + repository + '/releases/latest'));
     const CACHE_KEY = 'exp:v3:' + productId + ':update-cache';
     const CHECK_INTERVAL = 15 * 60 * 1000;
     const CHECK_LEASE = 30 * 1000;
@@ -3279,6 +3279,8 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
+EXP.VERSION = '3.2.13';
+
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
     '3.2.13': Object.freeze([
@@ -3358,6 +3360,7 @@ EXP.ReleaseNotes = (() => {
 EXP.Updates = ExtraPotionsCore.createReleaseUpdateChecker({
   productId: 'ward',
   repository: 'ExtraPotions/WARD',
+  endpoint: 'https://api.github.com/repos/ExtraPotions/WARD/releases/latest',
   currentVersion: EXP.VERSION,
   enabled: () => EXP.Settings.snapshot().updateNotifications,
   onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),
@@ -3471,6 +3474,7 @@ EXP.UI = (() => {
     }
     list.hidden = !details.length;
     updateCard.querySelector('.update-action').hidden = complete || current;
+    updateCard.dataset.noticeKind = current ? 'current' : complete ? 'complete' : 'available';
     updateCard.dataset.placement = 'menu';
     updateCard.hidden = false;
     chrome?.layout();
@@ -4041,7 +4045,7 @@ EXP.UI = (() => {
     titleRow.append(el('strong','','WARD'));
 
     titleRow.append(
-      action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false) showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
+      action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false || updateCard.dataset.noticeKind !== 'current') showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
     );
 
     title.append(titleRow,el('small','','Amazon pressure and coupon controls'));
