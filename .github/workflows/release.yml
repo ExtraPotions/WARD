@@ -2,13 +2,15 @@ name: Publish release
 
 on:
   push:
-    branches:
-      - main
-    tags:
-      - "v*.*.*"
+    branches: [main]
+    tags: ["v*.*.*"]
 
 permissions:
   contents: write
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -34,14 +36,46 @@ jobs:
             tag="v$version"
           fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-      - name: Validate release
+      # One-time synchronization for this parity release. Subsequent versions
+      # build from their own committed vendor files without overriding them.
+      - name: Check out verified Core for 3.2.13
+        if: github.ref == 'refs/heads/main' && steps.release.outputs.tag == 'v3.2.13'
+        uses: actions/checkout@v7
+        with:
+          repository: ExtraPotions/exp-core
+          ref: 30132f6c152c6cf3ce6f5811d05652bae44bb9c0
+          path: .release-core
+          persist-credentials: false
+      - name: Synchronize verified Core
+        if: github.ref == 'refs/heads/main' && steps.release.outputs.tag == 'v3.2.13'
+        run: |
+          cp .release-core/dist/exp-core.js vendor/exp-core/exp-core.js
+          cp .release-core/dist/manifest.json vendor/exp-core/manifest.json
+          node --test .release-core/tests/update-version-regression.test.cjs
+      - name: Build and validate release
         env:
           TAG: ${{ steps.release.outputs.tag }}
         run: |
           set -euo pipefail
           version="${TAG#v}"
+          npm run build
           npm run release:check
+          node --check ward.user.js
           grep -q "^// @version[[:space:]]*$version$" ward.user.js
+      - name: Commit verified generated artifacts
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            git diff --exit-code -- ward.user.js vendor/exp-core/exp-core.js vendor/exp-core/manifest.json
+          else
+            git add ward.user.js vendor/exp-core/exp-core.js vendor/exp-core/manifest.json
+            if ! git diff --cached --quiet; then
+              git config user.name 'github-actions[bot]'
+              git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+              git commit -m 'Build verified WARD 3.2.13 release artifacts'
+              git push origin HEAD:main
+            fi
+          fi
       - name: Publish assets
         env:
           GH_TOKEN: ${{ github.token }}
@@ -53,4 +87,7 @@ jobs:
             /^## / { section += 1; if (section > 1) exit }
             { print }
           ' CHANGELOG.md > release-notes.md
-          gh release create "$TAG"             ward.user.js             assets/ward-launcher.svg             --target "$GITHUB_SHA"             --title "WARD $TAG"             --notes-file release-notes.md
+          sha256sum ward.user.js > SHA256SUMS
+          (cd assets && sha256sum ward-launcher.svg) >> SHA256SUMS
+          gh release create "$TAG" ward.user.js assets/ward-launcher.svg SHA256SUMS \
+            --target "$(git rev-parse HEAD)" --title "WARD $TAG" --notes-file release-notes.md
