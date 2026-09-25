@@ -75,7 +75,34 @@ test('production menu uses switches and has every required navigation group', as
   await page.goto('https://www.amazon.com/');
   await page.addScriptTag({ content: fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8') });
   await page.locator('#exp-ward-root').evaluate((host) => host.shadowRoot.querySelector('.ward-launcher').click());
-  const result = await page.locator('#exp-ward-root').evaluate((host) => { const root = host.shadowRoot; const panel = root.querySelector('.ward');root.querySelector('.version').click();const changelog=root.querySelector('.ward-version-changelog'); return { nav: [...root.querySelectorAll('.ward-nav > .tool-panel > .route')].map((node) => node.querySelector('.fl-tool-title')?.textContent), switches: root.querySelectorAll('[role="switch"]').length, checkboxes: root.querySelectorAll('input[type="checkbox"]').length, open: panel.classList.contains('open'), role: panel.getAttribute('role'), modal: panel.getAttribute('aria-modal'), launcherExpanded: root.querySelector('.ward-launcher').getAttribute('aria-expanded'), width: panel.getBoundingClientRect().width, sections: root.querySelectorAll('.tool-panel').length, visibleBodies: [...root.querySelectorAll('.route-body')].filter((body) => !body.hidden).length, openRoute: root.querySelector('.route[aria-expanded="true"] .fl-tool-title')?.textContent, changelogOutside:!panel.contains(changelog) }; });
+  const result = await page.locator('#exp-ward-root').evaluate((host) => {
+    const root = host.shadowRoot;
+    const panel = root.querySelector('.ward');
+    root.querySelector('.version').click();
+    const notice = root.querySelector('.ward-update-changelog');
+    return {
+      nav: [...root.querySelectorAll('.ward-nav > .tool-panel > .route')].map((node) => node.querySelector('.fl-tool-title')?.textContent),
+      switches: root.querySelectorAll('[role="switch"]').length,
+      checkboxes: root.querySelectorAll('input[type="checkbox"]').length,
+      open: panel.classList.contains('open'),
+      role: panel.getAttribute('role'),
+      modal: panel.getAttribute('aria-modal'),
+      launcherExpanded: root.querySelector('.ward-launcher').getAttribute('aria-expanded'),
+      width: panel.getBoundingClientRect().width,
+      sections: root.querySelectorAll('.tool-panel').length,
+      visibleBodies: [...root.querySelectorAll('.route-body')].filter((body) => !body.hidden).length,
+      openRoute: root.querySelector('.route[aria-expanded="true"] .fl-tool-title')?.textContent,
+      noticeOutside: !panel.contains(notice),
+      notice: {
+        title: notice?.querySelector('.update-title')?.textContent || '',
+        version: notice?.querySelector('.update-version')?.textContent || '',
+        bullets: [...(notice?.querySelectorAll('li') || [])].map((item) => item.textContent.trim()),
+        hasList: Boolean(notice?.querySelector('ul')),
+        visible: !notice?.hidden,
+        role: notice?.getAttribute('role') || '',
+      },
+    };
+  });
   assert.equal(result.open, true);
   assert.equal(result.checkboxes, 0);
   assert.equal(result.switches, 0);
@@ -85,61 +112,64 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(result.width, 260);
   assert.equal(result.sections, 4);
   assert.equal(result.visibleBodies, 0);
-  assert.equal(result.changelogOutside, true);
-  const notice = await page.locator('#exp-ward-root').evaluate((host) => {
-    const changelog = host.shadowRoot.querySelector('.ward-version-changelog');
-    return {
-      versionLabel: host.shadowRoot.querySelector('.version')?.textContent || '',
-      heading: changelog?.querySelector('strong')?.textContent || '',
-      bullets: [...(changelog?.querySelectorAll('li') || [])].map((item) => item.textContent.trim()),
-      hasList: Boolean(changelog?.querySelector('ul')),
-      visible: !changelog?.hidden,
-      role: changelog?.getAttribute('role') || '',
-    };
-  });
-  assert.equal(notice.versionLabel, `v${pkg.version}`);
-  assert.equal(notice.heading, `WARD Changelog · v${pkg.version}`);
-  assert.equal(notice.hasList, true);
-  assert.ok(notice.bullets.length >= 2 && notice.bullets.length <= 4, JSON.stringify(notice));
-  assert.ok(notice.bullets.every((item) => item !== 'Current WARD improvements and fixes.'));
+  assert.equal(result.noticeOutside, true);
+  assert.equal(result.notice.title, 'WARD Changelog');
+  assert.equal(result.notice.version, `v${pkg.version}`);
+  assert.equal(result.notice.hasList, true);
+  assert.ok(result.notice.bullets.length >= 2 && result.notice.bullets.length <= 4, JSON.stringify(result.notice));
+  assert.ok(result.notice.bullets.every((item) => item !== 'Current WARD improvements and fixes.'));
   assert.equal(result.openRoute, undefined);
-  const launcherChrome = await page.locator('#exp-ward-root').evaluate((host) => { const root=host.shadowRoot;const launcher=root.querySelector('.ward-launcher');return {button:Math.round(launcher.getBoundingClientRect().width),radius:getComputedStyle(launcher).borderRadius,hasRing:Boolean(root.querySelector('.launcher-ring')),icon:Math.round(root.querySelector('.launcher-icon').getBoundingClientRect().width),headerBadge:Math.round(root.querySelector('.header-icon .menu-icon').getBoundingClientRect().width)}; });
+  const launcherChrome = await page.locator('#exp-ward-root').evaluate((host) => {
+    const root=host.shadowRoot;const launcher=root.querySelector('.ward-launcher');
+    return {button:Math.round(launcher.getBoundingClientRect().width),radius:getComputedStyle(launcher).borderRadius,hasRing:Boolean(root.querySelector('.launcher-ring')),icon:Math.round(root.querySelector('.launcher-icon').getBoundingClientRect().width),headerBadge:Math.round(root.querySelector('.header-icon .menu-icon').getBoundingClientRect().width)};
+  });
   assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:38});
   for (const label of ['Protection','Appearance','Amazon','System']) assert.ok(result.nav.includes(label));
   assert.equal(result.nav.includes('Settings'), false);
   assert.equal(result.nav.includes('Read'), false);
   assert.equal(result.nav.includes('Recover'), false);
-  const changed = await page.locator('#exp-ward-root').evaluate((host) => { const root = host.shadowRoot; root.querySelector('.route[data-view="tools"]').click(); return { visibleBodies: [...root.querySelectorAll('.route-body')].filter((body) => !body.hidden).length, openRoute: root.querySelector('.route[aria-expanded="true"] .fl-tool-title')?.textContent, coupon: root.querySelector('[role="switch"][aria-label="Auto-clip coupons"]')?.getAttribute('aria-checked'), switches:root.querySelectorAll('[role="switch"]').length, nested: root.querySelectorAll('.route-body:not([hidden]) details').length }; });
+  const changed = await page.locator('#exp-ward-root').evaluate((host) => {
+    const root = host.shadowRoot; root.querySelector('.route[data-view="tools"]').click();
+    return { visibleBodies: [...root.querySelectorAll('.route-body')].filter((body) => !body.hidden).length, openRoute: root.querySelector('.route[aria-expanded="true"] .fl-tool-title')?.textContent, coupon: root.querySelector('[role="switch"][aria-label="Auto-clip coupons"]')?.getAttribute('aria-checked'), switches:root.querySelectorAll('[role="switch"]').length, nested: root.querySelectorAll('.route-body:not([hidden]) details').length };
+  });
   assert.equal(changed.visibleBodies, 1);
   assert.equal(changed.openRoute, 'Amazon');
   assert.equal(changed.coupon, 'true');
   assert.equal(changed.nested, 0);
   assert.ok(changed.switches > 0);
-  const reopened = await page.locator('#exp-ward-root').evaluate((host) => { const root=host.shadowRoot;root.querySelector('.ward-launcher').click();root.querySelector('.ward-launcher').click();return {visibleBodies:[...root.querySelectorAll('.route-body')].filter((body)=>!body.hidden).length,marker:root.querySelector('.route.last-opened')?.textContent}; });
+  const reopened = await page.locator('#exp-ward-root').evaluate((host) => {
+    const root=host.shadowRoot;root.querySelector('.ward-launcher').click();root.querySelector('.ward-launcher').click();
+    return {visibleBodies:[...root.querySelectorAll('.route-body')].filter((body)=>!body.hidden).length,marker:root.querySelector('.route.last-opened')?.textContent};
+  });
   assert.deepEqual(reopened,{visibleBodies:0,marker:'Amazon▸'});
 });
 
-test('version and update-complete cards show the concise current changelog', async (t) => {
+test('version action reuses the update-complete card for the current changelog', async (t) => {
   const browser = await chromium.launch({ headless:true });
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({ status:200, contentType:'text/html', body:'<!doctype html><html><body><main>Amazon fixture</main></body></html>' }));
   await page.goto('https://www.amazon.com/');
-  await page.evaluate(() => localStorage.setItem('exp:v3:ward:last-version-v2','3.2.3'));
+  await page.evaluate(() => localStorage.setItem('exp:v3:ward:last-version-v2','3.2.12'));
   await page.addScriptTag({ content:fs.readFileSync(path.join(root,'ward.user.js'),'utf8') });
   await page.waitForSelector('#exp-ward-root', { state:'attached' });
   const facts = await page.locator('#exp-ward-root').evaluate((host) => {
     const root=host.shadowRoot;
-    const completed=root.querySelector('.ward-update-changelog');
+    const card=root.querySelector('.ward-update-changelog');
+    const read=(node)=>({kind:node.dataset.noticeKind,title:node.querySelector('.update-title')?.textContent||'',version:node.querySelector('.update-version')?.textContent||'',bullets:[...node.querySelectorAll('li')].map((item)=>item.textContent.trim()),visible:!node.hidden});
+    const completed=read(card);
     root.querySelector('.version').click();
-    const current=root.querySelector('.ward-version-changelog');
-    const read=(node)=>({title:node.querySelector('.update-title')?.textContent||node.querySelector('strong')?.textContent||'',bullets:[...node.querySelectorAll('li')].map((item)=>item.textContent.trim()),visible:!node.hidden});
-    return {completed:read(completed),current:read(current)};
+    const current=read(card);
+    return {completed,current,sameNode:card===root.querySelector('.ward-update-changelog')};
   });
+  assert.equal(facts.sameNode,true);
+  assert.equal(facts.completed.kind,'complete');
   assert.equal(facts.completed.title,'WARD Updated');
   assert.equal(facts.completed.visible,true);
   assert.ok(facts.completed.bullets.length>=2&&facts.completed.bullets.length<=4,JSON.stringify(facts));
-  assert.equal(facts.current.title,`WARD Changelog · v${pkg.version}`);
+  assert.equal(facts.current.kind,'current');
+  assert.equal(facts.current.title,'WARD Changelog');
+  assert.equal(facts.current.version,`v${pkg.version}`);
   assert.equal(facts.current.visible,true);
   assert.deepEqual(facts.current.bullets,facts.completed.bullets);
 });
