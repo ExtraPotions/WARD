@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.11
+// @version      3.2.12
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -2949,6 +2949,10 @@ EXP.Engine = (() => {
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.12': Object.freeze([
+      'Preserves WARD settings across userscript updates by recovering from browser-local backup storage when manager storage is missing.',
+      'Mirrors validated settings to both manager storage and the local fallback, and keeps the saved Full, Compact, or Narrow menu width.'
+    ]),
     '3.2.11': Object.freeze([
       'Shows each automatic update notice once for that version instead of on every page load.',
       'Stacks simultaneous notices beside the complete launcher grid.',
@@ -3872,7 +3876,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.11';
+EXP.VERSION = '3.2.12';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
