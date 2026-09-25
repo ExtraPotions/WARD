@@ -1964,8 +1964,31 @@ EXP.Settings = (() => {
   let state;
   const listeners = new Set();
   const key = (name) => `${PREFIX}:${name}`;
-  function read(name) { try { if (typeof GM_getValue === 'function') return GM_getValue(key(name), undefined); } catch {} try { const value = localStorage.getItem(key(name)); return value === null ? undefined : JSON.parse(value); } catch { return memory.get(key(name)); } }
-  function write(name, value) { memory.set(key(name), value); try { if (typeof GM_setValue === 'function') { GM_setValue(key(name), value); return; } } catch {} try { localStorage.setItem(key(name), JSON.stringify(value)); } catch {} }
+  function read(name) {
+    const storageKey = key(name);
+    try {
+      if (typeof GM_getValue === 'function') {
+        const value = GM_getValue(storageKey, undefined);
+        if (value !== undefined) return value;
+      }
+    } catch {}
+    try {
+      const value = localStorage.getItem(storageKey);
+      if (value !== null) {
+        const parsed = JSON.parse(value);
+        memory.set(storageKey, parsed);
+        try { if (typeof GM_setValue === 'function') GM_setValue(storageKey, parsed); } catch {}
+        return parsed;
+      }
+    } catch {}
+    return memory.get(storageKey);
+  }
+  function write(name, value) {
+    const storageKey = key(name);
+    memory.set(storageKey, value);
+    try { if (typeof GM_setValue === 'function') GM_setValue(storageKey, value); } catch {}
+    try { localStorage.setItem(storageKey, JSON.stringify(value)); } catch {}
+  }
   function validate(candidate) {
     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) throw Object.assign(new Error('Settings must be an object'), { code: 'SETTINGS_TYPE' });
     const next = structuredClone(defaults);
@@ -1981,7 +2004,12 @@ EXP.Settings = (() => {
     for (const field of ['categories', 'patterns']) if (candidate[field] && typeof candidate[field] === 'object' && !Array.isArray(candidate[field])) next[field] = Object.fromEntries(Object.entries(candidate[field]).filter(([id, value]) => /^[a-z][a-z0-9.-]+$/.test(id) && ['inherit', 'on', 'off'].includes(value)));
     return next;
   }
-  function load() { state = validate(read('settings') || defaults); return snapshot(); }
+  function load() {
+    const stored = read('settings');
+    state = validate(stored || defaults);
+    write('settings', state);
+    return snapshot();
+  }
   function snapshot() { return structuredClone(state || defaults); }
   function replace(value, reason = 'replace') { state = validate(value); write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
@@ -3596,7 +3624,7 @@ EXP.UI = (() => {
     const settings = EXP.Settings.snapshot();
     applyUiTheme(settings.uiTheme);
     host.dataset.expNonColor = settings.nonColorIndicators ? '1' : '0';
-    host.dataset.menuWidth = 'compact';
+    host.dataset.menuWidth = settings.menuWidth;
 
     for (const button of nav.querySelectorAll(':scope > .tool-panel > .route')) {
       const active = button.dataset.view === activeView;
