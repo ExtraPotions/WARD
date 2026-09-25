@@ -556,7 +556,7 @@ EXP.UI = (() => {
     const settings = EXP.Settings.snapshot();
     applyUiTheme(settings.uiTheme);
     host.dataset.expNonColor = settings.nonColorIndicators ? '1' : '0';
-    host.dataset.menuWidth = 'compact';
+    host.dataset.menuWidth = settings.menuWidth;
 
     for (const button of nav.querySelectorAll(':scope > .tool-panel > .route')) {
       const active = button.dataset.view === activeView;
