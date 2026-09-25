@@ -1,5 +1,9 @@
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.12': Object.freeze([
+      'Preserves WARD settings across userscript updates by recovering from browser-local backup storage when manager storage is missing.',
+      'Mirrors validated settings to both manager storage and the local fallback, and keeps the saved Full, Compact, or Narrow menu width.'
+    ]),
     '3.2.11': Object.freeze([
       'Shows each automatic update notice once for that version instead of on every page load.',
       'Stacks simultaneous notices beside the complete launcher grid.',
