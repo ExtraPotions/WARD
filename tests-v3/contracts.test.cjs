@@ -73,26 +73,29 @@ test('engine batches never rebuild the open menu', () => {
   assert.match(source, /restack/);
 });
 
-test('in-app update notice uses a version heading and concise bullet list', () => {
+test('in-app update notice uses one Dropper-style menu card with concise release notes', () => {
   const source = read('src/ui.js');
   const releaseNotes = read('src/release-notes.js');
   const updates = read('src/updates.js');
+  const core = read('vendor/exp-core/exp-core.js');
   const workflow = read('.github/workflows/release.yml');
   const { version } = JSON.parse(read('package.json'));
-  assert.match(source, /function updateNotice\(\)/);
-  assert.match(source, /el\('strong','',`WARD Changelog · v\$\{EXP\.VERSION\}`\)/);
-  assert.match(source, /el\('ul'\)/);
-  assert.match(source, /el\('li','',item\)/);
+  assert.match(source, /updateCard\.className = 'update-notice ward-update-changelog'/);
+  assert.match(source, /Current Version/);
+  assert.match(source, /Update Complete/);
+  assert.match(source, /Update Available/);
+  assert.match(source, /updateCard\.dataset\.noticeKind/);
   assert.match(source, /EXP\.ReleaseNotes\.current\(\)/);
-  assert.match(source, /complete\?EXP\.ReleaseNotes\.current\(\)/);
   assert.match(source, /result\.details/);
-  assert.match(updates, /function releaseDetails\(body\)/);
+  assert.doesNotMatch(source, /registerFloatingNotice/);
+  assert.doesNotMatch(source, /ward-version-changelog/);
+  assert.match(updates, /createReleaseUpdateChecker/);
+  assert.match(core, /function createMenuNotice\(/);
+  assert.match(core, /notice\.dataset\.placement = 'menu'/);
   assert.match(workflow, /--notes-file release-notes\.md/);
   assert.doesNotMatch(workflow, /--generate-notes/);
   assert.match(releaseNotes, new RegExp(`'${version.replaceAll('.', '\\.')}'`));
-  assert.doesNotMatch(source, /el\('div','changelog','Version/);
 });
-
 
 test('audit source never captures page text, selectors, form values, URLs, or DOM markup', () => {
   const source = read('src/audit.js');
