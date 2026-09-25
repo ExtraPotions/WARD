@@ -7,7 +7,6 @@ EXP.UI = (() => {
 
   let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard;
   let toastTimer, updateTimer, launcherCleanup, escapeHandler, pointerHandler;
-  let noticeCleanups = [];
   let activeView = '';
   let patternsOpen = false;
 
@@ -61,42 +60,49 @@ EXP.UI = (() => {
     return node;
   }
 
-  function hideUpdateCard(){clearTimeout(updateTimer);updateTimer=null;if(updateCard)updateCard.hidden=true;chrome?.layout();}
-  function showUpdateCard(result={},complete=false,previous=''){
-    if(!updateCard)return;
-    if(!complete&&!EXP.Core.claimNotice('ward',`available:${result.latest}`))return;
-    updateCard.className='update-notice exp-floating-update ward-update-changelog';
-    updateCard.innerHTML='<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker"></div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" href="https://github.com/ExtraPotions/WARD/releases" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" href="https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js" target="_blank" rel="noopener noreferrer">Install Update</a></div>';
-    updateCard.querySelector('.update-dismiss').addEventListener('click',hideUpdateCard);
-    updateCard.querySelector('.update-kicker').textContent=complete?'Update Complete':'Update Available';
-    updateCard.querySelector('.update-title').textContent=complete?'WARD Updated':'New WARD Version Available';
-    updateCard.querySelector('.update-version').textContent='v'+(complete?EXP.VERSION:result.latest);
-    updateCard.querySelector('.update-text').textContent=complete?`Updated from v${previous} to v${EXP.VERSION}.`:`v${result.latest} is ready to install.`;
-    const fallback=['A newer WARD build is available.','Install the latest userscript for the newest fixes and improvements.'];
-    const details=(complete?EXP.ReleaseNotes.current():(Array.isArray(result.details)&&result.details.length?result.details:fallback)).slice(0,4);
-    const list=updateCard.querySelector('.update-list');
-    for(const detail of details){const li=document.createElement('li');li.textContent=detail;list.append(li);}
-    list.hidden=!details.length;
-    updateCard.querySelector('.update-action').hidden=complete;
-    updateCard.hidden=false;
-    requestAnimationFrame(()=>positionChangelog(updateCard));
-    clearTimeout(updateTimer);updateTimer=setTimeout(hideUpdateCard,30000);
-  }
-  function positionChangelog(notice) {
-    if(!notice)return;
-    notice.dataset.placement='launcher-grid';
-    EXP.Core.layoutFloatingNotices();
+  function hideUpdateCard() {
+    clearTimeout(updateTimer);
+    updateTimer = null;
+    if (updateCard) updateCard.hidden = true;
+    chrome?.layout();
   }
 
-  function updateNotice() {
-    const notice = el('div','changelog ward-version-changelog');
-    notice.hidden = true;
-    notice.append(el('div','update-kicker',"What's New"),el('strong','',`WARD Changelog · v${EXP.VERSION}`));
-    const list = el('ul');
-    for (const item of EXP.ReleaseNotes.current()) list.append(el('li','',item));
-    notice.append(list);
-    const footer=el('div','update-footer'); const release=el('a','action','GitHub Release'); release.href='https://github.com/ExtraPotions/WARD/releases'; release.target='_blank'; release.rel='noopener noreferrer'; footer.append(release); notice.append(footer);
-    return notice;  }
+  function showUpdateCard(result = {}, complete = false, previous = '', current = false) {
+    if (!updateCard) return;
+    const version = complete || current ? EXP.VERSION : result.latest;
+    if (!complete && !current && !EXP.Core.claimNotice('ward', `available:${version}`)) return;
+
+    updateCard.className = 'update-notice ward-update-changelog';
+    updateCard.innerHTML = '<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker"></div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" href="https://github.com/ExtraPotions/WARD/releases" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" href="https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js" target="_blank" rel="noopener noreferrer">Install Update</a></div>';
+    updateCard.querySelector('.update-dismiss').addEventListener('click', hideUpdateCard);
+
+    updateCard.querySelector('.update-kicker').textContent = current ? 'Current Version' : complete ? 'Update Complete' : 'Update Available';
+    updateCard.querySelector('.update-title').textContent = current ? 'WARD Changelog' : complete ? 'WARD Updated' : 'New WARD Version Available';
+    updateCard.querySelector('.update-version').textContent = 'v' + version;
+    updateCard.querySelector('.update-text').textContent = current
+      ? `What's new in v${EXP.VERSION}.`
+      : complete
+        ? `Updated from v${previous} to v${EXP.VERSION}.`
+        : `v${result.latest} is ready to install.`;
+
+    const fallback = ['A newer WARD build is available.', 'Install the latest userscript for the newest fixes and improvements.'];
+    const details = (current || complete
+      ? EXP.ReleaseNotes.current()
+      : Array.isArray(result.details) && result.details.length ? result.details : fallback).slice(0, 4);
+    const list = updateCard.querySelector('.update-list');
+    for (const detail of details) {
+      const li = document.createElement('li');
+      li.textContent = detail;
+      list.append(li);
+    }
+    list.hidden = !details.length;
+    updateCard.querySelector('.update-action').hidden = complete || current;
+    updateCard.dataset.placement = 'menu';
+    updateCard.hidden = false;
+    chrome?.layout();
+    clearTimeout(updateTimer);
+    updateTimer = setTimeout(hideUpdateCard, 30000);
+  }
 
   function badge(alt = '') {
     const image = el('img');
@@ -660,9 +666,8 @@ EXP.UI = (() => {
     const titleRow = el('div');
     titleRow.append(el('strong','','WARD'));
 
-    const changelog = updateNotice();
     titleRow.append(
-      action(`v${EXP.VERSION}`,() => { changelog.hidden=!changelog.hidden; if(!changelog.hidden) requestAnimationFrame(()=>positionChangelog(changelog)); chrome?.layout(); },'version')
+      action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false) showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
     );
 
     title.append(titleRow,el('small','','Amazon pressure and coupon controls'));
@@ -703,17 +708,13 @@ EXP.UI = (() => {
     );
     shell.append(frame);
 
-    updateCard=el('div','changelog exp-floating-update ward-update-changelog');updateCard.hidden=true;
+    updateCard=el('div','update-notice ward-update-changelog');updateCard.hidden=true;
     toast = el('div','toast');
     toast.hidden = true;
 
-    shadow.append(launcher,shell,updateCard,changelog,toast);
+    shadow.append(launcher,shell,updateCard,toast);
     document.documentElement.append(host);
 
-    noticeCleanups=[EXP.Core.registerFloatingNotice(host,updateCard),EXP.Core.registerFloatingNotice(host,changelog)];
-    const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
-    if(previous)showUpdateCard({},true,previous);
-    if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{if(r.available)showUpdateCard(r);});
     launcherCleanup = EXP.Core.registerLauncher(host,{productId:'ward'});
     chrome = EXP.MenuChrome.create({
       id:'ward',
@@ -725,6 +726,9 @@ EXP.UI = (() => {
       setOpen,
       shortcutKey:'w'
     });
+    const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
+    if(previous)showUpdateCard({},true,previous);
+    if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{if(r.available)showUpdateCard(r);});
 
     escapeHandler = event => {
       if (!shell.classList.contains('open')) return;
@@ -780,8 +784,6 @@ EXP.UI = (() => {
 
   function cleanup() {
     launcherCleanup?.();
-    noticeCleanups.forEach(dispose=>dispose());
-    noticeCleanups=[];
     chrome?.destroy();
     clearTimeout(toastTimer);
     document.removeEventListener('keydown',escapeHandler);
