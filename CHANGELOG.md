@@ -1,3 +1,9 @@
+## 3.2.20 - 2026-09-27
+
+- Lets every launcher move left, right, up, or down within the shared grid.
+- Persists launcher order and supports Alt+Arrow keyboard reordering.
+- Bundles exp-core 3.3.11 without changing Amazon protection behavior.
+
 ## 3.2.19 - 2026-09-27
 
 - Adds layered menu surfaces so protection controls remain distinct at every menu width.
