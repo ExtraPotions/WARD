@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.14
+// @version      3.2.15
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -30,7 +30,7 @@
 'use strict';
 const EXP = Object.create(null);
 
-// Generated from the approved Dropper v3.3.4 install artifact. Do not edit.
+// Generated from the approved Dropper v3.3.5 install artifact. Do not edit.
 const DropperReference = (() => {
 const LAUNCHER_ORDER_KEY = "exp:v3:launcher-order";
 const LAUNCHER_GRID_DELTA_KEY = "exp:v3:launcher-grid-delta";
@@ -1550,12 +1550,12 @@ const ExtraPotionsTools = (() => {
   return Object.freeze({createSettingsRecovery,compatibilitySnapshot,createCompatibilityControls,createRecoveryControls});
 })();
 
-// Product-neutral host for the code extracted from Dropper 3.3.4.
+// Product-neutral host for the code extracted from Dropper 3.3.5.
 // Product engines own their settings, content, and actions. Core owns shared UI.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.3.6';
-  const sourceVersion = '3.3.4';
+  const version = '3.3.7';
+  const sourceVersion = '3.3.5';
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
   const gridProtocol = 'exp-launcher-grid-v3';
@@ -2097,7 +2097,7 @@ const ExtraPotionsCore = (() => {
     const versionButton=panel.querySelector('.version,[data-exp-part="version"]');
     const menuNotices=[...themeRoot.querySelectorAll('.update-notice,.changelog')].map(notice=>createMenuNotice({host,shadow,panel,notice,versionButton:notice.classList.contains('changelog')?versionButton:null,manageVersion:false,durationMs:30000}));
     if (launcherSrc) panel.querySelectorAll('.header-icon img').forEach(image => image.src = launcherSrc);
-    host.dataset.coreVersion = version; host.dataset.coreSource = 'Dropper/3.3.4';
+    host.dataset.coreVersion = version; host.dataset.coreSource = 'Dropper/3.3.5';
     let choices = themes(productTheme), selected = choices.at(-1), open = false, destroyed = false, timer = 0, deadline = 0, frame = 0;
     const removers = [];
     const on = (node,type,fn,opts) => { node.addEventListener(type,fn,opts); removers.push(() => node.removeEventListener(type,fn,opts)); };
@@ -3531,10 +3531,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.2.14';
+EXP.VERSION = '3.2.15';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.15': ["Adds remembered per-page exceptions for individual protection patterns.","Displays intervention reasons and keeps allowed content out of active protections.","Adds settings backups, rollback, and compatibility details through exp-core 3.3.7."],
     '3.2.14': ["Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination.","Uses Firefox-safe settings copies and content-context injection.","Preserves existing Amazon protections without affiliate link rewriting."],
     '3.2.13': Object.freeze([
       'Uses the same menu-width notice surface for Current Version, Update Available, and Update Complete, matching Dropper.',
@@ -4443,7 +4444,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.14';
+EXP.VERSION = '3.2.15';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

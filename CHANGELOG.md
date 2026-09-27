@@ -1,6 +1,8 @@
-## Unreleased
+## 3.2.15 - 2026-09-26
 
-- Adds local settings backups and rollback, current-page product compatibility, and reasons for active interventions. Allow a protection type on this page and remove that exception in Recovery. Exceptions cover one pattern on the exact hostname and pathname; query strings are not stored. Temporary reveal remains available. Allowed records no longer appear as active protections.
+- Adds remembered per-page exceptions for individual protection patterns.
+- Displays intervention reasons and keeps allowed content out of active protections.
+- Adds settings backups, rollback, and compatibility details through exp-core 3.3.7.
 
 ## 3.2.14 - 2026-09-26
 
