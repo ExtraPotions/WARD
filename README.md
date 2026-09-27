@@ -10,6 +10,14 @@ Reduce supported Amazon promotions and distractions while keeping essential prod
 [![Code: PolyForm Noncommercial 1.0.0](docs/badges/code.svg)](LICENSE-CODE.md)
 [![Artwork and documentation: CC BY-NC-SA 4.0](docs/badges/assets.svg)](LICENSE-ASSETS.md)
 
+## Get started
+
+1. Install a userscript manager such as [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/).
+2. [Install WARD](https://github.com/ExtraPotions/WARD/raw/refs/heads/main/ward.user.js) and confirm in your userscript manager.
+3. Refresh Amazon and open the product launcher.
+
+Open Protection to choose a level and Content action. Use Amazon to select the categories you want handled. Unsupported or mixed content may remain visible to preserve essential information.
+
 ## What you can do
 
 - **Protection choices:** Essential, Balanced, and Custom let you choose the level of cleanup.
@@ -25,18 +33,10 @@ Screenshots show the current product with sample content.
 
 <table>
   <tr>
-    <td width="50%" valign="top" align="center"><a href="docs/screenshots/protection.png"><img src="docs/screenshots/protection.png" width="440" alt="WARD: protection levels and content actions"></a><br><strong>Protection levels and content actions</strong></td>
-    <td width="50%" valign="top" align="center"><a href="docs/screenshots/amazon.png"><img src="docs/screenshots/amazon.png" width="440" alt="WARD: amazon categories and coupon options"></a><br><strong>Amazon categories and coupon options</strong></td>
+    <td width="50%" valign="top" align="center"><a href="docs/screenshots/protection.png"><img src="docs/screenshots/protection.png" width="220" alt="WARD: protection levels and content actions"></a><br><strong>Protection levels and content actions</strong></td>
+    <td width="50%" valign="top" align="center"><a href="docs/screenshots/amazon.png"><img src="docs/screenshots/amazon.png" width="220" alt="WARD: amazon categories and coupon options"></a><br><strong>Amazon categories and coupon options</strong></td>
   </tr>
 </table>
-
-## Get started
-
-1. Install a userscript manager such as [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/).
-2. [Install WARD](https://github.com/ExtraPotions/WARD/raw/refs/heads/main/ward.user.js) and confirm in your userscript manager.
-3. Refresh Amazon and open the product launcher.
-
-Open Protection to choose a level and Content action. Use Amazon to select the categories you want handled. Unsupported or mixed content may remain visible to preserve essential information.
 
 ## Support
 
