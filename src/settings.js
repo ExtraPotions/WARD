@@ -25,6 +25,7 @@ EXP.Settings = (() => {
     menuNotifications: true,
     shortcut: '',
     categories: {},
+    pageExceptions: [],
     patterns: {}
   });
   let state;
@@ -68,19 +69,26 @@ EXP.Settings = (() => {
 	}
     if (typeof candidate.shortcut === 'string' && candidate.shortcut.length <= 40) next.shortcut = candidate.shortcut;
     for (const field of ['categories', 'patterns']) if (candidate[field] && typeof candidate[field] === 'object' && !Array.isArray(candidate[field])) next[field] = Object.fromEntries(Object.entries(candidate[field]).filter(([id, value]) => /^[a-z][a-z0-9.-]+$/.test(id) && ['inherit', 'on', 'off'].includes(value)));
+    next.pageExceptions=Array.isArray(candidate.pageExceptions)?candidate.pageExceptions.filter(v=>v&&typeof v.path==='string'&&v.path.length<=500&&typeof v.patternId==='string'&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)).slice(0,200).map(v=>({path:v.path,patternId:v.patternId})):[];
     return next;
   }
   function load() {
     const stored = read('settings');
+    if(stored && read('settings-version')!==EXP.VERSION)recovery.capture(stored,'before-update');
+    write('settings-version',EXP.VERSION);
     state = validate(stored || defaults);
     write('settings', state);
     return snapshot();
   }
+  const recovery = ExtraPotionsCore.createSettingsRecovery({read:()=>read('backups'),write:value=>write('backups',value),validate});
+  function backups(){return recovery.list();}
+  function backup(){return recovery.capture(snapshot(),'manual');}
+  function restoreBackup(id){return replace(recovery.restore(id),'rollback');}
   function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
-  function replace(value, reason = 'replace') { state = validate(value); write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
+  function replace(value, reason = 'replace') { const next=validate(value);if(state&&JSON.stringify(next)!==JSON.stringify(state))recovery.capture(state,reason);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
   function exportData() { return { product: 'ward', generation: 3, schema: SCHEMA, settings: snapshot() }; }
   function prepareImport(payload) { if (!payload || payload.product !== 'ward' || payload.generation !== 3 || payload.schema !== SCHEMA) throw Object.assign(new Error('Unsupported WARD export'), { code: 'IMPORT_SCHEMA' }); return validate(payload.settings); }
-  return Object.freeze({ PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
+  return Object.freeze({backups,backup,restoreBackup, PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
 })();

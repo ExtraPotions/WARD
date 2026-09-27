@@ -1515,6 +1515,41 @@ function createProductLifecycle(shared) {
   });
 }
 
+// Shared, local-only recovery and compatibility controls.
+const ExtraPotionsTools = (() => {
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function createSettingsRecovery({read,write,validate,limit=5}) {
+    function list() { try { const values=read(); return Array.isArray(values)?values.filter(v=>v&&typeof v.id==='string'&&v.settings&&typeof v.settings==='object').slice(0,limit).map(clone):[]; } catch {return [];} }
+    function capture(settings,reason='change') {
+      const clean=validate(clone(settings)); const entries=list();
+      if(entries[0]&&JSON.stringify(entries[0].settings)===JSON.stringify(clean))return entries[0].id;
+      const entry={id:globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`,at:Date.now(),reason:String(reason).slice(0,80),settings:clean};
+      write([entry,...entries].slice(0,limit));return entry.id;
+    }
+    function restore(id){const entry=list().find(v=>v.id===id);if(!entry)throw Error('This backup is no longer available.');return validate(clone(entry.settings));}
+    return Object.freeze({list,capture,restore});
+  }
+  function compatibilitySnapshot(){
+    const rows=[];const warnings=[];const versions=new Set();
+    for(const id of ['dropper','shift','prisma','ward']){
+      const markers=[...document.querySelectorAll('[data-exp-diagnostics-product]')].filter(n=>n.dataset.expDiagnosticsProduct===id);
+      if(!markers.length)continue;
+      const productVersions=[...new Set(markers.map(n=>n.dataset.expProductVersion||'unknown'))];
+      const host=document.getElementById(id==='dropper'?'tdh-root':`exp-${id}-root`);
+      const core=host?.dataset.coreVersion||null;if(core)versions.add(core);
+      rows.push({id,versions:productVersions,core,instances:markers.length});
+      if(markers.length>1)warnings.push(`More than one ${id.toUpperCase()} instance is active.`);
+    }
+    if(versions.size>1)warnings.push('Different core versions are active. Update the products and reload this page.');
+    return {products:rows,warnings};
+  }
+  const button=(label,fn)=>{const b=document.createElement('button');b.type='button';b.className='life-btn action';b.textContent=label;b.addEventListener('click',fn);return b;};
+  function card(title){const d=document.createElement('details');d.className='exp-tools-card';d.style.cssText='border:1px solid var(--theme-line,var(--line,#777));border-radius:7px;padding:7px;margin-top:8px';const s=document.createElement('summary');s.textContent=title;d.append(s);return d;}
+  function createCompatibilityControls(){const d=card('Product compatibility'),out=document.createElement('div');out.setAttribute('aria-live','polite');function refresh(){out.replaceChildren();const value=compatibilitySnapshot();for(const p of value.products){const line=document.createElement('p');line.textContent=`${p.id.toUpperCase()} ${p.versions.join(', ')} · ${p.core?'core '+p.core:'native product UI'}`;out.append(line);}const status=document.createElement('p');status.textContent=value.warnings.join(' ')||'No mixed core versions or duplicate instances detected on this page.';out.append(status);const note=document.createElement('small');note.textContent='Only products running on this page are visible. This is not an online update check.';out.append(note);}d.addEventListener('toggle',()=>{if(d.open)refresh();});d.append(out,button('Refresh compatibility',refresh));return d;}
+  function createRecoveryControls({list,capture,restore,notify=()=>{}}){const d=card('Settings backups'),select=document.createElement('select'),status=document.createElement('p');select.setAttribute('aria-label','Settings backup');status.setAttribute('role','status');function refresh(){select.replaceChildren();for(const e of list()){const o=document.createElement('option');o.value=e.id;o.textContent=`${new Date(e.at).toLocaleString()} · ${e.reason}`;select.append(o);}select.disabled=!select.options.length;rollback.disabled=select.disabled;}const backup=button('Back up settings',()=>{try{capture();refresh();status.textContent='Settings backed up locally.';}catch(e){status.textContent=e.message;}});const rollback=button('Restore selected backup',()=>{try{if(!select.value)return;restore(select.value);refresh();status.textContent='Settings restored. The previous state was also backed up.';notify(status.textContent);}catch(e){status.textContent=e.message;}});d.addEventListener('toggle',()=>{if(d.open)refresh();});d.append(select,backup,rollback,status);refresh();return d;}
+  return Object.freeze({createSettingsRecovery,compatibilitySnapshot,createCompatibilityControls,createRecoveryControls});
+})();
+
 // Product-neutral host for the code extracted from Dropper 3.3.4.
 // Product engines own their settings, content, and actions. Core owns shared UI.
 const ExtraPotionsCore = (() => {
@@ -2463,7 +2498,7 @@ const ExtraPotionsCore = (() => {
   if(document.documentElement)startGrid();else addEventListener('DOMContentLoaded',startGrid,{once:true});
   document.addEventListener('exp-core:coordination',scheduleGrid);
   addEventListener('resize',scheduleGrid,{passive:true});
-  const api = Object.freeze({version,sourceVersion,protocol,gridProtocol,reference:DropperReference,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,compareVersions:DropperReference.compareVersions});
+  const api = Object.freeze({...ExtraPotionsTools,version,sourceVersion,protocol,gridProtocol,reference:DropperReference,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,compareVersions:DropperReference.compareVersions});
   return api;
 })();
 
@@ -2497,6 +2532,7 @@ EXP.Settings = (() => {
     menuNotifications: true,
     shortcut: '',
     categories: {},
+    pageExceptions: [],
     patterns: {}
   });
   let state;
@@ -2540,21 +2576,28 @@ EXP.Settings = (() => {
 	}
     if (typeof candidate.shortcut === 'string' && candidate.shortcut.length <= 40) next.shortcut = candidate.shortcut;
     for (const field of ['categories', 'patterns']) if (candidate[field] && typeof candidate[field] === 'object' && !Array.isArray(candidate[field])) next[field] = Object.fromEntries(Object.entries(candidate[field]).filter(([id, value]) => /^[a-z][a-z0-9.-]+$/.test(id) && ['inherit', 'on', 'off'].includes(value)));
+    next.pageExceptions=Array.isArray(candidate.pageExceptions)?candidate.pageExceptions.filter(v=>v&&typeof v.path==='string'&&v.path.length<=500&&typeof v.patternId==='string'&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)).slice(0,200).map(v=>({path:v.path,patternId:v.patternId})):[];
     return next;
   }
   function load() {
     const stored = read('settings');
+    if(stored && read('settings-version')!==EXP.VERSION)recovery.capture(stored,'before-update');
+    write('settings-version',EXP.VERSION);
     state = validate(stored || defaults);
     write('settings', state);
     return snapshot();
   }
+  const recovery = ExtraPotionsCore.createSettingsRecovery({read:()=>read('backups'),write:value=>write('backups',value),validate});
+  function backups(){return recovery.list();}
+  function backup(){return recovery.capture(snapshot(),'manual');}
+  function restoreBackup(id){return replace(recovery.restore(id),'rollback');}
   function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
-  function replace(value, reason = 'replace') { state = validate(value); write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
+  function replace(value, reason = 'replace') { const next=validate(value);if(state&&JSON.stringify(next)!==JSON.stringify(state))recovery.capture(state,reason);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
   function exportData() { return { product: 'ward', generation: 3, schema: SCHEMA, settings: snapshot() }; }
   function prepareImport(payload) { if (!payload || payload.product !== 'ward' || payload.generation !== 3 || payload.schema !== SCHEMA) throw Object.assign(new Error('Unsupported WARD export'), { code: 'IMPORT_SCHEMA' }); return validate(payload.settings); }
-  return Object.freeze({ PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
+  return Object.freeze({backups,backup,restoreBackup, PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
 })();
 
 EXP.Patterns = (() => {
@@ -3147,6 +3190,7 @@ EXP.Actions = (() => {
     record.patternId = proposal.pattern.id;
     record.category = proposal.pattern.category;
     record.confidence = proposal.confidence;
+    record.reason = proposal.reason || 'protection-policy';
     record.structuralSafe = proposal.structuralSafe ?? record.structuralSafe;
 
     if (record.revealed) {
@@ -3248,12 +3292,13 @@ EXP.Actions = (() => {
 
   function snapshot() {
     return [...records.values()].map(
-      ({ id, action, patternId, category, confidence, revealed, node }) => ({
+      ({ id, action, patternId, category, confidence, reason, revealed, node }) => ({
         id,
         action,
         patternId,
         category,
         confidence,
+        reason,
         revealed,
         connected: node.isConnected
       })
@@ -3319,6 +3364,7 @@ EXP.Engine = (() => {
 
   function requestedDecision(evidence, pattern, settings) {
     if (!settings.enabled || !settings.amazonEnabled || settings.safeMode) return { action: 'allow', reason: 'protection-disabled' };
+    if(settings.pageExceptions?.some(v=>v.path===location.hostname+location.pathname&&v.patternId===pattern.id))return {action:'allow',reason:'remembered-page-exception'};
     const patternMode = settings.patterns[pattern.id] || 'inherit';
     const categoryMode = settings.categories[pattern.category] || 'inherit';
     if (patternMode === 'off') return { action: 'allow', reason: 'pattern-disabled' };
@@ -3386,7 +3432,7 @@ EXP.Engine = (() => {
       structuralSafe: evidence.structuralSafe,
       reason
     });
-    EXP.Actions.apply(evidence.node, { action: appliedAction, pattern, confidence: evidence.confidence, structuralSafe: evidence.structuralSafe });
+    EXP.Actions.apply(evidence.node, { action: appliedAction, pattern, confidence: evidence.confidence, structuralSafe: evidence.structuralSafe, reason });
   }
 
   function verifyCoupon(control, component, epoch, href) {
@@ -3849,7 +3895,7 @@ EXP.UI = (() => {
     const settings = EXP.Settings.snapshot();
     const activity = EXP.Activity.snapshot();
     const audit = EXP.Audit.snapshot();
-    const interventions = EXP.Actions.snapshot().filter((item) => item.connected);
+    const interventions = EXP.Actions.snapshot().filter((item) => item.connected && item.action !== 'allow');
     const revealed = interventions.filter((item) => item.revealed);
     const box = section('Activity');
     box.append(
@@ -3898,7 +3944,7 @@ EXP.UI = (() => {
         const pattern = EXP.Patterns.get(item.patternId);
         current.append(row(
           pattern?.label || 'Protected content',
-          `${item.action}${item.confidence ? ` · ${item.confidence}` : ''}`,
+          `${item.action}${item.confidence ? ` · ${item.confidence}` : ''} · ${reasonLabel(item.reason)}`,
           action(item.revealed ? 'Protect again' : 'Show',() => {
             if (item.revealed) EXP.Actions.endReveal(item.id);
             else EXP.Actions.reveal(item.id);
@@ -3906,6 +3952,8 @@ EXP.UI = (() => {
           })
         ));
       }
+      const explain=el('p','','Show temporarily restores the content. Allow here remembers this protection type for this page only.');current.prepend(explain);
+      for(const item of interventions.slice(0,8))current.append(action('Allow '+(EXP.Patterns.get(item.patternId)?.label||'content')+' here',()=>{const state=EXP.Settings.snapshot();const path=location.hostname+location.pathname;const pageExceptions=[...(state.pageExceptions||[]).filter(v=>v.path!==path||v.patternId!==item.patternId),{path,patternId:item.patternId}];update({pageExceptions},'page-exception');notify('This protection type is now allowed on this page.');refreshActivity();}));
       box.append(current);
     }
     container.replaceChildren(box);
@@ -4121,6 +4169,9 @@ EXP.UI = (() => {
     box.append(transfers);
     fragment.append(box);
     const recovery = section('Recovery');
+    for(const exception of EXP.Settings.snapshot().pageExceptions||[])recovery.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
+
+    recovery.append(ExtraPotionsCore.createCompatibilityControls(),ExtraPotionsCore.createRecoveryControls({list:EXP.Settings.backups,capture:EXP.Settings.backup,restore:id=>{EXP.Settings.restoreBackup(id);renderView();},notify}));
     recovery.append(row('Reset Amazon settings','Resets WARD Amazon settings and pattern overrides.',action('Reset',resetAmazon,'warn')));
     fragment.append(recovery);
     return fragment;

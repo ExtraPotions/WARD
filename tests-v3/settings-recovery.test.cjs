@@ -1,0 +1,7 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+function load(){const store=new Map(),context=vm.createContext({EXP:{VERSION:'local-test'},ExtraPotionsCore:{cloneSettings:v=>JSON.parse(JSON.stringify(v))},location:{hostname:'example.com'},GM_getValue:(k,f)=>store.has(k)?store.get(k):f,GM_setValue:(k,v)=>store.set(k,v)});
+const bundle=fs.readFileSync(path.join(__dirname,'../vendor/exp-core/exp-core.js'),'utf8');const shared=bundle.match(/const ExtraPotionsTools = \(\(\) => \{[\s\S]*?\n\}\)\(\);/)[0];vm.runInContext(shared+';ExtraPotionsCore.createSettingsRecovery=ExtraPotionsTools.createSettingsRecovery;',context);
+
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../src/settings.js'),'utf8'),context);context.EXP.Settings.load();return context.EXP.Settings;}
+test('WARD settings rollback preserves the replaced state and rejected imports do not add a backup',()=>{const s=load();const original=s.snapshot();s.update({safeMode:true},'change');const first=s.backups()[0];assert.equal(first.settings.safeMode,false);s.restoreBackup(first.id);assert.equal(s.snapshot().safeMode,false);assert.equal(s.backups()[0].settings.safeMode,true);const count=s.backups().length;assert.throws(()=>s.prepareImport({product:'wrong',generation:3,schema:1,settings:{}}));assert.equal(s.backups().length,count);s.backup();assert.deepEqual(JSON.parse(JSON.stringify(s.snapshot())),JSON.parse(JSON.stringify(original)));});

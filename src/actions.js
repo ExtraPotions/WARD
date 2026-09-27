@@ -212,6 +212,7 @@ EXP.Actions = (() => {
     record.patternId = proposal.pattern.id;
     record.category = proposal.pattern.category;
     record.confidence = proposal.confidence;
+    record.reason = proposal.reason || 'protection-policy';
     record.structuralSafe = proposal.structuralSafe ?? record.structuralSafe;
 
     if (record.revealed) {
@@ -313,12 +314,13 @@ EXP.Actions = (() => {
 
   function snapshot() {
     return [...records.values()].map(
-      ({ id, action, patternId, category, confidence, revealed, node }) => ({
+      ({ id, action, patternId, category, confidence, reason, revealed, node }) => ({
         id,
         action,
         patternId,
         category,
         confidence,
+        reason,
         revealed,
         connected: node.isConnected
       })

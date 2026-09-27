@@ -1,3 +1,7 @@
+## Unreleased
+
+- Adds local settings backups and rollback, current-page product compatibility, and reasons for active interventions. Allow a protection type on this page and remove that exception in Recovery. Exceptions cover one pattern on the exact hostname and pathname; query strings are not stored. Temporary reveal remains available. Allowed records no longer appear as active protections.
+
 ## 3.2.14 - 2026-09-26
 
 - Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination.

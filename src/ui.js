@@ -264,7 +264,7 @@ EXP.UI = (() => {
     const settings = EXP.Settings.snapshot();
     const activity = EXP.Activity.snapshot();
     const audit = EXP.Audit.snapshot();
-    const interventions = EXP.Actions.snapshot().filter((item) => item.connected);
+    const interventions = EXP.Actions.snapshot().filter((item) => item.connected && item.action !== 'allow');
     const revealed = interventions.filter((item) => item.revealed);
     const box = section('Activity');
     box.append(
@@ -313,7 +313,7 @@ EXP.UI = (() => {
         const pattern = EXP.Patterns.get(item.patternId);
         current.append(row(
           pattern?.label || 'Protected content',
-          `${item.action}${item.confidence ? ` · ${item.confidence}` : ''}`,
+          `${item.action}${item.confidence ? ` · ${item.confidence}` : ''} · ${reasonLabel(item.reason)}`,
           action(item.revealed ? 'Protect again' : 'Show',() => {
             if (item.revealed) EXP.Actions.endReveal(item.id);
             else EXP.Actions.reveal(item.id);
@@ -321,6 +321,8 @@ EXP.UI = (() => {
           })
         ));
       }
+      const explain=el('p','','Show temporarily restores the content. Allow here remembers this protection type for this page only.');current.prepend(explain);
+      for(const item of interventions.slice(0,8))current.append(action('Allow '+(EXP.Patterns.get(item.patternId)?.label||'content')+' here',()=>{const state=EXP.Settings.snapshot();const path=location.hostname+location.pathname;const pageExceptions=[...(state.pageExceptions||[]).filter(v=>v.path!==path||v.patternId!==item.patternId),{path,patternId:item.patternId}];update({pageExceptions},'page-exception');notify('This protection type is now allowed on this page.');refreshActivity();}));
       box.append(current);
     }
     container.replaceChildren(box);
@@ -536,6 +538,9 @@ EXP.UI = (() => {
     box.append(transfers);
     fragment.append(box);
     const recovery = section('Recovery');
+    for(const exception of EXP.Settings.snapshot().pageExceptions||[])recovery.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
+
+    recovery.append(ExtraPotionsCore.createCompatibilityControls(),ExtraPotionsCore.createRecoveryControls({list:EXP.Settings.backups,capture:EXP.Settings.backup,restore:id=>{EXP.Settings.restoreBackup(id);renderView();},notify}));
     recovery.append(row('Reset Amazon settings','Resets WARD Amazon settings and pattern overrides.',action('Reset',resetAmazon,'warn')));
     fragment.append(recovery);
     return fragment;

@@ -29,6 +29,7 @@ EXP.Engine = (() => {
 
   function requestedDecision(evidence, pattern, settings) {
     if (!settings.enabled || !settings.amazonEnabled || settings.safeMode) return { action: 'allow', reason: 'protection-disabled' };
+    if(settings.pageExceptions?.some(v=>v.path===location.hostname+location.pathname&&v.patternId===pattern.id))return {action:'allow',reason:'remembered-page-exception'};
     const patternMode = settings.patterns[pattern.id] || 'inherit';
     const categoryMode = settings.categories[pattern.category] || 'inherit';
     if (patternMode === 'off') return { action: 'allow', reason: 'pattern-disabled' };
@@ -96,7 +97,7 @@ EXP.Engine = (() => {
       structuralSafe: evidence.structuralSafe,
       reason
     });
-    EXP.Actions.apply(evidence.node, { action: appliedAction, pattern, confidence: evidence.confidence, structuralSafe: evidence.structuralSafe });
+    EXP.Actions.apply(evidence.node, { action: appliedAction, pattern, confidence: evidence.confidence, structuralSafe: evidence.structuralSafe, reason });
   }
 
   function verifyCoupon(control, component, epoch, href) {

@@ -73,3 +73,9 @@ WARD is an independent project and is not affiliated with or endorsed by Amazon.
 ## 3.2.14 update
 
 Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination. Uses Firefox-safe settings copies and content-context injection. Preserves existing Amazon protections without affiliate link rewriting.
+
+## Local development changes (unreleased)
+
+Adds local settings backups and rollback, current-page product compatibility, and reasons for active interventions. Allow a protection type on this page and remove that exception in Recovery. Exceptions cover one pattern on the exact hostname and pathname; query strings are not stored. Temporary reveal remains available. Allowed records no longer appear as active protections.
+
+These changes are prepared locally. The stable installation links above still serve the published release.
