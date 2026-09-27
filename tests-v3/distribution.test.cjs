@@ -105,7 +105,7 @@ test('production menu uses switches and has every required navigation group', as
   });
   assert.equal(result.open, true);
   assert.equal(result.checkboxes, 0);
-  assert.equal(result.switches, 0);
+  assert.equal(result.switches, result.nav.length - 1); // System recovery cannot be hidden.
   assert.equal(result.role, 'dialog');
   assert.equal(result.modal, 'true');
   assert.equal(result.launcherExpanded, 'true');

@@ -1,7 +1,8 @@
-EXP.VERSION = '3.2.15';
+EXP.VERSION = '3.2.16';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.16': ["Bundles exp-core 3.3.8 with section arrangement and viewport-safe menus.","Preserves remembered page exceptions and intervention explanations.","Refreshes the README and feature screenshots in a horizontal gallery."],
     '3.2.15': ["Adds remembered per-page exceptions for individual protection patterns.","Displays intervention reasons and keeps allowed content out of active protections.","Adds settings backups, rollback, and compatibility details through exp-core 3.3.7."],
     '3.2.14': ["Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination.","Uses Firefox-safe settings copies and content-context injection.","Preserves existing Amazon protections without affiliate link rewriting."],
     '3.2.13': Object.freeze([

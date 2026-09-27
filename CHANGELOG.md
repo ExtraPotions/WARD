@@ -1,3 +1,9 @@
+## 3.2.16 - 2026-09-26
+
+- Bundles exp-core 3.3.8 with section arrangement and viewport-safe menus.
+- Preserves remembered page exceptions and intervention explanations.
+- Refreshes the README and feature screenshots in a horizontal gallery.
+
 ## 3.2.15 - 2026-09-26
 
 - Adds remembered per-page exceptions for individual protection patterns.
