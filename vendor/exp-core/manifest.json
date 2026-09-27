@@ -1,68 +1,72 @@
 {
-  "coreVersion": "3.2.25",
+  "coreVersion": "3.3.6",
   "source": {
     "source": "ExtraPotions/Dropper",
-    "sourceVersion": "3.2.25",
-    "behaviorSourceVersion": "3.2.31",
+    "sourceVersion": "3.3.4",
+    "behaviorSourceVersion": "3.3.4",
     "behaviorParity": [
+      "launcher-and-menu-badge-sizing",
+      "launcher-host-protection",
       "menu-width-notices",
+      "badge-only-menu-content-width",
       "version-scoped-update-checks",
       "diagnostic-resource-attribution",
-      "diagnostic-ui-geometry"
+      "diagnostic-ui-geometry",
+      "support-control-chrome"
     ],
-    "commit": "f9b2b837c9cb72c6a0d4d3404143f47af9a8d4df",
+    "commit": "a83f9165d8fc45dfecf4ff1b922ae5af812b98b2",
     "path": "dropper.user.js",
-    "sha256": "6f8ddae769f17aecd9cae723d0bc36359e64e06262ee15962782bcd12e8a7dd8",
+    "sha256": "7aae2ff93183903639f3db8741e369c2c00f73a83702ad0cd791a456b7ecbcbb",
     "entries": [
       {
         "name": "PRIDE_RAINBOW",
         "kind": "constant",
-        "startLine": 755,
-        "endLine": 755
+        "startLine": 826,
+        "endLine": 826
       },
       {
         "name": "PRIDE_RAINBOW_VERTICAL",
         "kind": "constant",
-        "startLine": 756,
-        "endLine": 756
+        "startLine": 827,
+        "endLine": 827
       },
       {
         "name": "CRIMSON_THEME",
         "kind": "constant",
-        "startLine": 757,
-        "endLine": 757
+        "startLine": 828,
+        "endLine": 828
       },
       {
         "name": "UI_THEMES",
         "kind": "constant",
-        "startLine": 758,
-        "endLine": 767
+        "startLine": 829,
+        "endLine": 838
       },
       {
         "name": "css",
         "kind": "function",
-        "startLine": 11227,
-        "endLine": 11915
+        "startLine": 12610,
+        "endLine": 13353
       },
       {
         "name": "protectLauncherHost",
         "kind": "function",
-        "startLine": 235,
-        "endLine": 310
+        "startLine": 258,
+        "endLine": 333
       },
       {
         "name": "compareVersions",
         "kind": "function",
-        "startLine": 13667,
-        "endLine": 13671
+        "startLine": 15305,
+        "endLine": 15309
       }
     ]
   },
-  "bundleSha256": "07cb09aa81c656d56bc4a1c9a3d60a5d539732a0f645e990fd87b6b0aecb6fd2",
+  "bundleSha256": "690aabb45905186397a271b14e52a80d93f815bd6932e1b840fd2a07792e645f",
   "files": {
-    "dropper-reference.js": "50db343fc849a84d3e70c0935ed5a8331507ead0e5a789d70538523dc08383b0",
+    "dropper-reference.js": "124109d5521089b07a04798ae8e97681d3746af6bcd09e5131ddedb5a492f84e",
     "diagnostic-report.js": "605abdecadfd11e7bf89d9937b67bc2a5eb2faa2f495035ca2505f3986ab5989",
     "lifecycle.js": "50a3584b708d155ce03c7d1a622d9be4f8345e91f6c4c71f8c42dc98f1ed5691",
-    "runtime.js": "d46ac827ba492285a0d7985f348c87c3b23a394c15a81cae7fa7e9f05553aeb5"
+    "runtime.js": "4dfb687a64a45f6ebf1a835cd5b096c3c875e1d00550d85ffc4c4bea11138c23"
   }
 }

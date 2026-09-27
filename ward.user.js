@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.13
+// @version      3.2.14
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -16,6 +16,7 @@
 // @match        https://www.amazon.com/*
 // @match        https://smile.amazon.com/*
 // @run-at       document-start
+// @inject-into  content
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
@@ -29,7 +30,7 @@
 'use strict';
 const EXP = Object.create(null);
 
-// Generated from the approved Dropper v3.2.25 install artifact. Do not edit.
+// Generated from the approved Dropper v3.3.4 install artifact. Do not edit.
 const DropperReference = (() => {
 const LAUNCHER_ORDER_KEY = "exp:v3:launcher-order";
 const LAUNCHER_GRID_DELTA_KEY = "exp:v3:launcher-grid-delta";
@@ -94,7 +95,7 @@ function css() {
         border-radius:12px;
         border-left:1px solid color-mix(in srgb, var(--theme-accent) 47%, transparent);
       }
-      .badge-only-progress-slot{display:block;grid-column:1/-1;margin:0 0 8px;min-width:0}
+      .badge-only-progress-slot{display:block;width:100%;margin:0 0 5px;min-width:0}
       .badge-only-progress-slot[hidden]{display:none!important}
       .badge-only-progress-slot #tdh-drop-card{position:relative!important;inset:auto!important;display:block!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important}
       .compact-line { height:auto; min-height:48px; padding:6px 10px; display:grid; grid-template-columns:6px minmax(0,1fr) auto auto; gap:7px; align-items:center; cursor:pointer; }
@@ -134,10 +135,10 @@ function css() {
       /* 3.2.0 progress panel */
       .cluster{pointer-events:none!important}
       .cluster :is(#tdh-tools-dock,.update-notice,#tdh-drop-card,#tdh-settings-launcher){pointer-events:auto!important}
-      .cluster .progress-stack{height:48px;min-height:48px;pointer-events:none!important}
-      .cluster .badge-row{position:fixed!important;min-height:48px!important;height:48px!important;width:inherit!important;justify-content:flex-end!important;pointer-events:none!important}
-      .cluster #tdh-drop-card{position:absolute!important;right:0!important;width:100%!important;bottom:calc(100% + var(--exp-product-grid-height,0px) + 8px)!important;top:auto!important}
-      .cluster[data-launcher-anchor="top"] #tdh-drop-card{top:calc(100% + var(--exp-product-grid-height,0px) + 8px)!important;bottom:auto!important}
+      .cluster .progress-stack{height:auto;min-height:48px;pointer-events:none!important}
+      .cluster .badge-row{position:fixed!important;min-height:112px!important;height:auto!important;justify-content:flex-end!important;align-items:center!important;pointer-events:none!important}
+      .cluster #tdh-drop-card[data-presentation="page-card"]{position:relative!important;inset:auto!important;right:auto!important;left:auto!important;top:auto!important;bottom:auto!important;flex:0 0 auto!important;margin:0!important}
+      .cluster .badge-only-progress-slot #tdh-drop-card[data-presentation="menu-card"]{position:relative!important;inset:auto!important;right:auto!important;left:auto!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important}
 
       .badge-row {display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:8px!important;width:100%!important;min-height:112px!important;height:auto!important;position:relative!important}
       #tdh-drop-card {position:relative!important;order:0!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;min-height:112px!important;margin:0!important;overflow:hidden!important;isolation:isolate!important;cursor:default!important;background:var(--theme-panel)!important;border:1px solid color-mix(in srgb,var(--theme-line) 94%,var(--theme-accent) 6%)!important;border-radius:12px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 0 18px rgba(255,255,255,.012),0 8px 28px #0006!important;opacity:1!important;transition:border-color .16s ease,box-shadow .16s ease!important}
@@ -284,6 +285,7 @@ function css() {
       #tdh-settings-launcher .fill { fill:none; stroke:var(--theme-accent,#9147ff); stroke-width:2.5; stroke-linecap:round; transition:.2s stroke; }
       #tdh-settings-launcher .icon { position:absolute; top:50%; left:50%; width:40px; height:40px; pointer-events:none; z-index:1; transform:translate(-50%,-50%); }
       #tdh-tools-dock {
+        position:fixed; right:12px; top:auto; bottom:auto;
         display:none; width:min(var(--dropper-width, 312px), calc(100vw - 24px)); max-width:calc(100vw - 24px);
         height:max-content; min-height:0; max-height:none; overflow:visible; flex:0 0 auto;
         transition:.15s width;
@@ -292,8 +294,42 @@ function css() {
       #tdh-tools-dock.fl-rail-open { display:block; height:max-content; min-height:0; max-height:none; }
       #tdh-tools-dock:focus { outline:none; }
       .menu-head {
-        display:grid; grid-template-columns:minmax(0,1fr) 30px;
+        position:relative;
+        display:grid; grid-template-columns:minmax(0,1fr) auto;
         align-items:start; gap:8px; width:100%;
+      }
+      .header-actions { display:flex; align-items:flex-start; gap:5px; position:static; }
+      .support-wrap { position:static; }
+      #tdh-support-button, #tdh-rail-close {
+        width:30px; height:30px; min-width:30px; padding:0;
+        border:1px solid #3a3a42; border-radius:8px; background:#151519; color:#b8b8c0;
+        cursor:pointer;
+      }
+      #tdh-support-button { display:grid; place-items:center; }
+      #tdh-support-button svg { width:15px; height:15px; fill:currentColor; }
+      #tdh-support-button:hover, #tdh-support-button:focus-visible {
+        border-color:var(--theme-accent); color:var(--theme-accent2); background:#211b2b; outline:none;
+      }
+      .support-popover {
+        position:absolute; z-index:14; top:35px; right:0;
+        width:min(190px,100%); max-width:100%;
+        box-sizing:border-box; padding:8px 9px;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 46%,var(--theme-line));
+        border-radius:9px; background:var(--theme-panel); color:var(--theme-text);
+        box-shadow:0 10px 28px #0009;
+      }
+      .support-popover[hidden] { display:none; }
+      .support-popover strong { display:block; margin-bottom:3px; font-size:10px; }
+      .support-popover span { display:block; color:var(--theme-muted); font-size:8px; line-height:1.35; }
+      .support-popover a {
+        display:flex; align-items:center; justify-content:center; min-height:26px; margin-top:7px; padding:0 9px;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 58%,var(--theme-line));
+        border-radius:7px; background:color-mix(in srgb,var(--theme-panel) 76%,var(--theme-accent) 24%);
+        color:var(--theme-text); text-decoration:none; font-size:9px; font-weight:800;
+      }
+      .support-popover a:hover, .support-popover a:focus-visible {
+        border-color:var(--theme-accent2); outline:none;
+        background:color-mix(in srgb,var(--theme-panel) 66%,var(--theme-accent) 34%);
       }
       .header-brand {
         display:grid; grid-template-columns:38px minmax(0,1fr);
@@ -321,12 +357,8 @@ function css() {
         margin-top:2px; font-size:9px; line-height:1.2; color:#adadb8;
         white-space:normal; overflow-wrap:anywhere;
       }
-      #tdh-rail-close {
-        width:30px; height:30px; min-width:30px; padding:0; justify-self:end;
-        border:1px solid #3a3a42; border-radius:8px; background:#151519; color:#b8b8c0;
-        cursor:pointer; font:18px/1 Arial,sans-serif;
-      }
-      #tdh-rail-close:hover { border-color:#9147ff; color:#fff; background:#211b2b; }
+      #tdh-rail-close { font:18px/1 Arial,sans-serif; }
+      #tdh-rail-close:hover, #tdh-rail-close:focus-visible { border-color:#9147ff; color:#fff; background:#211b2b; outline:none; }
       .header-divider { height:1px; width:100%; margin:5px 0; background:linear-gradient(90deg,transparent,#9147ff88 50%,transparent); }
       .update-notice {
         position:fixed; display:block; width:100%; max-width:calc(100vw - 24px); margin:0; padding:10px;
@@ -645,6 +677,30 @@ function css() {
       .campaign-manager-summary { flex:0 0 auto; font-size:8px; font-weight:700; color:var(--theme-muted); }
       .campaign-manager[open] > summary { border-bottom:1px solid var(--theme-line); }
       .campaign-manager-note { padding:6px 8px 3px; font-size:8px; line-height:1.35; color:var(--theme-muted); }
+      .eligibility-chip {
+        grid-column:1/-1; margin-top:6px;
+        border:1px solid color-mix(in srgb,var(--theme-line) 68%,var(--theme-accent) 32%);
+        border-radius:8px; background:var(--theme-panel); overflow:hidden;
+      }
+      .eligibility-chip > summary {
+        list-style:none; display:flex; align-items:center; gap:6px; min-height:28px;
+        box-sizing:border-box; padding:5px 8px; cursor:pointer;
+        color:var(--theme-text); font-size:9px; font-weight:800;
+      }
+      .eligibility-chip > summary::-webkit-details-marker { display:none; }
+      .eligibility-chip > summary::after {
+        content:"▸"; margin-left:auto; color:var(--theme-muted); font-size:9px; transition:.12s transform;
+      }
+      .eligibility-chip[open] > summary::after { transform:rotate(90deg); }
+      .eligibility-chip[data-tone="good"] { border-color:color-mix(in srgb,#3ac978 58%,var(--theme-line)); }
+      .eligibility-chip[data-tone="warn"] { border-color:color-mix(in srgb,#e2b34a 58%,var(--theme-line)); }
+      .eligibility-chip[data-tone="bad"] { border-color:color-mix(in srgb,#df5b65 58%,var(--theme-line)); }
+      .eligibility-chip[data-tone="muted"] { border-color:var(--theme-line); }
+      .eligibility-detail {
+        padding:0 8px 7px; border-top:1px solid var(--theme-line);
+        color:var(--theme-muted); font-size:8px; line-height:1.4;
+      }
+      .eligibility-detail[hidden] { display:none; }
       .campaign-game-list { max-height:240px; overflow:auto; padding:2px 7px 6px; }
       .campaign-game-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; min-height:36px; padding:6px 0; }
       .campaign-game-row + .campaign-game-row { border-top:1px solid #242429; }
@@ -1459,12 +1515,13 @@ function createProductLifecycle(shared) {
   });
 }
 
-// Product-neutral host for the code extracted from Dropper 3.2.10.
+// Product-neutral host for the code extracted from Dropper 3.3.4.
 // Product engines own their settings, content, and actions. Core owns shared UI.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.2.25';
-  const sourceVersion = '3.2.31';
+  const version = '3.3.6';
+  const sourceVersion = '3.3.4';
+  const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
   const gridProtocol = 'exp-launcher-grid-v3';
   const GRID_ORDER = 'exp:v3:launcher-order';
@@ -1475,6 +1532,20 @@ const ExtraPotionsCore = (() => {
   const floatingNoticeRegistrations = new WeakMap();
   const controllers = new WeakMap();
   const tokenNames = ['bg', 'panel', 'line', 'text', 'muted', 'accent', 'accent2'];
+  // Callers own foreground, accessibility fallbacks, and removing these inline properties.
+  // Settings use the persisted JSON schema. Parse in the caller's userscript realm
+  // instead of returning a native structuredClone page-realm Xray wrapper.
+  function cloneSettings(value) { return JSON.parse(JSON.stringify(value)); }
+  function applyTextGradient(element, backgroundImage) {
+    const properties = {'background-color':'transparent','background-image':backgroundImage,'background-clip':'text','-webkit-background-clip':'text','background-size':'auto','background-position':'0% 0%','background-repeat':'repeat'};
+    for (const [property,value] of Object.entries(properties)) element.style.setProperty(property,value,'important');
+  }
+  function menuWidthForMode(mode = 'compact', fullWidth = 312) {
+    if (mode === 'narrow') return 220;
+    if (mode === 'compact') return 260;
+    const full = Number(fullWidth);
+    return Number.isFinite(full) ? Math.max(280, Math.min(full, 340)) : 312;
+  }
   const partIds = {
     'tdh-tools-dock': 'dock', 'tdh-settings-launcher': 'launcher',
     'tdh-rail-title': 'title', 'tdh-header-version': 'version',
@@ -1566,7 +1637,8 @@ const ExtraPotionsCore = (() => {
   function menuPalette(host) {
     if (host?.dataset.productId === 'dropper') {
       const selected = host.shadowRoot?.querySelector('#tdh-cluster')?.dataset.uiTheme;
-      return DropperReference.UI_THEMES.find(theme => theme.id === selected) || null;
+      const theme = DropperReference.UI_THEMES.find(item => item.id === selected);
+      if (theme) return theme;
     }
     try {
       const value = JSON.parse(host.dataset.expMenuPalette || 'null');
@@ -1719,13 +1791,18 @@ const ExtraPotionsCore = (() => {
     const id = options.productId || options.id || host.dataset.productId;
     Object.assign(host.dataset, { expProductLauncher:'1', productId:id, launcherPriority:String(options.priority ?? PRIORITY[id] ?? 0) });
     applyMatteToggleChrome(host);
+    // The launcher is non-modal: site-wide dialog backdrop styles must never
+    // paint over the page when the reference opens its manual popover.
+    const backdropStyle = host.shadowRoot ? injectStyle(host.shadowRoot,
+      ':host::backdrop{all:initial!important;display:none!important;background:transparent!important;pointer-events:none!important}',
+      { expLauncherBackdrop: '1' }) : null;
     const stopProtect = DropperReference.protectLauncherHost(host);
     let frame = 0;
     const refresh = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; layoutGrid(); controllers.get(host)?.layout(); }); };
     document.addEventListener('exp-core:coordination', refresh);
     addEventListener('resize', refresh);
     layoutGrid(); emit('launcher-added', id);
-    const dispose = () => { stopProtect(); cancelAnimationFrame(frame); document.removeEventListener('exp-core:coordination', refresh); removeEventListener('resize', refresh); delete host.dataset.expProductLauncher; registrations.delete(host); layoutGrid(); emit('launcher-removed', id); };
+    const dispose = () => { stopProtect(); backdropStyle?.dispose(); cancelAnimationFrame(frame); document.removeEventListener('exp-core:coordination', refresh); removeEventListener('resize', refresh); delete host.dataset.expProductLauncher; registrations.delete(host); layoutGrid(); emit('launcher-removed', id); };
     registrations.set(host, dispose);
     return dispose;
   }
@@ -1833,8 +1910,7 @@ const ExtraPotionsCore = (() => {
       notice.style.setProperty('--exp-notice-text', first(['--exp-notice-text','--theme-text','--text','--mb-ink'], theme.color || '#f4f4f6'));
     }
     function widthForMode() {
-      const mode = host?.dataset.menuWidth || 'compact';
-      return mode === 'narrow' ? 220 : mode === 'full' ? 312 : 260;
+      return menuWidthForMode(host?.dataset.menuWidth || 'compact');
     }
     function clearTimer() { clearTimeout(timer); timer = 0; }
     function queueLayout() {
@@ -1929,7 +2005,7 @@ const ExtraPotionsCore = (() => {
     panel.querySelectorAll('button.action,button.secondary,button.primary,button.compact,.diagnostics-controls button,.button-grid button,.menu-footer button').forEach(node => { if (!node.dataset.expPart) node.classList.add('life-btn'); });
     panel.querySelectorAll('.route-body').forEach(body => body.classList.toggle('fl-tool-hidden', body.hidden));
     const active = panel.querySelector('.fl-tool-header[aria-expanded="true"]');
-    panel.querySelectorAll('.fl-tool-header').forEach(header => { if (active) header.classList.toggle('last-opened', header === active); const chevron = header.querySelector('.fl-tool-chevron'); if (chevron) chevron.textContent = header.getAttribute('aria-expanded') === 'true' ? '▾' : '▸'; });
+    panel.querySelectorAll('.fl-tool-header').forEach(header => { if (active) header.classList.toggle('last-opened', header === active); const chevron = header.querySelector('.fl-tool-chevron'); if (chevron) { const text = header.getAttribute('aria-expanded') === 'true' ? '▾' : '▸'; if (chevron.textContent !== text) chevron.textContent = text; } });
   }
   function normalizeHeader(panel) {
     const head = panel.querySelector('.menu-head,header,.head,.ward-header'); if (!head) return;
@@ -1973,12 +2049,20 @@ const ExtraPotionsCore = (() => {
     const themeRoot = document.createElement('div'); themeRoot.className = 'exp-core-theme';
     [...shadow.childNodes].filter(node => node !== styles).forEach(node => themeRoot.append(node)); shadow.append(themeRoot);
     panel.dataset.expPart = 'dock'; panel.classList.add('dropper-menu-surface'); makeLauncher(launcher,launcherSrc); normalizeHeader(panel); normalizeControls(panel);
+    let defaultSupport = null;
+    const header = panel.querySelector('.menu-head');
+    if (header && !header.querySelector('.support-wrap') && options.supportUrl !== '') {
+      defaultSupport = createSupportControl({url:options.supportUrl || SUPPORT_URL,label:'Support '+id.toUpperCase()});
+      let actions = header.querySelector('.header-actions');
+      if (!actions) { actions=document.createElement('div');actions.className='header-actions';const close=header.querySelector('[data-exp-part="close"]');if(close)actions.append(close);header.append(actions); }
+      actions.prepend(defaultSupport.element);
+    }
     applyContentDrivenMenuLayout(shadow);
     applyMatteToggleChrome(shadow);
     const versionButton=panel.querySelector('.version,[data-exp-part="version"]');
     const menuNotices=[...themeRoot.querySelectorAll('.update-notice,.changelog')].map(notice=>createMenuNotice({host,shadow,panel,notice,versionButton:notice.classList.contains('changelog')?versionButton:null,manageVersion:false,durationMs:30000}));
     if (launcherSrc) panel.querySelectorAll('.header-icon img').forEach(image => image.src = launcherSrc);
-    host.dataset.coreVersion = version; host.dataset.coreSource = 'Dropper/3.2.10';
+    host.dataset.coreVersion = version; host.dataset.coreSource = 'Dropper/3.3.4';
     let choices = themes(productTheme), selected = choices.at(-1), open = false, destroyed = false, timer = 0, deadline = 0, frame = 0;
     const removers = [];
     const on = (node,type,fn,opts) => { node.addEventListener(type,fn,opts); removers.push(() => node.removeEventListener(type,fn,opts)); };
@@ -1995,10 +2079,12 @@ const ExtraPotionsCore = (() => {
     const dropperThemeObserver = new MutationObserver(syncThemeOwner);
     function syncThemeOwner() {
       const owner = menuThemeOwner();
-      const dropperCluster = owner?.dataset.productId === 'dropper' ? owner.shadowRoot?.querySelector('#tdh-cluster') : null;
-      if (dropperCluster !== observedDropper) {
+      const dropperThemeSurface = owner?.dataset.productId === 'dropper'
+        ? owner.shadowRoot?.querySelector('#tdh-cluster')
+        : null;
+      if (dropperThemeSurface !== observedDropper) {
         dropperThemeObserver.disconnect();
-        observedDropper = dropperCluster;
+        observedDropper = dropperThemeSurface;
         if (observedDropper) dropperThemeObserver.observe(observedDropper, { attributes:true, attributeFilter:['data-ui-theme'] });
       }
       const deprioritized = Boolean(owner && owner !== host);
@@ -2032,7 +2118,7 @@ const ExtraPotionsCore = (() => {
 
       top = Math.max(8,Math.min(innerHeight-56,top));
       Object.assign(launcher.style,{top:top+'px',right:(12+x)+'px',bottom:'auto',left:'auto',zIndex:open?'2147483647':'2147483600'});
-      const maxWidth = Math.max(0,innerWidth-24), panelWidth = Math.min({full:312,compact:260,narrow:220}[width],maxWidth);
+      const maxWidth = Math.max(0,innerWidth-24), panelWidth = Math.min(menuWidthForMode(width),maxWidth);
       Object.assign(panel.style,{width:panelWidth+'px',maxHeight:Math.max(80,innerHeight-80)+'px',overflowY:'auto',right:'12px',left:'auto',bottom:'auto',zIndex:open?'2147483647':'2147483599'});
       if (!open) return;
       const h = panel.offsetHeight, below = innerHeight-top-56, above = top-8;
@@ -2052,14 +2138,15 @@ const ExtraPotionsCore = (() => {
     on(window,'keydown',e=>{if(shortcutKey&&e.altKey&&e.shiftKey&&e.key.toLowerCase()===shortcutKey.toLowerCase()&&!e.repeat){e.preventDefault();setOpen(!open,true);} });
     on(window,'resize',queueLayout);on(document,'exp-core:coordination',queueLayout);
     on(document,'exp-core:coordination',syncThemeOwner);
+    on(document,'exp-core:menu-open',()=>{if(open && document.documentElement.getAttribute('data-exp-open-menu')!==id)setOpen(false,false);});
     const resize = new ResizeObserver(queueLayout); resize.observe(panel);
     const mutation = new MutationObserver(records=>{if(records.some(r=>r.type==='childList'||r.attributeName==='hidden'))queueLayout();}); mutation.observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
     const controller = {
       layout, setTheme,
-      state(value) {open=Boolean(value);panel.classList.toggle('fl-rail-open',open);menuNotices.forEach(notice=>notice.setMenuOpen(open));if(open)scheduleDismiss();else clearTimer();queueLayout();},
+      state(value) {open=Boolean(value);if(open){document.documentElement.setAttribute('data-exp-open-menu',id);document.dispatchEvent(new Event('exp-core:menu-open'));}panel.classList.toggle('fl-rail-open',open);menuNotices.forEach(notice=>notice.setMenuOpen(open));if(open)scheduleDismiss();else clearTimer();queueLayout();},
       update(){normalizeControls(panel);queueLayout();},
       get dismissAt(){return deadline;},
-      destroy(){destroyed=true;clearTimer();cancelAnimationFrame(frame);resize.disconnect();mutation.disconnect();dropperThemeObserver.disconnect();menuNotices.forEach(notice=>notice.destroy());removers.forEach(f=>f());styles.dispose();controllers.delete(host);}
+      destroy(){destroyed=true;defaultSupport?.destroy();clearTimer();cancelAnimationFrame(frame);resize.disconnect();mutation.disconnect();dropperThemeObserver.disconnect();menuNotices.forEach(notice=>notice.destroy());removers.forEach(f=>f());styles.dispose();controllers.delete(host);}
     };
     controllers.set(host,controller);setTheme(getSettings().uiTheme || getSettings().theme || id);
     queueLayout();return controller;
@@ -2226,6 +2313,123 @@ const ExtraPotionsCore = (() => {
     });
   }
 
+  function createSupportControl({ url, label = 'Support' } = {}) {
+    if (!url) return null;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'support-wrap';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.id = 'tdh-support-button';
+    button.className = 'support-button';
+    button.setAttribute('aria-label', label);
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', 'tdh-support-popover');
+    button.title = label;
+    button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.2-4.35-9.55-8.45C.42 9.02 2.3 5 6.25 5c2.15 0 3.56 1.21 4.33 2.3C11.36 6.21 12.77 5 14.92 5c3.95 0 5.83 4.02 3.8 7.55C16.36 16.65 12 21 12 21Z"/></svg>';
+    const popover = document.createElement('div');
+    popover.id = 'tdh-support-popover';
+    popover.className = 'support-popover';
+    popover.setAttribute('role', 'dialog');
+    popover.setAttribute('aria-label', label);
+    popover.hidden = true;
+    const strong = document.createElement('strong');
+    strong.textContent = label;
+    const copy = document.createElement('span');
+    copy.textContent = 'Donations are optional. All features stay free.';
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.textContent = 'Open Ko-fi';
+    popover.append(strong, copy, anchor);
+    wrapper.append(button, popover);
+    const toggle = event => {
+      event?.stopPropagation?.();
+      popover.hidden = !popover.hidden;
+      button.setAttribute('aria-expanded', String(!popover.hidden));
+    };
+    const outside = event => {
+      if (popover.hidden || event.composedPath().includes(wrapper)) return;
+      popover.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+    };
+    button.addEventListener('click', toggle);
+    document.addEventListener('pointerdown', outside, true);
+    return Object.freeze({
+      element: wrapper,
+      button,
+      popover,
+      hide() { popover.hidden = true; button.setAttribute('aria-expanded', 'false'); },
+      destroy() { button.removeEventListener('click', toggle); document.removeEventListener('pointerdown', outside, true); wrapper.remove(); },
+    });
+  }
+
+  function createProductNotice(options = {}) {
+    const { host, shadow, panel, versionButton = null } = options;
+    if (!(host instanceof Element) || !(shadow instanceof ShadowRoot) || !(panel instanceof Element)) {
+      throw new Error('Product notice requires a mounted Core product');
+    }
+    const notice = document.createElement('div');
+    notice.className = 'update-notice';
+    notice.hidden = true;
+    notice.innerHTML = '<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker">What\'s New</div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" target="_blank" rel="noopener noreferrer">Install Update</a></div>';
+    (shadow.querySelector('.exp-core-theme') || shadow).append(notice);
+    const controller = createMenuNotice({
+      host,
+      shadow,
+      panel,
+      notice,
+      versionButton: null,
+      manageVersion: false,
+      durationMs: options.durationMs ?? 30000,
+    });
+    function show(state = {}) {
+      notice.querySelector('.update-kicker').textContent = state.kicker || "What's New";
+      notice.querySelector('.update-title').textContent = state.title || '';
+      notice.querySelector('.update-version').textContent = state.version ? 'v' + state.version : '';
+      notice.querySelector('.update-text').textContent = state.text || '';
+      const list = notice.querySelector('.update-list');
+      list.replaceChildren();
+      const details = Array.isArray(state.details) ? state.details.slice(0, 4) : [];
+      for (const detail of details) {
+        const item = document.createElement('li');
+        item.textContent = detail;
+        list.append(item);
+      }
+      list.hidden = !details.length;
+      const release = notice.querySelector('.update-release');
+      const releaseUrl = state.releaseUrl || options.releaseUrl || '';
+      release.hidden = !releaseUrl;
+      if (releaseUrl) release.href = releaseUrl;
+      const action = notice.querySelector('.update-action');
+      const actionUrl = state.actionUrl || options.installUrl || '';
+      action.hidden = !actionUrl || state.showAction === false;
+      if (actionUrl) action.href = actionUrl;
+      action.textContent = state.actionText || 'Install Update';
+      notice.dataset.noticeKind = state.kind || 'current';
+      controller.setMenuOpen(!panel.hidden);
+      controller.show();
+    }
+    const versionClick = () => {
+      if (typeof options.onVersion === 'function') options.onVersion();
+      else controller.toggle();
+    };
+    versionButton?.addEventListener('click', versionClick);
+    return Object.freeze({
+      element: notice,
+      show,
+      hide: controller.hide,
+      toggle: controller.toggle,
+      layout: controller.layout,
+      setMenuOpen: controller.setMenuOpen,
+      destroy() {
+        versionButton?.removeEventListener('click', versionClick);
+        controller.destroy();
+        notice.remove();
+      },
+    });
+  }
+
   function createDiagnosticsReport(product, details = {}) {
     return ExtraPotionsDiagnostics.createReport(product, details, { version, source: 'Dropper', sourceVersion });
   }
@@ -2239,15 +2443,18 @@ const ExtraPotionsCore = (() => {
     const area=document.createElement('textarea');area.value=text;area.style.cssText='position:fixed;left:-9999px';document.documentElement.append(area);area.select();const success=document.execCommand('copy');area.remove();if(!success)throw new Error('Clipboard unavailable');
   }
   function createDiagnosticsControls(getReport, notify = () => {}) { return ExtraPotionsDiagnostics.createControls(getReport, notify); }
-  function createProduct({id,name,version:productVersion,subtitle='',artwork,theme,sections=[],getSettings,onSettings=()=>{},priority}) {
-    const host=document.createElement('div');host.id='exp-'+id+'-root';const shadow=host.attachShadow({mode:'open'});const panel=document.createElement('aside');panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label',name+' settings');
-    const header=document.createElement('header');header.className='menu-head';const brand=document.createElement('div');brand.className='header-brand';const image=document.createElement('img');image.src=artwork;image.alt='';const copy=document.createElement('div');const titleRow=document.createElement('div');const title=document.createElement('strong');title.textContent=name;const v=document.createElement('button');v.type='button';v.className='version';v.textContent='v'+productVersion;titleRow.append(title,v);const sub=document.createElement('small');sub.textContent=subtitle;copy.append(titleRow,sub);brand.append(image,copy);const close=document.createElement('button');close.className='close';close.textContent='×';close.setAttribute('aria-label','Close '+name);header.append(brand,close);const divider=document.createElement('div');divider.className='header-divider';const nav=document.createElement('nav');
-    let isOpen=false, last='';let chrome;
-    function setOpen(value,focus=true){isOpen=Boolean(value);panel.hidden=!isOpen;launcher.setAttribute('aria-expanded',String(isOpen));if(isOpen)nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);chrome.state(isOpen);if(focus)(isOpen?focusMenuSurface(panel):launcher.focus());}
-    for(const section of sections){const group=document.createElement('section');group.className='tool-panel';const button=document.createElement('button');button.type='button';button.textContent=section.label;button.dataset.section=section.id;const body=document.createElement('div');body.className='route-body';body.hidden=true;button.addEventListener('click',()=>{const opening=body.hidden;nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);nav.querySelectorAll('button[data-section]').forEach(n=>{n.classList.toggle('last-opened',n===button);n.setAttribute('aria-expanded',String(opening&&n===button));});body.hidden=!opening;if(opening){last=section.id;const content=section.render({core:api,onSettings});body.replaceChildren(content);}chrome.update();});group.append(button,body);nav.append(group);}
-    const launcher=document.createElement('button');launcher.className='launcher';launcher.type='button';launcher.setAttribute('aria-label','Open '+name);const mark=image.cloneNode(true);launcher.append(mark);launcher.addEventListener('click',()=>setOpen(!isOpen));close.addEventListener('click',()=>setOpen(false));panel.append(header,divider,nav);shadow.append(panel,launcher);document.documentElement.append(host);chrome=create({id,host,shadow,panel,launcher,getSettings,setOpen,productTheme:theme});const unregister=registerLauncher(host,{productId:id,priority});
+  function createProduct({id,name,version:productVersion,subtitle='',artwork,theme,sections=[],getSettings,onSettings=()=>{},priority,supportUrl=SUPPORT_URL}) {
+    const host=document.createElement('div');host.id='exp-'+id+'-root';host.dataset.expOwned='1';const shadow=host.attachShadow({mode:'open'});const panel=document.createElement('aside');panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label',name+' settings');
+    const header=document.createElement('header');header.className='menu-head';const brand=document.createElement('div');brand.className='header-brand';const image=document.createElement('img');image.src=artwork;image.alt='';const copy=document.createElement('div');const titleRow=document.createElement('div');const title=document.createElement('strong');title.textContent=name;const v=document.createElement('button');v.type='button';v.className='version';v.textContent='v'+productVersion;titleRow.append(title,v);const sub=document.createElement('small');sub.textContent=subtitle;copy.append(titleRow,sub);brand.append(image,copy);const close=document.createElement('button');close.className='close';close.textContent='×';close.setAttribute('aria-label','Close '+name);const actions=document.createElement('div');actions.className='header-actions';const support=createSupportControl({url:supportUrl,label:'Support '+name});if(support)actions.append(support.element);actions.append(close);header.append(brand,actions);const divider=document.createElement('div');divider.className='header-divider';const nav=document.createElement('nav');
+    let isOpen=false, activeId='';let chrome;
+    const sectionMap=new Map();
+    function renderSection(section,body){const content=section.render({core:api,onSettings});body.replaceChildren(content);chrome?.update();}
+    function renderActive(){if(!activeId)return false;const entry=sectionMap.get(activeId);if(!entry||entry.body.hidden)return false;renderSection(entry.section,entry.body);return true;}
+    function setOpen(value,focus=true){isOpen=Boolean(value);panel.hidden=!isOpen;launcher.setAttribute('aria-expanded',String(isOpen));if(isOpen){activeId='';nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);nav.querySelectorAll('button[data-section]').forEach(n=>n.setAttribute('aria-expanded','false'));}chrome.state(isOpen);if(focus)(isOpen?focusMenuSurface(panel):launcher.focus());}
+    for(const section of sections){const group=document.createElement('section');group.className='tool-panel';const button=document.createElement('button');button.type='button';button.textContent=section.label;button.dataset.section=section.id;const body=document.createElement('div');body.className='route-body';body.hidden=true;sectionMap.set(section.id,{section,body,button});button.addEventListener('click',()=>{const opening=body.hidden;nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);nav.querySelectorAll('button[data-section]').forEach(n=>{n.classList.toggle('last-opened',n===button);n.setAttribute('aria-expanded',String(opening&&n===button));});body.hidden=!opening;activeId=opening?section.id:'';if(opening)renderSection(section,body);chrome.update();});group.append(button,body);nav.append(group);}
+    const launcher=document.createElement('button');launcher.className='launcher';launcher.type='button';launcher.setAttribute('aria-label','Open '+name);const mark=image.cloneNode(true);launcher.append(mark);launcher.addEventListener('click',()=>setOpen(!isOpen));close.addEventListener('click',()=>setOpen(false));panel.append(header,divider,nav);shadow.append(panel,launcher);document.documentElement.append(host);chrome=create({id,host,shadow,panel,launcher,getSettings,setOpen,productTheme:theme,supportUrl});const unregister=registerLauncher(host,{productId:id,priority});
     const key=e=>{if(e.key==='Escape'&&isOpen)setOpen(false);};document.addEventListener('keydown',key);
-    return {host,shadow,panel,launcher,open:()=>setOpen(true),close:()=>setOpen(false),refresh:()=>chrome.update(),destroy(){document.removeEventListener('keydown',key);chrome.destroy();unregister();host.remove();}};
+    return {host,shadow,panel,launcher,versionButton:v,open:()=>setOpen(true),close:()=>setOpen(false),toggle:()=>setOpen(!isOpen),refresh:()=>chrome.update(),renderActive,get isOpen(){return isOpen;},destroy(){document.removeEventListener('keydown',key);support?.destroy();chrome.destroy();unregister();host.remove();}};
   }
   let gridFrame=0;
   const scheduleGrid=()=>{if(!gridFrame)gridFrame=requestAnimationFrame(()=>{gridFrame=0;layoutGrid();});};
@@ -2256,7 +2463,7 @@ const ExtraPotionsCore = (() => {
   if(document.documentElement)startGrid();else addEventListener('DOMContentLoaded',startGrid,{once:true});
   document.addEventListener('exp-core:coordination',scheduleGrid);
   addEventListener('resize',scheduleGrid,{passive:true});
-  const api = Object.freeze({version,sourceVersion,protocol,gridProtocol,reference:DropperReference,css:canonicalCss,themes,create,createProduct,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,compareVersions:DropperReference.compareVersions});
+  const api = Object.freeze({version,sourceVersion,protocol,gridProtocol,reference:DropperReference,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,compareVersions:DropperReference.compareVersions});
   return api;
 })();
 
@@ -2322,7 +2529,7 @@ EXP.Settings = (() => {
   }
   function validate(candidate) {
     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) throw Object.assign(new Error('Settings must be an object'), { code: 'SETTINGS_TYPE' });
-    const next = structuredClone(defaults);
+    const next = ExtraPotionsCore.cloneSettings(defaults);
 	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
 	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
     for (const name of ['enabled', 'amazonEnabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
@@ -2341,7 +2548,7 @@ EXP.Settings = (() => {
     write('settings', state);
     return snapshot();
   }
-  function snapshot() { return structuredClone(state || defaults); }
+  function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
   function replace(value, reason = 'replace') { state = validate(value); write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
@@ -3278,10 +3485,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.2.13';
+EXP.VERSION = '3.2.14';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.14': ["Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination.","Uses Firefox-safe settings copies and content-context injection.","Preserves existing Amazon protections without affiliate link rewriting."],
     '3.2.13': Object.freeze([
       'Uses the same menu-width notice surface for Current Version, Update Available, and Update Complete, matching Dropper.',
       'Forces a fresh update check for each newly installed WARD version instead of inheriting the previous version\'s 15-minute throttle or stale remote version.',
@@ -4184,7 +4392,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.13';
+EXP.VERSION = '3.2.14';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

@@ -1,3 +1,9 @@
+## 3.2.14 - 2026-09-26
+
+- Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination.
+- Uses Firefox-safe settings copies and content-context injection.
+- Preserves existing Amazon protections without affiliate link rewriting.
+
 ## 3.2.13 - 2026-09-25
 
 - Uses the same menu-width notice surface for Current Version, Update Available, and Update Complete, matching Dropper.

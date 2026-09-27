@@ -57,7 +57,7 @@ EXP.Settings = (() => {
   }
   function validate(candidate) {
     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) throw Object.assign(new Error('Settings must be an object'), { code: 'SETTINGS_TYPE' });
-    const next = structuredClone(defaults);
+    const next = ExtraPotionsCore.cloneSettings(defaults);
 	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
 	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
     for (const name of ['enabled', 'amazonEnabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
@@ -76,7 +76,7 @@ EXP.Settings = (() => {
     write('settings', state);
     return snapshot();
   }
-  function snapshot() { return structuredClone(state || defaults); }
+  function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
   function replace(value, reason = 'replace') { state = validate(value); write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
