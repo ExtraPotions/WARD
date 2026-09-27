@@ -492,6 +492,12 @@ EXP.UI = (() => {
 
   function systemView() {
     const fragment = document.createDocumentFragment();
+    fragment.append(row('Panel + menu width','',selectControl(
+      EXP.Settings.snapshot().menuWidth,
+      'Panel + menu width',
+      [['full','Full'],['compact','Compact'],['narrow','Narrow']],
+      value => update({menuWidth:value},'menu-width')
+    )));
     const box = section('Diagnostics');
 
     box.append(

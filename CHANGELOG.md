@@ -1,3 +1,9 @@
+## 3.2.17 - 2026-09-26
+
+- Restores Full, Compact, and Narrow menu-width controls under System.
+- Applies width changes immediately and remembers the selection after reload.
+- Keeps wide menus within the available viewport on small screens.
+
 ## 3.2.16 - 2026-09-26
 
 - Bundles exp-core 3.3.8 with section arrangement and viewport-safe menus.

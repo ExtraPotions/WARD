@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.16
+// @version      3.2.17
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -3646,10 +3646,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.2.16';
+EXP.VERSION = '3.2.17';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.17': ["Restores Full, Compact, and Narrow menu-width controls under System.","Applies width changes immediately and remembers the selection after reload.","Keeps wide menus within the available viewport on small screens."],
     '3.2.16': ["Bundles exp-core 3.3.8 with section arrangement and viewport-safe menus.","Preserves remembered page exceptions and intervention explanations.","Refreshes the README and feature screenshots in a horizontal gallery."],
     '3.2.15': ["Adds remembered per-page exceptions for individual protection patterns.","Displays intervention reasons and keeps allowed content out of active protections.","Adds settings backups, rollback, and compatibility details through exp-core 3.3.7."],
     '3.2.14': ["Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination.","Uses Firefox-safe settings copies and content-context injection.","Preserves existing Amazon protections without affiliate link rewriting."],
@@ -4240,6 +4241,12 @@ EXP.UI = (() => {
 
   function systemView() {
     const fragment = document.createDocumentFragment();
+    fragment.append(row('Panel + menu width','',selectControl(
+      EXP.Settings.snapshot().menuWidth,
+      'Panel + menu width',
+      [['full','Full'],['compact','Compact'],['narrow','Narrow']],
+      value => update({menuWidth:value},'menu-width')
+    )));
     const box = section('Diagnostics');
 
     box.append(
@@ -4560,7 +4567,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.16';
+EXP.VERSION = '3.2.17';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
