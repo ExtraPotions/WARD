@@ -1,3 +1,9 @@
+## 3.2.19 - 2026-09-27
+
+- Adds layered menu surfaces so protection controls remain distinct at every menu width.
+- Uses accessible semantic colors for links, focus indicators, and accent text.
+- Bundles the verified exp-core 3.3.10 artifact without changing Amazon intervention behavior.
+
 ## 3.2.18 - 2026-09-26
 
 - Compacts System menus and keeps menu width controls together on one row.
