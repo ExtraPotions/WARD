@@ -114,7 +114,7 @@ EXP.UI = (() => {
 
   function section(title) {
     const box = el('section','section');
-    box.append(el('h3','',title));
+    if (title) box.append(el('h3','',title));
     return box;
   }
 
@@ -360,7 +360,7 @@ EXP.UI = (() => {
           value => update({protectionLevel:value},'level')
         ))
     );
-    general.append(row('Content action','Applies to all protected content. Hide falls back to Dim where needed; purchasing information stays visible.',
+    general.append(row('Content action','Hide or dim matched content; purchase controls remain visible.',
       selectControl(settings.contentAction,'Content action',[['automatic','Automatic'],['hide','Hide'],['dim','Dim']],
         value => update({contentAction:value},'content-action'))));
     general.append(row('Amazon adapter','Selector and safety system status.',adapterHealthControl()));
@@ -368,7 +368,7 @@ EXP.UI = (() => {
     const summary = el('div');
     summary.setAttribute('data-exp-activity-summary','1');
     renderActivitySummary(summary);
-    fragment.append(general,summary);
+    fragment.append(general,ExtraPotionsCore.createDisclosure('Page activity',summary));
     return fragment;
   }
 
@@ -381,10 +381,10 @@ EXP.UI = (() => {
 
     const accessibility = section('Accessibility');
     accessibility.append(
-      row('Reduced motion','',
+      row('Reduce motion','',
         selectControl(
           settings.reducedMotion,
-          'Reduced motion',
+          'Reduce motion',
           [['system','Follow system'],['reduce','Reduce'],['allow','Allow']],
           value => update({reducedMotion:value},'reduced-motion')
         ))
@@ -492,14 +492,21 @@ EXP.UI = (() => {
 
   function systemView() {
     const fragment = document.createDocumentFragment();
-    fragment.append(row('Panel + menu width','',selectControl(
+    fragment.append(row('Menu width','',selectControl(
       EXP.Settings.snapshot().menuWidth,
-      'Panel + menu width',
+      'Menu width',
       [['full','Full'],['compact','Compact'],['narrow','Narrow']],
       value => update({menuWidth:value},'menu-width')
     )));
-    const box = section('Diagnostics');
-
+    const settings = EXP.Settings.snapshot();
+    const box = section();
+    const preferences = ExtraPotionsCore.createDisclosure('Menu preferences');
+    for (const [key,label] of [['menuAutoClose','Auto-close menu'],['menuNotifications','Menu notifications'],['updateNotifications','Update notifications']]) {
+      preferences.append(row(label,'',switchControl(settings[key],label,value=>{
+        update({[key]:value},key);
+        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
+      })));
+    }
     box.append(
       EXP.Diagnostics.createDiagnosticsControls(
         () => EXP.Diagnostics.createDiagnosticsReport(
@@ -541,14 +548,19 @@ EXP.UI = (() => {
       })
     );
 
-    box.append(transfers);
+    const data = ExtraPotionsCore.createDisclosure('Settings',transfers);
     fragment.append(box);
-    const recovery = section('Recovery');
+    const tools = ExtraPotionsCore.createSystemGrid(preferences,data);
+    const safeMode = switchControl(settings.safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'));
+    safeMode.title='Pause protection and coupon actions without changing saved preferences.';
+    box.append(row('Safe Mode','',safeMode));
+    const recovery = ExtraPotionsCore.createDisclosure('Page exceptions');
     for(const exception of EXP.Settings.snapshot().pageExceptions||[])recovery.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
 
-    recovery.append(ExtraPotionsCore.createCompatibilityControls(),ExtraPotionsCore.createRecoveryControls({list:EXP.Settings.backups,capture:EXP.Settings.backup,restore:id=>{EXP.Settings.restoreBackup(id);renderView();},notify}));
-    recovery.append(row('Reset Amazon settings','Resets WARD Amazon settings and pattern overrides.',action('Reset',resetAmazon,'warn')));
-    fragment.append(recovery);
+    tools.append(ExtraPotionsCore.createCompatibilityControls());
+    data.append(row('Reset Amazon settings','Resets WARD Amazon settings and pattern overrides.',action('Reset',resetAmazon,'warn')));
+    if ((EXP.Settings.snapshot().pageExceptions || []).length) tools.append(recovery);
+    fragment.append(tools);
     return fragment;
   }
 
@@ -587,7 +599,6 @@ EXP.UI = (() => {
       if (!active) continue;
 
       content = body;
-      content.replaceChildren();
 
       const renderer = {
         page:() => pageView(settings),
@@ -596,7 +607,7 @@ EXP.UI = (() => {
         system:() => systemView()
       }[activeView];
 
-      if (renderer) content.append(renderer());
+      if (renderer) ExtraPotionsCore.replaceMenuContent(content,renderer());
     }
 
     chrome?.update();
@@ -682,7 +693,7 @@ EXP.UI = (() => {
       action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false || updateCard.dataset.noticeKind !== 'current') showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
     );
 
-    title.append(titleRow,el('small','','Amazon pressure and coupon controls'));
+    title.append(titleRow,el('small','','Calmer shopping'));
     brand.append(mark,title);
 
     const closeButton = el('button','close','×');

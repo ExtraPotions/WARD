@@ -1,7 +1,8 @@
-EXP.VERSION = '3.2.17';
+EXP.VERSION = '3.2.18';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.18': ["Compacts System menus and keeps menu width controls together on one row.","Groups existing menu preferences consistently while preserving saved settings.","Removes automatic Settings Backup and its restore controls.","Adds a Bitcoin donation option with address copying and wallet support."],
     '3.2.17': ["Restores Full, Compact, and Narrow menu-width controls under System.","Applies width changes immediately and remembers the selection after reload.","Keeps wide menus within the available viewport on small screens."],
     '3.2.16': ["Bundles exp-core 3.3.8 with section arrangement and viewport-safe menus.","Preserves remembered page exceptions and intervention explanations.","Refreshes the README and feature screenshots in a horizontal gallery."],
     '3.2.15': ["Adds remembered per-page exceptions for individual protection patterns.","Displays intervention reasons and keeps allowed content out of active protections.","Adds settings backups, rollback, and compatibility details through exp-core 3.3.7."],

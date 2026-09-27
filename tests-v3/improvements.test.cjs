@@ -152,6 +152,8 @@ test('compact UI exposes health, activity, reversible controls, and nested Custo
   await host.locator('.route[data-view="page"]').click();
   assert.equal(await host.locator('[data-exp-adapter-health]').textContent(),'Healthy');
   assert.equal(await host.locator('[data-exp-activity-summary]').getByText('Active protections').count(),1);
+  assert.equal(await host.getByRole('button',{ name:'Show',exact:true }).count(),0);
+  await host.locator('summary').filter({hasText:'Page activity'}).click();
   assert.equal(await host.getByRole('button',{ name:'Show',exact:true }).count(),1);
   await host.getByRole('button',{ name:'Show',exact:true }).click();
   assert.equal(await host.getByRole('button',{ name:'Protect again',exact:true }).count(),1);
@@ -186,4 +188,19 @@ test('main Protection screen changes all content between Dim, Hide and Automatic
   await host.getByLabel('Content action',{exact:true}).selectOption('automatic');
   assert.deepEqual(await state(),[{hidden:true,action:'hide'},{hidden:true,action:'collapse'}]);
   assert.equal(await host.locator('input[type="checkbox"]').count(),0);
+});
+
+test('System Safe Mode restores protection targets and preserves preferences',async t=>{
+ const browser=await chromium.launch();t.after(()=>browser.close());const page=await browser.newPage();
+ await page.route('https://www.amazon.com/**',r=>r.fulfill({contentType:'text/html',body:'<main><div id="sims-fbt">Recommendations</div></main>'}));
+ await page.goto('https://www.amazon.com/dp/fixture');await page.addScriptTag({content:distribution});
+ const host=page.locator('#exp-ward-root');await host.locator('.ward-launcher').click();await host.locator('[data-view="system"]').click();
+ const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('exp:v3:ward:settings')||'{}'));
+ const toggle=host.getByRole('switch',{name:'Safe Mode',exact:true});await toggle.click();
+ await page.waitForFunction(()=>!document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));
+ assert.equal(await toggle.getAttribute('aria-checked'),'true');
+ await toggle.click();await page.waitForFunction(()=>document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));
+ assert.equal(await toggle.getAttribute('aria-checked'),'false');
+ const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('exp:v3:ward:settings')||'{}'));
+ assert.equal(after.contentAction,before.contentAction);
 });
