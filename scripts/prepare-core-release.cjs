@@ -44,7 +44,7 @@ const coreVersion = coreTag.slice(1);
 const date = new Date().toISOString().slice(0, 10);
 
 if (atLeastVersion(coreVersion, '3.3.14')) {
-  write('src/core.js', "const services = ExtraPotionsCore.createProductServices({\n  productId: 'ward',\n  repository: 'ExtraPotions/WARD',\n  currentVersion: EXP.VERSION,\n  enabled: () => EXP.Settings.snapshot().updateNotifications,\n  onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),\n});\nEXP.Core = services.lifecycle;\nEXP.Diagnostics = services.diagnostics;\nEXP.Updates = services.updates;\n");
+  write('src/core.js', "const services = ExtraPotionsCore.createProductServices({\n  productId: 'ward',\n  repository: 'ExtraPotions/WARD',\n  currentVersion: () => EXP.VERSION,\n  enabled: () => EXP.Settings.snapshot().updateNotifications,\n  onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),\n});\nEXP.Core = services.lifecycle;\nEXP.Diagnostics = services.diagnostics;\nEXP.Updates = services.updates;\n");
   for (const relative of ['src/updates.js', 'src/diagnostics.js']) {
     if (exists(relative)) fs.unlinkSync(path.join(root, relative));
   }
