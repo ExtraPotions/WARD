@@ -26,6 +26,14 @@ function replaceRequired(text, pattern, replacement, label) {
   if (next === text) throw new Error(`Could not update ${label}`);
   return next;
 }
+function atLeastVersion(version, minimum) {
+  const a = String(version).split('.').map(Number);
+  const b = String(minimum).split('.').map(Number);
+  for (let index = 0; index < 3; index += 1) {
+    if ((a[index] || 0) !== (b[index] || 0)) return (a[index] || 0) > (b[index] || 0);
+  }
+  return true;
+}
 
 const pkg = JSON.parse(read('package.json'));
 const previous = pkg.version;
@@ -34,6 +42,19 @@ const coreTag = read('vendor/exp-core/PIN').trim();
 if (!/^v\d+\.\d+\.\d+$/.test(coreTag)) throw new Error(`Invalid exp-core pin: ${coreTag}`);
 const coreVersion = coreTag.slice(1);
 const date = new Date().toISOString().slice(0, 10);
+
+if (atLeastVersion(coreVersion, '3.3.14')) {
+  write('src/core.js', "const services = ExtraPotionsCore.createProductServices({\n  productId: 'ward',\n  repository: 'ExtraPotions/WARD',\n  currentVersion: EXP.VERSION,\n  enabled: () => EXP.Settings.snapshot().updateNotifications,\n  onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),\n});\nEXP.Core = services.lifecycle;\nEXP.Diagnostics = services.diagnostics;\nEXP.Updates = services.updates;\n");
+  for (const relative of ['src/updates.js', 'src/diagnostics.js']) {
+    if (exists(relative)) fs.unlinkSync(path.join(root, relative));
+  }
+  let build = read('scripts/build.cjs');
+  build = build
+    .replace(/,\s*'updates\.js'/u, '')
+    .replace(/,\s*'diagnostics\.js'/u, '');
+  write('scripts/build.cjs', build);
+  console.log('Migrated shared bootstrap to Core-owned product services.');
+}
 
 pkg.version = next;
 write('package.json', JSON.stringify(pkg, null, 2) + '\n');
