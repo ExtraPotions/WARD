@@ -159,6 +159,7 @@ test('compact UI exposes health, activity, reversible controls, and nested Custo
   assert.equal(await host.getByRole('button',{ name:'Protect again',exact:true }).count(),1);
   await host.getByLabel('Protection level').selectOption('custom');
   await host.locator('.route[data-view="tools"]').click();
+  await host.locator('summary').filter({hasText:'Advanced Amazon'}).click();
   for (const label of ['Default action','Confidence policy','Explanation detail']) assert.equal(await host.getByLabel(label).count(),1);
   assert.ok(await host.getByText('Category controls',{ exact:true }).isVisible());
   assert.ok(await host.getByText('Individual patterns',{ exact:true }).isVisible());
