@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.21
+// @version      3.2.22
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -30,8 +30,8 @@
 'use strict';
 const EXP = Object.create(null);
 
-// Generated from the approved Dropper v3.3.5 install artifact. Do not edit.
-const DropperReference = (() => {
+// Native exp-core foundation. Shared UI primitives are owned and maintained here.
+const CoreFoundation = (() => {
 const LAUNCHER_ORDER_KEY = "exp:v3:launcher-order";
 const LAUNCHER_GRID_DELTA_KEY = "exp:v3:launcher-grid-delta";
 const PRIDE_RAINBOW = "linear-gradient(90deg,#c84e66,#d07840,#be9f37,#3b8a5f,#3d79a6,#7455a4)";
@@ -59,7 +59,7 @@ function css() {
         position: fixed; right: 12px; z-index: 2147483600;
         display: flex; flex-direction: column-reverse; align-items: flex-end;
         width: max-content; max-width: calc(100vw - 24px); gap: 8px;
-        --theme-bg:#111114; --theme-panel:#19191e; --theme-line:#34343b; --theme-text:#efeff1; --theme-muted:#adadb8; --theme-accent:#9147ff; --theme-accent2:#bf94ff; --theme-skin:linear-gradient(135deg,#d9b5ff,#9b5af9,#7428e8); --theme-skin-vertical:linear-gradient(180deg,#d9b5ff,#9b5af9,#7428e8); --dropper-ui-opacity:1;
+        --theme-bg:#111114; --theme-panel:#19191e; --theme-raised:#2a2a31; --theme-inset:#0e0e10; --theme-line:#34343b; --theme-text:#efeff1; --theme-muted:#adadb8; --theme-accent:#9147ff; --theme-accent2:#bf94ff; --theme-link:#c6a4ff; --theme-focus:#bf94ff; --theme-onAccent:#111114; --theme-skin:linear-gradient(135deg,#d9b5ff,#9b5af9,#7428e8); --theme-skin-vertical:linear-gradient(180deg,#d9b5ff,#9b5af9,#7428e8); --dropper-ui-opacity:1;
         font: 13px/1.42 ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: var(--theme-text);
       }
       .cluster.open-up { flex-direction: column; }
@@ -232,12 +232,12 @@ function css() {
       .queue-switches>.fl-switch{grid-column:2;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px;min-width:0;padding:5px 0!important;text-align:left!important}
       .queue-switches>.fl-switch>span:first-child{display:block;flex:1 1 auto;width:auto!important;min-width:0!important;min-height:0!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important;line-height:1.25;text-align:left}
       .queue-switches>.fl-switch>.toggleSwitch{flex:0 0 34px;margin-left:auto}
-      #tdh-collapsed-width{box-sizing:border-box;width:104px;min-width:0!important;max-width:104px!important;flex:0 1 104px}
+      #tdh-collapsed-width{box-sizing:border-box;width:100%;margin:0;min-width:0!important;max-width:104px!important;flex:0 1 104px}
       #tdh-progress-body{padding-bottom:5px}
       #tdh-progress-body>.fl-switch,
       #tdh-progress-body>.mini-row{padding:4px 0}
-      #tdh-progress-body>.mini-row:has(#tdh-collapsed-width){grid-column:1/-1;align-items:center;flex-wrap:wrap}
-      #tdh-progress-body>.mini-row:has(#tdh-collapsed-width)>span{flex:1 1 120px;min-width:0;white-space:normal;overflow-wrap:normal}
+      #tdh-diagnostics-body>.mini-row:has(#tdh-collapsed-width){grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,104px);align-items:center;gap:8px}
+      #tdh-diagnostics-body>.mini-row:has(#tdh-collapsed-width)>span{flex:1 1 120px;min-width:0;white-space:normal;overflow-wrap:normal}
       #tdh-progress-body>.theme-row{min-height:22px;padding:3px 0;gap:6px}
       #tdh-progress-body .exp-theme-swatches{gap:3px;flex-wrap:nowrap;min-width:0}
       #tdh-progress-body .exp-theme-swatch{flex:0 0 18px!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;max-width:18px!important;max-height:18px!important;border-radius:4px!important}
@@ -247,9 +247,6 @@ function css() {
       .cluster[data-panel-width="narrow"] #tdh-progress-body>.theme-row{gap:0}
       .cluster[data-panel-width="compact"] #tdh-progress-body .exp-theme-swatches,
       .cluster[data-panel-width="narrow"] #tdh-progress-body .exp-theme-swatches{width:100%;justify-content:space-between}
-      .cluster[data-panel-width="narrow"] #tdh-progress-body>.mini-row:has(#tdh-collapsed-width){flex-direction:column;align-items:stretch;gap:4px}
-      .cluster[data-panel-width="narrow"] #tdh-progress-body>.mini-row:has(#tdh-collapsed-width)>span{flex:0 0 auto;width:100%}
-      .cluster[data-panel-width="narrow"] #tdh-collapsed-width{width:100%;max-width:100%!important;flex:0 0 auto;margin:0}
       .cluster[data-panel-width="narrow"] #tdh-progress-body>.theme-row{gap:4px}
       .cluster[data-panel-width="narrow"] #tdh-progress-body .exp-theme-swatch{flex-basis:16px!important;width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;max-width:16px!important;max-height:16px!important}
       .appearance-separator{grid-column:1/-1;width:100%;border:0;border-top:1px solid var(--theme-line,#34343b);margin:3px 0 1px}
@@ -287,12 +284,14 @@ function css() {
       #tdh-tools-dock {
         position:fixed; right:12px; top:auto; bottom:auto;
         display:none; width:min(var(--dropper-width, 312px), calc(100vw - 24px)); max-width:calc(100vw - 24px);
-        height:max-content; min-height:0; max-height:none; overflow:visible; flex:0 0 auto;
+        height:max-content; min-height:0; max-height:none; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; flex:0 0 auto;
         transition:.15s width;
-        padding:9px 9px 4px; background:var(--theme-bg); border:0; border-radius:14px; box-shadow:0 18px 50px #0008; color-scheme:dark;
+        padding:9px 9px 4px; background:var(--theme-bg); border:1px solid var(--theme-line); border-radius:14px; box-shadow:0 18px 50px #0008; color-scheme:dark;
       }
       #tdh-tools-dock.fl-rail-open { display:block; height:max-content; min-height:0; max-height:none; }
       #tdh-tools-dock:focus { outline:none; }
+      #tdh-tools-dock :is(.fl-tool-body,.row,.group,.section,.fl-tool-title) { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+      #tdh-tools-dock :is(input,select,textarea) { min-width:0; max-width:100%; }
       .menu-head {
         position:relative;
         display:grid; grid-template-columns:minmax(0,1fr) auto;
@@ -461,6 +460,13 @@ function css() {
       .fl-tool-body > :is(.fl-switch,.mini-row,.life-btn) { min-width:0; }
       .fl-tool-body > :is(.compact-inventory,.campaign-manager,.diag) { grid-column:1/-1; }
       #tdh-diagnostics-body { padding-bottom:2px; }
+      #tdh-diagnostics-body > [data-dropper-tools] { grid-column:1/-1; min-width:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; align-items:stretch; }
+      #tdh-diagnostics-body > [data-dropper-tools]:not(:has(> details[open])) { grid-auto-rows:1fr; }
+      #tdh-diagnostics-body>[data-dropper-tools]>details[open]{grid-column:1/-1!important}
+      #tdh-diagnostics-body>[data-dropper-tools]>details:not([open]){grid-column:auto!important}
+      #tdh-diagnostics-body > [data-dropper-tools] > details { min-width:0; margin-top:0!important; padding:7px!important; border:1px solid var(--theme-line);border-radius:7px;overflow-wrap:anywhere; }
+      #tdh-diagnostics-body > [data-dropper-tools] :is(button,select) { max-width:100%; min-width:0; white-space:normal; }
+      .cluster[data-panel-width="narrow"] #tdh-diagnostics-body > [data-dropper-tools] { grid-template-columns:minmax(0,1fr); }
       .fl-tool-hidden { display:none !important; }
       .fl-switch, .mini-row { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; height:auto; min-height:0; padding:6px 0; }
       .fl-switch + .fl-switch, .mini-row + .mini-row { border-top:1px solid #26262b; }
@@ -524,21 +530,23 @@ function css() {
       }
       #tdh-toggle-inventory,
       #tdh-refresh-campaign-data { grid-column:1/-1; }
-      .auth-advanced { margin-top:2px; border:1px solid var(--theme-line); border-radius:7px; background:var(--theme-bg); padding:6px 8px; }
+      .auth-advanced { margin-top:2px; border:1px solid var(--theme-line); border-radius:7px; background:var(--theme-inset); padding:6px 8px; }
       .auth-advanced > summary { cursor:pointer; list-style:none; color:var(--theme-muted); font-size:11px; font-weight:600; user-select:none; }
       .auth-advanced > summary::-webkit-details-marker { display:none; }
       .auth-advanced[open] > summary { margin-bottom:6px; color:var(--theme-text); }
       .auth-advanced-body { display:flex; flex-direction:column; gap:6px; }
       .auth-hint { color:var(--theme-muted); font-size:10px; line-height:1.35; }
-      .auth-input { width:100%; min-height:30px; border:1px solid var(--theme-line); border-radius:6px; background:var(--theme-panel); color:var(--theme-text); padding:6px 8px; font-size:11px; }
-      .auth-input:focus { outline:none; border-color:var(--theme-accent); }
+      .auth-input { width:100%; min-height:30px; border:1px solid var(--theme-line); border-radius:6px; background:var(--theme-inset); color:var(--theme-text); padding:6px 8px; font-size:11px; }
+      .auth-input:focus { outline:2px solid var(--theme-focus); outline-offset:2px; border-color:var(--theme-focus); }
       .theme-row { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:28px; padding:6px 0; font-size:11px; }
       .exp-theme-swatch{box-sizing:border-box!important;flex:0 0 22px!important;width:22px!important;height:22px!important;min-width:22px!important;min-height:22px!important;max-width:22px!important;max-height:22px!important;padding:0!important;border-radius:5px!important}
       .exp-theme-swatches { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
       .exp-theme-swatch { appearance:none; width:18px; height:18px; min-width:18px; padding:0; border:2px solid var(--theme-line); border-radius:4px; box-sizing:border-box; cursor:pointer; }
       .exp-theme-swatch.is-on { border-color:var(--theme-text); box-shadow:0 0 0 2px var(--theme-accent); }
       .fl-tool-panel { border-color:var(--theme-line); background:var(--theme-panel); }
-      .fl-tool-body, .select-lite, .life-btn { border-color:var(--theme-line); background:var(--theme-bg); color:var(--theme-text); }
+      .fl-tool-body { border-color:var(--theme-line); background:var(--theme-bg); color:var(--theme-text); }
+      .select-lite, .life-btn { border-color:var(--theme-line); background:var(--theme-raised); color:var(--theme-text); }
+      .cluster a { color:var(--theme-link); }
       .fl-tool-chevron, #tdh-rail-subtitle, .compact-extra { color:var(--theme-muted); }
       .cluster[data-ui-theme="contrast"] .toggleSwitch { border:2px solid #fff; background:#050505; }
       .cluster[data-ui-theme="contrast"] .toggleSwitch::after { top:0; left:0; border:1px solid #050505; background:#fff; }
@@ -1072,8 +1080,8 @@ const ExtraPotionsDiagnostics = (() => {
     removeEventListener('error', onError, true); removeEventListener('unhandledrejection', onRejection);
     for (const marker of registrations.values()) marker.remove();
   }
-  // Dropper is the source of truth: Show/Hide first, Copy second, transient
-  // Diagnostics Copied / Copy Failed feedback, and fresh reports per action.
+  // Core owns the shared diagnostics interaction contract: Show/Hide first, Copy second,
+  // transient Diagnostics Copied / Copy Failed feedback, and fresh reports per action.
   function bindControls({ show, copy, output, getReport, notify = () => {}, onShow = () => {}, onCopy = () => {} }) {
     let timer, generation = 0;
     output.hidden = true; output.setAttribute('role', 'region');
@@ -1660,12 +1668,12 @@ const ExpMenuArrangement = (() => {
   return Object.freeze({ mount });
 })();
 
-// Product-neutral host for the code extracted from Dropper 3.3.5.
-// Product engines own their settings, content, and actions. Core owns shared UI.
+// Product-neutral shared runtime. Product engines own their settings, content, and actions.
+// exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.3.11';
-  const sourceVersion = '3.3.5';
+  const version = '3.3.13';
+  const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
   const gridProtocol = 'exp-launcher-grid-v3';
@@ -1745,7 +1753,7 @@ const ExtraPotionsCore = (() => {
     'tdh-opacity-range': 'opacity-range', 'tdh-opacity-value': 'opacity-value'
   };
   const canonicalCss = Object.entries(partIds).reduce((css, [id, part]) =>
-    css.replaceAll('#' + id, '[data-exp-part="' + part + '"]'), DropperReference.css())
+    css.replaceAll('#' + id, '[data-exp-part="' + part + '"]'), CoreFoundation.css())
     .replaceAll('.cluster', '.exp-core-theme');
   const compositionCss = `
     [data-exp-part="dock"]{box-sizing:border-box;overflow-x:hidden;overscroll-behavior:contain}
@@ -1843,7 +1851,7 @@ const ExtraPotionsCore = (() => {
   function menuPalette(host) {
     if (host?.dataset.productId === 'dropper') {
       const selected = host.shadowRoot?.querySelector('#tdh-cluster')?.dataset.uiTheme;
-      const theme = DropperReference.UI_THEMES.find(item => item.id === selected);
+      const theme = CoreFoundation.UI_THEMES.find(item => item.id === selected);
       if (theme) return semanticTheme(theme);
     }
     try {
@@ -2001,7 +2009,7 @@ const ExtraPotionsCore = (() => {
     const backdropStyle = host.shadowRoot ? injectStyle(host.shadowRoot,
       ':host::backdrop{all:initial!important;display:none!important;background:transparent!important;pointer-events:none!important}',
       { expLauncherBackdrop: '1' }) : null;
-    const stopProtect = DropperReference.protectLauncherHost(host);
+    const stopProtect = CoreFoundation.protectLauncherHost(host);
     let frame = 0;
     const refresh = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; layoutGrid(); controllers.get(host)?.layout(); }); };
     document.addEventListener('exp-core:coordination', refresh);
@@ -2012,8 +2020,8 @@ const ExtraPotionsCore = (() => {
     return dispose;
   }
   function themes(productTheme) {
-    const common = DropperReference.UI_THEMES.filter(t => !['twitch', 'dropper'].includes(t.id));
-    return Object.freeze([...common, DropperReference.CRIMSON_THEME, ...(productTheme ? [productTheme] : [DropperReference.UI_THEMES.at(-1)])].map(t => { const theme = semanticTheme(t); return Object.freeze({ ...theme, vars: Object.fromEntries(tokenNames.map(k => [k, theme[k]])) }); }));
+    const common = CoreFoundation.UI_THEMES.filter(t => !['twitch', 'dropper'].includes(t.id));
+    return Object.freeze([...common, CoreFoundation.CRIMSON_THEME, ...(productTheme ? [productTheme] : [CoreFoundation.UI_THEMES.at(-1)])].map(t => { const theme = semanticTheme(t); return Object.freeze({ ...theme, vars: Object.fromEntries(tokenNames.map(k => [k, theme[k]])) }); }));
   }
   function createThemeSwatches({ container, themes: choices, value, onChange = () => {} }) {
     const root = resolveShadowRoot(container);
@@ -2073,8 +2081,8 @@ const ExtraPotionsCore = (() => {
     dismiss.addEventListener('click',hide);versionButton?.addEventListener('click',versionClick);addEventListener('resize',layout,{passive:true});document.addEventListener('exp-core:coordination',coordination);
     return Object.freeze({show,hide,toggle,layout,setMenuOpen,destroy(){destroyed=true;clearTimer();unregisterNotice();dismiss.removeEventListener('click',hide);versionButton?.removeEventListener('click',versionClick);removeEventListener('resize',layout);document.removeEventListener('exp-core:coordination',coordination);}});
   }
-  // Core-owned update and changelog cards use Dropper's menu-width notice
-  // geometry directly. The legacy floating-notice coordinator remains exported
+  // Core-owned update and changelog cards use the canonical menu-width notice
+  // geometry. The legacy floating-notice coordinator remains exported
   // for compatibility, but it no longer owns these product notices.
   function createMenuNotice(options = {}) {
     const { shadow, panel, notice, versionButton = null } = options;
@@ -2267,7 +2275,7 @@ const ExtraPotionsCore = (() => {
     const versionButton=panel.querySelector('.version,[data-exp-part="version"]');
     const menuNotices=[...themeRoot.querySelectorAll('.update-notice,.changelog')].map(notice=>createMenuNotice({host,shadow,panel,notice,versionButton:notice.classList.contains('changelog')?versionButton:null,manageVersion:false,durationMs:30000}));
     if (launcherSrc) panel.querySelectorAll('.header-icon img').forEach(image => image.src = launcherSrc);
-    host.dataset.coreVersion = version; host.dataset.coreSource = 'Dropper/3.3.5';
+    host.dataset.coreVersion = version; host.dataset.coreSource = 'Dropper/3.3.15';
     let choices = themes(productTheme), selected = choices.at(-1), open = false, destroyed = false, timer = 0, deadline = 0, frame = 0;
     const removers = [];
     const on = (node,type,fn,opts) => { node.addEventListener(type,fn,opts); removers.push(() => node.removeEventListener(type,fn,opts)); };
@@ -2420,7 +2428,7 @@ const ExtraPotionsCore = (() => {
         latest: latest || null,
         state: stateName || next.state || 'idle',
         current: currentVersion,
-        available: Boolean(latest && DropperReference.compareVersions(latest, currentVersion) > 0),
+        available: Boolean(latest && CoreFoundation.compareVersions(latest, currentVersion) > 0),
         details: next.details.slice(0, 4),
         checkedForVersion: next.checkedForVersion || null,
         lastRemoteVersion: latest || null,
@@ -2489,7 +2497,7 @@ const ExtraPotionsCore = (() => {
         state.lastError = '';
         state.details = releaseDetails(payload.body);
         state.state = 'checked';
-        if (DropperReference.compareVersions(latest, currentVersion) > 0) {
+        if (CoreFoundation.compareVersions(latest, currentVersion) > 0) {
           state.availableVersion = latest;
           state.availableAt = Date.now();
         } else {
@@ -2517,7 +2525,7 @@ const ExtraPotionsCore = (() => {
       CHECK_INTERVAL,
       check,
       status,
-      compare: DropperReference.compareVersions,
+      compare: CoreFoundation.compareVersions,
     });
   }
 
@@ -2640,7 +2648,7 @@ const ExtraPotionsCore = (() => {
   }
 
   function createDiagnosticsReport(product, details = {}) {
-    return ExtraPotionsDiagnostics.createReport(product, details, { version, source: 'Dropper', sourceVersion });
+    return ExtraPotionsDiagnostics.createReport(product, details, { version, source: 'exp-core', sourceVersion });
   }
   function downloadDiagnostics(report) {
     const name=`${String(report.report||'Diagnostics').toLowerCase().replace(/[^a-z0-9]+/g,'-')}-${new Date().toISOString().replace(/[:.]/g,'-')}.json`;
@@ -2672,7 +2680,7 @@ const ExtraPotionsCore = (() => {
   if(document.documentElement)startGrid();else addEventListener('DOMContentLoaded',startGrid,{once:true});
   document.addEventListener('exp-core:coordination',scheduleGrid);
   addEventListener('resize',scheduleGrid,{passive:true});
-  const api = Object.freeze({...ExtraPotionsTools,version,sourceVersion,protocol,gridProtocol,reference:DropperReference,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,replaceMenuContent,createDisclosure,createSystemGrid,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,compareVersions:DropperReference.compareVersions});
+  const api = Object.freeze({...ExtraPotionsTools,version,sourceVersion,protocol,gridProtocol,reference:CoreFoundation,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,replaceMenuContent,createDisclosure,createSystemGrid,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,bindDiagnosticsControls:ExtraPotionsDiagnostics.bindControls,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,mountMenuArrangement:ExpMenuArrangement.mount,compareVersions:CoreFoundation.compareVersions});
   return api;
 })();
 
@@ -3699,10 +3707,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.2.21';
+EXP.VERSION = '3.2.22';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.22': ['Updates the shared foundation to exp-core 3.3.13.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.21': ['Adds the shared themed outer menu border across the ExtraPotions suite.','Keeps current Amazon protection behavior unchanged.','Retains the existing verified exp-core bundle while publishing the pending WARD shell update.'],
     '3.2.20': ['Lets every launcher move left, right, up, or down within the shared grid.','Persists launcher order and supports Alt+Arrow keyboard reordering.','Bundles exp-core 3.3.11 without changing Amazon protection behavior.'],
     '3.2.19': ['Adds layered menu surfaces so protection controls remain distinct at every menu width.','Uses accessible semantic colors for links, focus indicators, and accent text.','Bundles the verified exp-core 3.3.10 artifact without changing Amazon intervention behavior.'],
@@ -3797,7 +3806,7 @@ EXP.Updates = ExtraPotionsCore.createReleaseUpdateChecker({
 // Dropper 3.2.8 is the canonical shared UI; product-specific color stays declarative.
 EXP.MenuChrome = Object.freeze({ create: options => ExtraPotionsCore.create({ ...options, launcherSrc: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg', productTheme: {"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","bg":"#101014","panel":"#19191e","line":"#3a3532","text":"#fffaf3","muted":"#b9afa7","accent":"#ffb000","accent2":"#ff4a35","skin":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","skinVertical":"linear-gradient(180deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)"} }) });
 
-/* Diagnostics reports and controls follow Dropper's shared implementation. */
+/* Diagnostics reports and controls use the Core-owned shared implementation. */
 EXP.Diagnostics = Object.freeze({
   createDiagnosticsReport: (product, details) => ExtraPotionsCore.createDiagnosticsReport(product, details),
   downloadDiagnostics: report => ExtraPotionsCore.downloadDiagnostics(report),
@@ -3811,8 +3820,8 @@ EXP.UI = (() => {
 
   const UI_THEMES = ExtraPotionsCore.themes({"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#120b05 0 38%,#b66a16 38% 69%,#356f78 69% 100%)","canvas":"#120b05","surface":"#241409","primary":"#b66a16","companion":"#9d3131","counterpoint":"#356f78","interactive":"#d1842a","bg":"#120b05","panel":"#241409","line":"#53321f","text":"#f1dfc9","muted":"#b79e84","accent":"#b66a16","accent2":"#d1842a","skin":"linear-gradient(135deg,#b66a16 0%,#9d3131 52%,#356f78 100%)","skinVertical":"linear-gradient(180deg,#b66a16 0%,#9d3131 52%,#356f78 100%)"});
 
-  let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard;
-  let toastTimer, updateTimer, launcherCleanup, escapeHandler, pointerHandler;
+  let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard, noticeController;
+  let toastTimer, launcherCleanup, escapeHandler, pointerHandler;
   let activeView = '';
   let patternsOpen = false;
 
@@ -3867,48 +3876,36 @@ EXP.UI = (() => {
   }
 
   function hideUpdateCard() {
-    clearTimeout(updateTimer);
-    updateTimer = null;
-    if (updateCard) updateCard.hidden = true;
+    noticeController?.hide();
     chrome?.layout();
   }
 
   function showUpdateCard(result = {}, complete = false, previous = '', current = false) {
-    if (!updateCard) return;
+    if (!noticeController) return;
     const version = complete || current ? EXP.VERSION : result.latest;
     if (!complete && !current && !EXP.Core.claimNotice('ward', `available:${version}`)) return;
-
-    updateCard.className = 'update-notice ward-update-changelog';
-    updateCard.innerHTML = '<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker"></div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" href="https://github.com/ExtraPotions/WARD/releases" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" href="https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js" target="_blank" rel="noopener noreferrer">Install Update</a></div>';
-    updateCard.querySelector('.update-dismiss').addEventListener('click', hideUpdateCard);
-
-    updateCard.querySelector('.update-kicker').textContent = current ? 'Current Version' : complete ? 'Update Complete' : 'Update Available';
-    updateCard.querySelector('.update-title').textContent = current ? 'WARD Changelog' : complete ? 'WARD Updated' : 'New WARD Version Available';
-    updateCard.querySelector('.update-version').textContent = 'v' + version;
-    updateCard.querySelector('.update-text').textContent = current
-      ? `What's new in v${EXP.VERSION}.`
-      : complete
-        ? `Updated from v${previous} to v${EXP.VERSION}.`
-        : `v${result.latest} is ready to install.`;
 
     const fallback = ['A newer WARD build is available.', 'Install the latest userscript for the newest fixes and improvements.'];
     const details = (current || complete
       ? EXP.ReleaseNotes.current()
       : Array.isArray(result.details) && result.details.length ? result.details : fallback).slice(0, 4);
-    const list = updateCard.querySelector('.update-list');
-    for (const detail of details) {
-      const li = document.createElement('li');
-      li.textContent = detail;
-      list.append(li);
-    }
-    list.hidden = !details.length;
-    updateCard.querySelector('.update-action').hidden = complete || current;
-    updateCard.dataset.noticeKind = current ? 'current' : complete ? 'complete' : 'available';
-    updateCard.dataset.placement = 'menu';
-    updateCard.hidden = false;
+
+    noticeController.show({
+      kicker: current ? 'Current Version' : complete ? 'Update Complete' : 'Update Available',
+      title: current ? 'WARD Changelog' : complete ? 'WARD Updated' : 'New WARD Version Available',
+      version,
+      text: current
+        ? `What's new in v${EXP.VERSION}.`
+        : complete
+          ? `Updated from v${previous} to v${EXP.VERSION}.`
+          : `v${result.latest} is ready to install.`,
+      details,
+      releaseUrl: 'https://github.com/ExtraPotions/WARD/releases',
+      actionUrl: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js',
+      showAction: !(complete || current),
+      kind: current ? 'current' : complete ? 'complete' : 'available',
+    });
     chrome?.layout();
-    clearTimeout(updateTimer);
-    updateTimer = setTimeout(hideUpdateCard, 30000);
   }
 
   function badge(alt = '') {
@@ -4537,11 +4534,10 @@ EXP.UI = (() => {
     );
     shell.append(frame);
 
-    updateCard=el('div','update-notice ward-update-changelog');updateCard.hidden=true;
     toast = el('div','toast');
     toast.hidden = true;
 
-    shadow.append(launcher,shell,updateCard,toast);
+    shadow.append(launcher,shell,toast);
     document.documentElement.append(host);
 
     launcherCleanup = EXP.Core.registerLauncher(host,{productId:'ward'});
@@ -4555,6 +4551,15 @@ EXP.UI = (() => {
       setOpen,
       shortcutKey:'w'
     });
+    noticeController = ExtraPotionsCore.createProductNotice({
+      host,
+      shadow,
+      panel:shell,
+      durationMs:30000,
+      releaseUrl:'https://github.com/ExtraPotions/WARD/releases',
+      installUrl:'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js'
+    });
+    updateCard = noticeController.element;
     const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
     if(previous)showUpdateCard({},true,previous);
     if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{if(r.available)showUpdateCard(r);});
@@ -4612,13 +4617,14 @@ EXP.UI = (() => {
   }
 
   function cleanup() {
+    noticeController?.destroy();
     launcherCleanup?.();
     chrome?.destroy();
     clearTimeout(toastTimer);
     document.removeEventListener('keydown',escapeHandler);
     document.removeEventListener('pointerdown',pointerHandler,true);
     host?.remove();
-    host = shadow = launcher = shell = nav = content = toast = chrome = null;
+    host = shadow = launcher = shell = nav = content = toast = chrome = updateCard = noticeController = null;
   }
 
   return Object.freeze({
@@ -4635,7 +4641,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.21';
+EXP.VERSION = '3.2.22';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

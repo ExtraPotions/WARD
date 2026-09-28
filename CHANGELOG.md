@@ -1,3 +1,9 @@
+## 3.2.22 - 2026-09-28
+
+- Updates the shared foundation to exp-core 3.3.13.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
 ## 3.2.21 - 2026-09-27
 
 - Adds the shared themed outer menu border across the ExtraPotions suite.
