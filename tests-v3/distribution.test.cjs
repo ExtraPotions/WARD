@@ -79,7 +79,7 @@ test('production menu uses switches and has every required navigation group', as
     const root = host.shadowRoot;
     const panel = root.querySelector('.ward');
     root.querySelector('.version').click();
-    const notice = root.querySelector('.ward-update-changelog');
+    const notice = root.querySelector('.update-notice');
     return {
       nav: [...root.querySelectorAll('.ward-nav > .tool-panel > .route')].map((node) => node.querySelector('.fl-tool-title')?.textContent),
       switches: root.querySelectorAll('[role="switch"]').length,
@@ -155,12 +155,12 @@ test('version action reuses the update-complete card for the current changelog',
   await page.waitForSelector('#exp-ward-root', { state:'attached' });
   const facts = await page.locator('#exp-ward-root').evaluate((host) => {
     const root=host.shadowRoot;
-    const card=root.querySelector('.ward-update-changelog');
+    const card=root.querySelector('.update-notice');
     const read=(node)=>({kind:node.dataset.noticeKind,title:node.querySelector('.update-title')?.textContent||'',version:node.querySelector('.update-version')?.textContent||'',bullets:[...node.querySelectorAll('li')].map((item)=>item.textContent.trim()),visible:!node.hidden});
     const completed=read(card);
     root.querySelector('.version').click();
     const current=read(card);
-    return {completed,current,sameNode:card===root.querySelector('.ward-update-changelog')};
+    return {completed,current,sameNode:card===root.querySelector('.update-notice')};
   });
   assert.equal(facts.sameNode,true);
   assert.equal(facts.completed.kind,'complete');
