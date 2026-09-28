@@ -80,7 +80,8 @@ test('in-app update notice uses one Dropper-style menu card with concise release
   const core = read('vendor/exp-core/exp-core.js');
   const workflow = read('.github/workflows/release.yml');
   const { version } = JSON.parse(read('package.json'));
-  assert.match(source, /updateCard\.className = 'update-notice ward-update-changelog'/);
+  assert.match(source, /ExtraPotionsCore\.createProductNotice\(/);
+  assert.match(source, /updateCard = noticeController\.element/);
   assert.match(source, /Current Version/);
   assert.match(source, /Update Complete/);
   assert.match(source, /Update Available/);
