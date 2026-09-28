@@ -136,6 +136,15 @@ EXP.Actions = (() => {
     }
 
     node.removeAttribute('data-ward-action');
+    ExtraPotionsCore.clearPresentationState?.(node, 'ward');
+  }
+
+  function publishPresentation(record) {
+    if (record.action === 'hide' || record.action === 'collapse' || record.action === 'dim') {
+      ExtraPotionsCore.setPresentationState?.(record.node, 'ward', { visibility: record.action });
+    } else {
+      ExtraPotionsCore.clearPresentationState?.(record.node, 'ward');
+    }
   }
 
   function presentationIntact(record, action) {
@@ -250,6 +259,7 @@ EXP.Actions = (() => {
       node.removeAttribute('data-ward-action');
     }
 
+    publishPresentation(record);
     if (record.action === 'allow') EXP.Activity.remove(id);
     else EXP.Activity.apply(id, record);
 
