@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const root = path.resolve(__dirname, '..');
+execFileSync(process.execPath, [path.join(root, 'scripts', 'verify-exp-core-pin.cjs')], { stdio: 'inherit' });
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 const script = fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8');
 for (const asset of ['ward-launcher.svg']) if (!fs.existsSync(path.join(root, 'assets', asset))) throw new Error(`Missing WARD asset: ${asset}`);

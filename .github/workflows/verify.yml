@@ -12,3 +12,5 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm test
+      - name: Verify pinned exp-core
+        run: node scripts/verify-exp-core-pin.cjs
