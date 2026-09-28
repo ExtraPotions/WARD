@@ -10,31 +10,29 @@ const read = relative => fs.readFileSync(path.join(root, relative), 'utf8');
 
 test('WARD declares its suite interoperability capabilities', () => {
   const source = read('src/main.js');
-  assert.match(source, /registerSuiteProduct\?\./u);
-  for (const capability of ['retail.classification', 'retail.cleanup', 'retail.coupons']) {
-    assert.match(source, new RegExp(capability.replace('.', '\\.')));
-  }
+  assert.ok(source.includes('registerSuiteProduct?.({'));
+  assert.ok(source.includes('retail.classification'));
+  assert.ok(source.includes('retail.cleanup'));
+  assert.ok(source.includes('retail.coupons'));
 });
 
 test('generated WARD userscript carries the same suite declaration', () => {
   const built = read('ward.user.js');
-  assert.match(built, /productId:\s*'ward'/u);
-  assert.match(built, /retail\.cleanup/u);
+  assert.ok(built.includes("productId: 'ward'"));
+  assert.ok(built.includes('retail.classification'));
 });
-
 
 test('WARD declares its presentation interoperability phase', () => {
   const source = read('src/main.js');
-  assert.match(source, /registerPresentationProvider\\?\\./u);
-  assert.match(source, /productId:\\s*'ward'/u);
-  assert.match(source, /'classify'/u);
-  assert.match(source, /'visibility'/u);
+  assert.ok(source.includes('registerPresentationProvider?.({'));
+  assert.ok(source.includes("productId: 'ward'"));
+  assert.ok(source.includes("'classify'"));
+  assert.ok(source.includes("'visibility'"));
 });
 
-
-test('WARD publishes visibility state through Core', () => {
+test('WARD uses the shared presentation contract at its existing engine gate', () => {
   const actions = read('src/actions.js');
-  assert.match(actions, /setPresentationState\\?\\.\\(record\\.node, 'ward'/u);
-  assert.match(actions, /clearPresentationState\\?\\.\\(node, 'ward'\\)/u);
-  assert.match(actions, /record\\.action === 'collapse'/u);
+  assert.ok(actions.includes("setPresentationState?.(record.node, 'ward'"));
+  assert.ok(actions.includes("clearPresentationState?.(node, 'ward')"));
+  assert.ok(actions.includes("record.action === 'collapse'"));
 });
