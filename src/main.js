@@ -1,4 +1,9 @@
 EXP.VERSION = '3.2.25';
+ExtraPotionsCore.registerSuiteProduct?.({
+  productId: 'ward',
+  productVersion: EXP.VERSION,
+  capabilities: ['retail.classification', 'retail.cleanup', 'retail.coupons'],
+});
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
