@@ -21,3 +21,12 @@ test('generated WARD userscript carries the same suite declaration', () => {
   assert.match(built, /productId:\s*'ward'/u);
   assert.match(built, /retail\.cleanup/u);
 });
+
+
+test('WARD declares its presentation interoperability phase', () => {
+  const source = read('src/main.js');
+  assert.match(source, /registerPresentationProvider\\?\\./u);
+  assert.match(source, /productId:\\s*'ward'/u);
+  assert.match(source, /'classify'/u);
+  assert.match(source, /'visibility'/u);
+});

@@ -4,6 +4,10 @@ ExtraPotionsCore.registerSuiteProduct?.({
   productVersion: EXP.VERSION,
   capabilities: ['retail.classification', 'retail.cleanup', 'retail.coupons'],
 });
+ExtraPotionsCore.registerPresentationProvider?.({
+  productId: 'ward',
+  phases: ["classify","visibility"],
+});
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
