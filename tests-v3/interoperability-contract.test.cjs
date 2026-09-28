@@ -32,7 +32,7 @@ test('WARD declares its presentation interoperability phase', () => {
 
 test('WARD uses the shared presentation contract at its existing engine gate', () => {
   const actions = read('src/actions.js');
-  assert.ok(actions.includes("setPresentationState?.(record.node, 'ward'"));
-  assert.ok(actions.includes("clearPresentationState?.(node, 'ward')"));
+  assert.ok(actions.includes("globalThis.ExtraPotionsCore?.setPresentationState?.(record.node, 'ward'"));
+  assert.ok(actions.includes("globalThis.ExtraPotionsCore?.clearPresentationState?.(node, 'ward')"));
   assert.ok(actions.includes("record.action === 'collapse'"));
 });
