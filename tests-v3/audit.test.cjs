@@ -8,8 +8,9 @@ const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
 const moduleNames = [
   'core.js','settings.js','patterns.js','audit.js','amazon-adapter.js',
-  'activity.js','page-styles.js','actions.js','layout.js','engine.js','diagnostics.js'
+  'activity.js','page-styles.js','actions.js','layout.js','engine.js'
 ];
+if (fs.existsSync(path.join(root, 'src', 'diagnostics.js'))) moduleNames.push('diagnostics.js');
 const runtime = `${fs.readFileSync(path.join(root,'vendor/exp-core/exp-core.js'),'utf8')}\nconst EXP={};${moduleNames.map((name) => fs.readFileSync(path.join(root,'src',name),'utf8')).join('\n')}window.EXP=EXP;`;
 
 async function amazonPage(browser, body, pathname = '/dp/test') {
