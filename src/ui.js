@@ -5,8 +5,8 @@ EXP.UI = (() => {
 
   const UI_THEMES = ExtraPotionsCore.themes({"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#120b05 0 38%,#b66a16 38% 69%,#356f78 69% 100%)","canvas":"#120b05","surface":"#241409","primary":"#b66a16","companion":"#9d3131","counterpoint":"#356f78","interactive":"#d1842a","bg":"#120b05","panel":"#241409","line":"#53321f","text":"#f1dfc9","muted":"#b79e84","accent":"#b66a16","accent2":"#d1842a","skin":"linear-gradient(135deg,#b66a16 0%,#9d3131 52%,#356f78 100%)","skinVertical":"linear-gradient(180deg,#b66a16 0%,#9d3131 52%,#356f78 100%)"});
 
-  let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard;
-  let toastTimer, updateTimer, launcherCleanup, escapeHandler, pointerHandler;
+  let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard, noticeController;
+  let toastTimer, launcherCleanup, escapeHandler, pointerHandler;
   let activeView = '';
   let patternsOpen = false;
 
@@ -61,48 +61,36 @@ EXP.UI = (() => {
   }
 
   function hideUpdateCard() {
-    clearTimeout(updateTimer);
-    updateTimer = null;
-    if (updateCard) updateCard.hidden = true;
+    noticeController?.hide();
     chrome?.layout();
   }
 
   function showUpdateCard(result = {}, complete = false, previous = '', current = false) {
-    if (!updateCard) return;
+    if (!noticeController) return;
     const version = complete || current ? EXP.VERSION : result.latest;
     if (!complete && !current && !EXP.Core.claimNotice('ward', `available:${version}`)) return;
-
-    updateCard.className = 'update-notice ward-update-changelog';
-    updateCard.innerHTML = '<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker"></div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" href="https://github.com/ExtraPotions/WARD/releases" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" href="https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js" target="_blank" rel="noopener noreferrer">Install Update</a></div>';
-    updateCard.querySelector('.update-dismiss').addEventListener('click', hideUpdateCard);
-
-    updateCard.querySelector('.update-kicker').textContent = current ? 'Current Version' : complete ? 'Update Complete' : 'Update Available';
-    updateCard.querySelector('.update-title').textContent = current ? 'WARD Changelog' : complete ? 'WARD Updated' : 'New WARD Version Available';
-    updateCard.querySelector('.update-version').textContent = 'v' + version;
-    updateCard.querySelector('.update-text').textContent = current
-      ? `What's new in v${EXP.VERSION}.`
-      : complete
-        ? `Updated from v${previous} to v${EXP.VERSION}.`
-        : `v${result.latest} is ready to install.`;
 
     const fallback = ['A newer WARD build is available.', 'Install the latest userscript for the newest fixes and improvements.'];
     const details = (current || complete
       ? EXP.ReleaseNotes.current()
       : Array.isArray(result.details) && result.details.length ? result.details : fallback).slice(0, 4);
-    const list = updateCard.querySelector('.update-list');
-    for (const detail of details) {
-      const li = document.createElement('li');
-      li.textContent = detail;
-      list.append(li);
-    }
-    list.hidden = !details.length;
-    updateCard.querySelector('.update-action').hidden = complete || current;
-    updateCard.dataset.noticeKind = current ? 'current' : complete ? 'complete' : 'available';
-    updateCard.dataset.placement = 'menu';
-    updateCard.hidden = false;
+
+    noticeController.show({
+      kicker: current ? 'Current Version' : complete ? 'Update Complete' : 'Update Available',
+      title: current ? 'WARD Changelog' : complete ? 'WARD Updated' : 'New WARD Version Available',
+      version,
+      text: current
+        ? `What's new in v${EXP.VERSION}.`
+        : complete
+          ? `Updated from v${previous} to v${EXP.VERSION}.`
+          : `v${result.latest} is ready to install.`,
+      details,
+      releaseUrl: 'https://github.com/ExtraPotions/WARD/releases',
+      actionUrl: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js',
+      showAction: !(complete || current),
+      kind: current ? 'current' : complete ? 'complete' : 'available',
+    });
     chrome?.layout();
-    clearTimeout(updateTimer);
-    updateTimer = setTimeout(hideUpdateCard, 30000);
   }
 
   function badge(alt = '') {
@@ -731,11 +719,10 @@ EXP.UI = (() => {
     );
     shell.append(frame);
 
-    updateCard=el('div','update-notice ward-update-changelog');updateCard.hidden=true;
     toast = el('div','toast');
     toast.hidden = true;
 
-    shadow.append(launcher,shell,updateCard,toast);
+    shadow.append(launcher,shell,toast);
     document.documentElement.append(host);
 
     launcherCleanup = EXP.Core.registerLauncher(host,{productId:'ward'});
@@ -749,6 +736,15 @@ EXP.UI = (() => {
       setOpen,
       shortcutKey:'w'
     });
+    noticeController = ExtraPotionsCore.createProductNotice({
+      host,
+      shadow,
+      panel:shell,
+      durationMs:30000,
+      releaseUrl:'https://github.com/ExtraPotions/WARD/releases',
+      installUrl:'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js'
+    });
+    updateCard = noticeController.element;
     const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
     if(previous)showUpdateCard({},true,previous);
     if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{if(r.available)showUpdateCard(r);});
@@ -806,13 +802,14 @@ EXP.UI = (() => {
   }
 
   function cleanup() {
+    noticeController?.destroy();
     launcherCleanup?.();
     chrome?.destroy();
     clearTimeout(toastTimer);
     document.removeEventListener('keydown',escapeHandler);
     document.removeEventListener('pointerdown',pointerHandler,true);
     host?.remove();
-    host = shadow = launcher = shell = nav = content = toast = chrome = null;
+    host = shadow = launcher = shell = nav = content = toast = chrome = updateCard = noticeController = null;
   }
 
   return Object.freeze({
