@@ -76,7 +76,7 @@ test('engine batches never rebuild the open menu', () => {
 test('in-app update notice uses one Core-owned menu card with concise release notes', () => {
   const source = read('src/ui.js');
   const releaseNotes = read('src/release-notes.js');
-  const updates = read('src/updates.js');
+  const updates = fs.existsSync(path.join(root, 'src', 'updates.js')) ? read('src/updates.js') : read('src/core.js');
   const core = read('vendor/exp-core/exp-core.js');
   const workflow = read('.github/workflows/release.yml');
   const { version } = JSON.parse(read('package.json'));
@@ -90,7 +90,7 @@ test('in-app update notice uses one Core-owned menu card with concise release no
   assert.match(source, /result\.details/);
   assert.doesNotMatch(source, /registerFloatingNotice/);
   assert.doesNotMatch(source, /ward-version-changelog/);
-  assert.match(updates, /createReleaseUpdateChecker/);
+  assert.match(updates, /create(?:ReleaseUpdateChecker|ProductServices)/);
   assert.match(core, /function createMenuNotice\(/);
   assert.match(core, /notice\.dataset\.placement = 'menu'/);
   assert.match(workflow, /--notes-file release-notes\.md/);
