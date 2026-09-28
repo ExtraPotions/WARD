@@ -73,7 +73,7 @@ test('engine batches never rebuild the open menu', () => {
   assert.match(source, /restack/);
 });
 
-test('in-app update notice uses one Dropper-style menu card with concise release notes', () => {
+test('in-app update notice uses one Core-owned menu card with concise release notes', () => {
   const source = read('src/ui.js');
   const releaseNotes = read('src/release-notes.js');
   const updates = read('src/updates.js');
