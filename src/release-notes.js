@@ -1,7 +1,8 @@
-EXP.VERSION = '3.2.20';
+EXP.VERSION = '3.2.21';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.21': ['Adds the shared themed outer menu border across the ExtraPotions suite.','Keeps current Amazon protection behavior unchanged.','Retains the existing verified exp-core bundle while publishing the pending WARD shell update.'],
     '3.2.20': ['Lets every launcher move left, right, up, or down within the shared grid.','Persists launcher order and supports Alt+Arrow keyboard reordering.','Bundles exp-core 3.3.11 without changing Amazon protection behavior.'],
     '3.2.19': ['Adds layered menu surfaces so protection controls remain distinct at every menu width.','Uses accessible semantic colors for links, focus indicators, and accent text.','Bundles the verified exp-core 3.3.10 artifact without changing Amazon intervention behavior.'],
     '3.2.18': ["Compacts System menus and keeps menu width controls together on one row.","Groups existing menu preferences consistently while preserving saved settings.","Removes automatic Settings Backup and its restore controls.","Adds a Bitcoin donation option with address copying and wallet support."],

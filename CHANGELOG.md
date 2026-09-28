@@ -1,3 +1,9 @@
+## 3.2.21 - 2026-09-27
+
+- Adds the shared themed outer menu border across the ExtraPotions suite.
+- Keeps current Amazon protection behavior unchanged.
+- Publishes the pending WARD shell update.
+
 ## 3.2.20 - 2026-09-27
 
 - Lets every launcher move left, right, up, or down within the shared grid.
