@@ -28,9 +28,17 @@ test('WARD does not redefine Core-owned shared infrastructure', () => {
 });
 
 test('WARD consumes the public ExtraPotionsCore boundary', () => {
-  assert.match(source, /ExtraPotionsCore\./u);
-  assert.match(source, /registerLauncher\(/u);
-  assert.match(source, /createProductNotice\(/u);
-  assert.match(source, /createDiagnosticsReport\(/u);
-  assert.match(source, /createReleaseUpdateChecker\(/u);
+  const pin = fs.readFileSync(path.join(root, 'vendor', 'exp-core', 'PIN'), 'utf8').trim().replace(/^v/, '');
+  const parts = pin.split('.').map(Number);
+  const services = parts[0] > 3 || (parts[0] === 3 && (parts[1] > 3 || (parts[1] === 3 && parts[2] >= 14)));
+  if (services) {
+    assert.match(source, /ExtraPotionsCore\.createProductServices\(/u);
+    assert.equal(fs.existsSync(path.join(src, 'updates.js')), false);
+    assert.equal(fs.existsSync(path.join(src, 'diagnostics.js')), false);
+    return;
+  }
+  assert.match(source, /ExtraPotionsCore\.createLifecycle\(/u);
+  assert.match(source, /ExtraPotionsCore\.createProductNotice\(/u);
+  assert.match(source, /ExtraPotionsCore\.createDiagnosticsReport\(/u);
+  assert.match(source, /ExtraPotionsCore\.createReleaseUpdateChecker\(/u);
 });
