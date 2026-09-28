@@ -30,3 +30,11 @@ test('WARD declares its presentation interoperability phase', () => {
   assert.match(source, /'classify'/u);
   assert.match(source, /'visibility'/u);
 });
+
+
+test('WARD publishes visibility state through Core', () => {
+  const actions = read('src/actions.js');
+  assert.match(actions, /setPresentationState\\?\\.\\(record\\.node, 'ward'/u);
+  assert.match(actions, /clearPresentationState\\?\\.\\(node, 'ward'\\)/u);
+  assert.match(actions, /record\\.action === 'collapse'/u);
+});
