@@ -84,7 +84,7 @@ jobs:
             { print }
           ' CHANGELOG.md > release-notes.md
           sha256sum ward.user.js > SHA256SUMS
-          (cd assets && sha256sum ward-launcher.svg) >> ../SHA256SUMS
+          (cd assets && sha256sum ward-launcher.svg) >> SHA256SUMS
           gh release create "$tag" ward.user.js assets/ward-launcher.svg SHA256SUMS \
             --target "$(git rev-parse HEAD)" \
             --title "WARD $tag" \
