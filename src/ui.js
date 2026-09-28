@@ -463,6 +463,7 @@ EXP.UI = (() => {
     const fragment = document.createDocumentFragment();
     fragment.append(amazonView(settings));
 
+    const advanced = ExtraPotionsCore.createDisclosure('Advanced Amazon');
     const controls = section('Pattern controls');
     controls.append(
       row('Individual patterns','',
@@ -471,10 +472,10 @@ EXP.UI = (() => {
           renderView();
         }))
     );
-    fragment.append(controls);
-
-    if (settings.protectionLevel === 'custom') fragment.append(customPolicyView(settings));
-    if (patternsOpen) fragment.append(patternsView(settings));
+    advanced.append(controls);
+    if (settings.protectionLevel === 'custom') advanced.append(customPolicyView(settings));
+    if (patternsOpen) advanced.append(patternsView(settings));
+    fragment.append(advanced);
     return fragment;
   }
 
