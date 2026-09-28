@@ -19,7 +19,8 @@ test('distribution is reproducible and has clean V3 metadata', () => {
   assert.match(source, /@homepageURL\s+https:\/\/github\.com\/ExtraPotions\/WARD/);
   assert.match(source, /@updateURL\s+https:\/\/github\.com\/ExtraPotions\/WARD\/releases\/latest\/download\/ward\.user\.js/);
   assert.match(source, /repository:\s*'ExtraPotions\/WARD'/);
-  assert.match(source, /'https:\/\/api\.github\.com\/repos\/'\s*\+\s*repository\s*\+\s*'\/releases\/latest'/);
+  const core = fs.readFileSync(path.join(root, 'vendor', 'exp-core', 'exp-core.js'), 'utf8');
+  assert.match(core, /const ENDPOINT = String\(options\.endpoint \|\| \('https:\/\/api\.github\.com\/repos\/' \+ repository \+ '\/releases\/latest'\)\);/);
   assert.doesNotMatch(source, /dark-pattern-blockers\/releases/);
   assert.doesNotMatch(source, /adpb:amazon:/);
   assert.doesNotMatch(source, /Amazon Dark Pattern Blocker/);
