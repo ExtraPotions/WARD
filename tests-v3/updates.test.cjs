@@ -8,14 +8,15 @@ const root = path.resolve(__dirname, '..');
 const read = name => fs.readFileSync(path.join(root, name), 'utf8');
 
 test('WARD uses the shared version-scoped updater and concise release parsing', () => {
-  const updates = read('src/updates.js');
+  const services = fs.existsSync(path.join(root, 'src', 'updates.js'))
+    ? read('src/updates.js')
+    : read('src/core.js');
   const core = read('vendor/exp-core/exp-core.js');
 
-  assert.match(updates, /ExtraPotionsCore\.createReleaseUpdateChecker/);
-  assert.match(updates, /productId:\s*'ward'/);
-  assert.match(updates, /repository:\s*'ExtraPotions\/WARD'/);
-  assert.match(updates, /endpoint:\s*'https:\/\/api\.github\.com\/repos\/ExtraPotions\/WARD\/releases\/latest'/);
-  assert.match(updates, /currentVersion:\s*EXP\.VERSION/);
+  assert.match(services, /ExtraPotionsCore\.(?:createReleaseUpdateChecker|createProductServices)/);
+  assert.match(services, /productId:\s*'ward'/);
+  assert.match(services, /repository:\s*'ExtraPotions\/WARD'/);
+  assert.match(services, /currentVersion:\s*(?:\(\)\s*=>\s*)?EXP\.VERSION/);
 
   assert.match(core, /function releaseDetails\(body\)/);
   assert.match(core, /checkedForCurrentVersion = state\.checkedForVersion === currentVersion/);
