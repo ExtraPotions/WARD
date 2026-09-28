@@ -1,7 +1,8 @@
-EXP.VERSION = '3.2.22';
+EXP.VERSION = '3.2.23';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.23': ['Updates the shared foundation to exp-core 3.3.15.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.22': ['Updates the shared foundation to exp-core 3.3.13.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.21': ['Adds the shared themed outer menu border across the ExtraPotions suite.','Keeps current Amazon protection behavior unchanged.','Retains the existing verified exp-core bundle while publishing the pending WARD shell update.'],
     '3.2.20': ['Lets every launcher move left, right, up, or down within the shared grid.','Persists launcher order and supports Alt+Arrow keyboard reordering.','Bundles exp-core 3.3.11 without changing Amazon protection behavior.'],

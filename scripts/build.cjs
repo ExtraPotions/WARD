@@ -11,7 +11,7 @@ const core = normalize(coreSource);
 const coreManifest = JSON.parse(fs.readFileSync(path.join(root, 'vendor', 'exp-core', 'manifest.json'), 'utf8'));
 if (crypto.createHash('sha256').update(coreSource).digest('hex') !== coreManifest.bundleSha256) throw new Error('Bundled Core hash mismatch');
 
-const sources = ['core.js', 'settings.js', 'patterns.js', 'audit.js', 'amazon-adapter.js', 'activity.js', 'page-styles.js', 'actions.js', 'layout.js', 'engine.js', 'release-notes.js', 'updates.js', 'menu-chrome.js', 'diagnostics.js', 'ui.js', 'main.js'];
+const sources = ['core.js', 'settings.js', 'patterns.js', 'audit.js', 'amazon-adapter.js', 'activity.js', 'page-styles.js', 'actions.js', 'layout.js', 'engine.js', 'release-notes.js', 'menu-chrome.js', 'ui.js', 'main.js'];
 const metadata = normalize(fs.readFileSync(path.join(root, 'src', 'metadata.txt'), 'utf8')).trimEnd();
 const body = sources.map((name) => normalize(fs.readFileSync(path.join(root, 'src', name), 'utf8')).trim()).join('\n\n');
 const output = `${metadata}\n\n(() => {\n'use strict';\nconst EXP = Object.create(null);\n\n${core}\n${body}\n})();\n`;

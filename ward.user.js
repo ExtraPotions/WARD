@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.22
+// @version      3.2.23
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -1672,7 +1672,7 @@ const ExpMenuArrangement = (() => {
 // exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.3.13';
+  const version = '3.3.15';
   const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
@@ -2370,10 +2370,17 @@ const ExtraPotionsCore = (() => {
   function createReleaseUpdateChecker(options = {}) {
     const productId = String(options.productId || '').toLowerCase();
     const repository = String(options.repository || '');
-    const currentVersion = String(options.currentVersion || '');
+    const resolveCurrentVersion = typeof options.currentVersion === 'function'
+      ? () => String(options.currentVersion() || '')
+      : () => String(options.currentVersion || '');
     const enabled = typeof options.enabled === 'function' ? options.enabled : () => true;
     const onError = typeof options.onError === 'function' ? options.onError : () => {};
-    if (!productId || !repository || !currentVersion) throw new Error('Incomplete update checker configuration');
+    if (!productId || !repository) throw new Error('Incomplete update checker configuration');
+    function getCurrentVersion() {
+      const currentVersion = resolveCurrentVersion();
+      if (!currentVersion) throw new Error('Update checker current version unavailable');
+      return currentVersion;
+    }
 
     const ENDPOINT = String(options.endpoint || ('https://api.github.com/repos/' + repository + '/releases/latest'));
     const CACHE_KEY = 'exp:v3:' + productId + ':update-cache';
@@ -2421,6 +2428,7 @@ const ExtraPotionsCore = (() => {
       return next;
     }
     function snapshot(state, stateName) {
+      const currentVersion = getCurrentVersion();
       const next = normalize(state);
       const latest = String(next.lastRemoteVersion || '');
       return {
@@ -2454,6 +2462,7 @@ const ExtraPotionsCore = (() => {
       });
     }
     async function check(force = false) {
+      const currentVersion = getCurrentVersion();
       let state = normalize(readState());
       if (!enabled() && !force) return snapshot(state, 'disabled');
 
@@ -2520,7 +2529,7 @@ const ExtraPotionsCore = (() => {
     }
     function status() { return snapshot(readState()); }
     return Object.freeze({
-      CURRENT_VERSION: currentVersion,
+      get CURRENT_VERSION() { return getCurrentVersion(); },
       ENDPOINT,
       CHECK_INTERVAL,
       check,
@@ -2680,12 +2689,45 @@ const ExtraPotionsCore = (() => {
   if(document.documentElement)startGrid();else addEventListener('DOMContentLoaded',startGrid,{once:true});
   document.addEventListener('exp-core:coordination',scheduleGrid);
   addEventListener('resize',scheduleGrid,{passive:true});
-  const api = Object.freeze({...ExtraPotionsTools,version,sourceVersion,protocol,gridProtocol,reference:CoreFoundation,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),registerLauncher,layout:layoutGrid,replaceMenuContent,createDisclosure,createSystemGrid,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,bindDiagnosticsControls:ExtraPotionsDiagnostics.bindControls,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,mountMenuArrangement:ExpMenuArrangement.mount,compareVersions:CoreFoundation.compareVersions});
+  // Core-owned product bootstrap for downstream consumers.
+  function createProductServices(options = {}) {
+    const productId = String(options.productId || '').toLowerCase();
+    const repository = String(options.repository || '');
+    const currentVersion = options.currentVersion;
+    if (!productId || !repository || (typeof currentVersion !== 'function' && !String(currentVersion || ''))) {
+      throw new Error('Incomplete product services configuration');
+    }
+    const lifecycle = createProductLifecycle(api);
+    const diagnostics = Object.freeze({
+      createDiagnosticsReport,
+      downloadDiagnostics,
+      createDiagnosticsControls,
+    });
+    const updates = createReleaseUpdateChecker({
+      productId,
+      repository,
+      currentVersion,
+      endpoint: options.endpoint,
+      enabled: options.enabled,
+      onError: options.onError,
+    });
+    return Object.freeze({ lifecycle, diagnostics, updates });
+  }
+
+  const api = Object.freeze({...ExtraPotionsTools,version,sourceVersion,protocol,gridProtocol,reference:CoreFoundation,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),createProductServices,registerLauncher,layout:layoutGrid,replaceMenuContent,createDisclosure,createSystemGrid,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct:ExtraPotionsDiagnostics.registerProduct,productCompatibility:ExtraPotionsDiagnostics.compatibility,bindDiagnosticsControls:ExtraPotionsDiagnostics.bindControls,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,mountMenuArrangement:ExpMenuArrangement.mount,compareVersions:CoreFoundation.compareVersions});
   return api;
 })();
 
-// The verified, bundled Core owns lifecycle and shared services.
-EXP.Core = ExtraPotionsCore.createLifecycle();
+const services = ExtraPotionsCore.createProductServices({
+  productId: 'ward',
+  repository: 'ExtraPotions/WARD',
+  currentVersion: () => EXP.VERSION,
+  enabled: () => EXP.Settings.snapshot().updateNotifications,
+  onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),
+});
+EXP.Core = services.lifecycle;
+EXP.Diagnostics = services.diagnostics;
+EXP.Updates = services.updates;
 
 EXP.Settings = (() => {
   const PREFIX = 'exp:v3:ward';
@@ -3707,10 +3749,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.2.22';
+EXP.VERSION = '3.2.23';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.23': ['Updates the shared foundation to exp-core 3.3.15.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.22': ['Updates the shared foundation to exp-core 3.3.13.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.21': ['Adds the shared themed outer menu border across the ExtraPotions suite.','Keeps current Amazon protection behavior unchanged.','Retains the existing verified exp-core bundle while publishing the pending WARD shell update.'],
     '3.2.20': ['Lets every launcher move left, right, up, or down within the shared grid.','Persists launcher order and supports Alt+Arrow keyboard reordering.','Bundles exp-core 3.3.11 without changing Amazon protection behavior.'],
@@ -3794,24 +3837,8 @@ EXP.ReleaseNotes = (() => {
   return Object.freeze({ current });
 })();
 
-EXP.Updates = ExtraPotionsCore.createReleaseUpdateChecker({
-  productId: 'ward',
-  repository: 'ExtraPotions/WARD',
-  endpoint: 'https://api.github.com/repos/ExtraPotions/WARD/releases/latest',
-  currentVersion: EXP.VERSION,
-  enabled: () => EXP.Settings.snapshot().updateNotifications,
-  onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),
-});
-
-// Dropper 3.2.8 is the canonical shared UI; product-specific color stays declarative.
+// exp-core owns the canonical shared UI; WARD-specific color stays declarative.
 EXP.MenuChrome = Object.freeze({ create: options => ExtraPotionsCore.create({ ...options, launcherSrc: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg', productTheme: {"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","bg":"#101014","panel":"#19191e","line":"#3a3532","text":"#fffaf3","muted":"#b9afa7","accent":"#ffb000","accent2":"#ff4a35","skin":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","skinVertical":"linear-gradient(180deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)"} }) });
-
-/* Diagnostics reports and controls use the Core-owned shared implementation. */
-EXP.Diagnostics = Object.freeze({
-  createDiagnosticsReport: (product, details) => ExtraPotionsCore.createDiagnosticsReport(product, details),
-  downloadDiagnostics: report => ExtraPotionsCore.downloadDiagnostics(report),
-  createDiagnosticsControls: (getReport, notify) => ExtraPotionsCore.createDiagnosticsControls(getReport, notify)
-});
 
 EXP.UI = (() => {
   const ICON_URL = 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg';
@@ -4641,7 +4668,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.22';
+EXP.VERSION = '3.2.23';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
