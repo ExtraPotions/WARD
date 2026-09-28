@@ -26,8 +26,8 @@ test('WARD declares its presentation interoperability phase', () => {
   const source = read('src/main.js');
   assert.ok(source.includes('registerPresentationProvider?.({'));
   assert.ok(source.includes("productId: 'ward'"));
-  assert.ok(source.includes("'classify'"));
-  assert.ok(source.includes("'visibility'"));
+  assert.ok(source.includes('"classify"'));
+  assert.ok(source.includes('"visibility"'));
 });
 
 test('WARD uses the shared presentation contract at its existing engine gate', () => {
