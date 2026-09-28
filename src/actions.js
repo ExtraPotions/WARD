@@ -136,14 +136,14 @@ EXP.Actions = (() => {
     }
 
     node.removeAttribute('data-ward-action');
-    ExtraPotionsCore.clearPresentationState?.(node, 'ward');
+    globalThis.ExtraPotionsCore?.clearPresentationState?.(node, 'ward');
   }
 
   function publishPresentation(record) {
     if (record.action === 'hide' || record.action === 'collapse' || record.action === 'dim') {
-      ExtraPotionsCore.setPresentationState?.(record.node, 'ward', { visibility: record.action });
+      globalThis.ExtraPotionsCore?.setPresentationState?.(record.node, 'ward', { visibility: record.action });
     } else {
-      ExtraPotionsCore.clearPresentationState?.(record.node, 'ward');
+      globalThis.ExtraPotionsCore?.clearPresentationState?.(record.node, 'ward');
     }
   }
 
