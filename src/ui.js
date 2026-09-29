@@ -42,6 +42,7 @@ EXP.UI = (() => {
   ];
 
   const css = `
+    .ward-shell{display:contents}
     .row-help{display:block;margin-top:2px;color:var(--muted);font:500 8px/1.3 system-ui,sans-serif}
     .activity-breakdown{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0}
     .activity-reasons,.current-protections{display:grid;gap:4px;margin-top:6px}

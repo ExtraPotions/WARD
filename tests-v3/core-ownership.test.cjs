@@ -42,3 +42,8 @@ test('WARD consumes the public ExtraPotionsCore boundary', () => {
   assert.match(source, /ExtraPotionsCore\.createDiagnosticsReport\(/u);
   assert.match(source, /ExtraPotionsCore\.createReleaseUpdateChecker\(/u);
 });
+
+
+test('WARD owns its product-specific shell layout', () => {
+  assert.match(source, /\.ward-shell\{display:contents\}/u);
+});
