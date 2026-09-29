@@ -265,11 +265,23 @@ test('compact search and compatibility recommendation cleanup are wired and reve
   assert.deepEqual(result.after, { compact: false, hidden: false, disclosure: '' });
 });
 
-test('Core navigation observes pushState and restores its wrapper on cleanup', async (t) => {
+test('Core navigation observes pushState and preserves the appropriate wrapper lifecycle', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
   const page = await amazonPage(browser, '<main>Route</main>');
-  const result = await page.evaluate(async () => { const original = history.pushState; let calls = 0; const cleanup = EXP.Core.onNavigation(() => { calls += 1; }); const wrapped = history.pushState !== original; history.pushState({}, '', '/s?k=next'); await new Promise((resolve) => setTimeout(resolve, 0)); cleanup(); return { wrapped, calls, restored: history.pushState === original }; });
-  assert.deepEqual(result, { wrapped: true, calls: 1, restored: true });
+  const result = await page.evaluate(async () => {
+    const sharedNavigation = typeof ExtraPotionsCore.navigationObserverState === 'function';
+    const original = history.pushState;
+    let calls = 0;
+    const cleanup = EXP.Core.onNavigation(() => { calls += 1; });
+    const wrapped = history.pushState !== original;
+    history.pushState({}, '', '/s?k=next');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    cleanup();
+    return { sharedNavigation, wrapped, calls, restored: history.pushState === original };
+  });
+  assert.equal(result.calls, 1);
+  assert.equal(result.wrapped, true);
+  assert.equal(result.restored, result.sharedNavigation ? false : true);
 });
 
 test('a real pointer click opens the launcher without a drag cancel', async (t) => {
