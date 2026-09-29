@@ -12,7 +12,8 @@
     "visual:capture": "node scripts/capture-visuals.cjs",
     "test:fallback": "node scripts/fallback-check.cjs",
     "test": "node scripts/build.cjs && node --test tests-v3/*.test.cjs",
-    "release:check": "node scripts/release-check.cjs"
+    "release:check": "node scripts/release-check.cjs",
+    "prepare:release:feature": "node scripts/prepare-feature-release.cjs && npm run build"
   },
   "devDependencies": {
     "playwright": "1.55.1"
