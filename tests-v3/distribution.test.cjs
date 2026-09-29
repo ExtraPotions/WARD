@@ -176,7 +176,7 @@ test('version action reuses the update-complete card for the current changelog',
   assert.deepEqual(facts.current.bullets,facts.completed.bullets);
 });
 
-test('WARD settings survive manager storage gaps and saved width is respected', () => {
+test('WARD settings survive manager storage gaps', () => {
   const settings = fs.readFileSync(path.join(root, 'src', 'settings.js'), 'utf8');
   const ui = fs.readFileSync(path.join(root, 'src', 'ui.js'), 'utf8');
   assert.match(settings, /const value = GM_getValue\(storageKey, undefined\);\s*if \(value !== undefined\) return value;/u);
@@ -186,7 +186,5 @@ test('WARD settings survive manager storage gaps and saved width is respected', 
   assert.match(settings, /localStorage\.setItem\(storageKey, JSON\.stringify\(value\)\);/u);
   assert.match(settings, /function load\(\) \{\s*const stored = read\('settings'\);[\s\S]*?state = validate\(stored \|\| defaults\);\s*write\('settings', state\);/u);
   assert.doesNotMatch(settings, /GM_setValue\(key\(name\), value\); return;/u);
-  assert.match(ui, /host\.dataset\.menuWidth = settings\.menuWidth;/u);
-  assert.doesNotMatch(ui, /host\.dataset\.menuWidth = 'compact';/u);
 });
 

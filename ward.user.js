@@ -4863,7 +4863,7 @@ EXP.UI = (() => {
   }
 
   function notify(message) {
-    if (!toast || !EXP.Settings.snapshot().menuNotifications) return;
+    if (!toast) return;
     toast.textContent = message;
     toast.hidden = false;
     toast.style.top = `${Math.max(8,(launcher?.getBoundingClientRect().top || 60) - 48)}px`;
@@ -4875,40 +4875,9 @@ EXP.UI = (() => {
 
   function applyUiTheme(id) { ExtraPotionsCore.applyTheme(host, id, UI_THEMES); }
 
-  function themeSwatches(value) {
-    const line = el('div','theme-row');
-    line.append(el('strong','','Menu theme'));
-    const dots = el('div','exp-theme-swatches');
-    const options = {
-      container:dots,
-      themes:UI_THEMES,
-      value,
-      onChange:(uiTheme) => {
-        applyUiTheme(uiTheme);
-        update({uiTheme},'ui-theme');
-      }
-    };
-    if (ExtraPotionsCore?.createThemeSwatches) {
-      ExtraPotionsCore.createThemeSwatches(options);
-    } else {
-      for (const theme of UI_THEMES) {
-        const dot = el('button',`exp-theme-swatch${theme.id === value ? ' is-on' : ''}`);
-        dot.type = 'button';
-        dot.title = theme.name;
-        dot.setAttribute('aria-label',theme.name);
-        dot.setAttribute('aria-pressed',String(theme.id === value));
-        dot.style.background = theme.swatch;
-        dot.addEventListener('click',() => options.onChange(theme.id));
-        dots.append(dot);
-      }
-    }
-    line.append(dots);
-    return line;
-  }
-
   function update(patch, reason) {
     const next = EXP.Settings.update(patch, reason);
-    applyUiTheme(next.uiTheme);
+    
     if (shell?.classList.contains('open')) renderView();
     else chrome?.update();
     return next;
@@ -5080,9 +5049,6 @@ EXP.UI = (() => {
   function lookView(settings) {
     const fragment = document.createDocumentFragment();
 
-    const theme = section('Theme');
-    theme.append(themeSwatches(settings.uiTheme));
-    fragment.append(theme);
 
     const accessibility = section('Accessibility');
     accessibility.append(
@@ -5198,16 +5164,10 @@ EXP.UI = (() => {
 
   function systemView() {
     const fragment = document.createDocumentFragment();
-    fragment.append(row('Menu width','',selectControl(
-      EXP.Settings.snapshot().menuWidth,
-      'Menu width',
-      [['full','Full'],['compact','Compact'],['narrow','Narrow']],
-      value => update({menuWidth:value},'menu-width')
-    )));
     const settings = EXP.Settings.snapshot();
     const box = section();
     const preferences = ExtraPotionsCore.createDisclosure('Menu preferences');
-    for (const [key,label] of [['menuAutoClose','Auto-close menu'],['menuNotifications','Menu notifications'],['updateNotifications','Update notifications']]) {
+    for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
       preferences.append(row(label,'',switchControl(settings[key],label,value=>{
         update({[key]:value},key);
         if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
@@ -5290,9 +5250,8 @@ EXP.UI = (() => {
     if (!nav) return;
 
     const settings = EXP.Settings.snapshot();
-    applyUiTheme(settings.uiTheme);
+    applyUiTheme('ward');
     host.dataset.expNonColor = settings.nonColorIndicators ? '1' : '0';
-    host.dataset.menuWidth = settings.menuWidth;
 
     for (const button of nav.querySelectorAll(':scope > .tool-panel > .route')) {
       const active = button.dataset.view === activeView;
