@@ -27,3 +27,12 @@ test('WARD publishes and clears shared presentation state through Core', () => {
   assert.ok(actions.includes("globalThis.ExtraPotionsCore?.setPresentationState?.(record.node, 'ward'"));
   assert.ok(actions.includes("globalThis.ExtraPotionsCore?.clearPresentationState?.(node, 'ward')"));
 });
+
+
+test('WARD publishes aggregate non-identifying suite state', () => {
+  const engine = read('src/engine.js');
+  assert.match(engine, /publishSuiteState\?\.\('ward', 'ward\.state-changed'/u);
+  for (const field of ['interventions', 'hide', 'dim', 'collapse', 'annotate']) assert.match(engine, new RegExp(field));
+  const block = engine.slice(engine.indexOf("publishSuiteState?.('ward'"), engine.indexOf('});', engine.indexOf("publishSuiteState?.('ward'")) + 3);
+  assert.doesNotMatch(block, /price|title|text|product|account|url/i);
+});
