@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.28
+// @version      3.2.29
 // @description  Local retail-pressure protection, initially for Amazon.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -4516,10 +4516,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.2.28';
+EXP.VERSION = '3.2.29';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.2.29': ["Adds a Check for updates button that works without turning on update notifications.","Checks GitHub release information only when you press it and never installs anything.","Reports whether an update is available, the script is current, or the check failed.","Leaves everything else in the product unchanged."],
     '3.2.28': ['Updates the shared foundation to exp-core 3.4.2.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.27': ['Updates the shared foundation to exp-core 3.4.1.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.26': ['Updates the shared foundation to exp-core 3.4.0.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
@@ -5114,6 +5115,7 @@ EXP.UI = (() => {
 
     const data = ExtraPotionsCore.createDisclosure('Settings',transfers);
     fragment.append(box);
+    preferences.append(row('Check for updates now','',action('Check now',() => EXP.Updates.check(true).then(result => notify(result.available ? 'A WARD update is available.' : result.state === 'failed' ? 'Update check failed quietly.' : 'WARD is up to date.')))));
     const tools = ExtraPotionsCore.createSystemGrid(preferences,data);
     const safeMode = switchControl(settings.safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'));
     safeMode.title='Pause protection and coupon actions without changing saved preferences.';
@@ -5401,7 +5403,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.28';
+EXP.VERSION = '3.2.29';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

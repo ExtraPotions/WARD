@@ -500,6 +500,7 @@ EXP.UI = (() => {
 
     const data = ExtraPotionsCore.createDisclosure('Settings',transfers);
     fragment.append(box);
+    preferences.append(row('Check for updates now','',action('Check now',() => EXP.Updates.check(true).then(result => notify(result.available ? 'A WARD update is available.' : result.state === 'failed' ? 'Update check failed quietly.' : 'WARD is up to date.')))));
     const tools = ExtraPotionsCore.createSystemGrid(preferences,data);
     const safeMode = switchControl(settings.safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'));
     safeMode.title='Pause protection and coupon actions without changing saved preferences.';

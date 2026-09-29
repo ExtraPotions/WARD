@@ -1,3 +1,10 @@
+## 3.2.29 - 2026-09-29
+
+- Adds a Check for updates button that works without turning on update notifications.
+- Checks GitHub release information only when you press it and never installs anything.
+- Reports whether an update is available, the script is current, or the check failed.
+- Leaves everything else in the product unchanged.
+
 ## 3.2.28 - 2026-09-29
 
 - Updates the shared foundation to exp-core 3.4.2.
