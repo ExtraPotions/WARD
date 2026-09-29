@@ -53,9 +53,9 @@ test('current Amazon product modules and route-wide coverage protections ship in
   }
 });
 
-test('visual capture manifest targets the current theme and fixture set without deprecated warm output', () => {
+test('visual capture manifest targets the current menu and fixture set without theme or warm output', () => {
   const capture = read('scripts/capture-visuals.cjs');
-  for (const file of ['current-fixture.png', 'menu-overview.png', 'ember.png', 'midnight.png', 'high-contrast.png', 'pride.png', 'ward-gem.png']) {
+  for (const file of ['current-fixture.png', 'menu-overview.png', 'protection.png', 'amazon.png']) {
     assert.match(capture, new RegExp(file.replaceAll('.', '\\.')));
   }
   assert.doesNotMatch(capture, /warm-charcoal\.png/);

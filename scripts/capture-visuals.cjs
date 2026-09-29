@@ -8,18 +8,15 @@ const output = path.join(root, 'docs', 'screenshots');
 
 const shots = [
   { file: 'menu-overview.png', view: null, theme: null },
-  { file: 'ember.png', view: 'look', theme: 'Ember' },
-  { file: 'midnight.png', view: 'look', theme: 'Midnight' },
-  { file: 'high-contrast.png', view: 'look', theme: 'High contrast' },
-  { file: 'pride.png', view: 'look', theme: 'Pride' },
-  { file: 'ward-gem.png', view: 'look', theme: 'WARD gem' },
+  { file: 'protection.png', view: 'page', theme: null },
+  { file: 'amazon.png', view: 'tools', theme: null },
 ];
 
 (async () => {
   fs.mkdirSync(output, { recursive: true });
   const browser = await chromium.launch({ headless: true });
   try {
-    const page = await browser.newPage({ viewport: { width: 1280, height: 820 }, deviceScaleFactor: 1 });
+    const page = await browser.newPage({ viewport: { width: 1280, height: 1300 }, deviceScaleFactor: 2 });
     await page.route('https://www.amazon.com/**', (route) => route.fulfill({
       status: 200,
       contentType: 'text/html',
