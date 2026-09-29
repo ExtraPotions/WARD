@@ -1,3 +1,9 @@
+## 3.2.26 - 2026-09-29
+
+- Updates the shared foundation to exp-core 3.4.0.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
 ## 3.2.25 - 2026-09-28
 
 - Updates the shared foundation to exp-core 3.3.17.
