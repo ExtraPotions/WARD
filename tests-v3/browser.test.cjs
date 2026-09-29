@@ -281,7 +281,7 @@ test('Core navigation observes pushState and preserves the appropriate wrapper l
   });
   assert.equal(result.calls, 1);
   assert.equal(result.wrapped, true);
-  assert.equal(result.restored, result.sharedNavigation ? false : true);
+  assert.equal(result.restored, true);
 });
 
 test('a real pointer click opens the launcher without a drag cancel', async (t) => {
