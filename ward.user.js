@@ -3867,10 +3867,25 @@ EXP.Engine = (() => {
     return true;
   }
 
+  function publishSuiteState(pageType = 'unknown') {
+    const records = EXP.Actions.snapshot();
+    const counts = { hide: 0, dim: 0, collapse: 0, annotate: 0 };
+    for (const record of records) if (Object.hasOwn(counts, record.action)) counts[record.action] += 1;
+    globalThis.ExtraPotionsCore?.publishSuiteState?.('ward', 'ward.state-changed', {
+      active: Boolean(active),
+      pageType: String(pageType || 'unknown'),
+      interventions: records.length,
+      hide: counts.hide,
+      dim: counts.dim,
+      collapse: counts.collapse,
+      annotate: counts.annotate,
+    });
+  }
+
   function processBatch(roots = [document]) {
     if (!active) return;
     const settings = EXP.Settings.snapshot();
-    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode || !EXP.AmazonAdapter.eligible()) { EXP.Actions.restoreAll(); EXP.UI?.restack?.(); syncActivityUi(); return; }
+    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode || !EXP.AmazonAdapter.eligible()) { EXP.Actions.restoreAll(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
     const pageType = EXP.AmazonAdapter.classify();
     EXP.Layout.apply(settings, pageType);
     const evidenceList = EXP.AmazonAdapter.detect(roots);
@@ -3910,12 +3925,13 @@ EXP.Engine = (() => {
     EXP.Audit?.prune?.();
     EXP.UI?.restack?.();
     syncActivityUi();
+    publishSuiteState(pageType);
   }
 
   function rebuild() { EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
   function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.AmazonAdapter.nextEpoch(); EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
   function start() { if (active) return; active = true; routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'start', lastResult:null }; EXP.AmazonAdapter.nextEpoch(); EXP.Audit?.resetRoute?.(); processBatch([document]); }
-  function stop() { active = false; couponPending.clear(); couponStatus = { state:'disabled', reason:'engine-stopped', lastResult:couponStatus.lastResult }; EXP.Actions.restoreAll(); EXP.Layout.cleanup(); }
+  function stop() { active = false; couponPending.clear(); couponStatus = { state:'disabled', reason:'engine-stopped', lastResult:couponStatus.lastResult }; EXP.Actions.restoreAll(); EXP.Layout.cleanup(); publishSuiteState('inactive'); }
   function cleanup() { stop(); EXP.Actions.cleanup(); EXP.PageStyles.cleanup(); EXP.AmazonAdapter.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
   function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, adapter: EXP.AmazonAdapter.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
