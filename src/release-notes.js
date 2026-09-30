@@ -1,7 +1,8 @@
-EXP.VERSION = '3.3.0';
+EXP.VERSION = '3.3.1';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.1': ['Updates the shared foundation to exp-core 3.4.5.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.0': ["WARD now protects Walmart, eBay and Etsy as well as Amazon, each with its own on/off switch in the menu.","Popularity claims such as \"100+ bought since yesterday\" or \"In 20+ carts\" are dimmed, and store membership, financing and sponsored listings are collapsed.","Struck-through reference prices are labelled as not verified, never hidden or changed.","Buy, add-to-cart and checkout controls are never touched."],
     '3.2.31': ['Updates the shared foundation to exp-core 3.4.4.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.30': ['Updates the shared foundation to exp-core 3.4.3.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],

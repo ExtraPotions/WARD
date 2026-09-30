@@ -1,3 +1,9 @@
+## 3.3.1 - 2026-09-30
+
+- Updates the shared foundation to exp-core 3.4.5.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
 ## 3.3.0 - 2026-09-30
 
 - WARD now protects Walmart, eBay and Etsy as well as Amazon, each with its own on/off switch in the menu.
