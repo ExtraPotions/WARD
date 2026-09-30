@@ -17,6 +17,7 @@
 // @match        https://smile.amazon.com/*
 // @match        https://www.walmart.com/*
 // @match        https://www.ebay.com/*
+// @match        https://cart.ebay.com/*
 // @match        https://www.etsy.com/*
 // @run-at       document-start
 // @inject-into  content
@@ -4093,10 +4094,14 @@ EXP.EbayAdapter = (() => {
   let health = 'inactive';
   let epoch = 0;
   let lastScan = null;
-  const supportedHosts = new Set(['www.ebay.com', 'ebay.com']);
+  const supportedHosts = new Set(['www.ebay.com', 'ebay.com', 'cart.ebay.com']);
   const cardBadge = '.s-card__attribute-row .su-styled-text';
   const itemSignal = '.x-ebay-signal .ux-textspans, #qtyAvailability .ux-textspans';
   const recommendationModule = '.srp-river-answer--ITEMS_CAROUSEL_WITH_COLOR';
+  // On the cart, "These are for you" is a headed section wrapping a carousel of other
+  // listings; it never contains the cart's own bucket.
+  const cartRecommendationModule = 'section:has(h2):has(.carousel):not(:has([data-test-id="cart-bucket"]))';
+  const moduleSelector = `${recommendationModule}, ${cartRecommendationModule}`;
   const essentialSelector = ['#binBtn_btn', '#isCartBtn_btn', '#atcBtn_btn', '.x-bin-action', '.x-atc-action', '.x-msku', '.x-quantity__input', '#qtyTextBox', '[data-testid*="checkout" i]', 'form[action*="checkout" i]', 'button[type="submit"]'].join(',');
   const protectedRootSelector = '#mainContent, #CenterPanel, #RightSummaryPanel, .srp-main, .srp-river, ul.srp-results, main, [role~="main"]';
   const purchaseWording = /buy it now|place bid|add to cart|check ?out|make offer|confirm and pay|pay now|continue/i;
@@ -4105,6 +4110,7 @@ EXP.EbayAdapter = (() => {
     { id: 'ebay.social-proof.item', patternId: 'pressure.social-proof', pages: ['product'], selectors: [itemSignal], text: /^(?:in [\d,.]+k?\+? carts?|[\d,.]+k?\+? (?:sold|watchers?|watching)|[\d,.]+k?\+? (?:people|viewers?) .*)$/i },
     { id: 'ebay.scarcity.card', patternId: 'pressure.scarcity', pages: ['search'], selectors: [cardBadge], text: /^(?:last one|only [\d,]+ left|[\d,]+ left)$/i },
     { id: 'ebay.scarcity.item', patternId: 'pressure.scarcity', pages: ['product'], selectors: [itemSignal], text: /^(?:last one|only [\d,]+ (?:left|available)|limited quantity)$/i },
+    { id: 'ebay.recommendation.cart', patternId: 'cross-sell.recommendation', pages: ['cart'], selectors: [cartRecommendationModule] },
     { id: 'ebay.recommendation.module', patternId: 'cross-sell.recommendation', pages: ['search'], selectors: [recommendationModule] },
     { id: 'ebay.sponsored.card', patternId: 'sponsorship.placement', pages: ['search'], selectors: ['li.s-card'], text: /(?:^|\n)\s*sponsored\s*(?:\n|$)/i, sponsoredOnly: true }
   ]);
@@ -4112,7 +4118,7 @@ EXP.EbayAdapter = (() => {
   function classify(pathname = location.pathname) {
     if (/^\/itm\//.test(pathname)) return 'product';
     if (/^\/(?:sch|b)\//.test(pathname)) return 'search';
-    if (/^\/(?:cart|sc)(?:\/|$)/.test(pathname)) return 'cart';
+    if (location.hostname === 'cart.ebay.com' || /^\/(?:cart|sc)(?:\/|$)/.test(pathname)) return 'cart';
     if (/^\/(?:checkout|pay)(?:\/|$)/.test(pathname)) return 'checkout';
     if (/^\/mye\//.test(pathname)) return 'orders';
     if (pathname === '/' || pathname === '') return 'home';
@@ -4127,14 +4133,18 @@ EXP.EbayAdapter = (() => {
       Boolean(node.matches?.(protectedRootSelector)) || Boolean(node.querySelector?.(`${protectedRootSelector}, [data-exp-owned="1"]`));
   }
   function hasPurchaseControl(node) { return [...(node.querySelectorAll?.('button, a, input[type="submit"]') || [])].some((control) => purchaseWording.test(control.textContent || control.value || control.getAttribute('aria-label') || '')); }
-  function essentialOverlap(node) { return hasPurchaseControl(node) || Boolean(node.matches?.(essentialSelector) || node.closest?.(essentialSelector) || safeQueryAll(node, essentialSelector).length); }
+  function essentialOverlap(node) {
+    // Recommendation modules carry their own per-listing links; only the page's real controls count.
+    if (node.matches?.(moduleSelector)) return Boolean(safeQueryAll(node, essentialSelector).length);
+    return hasPurchaseControl(node) || Boolean(node.matches?.(essentialSelector) || node.closest?.(essentialSelector) || safeQueryAll(node, essentialSelector).length);
+  }
   // Text spans and complete result modules are self-contained; nothing else is known to be.
   function structuralSafety(node) {
     if (!node?.isConnected) return { safe: false, reason: 'detached' };
     if (isProtectedPageRoot(node) || node.closest?.('[data-exp-owned="1"]')) return { safe: false, reason: 'protected-root' };
     if (essentialOverlap(node)) return { safe: false, reason: 'essential-overlap' };
     if (node.matches?.(`${cardBadge}, ${itemSignal}`)) return { safe: true, reason: 'known-text-signal' };
-    if (node.matches?.(recommendationModule)) return { safe: true, reason: 'complete-module' };
+    if (node.matches?.(moduleSelector)) return { safe: true, reason: 'complete-module' };
     if (node.matches?.('li.s-card')) return { safe: true, reason: 'complete-sponsored-placement' };
     return { safe: false, reason: 'unverified-container' };
   }
@@ -4201,6 +4211,9 @@ EXP.EtsyAdapter = (() => {
   const listingCard = '.v2-listing-card';
   const gridCell = 'li.wt-block-grid__item, li.wt-list-unstyled';
   const strikethrough = '.wt-text-strikethrough';
+  // Whole recommendation modules carry their own per-item Add to cart links; those
+  // are not the shopper's purchase controls, so only the page's real ones count.
+  const recommendationModules = [component('Cart_Recommendations_ApiSpec_List'), component('promoted_picks_for_you')].join(', ');
   const essentialSelector = [component('add_to_cart_form'), component('express_checkout_button'), component('variations'), component('price'), 'form[action*="cart" i]', '[data-add-to-cart-button]', '[data-buy-box-region]', 'button[type="submit"]'].join(',');
   const protectedRootSelector = 'main, [role~="main"], #content, #gnav-header-inner, ul.wt-grid, ol.wt-grid';
   const purchaseWording = /add to cart|buy it now|check ?out|proceed to|place order|continue/i;
@@ -4211,6 +4224,7 @@ EXP.EtsyAdapter = (() => {
     { id: 'etsy.reference-price.item', patternId: 'pricing.reference-price', pages: ['product'], selectors: [`${component('price')} ${strikethrough}`] },
     { id: 'etsy.social-proof.item', patternId: 'pressure.social-proof', pages: ['product'], selectors: [urgencySignal], text: /\bcarts?\b|\bpeople\b|\bviewing\b|\bbought\b|\bpopular now\b|\bbestseller\b/i },
     { id: 'etsy.scarcity.item', patternId: 'pressure.scarcity', pages: ['product'], selectors: [urgencySignal], text: /\bonly \d+ left\b|\blow in stock\b|\balmost gone\b|\bselling fast\b/i },
+    { id: 'etsy.recommendation.module', patternId: 'cross-sell.recommendation', pages: ['cart'], selectors: [recommendationModules] },
     { id: 'etsy.financial.klarna', patternId: 'upsell.financial-product', pages: ['product', 'cart'], selectors: [financing] }
   ]);
 
@@ -4232,12 +4246,16 @@ EXP.EtsyAdapter = (() => {
       Boolean(node.matches?.(protectedRootSelector)) || Boolean(node.querySelector?.(`${protectedRootSelector}, [data-exp-owned="1"]`));
   }
   function hasPurchaseControl(node) { return [...(node.querySelectorAll?.('button, a, input[type="submit"]') || [])].some((control) => purchaseWording.test(control.textContent || control.value || control.getAttribute('aria-label') || '')); }
-  function essentialOverlap(node) { return hasPurchaseControl(node) || Boolean(node.matches?.(essentialSelector) || node.closest?.(essentialSelector) || safeQueryAll(node, essentialSelector).length); }
+  function essentialOverlap(node) {
+    if (node.matches?.(recommendationModules)) return Boolean(safeQueryAll(node, essentialSelector).length);
+    return hasPurchaseControl(node) || Boolean(node.matches?.(essentialSelector) || node.closest?.(essentialSelector) || safeQueryAll(node, essentialSelector).length);
+  }
   function structuralSafety(node) {
     if (!node?.isConnected) return { safe: false, reason: 'detached' };
     if (isProtectedPageRoot(node) || node.closest?.('[data-exp-owned="1"]')) return { safe: false, reason: 'protected-root' };
     if (essentialOverlap(node)) return { safe: false, reason: 'essential-overlap' };
     if (node.matches?.(`${urgencySignal}, ${financing}`)) return { safe: true, reason: 'known-static' };
+    if (node.matches?.(recommendationModules)) return { safe: true, reason: 'complete-module' };
     if (node.matches?.(gridCell) || node.matches?.(listingCard)) return { safe: true, reason: 'complete-sponsored-placement' };
     if (node.matches?.(strikethrough)) return { safe: true, reason: 'price-text' };
     return { safe: false, reason: 'unverified-container' };

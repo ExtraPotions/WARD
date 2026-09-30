@@ -46,7 +46,7 @@ test('Etsy is recognised and page types classify', async (t) => {
   assert.equal(facts.key, 'etsy');
   assert.equal(facts.label, 'Etsy');
   assert.deepEqual(facts.kinds, ['product', 'product', 'search', 'search', 'cart', 'home', 'other']);
-  assert.deepEqual(facts.patterns, ['pressure.scarcity', 'pressure.social-proof', 'pricing.reference-price', 'sponsorship.placement', 'upsell.financial-product']);
+  assert.deepEqual(facts.patterns, ['cross-sell.recommendation', 'pressure.scarcity', 'pressure.social-proof', 'pricing.reference-price', 'sponsorship.placement', 'upsell.financial-product']);
 });
 
 test('search: ad listings hide as whole grid cells, organic ones stay, struck prices are annotated', async (t) => {
@@ -78,4 +78,21 @@ test('the Etsy switch turns protection off there without touching other stores',
   const page = await open(browser, 'https://www.etsy.com/listing/1/x', listingHtml);
   const facts = await page.evaluate(() => { const s = EXP.Settings.snapshot(); return { on: EXP.Retailer.enabled(s), etsyOff: EXP.Retailer.enabled({ ...s, retailers: { ...s.retailers, etsy: false } }), ebayOff: EXP.Retailer.enabled({ ...s, retailers: { ...s.retailers, ebay: false } }) }; });
   assert.deepEqual(facts, { on: true, etsyOff: false, ebayOff: true });
+});
+
+const cartHtml = `<!doctype html><html><head><meta charset="utf-8"></head><body><main>
+  <div data-appears-component-name="cart_shop_ratings_signal"><a href="#">5.0 (46.7k)</a></div>
+  <button type="submit">Proceed to checkout</button>
+  <div data-appears-component-name="Cart_Recommendations_ApiSpec_List">Related items you may like Including ads <a href="/listing/9">Candle</a> <a href="#">Add to cart</a></div>
+  <div data-appears-component-name="promoted_picks_for_you">Recommended for you Including ads <a href="#">Add to cart</a></div>
+  <div data-appears-component-name="impact_message">Etsy invests in climate solutions</div>
+</main></body></html>`;
+
+test('cart: both recommendation modules are found despite their own Add to cart links; checkout is not', async (t) => {
+  const browser = await chromium.launch({ headless: true });
+  t.after(() => browser.close());
+  const page = await open(browser, 'https://www.etsy.com/cart', cartHtml);
+  const found = await page.evaluate(() => EXP.Retailer.detect([document]).map((e) => ({ pattern: e.patternId, name: e.node.getAttribute('data-appears-component-name'), safe: e.structuralSafe })));
+  assert.deepEqual(found.map((item) => item.name).sort(), ['Cart_Recommendations_ApiSpec_List', 'promoted_picks_for_you']);
+  assert.ok(found.every((item) => item.pattern === 'cross-sell.recommendation' && item.safe));
 });

@@ -77,3 +77,24 @@ test('the eBay switch turns protection off there without touching other stores',
   const facts = await page.evaluate(() => { const s = EXP.Settings.snapshot(); return { on: EXP.Retailer.enabled(s), ebayOff: EXP.Retailer.enabled({ ...s, retailers: { ...s.retailers, ebay: false } }), amazonOff: EXP.Retailer.enabled({ ...s, retailers: { ...s.retailers, amazon: false } }) }; });
   assert.deepEqual(facts, { on: true, ebayOff: false, amazonOff: true });
 });
+
+// Cart, from a signed-in cart.ebay.com page: the bucket holds the shopper's item, and
+// "These are for you" is a headed section wrapping a carousel of other listings.
+const cartHtml = `<!doctype html><html><head><meta charset="utf-8"></head><body><main id="mainContent"><h1>Cart</h1>
+  <div data-test-id="app-cart"><div data-test-id="cart-bucket"><h3>Item</h3><button data-test-id="cart-remove-item">Remove</button><a href="/pay">Go to checkout</a></div></div>
+  <section><div><h2>These are for you</h2></div><div class="carousel"><ul><li><section><h3>Phone case</h3><span>50 sold</span></section></li></ul></div></section>
+</main></body></html>`;
+
+test('cart.ebay.com: the recommendation carousel is found; the item bucket and checkout are not', async (t) => {
+  const browser = await chromium.launch({ headless: true });
+  t.after(() => browser.close());
+  const page = await open(browser, 'https://cart.ebay.com/', cartHtml);
+  const facts = await page.evaluate(() => ({ key: EXP.Retailer.key(), kind: EXP.EbayAdapter.classify('/'), found: EXP.Retailer.detect([document]).map((e) => ({ pattern: e.patternId, tag: e.node.tagName, safe: e.structuralSafe, text: e.node.textContent.slice(0, 20) })) }));
+  assert.equal(facts.key, 'ebay');
+  assert.equal(facts.kind, 'cart');
+  assert.equal(facts.found.length, 1);
+  assert.equal(facts.found[0].pattern, 'cross-sell.recommendation');
+  assert.equal(facts.found[0].tag, 'SECTION');
+  assert.equal(facts.found[0].safe, true);
+  assert.doesNotMatch(facts.found[0].text, /Item|checkout/);
+});
