@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.3.3
+// @version      3.3.4
 // @description  Local retail-pressure protection for Amazon, Walmart, eBay and Etsy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -5046,10 +5046,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.3.3';
+EXP.VERSION = '3.3.4';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.4': ["Stops running on smile.amazon.com, which Amazon retired in 2023 and which only redirects to www.amazon.com now.","Amazon shopping on www.amazon.com works exactly as before."],
     '3.3.3': ['Updates the shared foundation to exp-core 3.4.7.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.2': ['Updates the shared foundation to exp-core 3.4.6.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.1': ['Updates the shared foundation to exp-core 3.4.5.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
@@ -5961,7 +5962,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.3.3';
+EXP.VERSION = '3.3.4';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

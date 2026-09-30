@@ -1,3 +1,8 @@
+## 3.3.4 - 2026-09-30
+
+- Stops running on smile.amazon.com, which Amazon retired in 2023 and which only redirects to www.amazon.com now.
+- Amazon shopping on www.amazon.com works exactly as before.
+
 ## 3.3.3 - 2026-09-30
 
 - Updates the shared foundation to exp-core 3.4.7.
