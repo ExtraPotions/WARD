@@ -18,6 +18,7 @@
 // @match        https://www.walmart.com/*
 // @match        https://www.ebay.com/*
 // @match        https://cart.ebay.com/*
+// @match        https://pay.ebay.com/*
 // @match        https://www.etsy.com/*
 // @run-at       document-start
 // @inject-into  content
@@ -4094,7 +4095,7 @@ EXP.EbayAdapter = (() => {
   let health = 'inactive';
   let epoch = 0;
   let lastScan = null;
-  const supportedHosts = new Set(['www.ebay.com', 'ebay.com', 'cart.ebay.com']);
+  const supportedHosts = new Set(['www.ebay.com', 'ebay.com', 'cart.ebay.com', 'pay.ebay.com']);
   const cardBadge = '.s-card__attribute-row .su-styled-text';
   const itemSignal = '.x-ebay-signal .ux-textspans, #qtyAvailability .ux-textspans';
   const recommendationModule = '.srp-river-answer--ITEMS_CAROUSEL_WITH_COLOR';
@@ -4102,7 +4103,8 @@ EXP.EbayAdapter = (() => {
   // listings; it never contains the cart's own bucket.
   const cartRecommendationModule = 'section:has(h2):has(.carousel):not(:has([data-test-id="cart-bucket"]))';
   const moduleSelector = `${recommendationModule}, ${cartRecommendationModule}`;
-  const essentialSelector = ['#binBtn_btn', '#isCartBtn_btn', '#atcBtn_btn', '.x-bin-action', '.x-atc-action', '.x-msku', '.x-quantity__input', '#qtyTextBox', '[data-testid*="checkout" i]', 'form[action*="checkout" i]', 'button[type="submit"]'].join(',');
+  const financing = '[data-testid="PAYMENTS_PROMOTIONS"]';
+  const essentialSelector = ['[data-testid="TOTAL"]', '[data-testid="SUB_TOTAL"]', '[data-testid="PAYMENT_METHODS"]', '[data-testid="KLARNA_BUTTON"]', '[data-testid="CTA_MESSAGE_WRAPPER"]', '#binBtn_btn', '#isCartBtn_btn', '#atcBtn_btn', '.x-bin-action', '.x-atc-action', '.x-msku', '.x-quantity__input', '#qtyTextBox', '[data-testid*="checkout" i]', 'form[action*="checkout" i]', 'button[type="submit"]'].join(',');
   const protectedRootSelector = '#mainContent, #CenterPanel, #RightSummaryPanel, .srp-main, .srp-river, ul.srp-results, main, [role~="main"]';
   const purchaseWording = /buy it now|place bid|add to cart|check ?out|make offer|confirm and pay|pay now|continue/i;
   const detectors = Object.freeze([
@@ -4110,12 +4112,14 @@ EXP.EbayAdapter = (() => {
     { id: 'ebay.social-proof.item', patternId: 'pressure.social-proof', pages: ['product'], selectors: [itemSignal], text: /^(?:in [\d,.]+k?\+? carts?|[\d,.]+k?\+? (?:sold|watchers?|watching)|[\d,.]+k?\+? (?:people|viewers?) .*)$/i },
     { id: 'ebay.scarcity.card', patternId: 'pressure.scarcity', pages: ['search'], selectors: [cardBadge], text: /^(?:last one|only [\d,]+ left|[\d,]+ left)$/i },
     { id: 'ebay.scarcity.item', patternId: 'pressure.scarcity', pages: ['product'], selectors: [itemSignal], text: /^(?:last one|only [\d,]+ (?:left|available)|limited quantity)$/i },
+    { id: 'ebay.financial.checkout', patternId: 'upsell.financial-product', pages: ['checkout'], selectors: [financing] },
     { id: 'ebay.recommendation.cart', patternId: 'cross-sell.recommendation', pages: ['cart'], selectors: [cartRecommendationModule] },
     { id: 'ebay.recommendation.module', patternId: 'cross-sell.recommendation', pages: ['search'], selectors: [recommendationModule] },
     { id: 'ebay.sponsored.card', patternId: 'sponsorship.placement', pages: ['search'], selectors: ['li.s-card'], text: /(?:^|\n)\s*sponsored\s*(?:\n|$)/i, sponsoredOnly: true }
   ]);
 
   function classify(pathname = location.pathname) {
+    if (location.hostname === 'pay.ebay.com') return 'checkout';
     if (/^\/itm\//.test(pathname)) return 'product';
     if (/^\/(?:sch|b)\//.test(pathname)) return 'search';
     if (location.hostname === 'cart.ebay.com' || /^\/(?:cart|sc)(?:\/|$)/.test(pathname)) return 'cart';
@@ -4145,6 +4149,7 @@ EXP.EbayAdapter = (() => {
     if (essentialOverlap(node)) return { safe: false, reason: 'essential-overlap' };
     if (node.matches?.(`${cardBadge}, ${itemSignal}`)) return { safe: true, reason: 'known-text-signal' };
     if (node.matches?.(moduleSelector)) return { safe: true, reason: 'complete-module' };
+    if (node.matches?.(financing)) return { safe: true, reason: 'known-static' };
     if (node.matches?.('li.s-card')) return { safe: true, reason: 'complete-sponsored-placement' };
     return { safe: false, reason: 'unverified-container' };
   }

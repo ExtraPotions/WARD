@@ -42,7 +42,7 @@ test('eBay is recognised and page types classify', async (t) => {
   assert.equal(facts.key, 'ebay');
   assert.equal(facts.label, 'eBay');
   assert.deepEqual(facts.kinds, ['product', 'search', 'search', 'cart', 'home', 'orders', 'other']);
-  assert.deepEqual(facts.patterns, ['cross-sell.recommendation', 'pressure.scarcity', 'pressure.social-proof', 'sponsorship.placement']);
+  assert.deepEqual(facts.patterns, ['cross-sell.recommendation', 'pressure.scarcity', 'pressure.social-proof', 'sponsorship.placement', 'upsell.financial-product']);
 });
 
 test('search results: popularity, scarcity, recommendation module and sponsored cards are found; facts and pagination are not', async (t) => {
@@ -97,4 +97,20 @@ test('cart.ebay.com: the recommendation carousel is found; the item bucket and c
   assert.equal(facts.found[0].tag, 'SECTION');
   assert.equal(facts.found[0].safe, true);
   assert.doesNotMatch(facts.found[0].text, /Item|checkout/);
+});
+
+// Checkout review, from a signed-in pay.ebay.com order review.
+const checkoutHtml = `<!doctype html><html><head><meta charset="utf-8"></head><body><main id="mainContent">
+  <div data-testid="PAYMENT_METHODS"><fieldset id="payment-selection-fieldset">Klarna Installments <button data-testid="KLARNA_BUTTON">Pay with Klarna</button>Special financing available. Apply now.</fieldset></div>
+  <section data-testid="SUMMARY"><div data-testid="TOTAL">Order total $72.41</div><div data-testid="PAYMENTS_PROMOTIONS">From $13/month, or 4 payments at 0% interest with Klarna<a href="#">Learn more</a></div></section>
+  <div data-testid="CTA_MESSAGE_WRAPPER"><button type="submit">Confirm and pay</button></div>
+</main></body></html>`;
+
+test('pay.ebay.com checkout: the monthly-payment message is found; payment choices, total and confirm are not', async (t) => {
+  const browser = await chromium.launch({ headless: true });
+  t.after(() => browser.close());
+  const page = await open(browser, 'https://pay.ebay.com/rxo?action=view', checkoutHtml);
+  const facts = await page.evaluate(() => ({ kind: EXP.EbayAdapter.classify('/rxo'), found: EXP.Retailer.detect([document]).map((e) => ({ pattern: e.patternId, tid: e.node.getAttribute('data-testid'), safe: e.structuralSafe })) }));
+  assert.equal(facts.kind, 'checkout');
+  assert.deepEqual(facts.found, [{ pattern: 'upsell.financial-product', tid: 'PAYMENTS_PROMOTIONS', safe: true }]);
 });

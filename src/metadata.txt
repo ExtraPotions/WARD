@@ -18,6 +18,7 @@
 // @match        https://www.walmart.com/*
 // @match        https://www.ebay.com/*
 // @match        https://cart.ebay.com/*
+// @match        https://pay.ebay.com/*
 // @match        https://www.etsy.com/*
 // @run-at       document-start
 // @inject-into  content
