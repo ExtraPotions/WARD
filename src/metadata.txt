@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.31
-// @description  Local retail-pressure protection, initially for Amazon.
+// @version      3.3.0
+// @description  Local retail-pressure protection for Amazon, Walmart, eBay and Etsy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
 // @tag          dark-patterns

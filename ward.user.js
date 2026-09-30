@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.2.31
-// @description  Local retail-pressure protection, initially for Amazon.
+// @version      3.3.0
+// @description  Local retail-pressure protection for Amazon, Walmart, eBay and Etsy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
 // @tag          dark-patterns
@@ -4943,10 +4943,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.2.31';
+EXP.VERSION = '3.3.0';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.0': ["WARD now protects Walmart, eBay and Etsy as well as Amazon, each with its own on/off switch in the menu.","Popularity claims such as \"100+ bought since yesterday\" or \"In 20+ carts\" are dimmed, and store membership, financing and sponsored listings are collapsed.","Struck-through reference prices are labelled as not verified, never hidden or changed.","Buy, add-to-cart and checkout controls are never touched."],
     '3.2.31': ['Updates the shared foundation to exp-core 3.4.4.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.30': ['Updates the shared foundation to exp-core 3.4.3.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.2.29': ["Adds a Check for updates button that works without turning on update notifications.","Checks GitHub release information only when you press it and never installs anything.","Reports whether an update is available, the script is current, or the check failed.","Leaves everything else in the product unchanged."],
@@ -5854,7 +5855,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.2.31';
+EXP.VERSION = '3.3.0';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

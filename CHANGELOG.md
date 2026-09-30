@@ -1,3 +1,10 @@
+## 3.3.0 - 2026-09-30
+
+- WARD now protects Walmart, eBay and Etsy as well as Amazon, each with its own on/off switch in the menu.
+- Popularity claims such as "100+ bought since yesterday" or "In 20+ carts" are dimmed, and store membership, financing and sponsored listings are collapsed.
+- Struck-through reference prices are labelled as not verified, never hidden or changed.
+- Buy, add-to-cart and checkout controls are never touched.
+
 ## 3.2.31 - 2026-09-29
 
 - Updates the shared foundation to exp-core 3.4.4.
