@@ -13,7 +13,7 @@ EXP.UI = (() => {
   const views = [
     ['page', 'Protection'],
     ['look', 'Appearance'],
-    ['tools', 'Amazon'],
+    ['tools', EXP.Retailer.label()],
     ['system', 'System']
   ];
 
@@ -321,7 +321,7 @@ EXP.UI = (() => {
     general.append(row('Content action','Hide or dim matched content; purchase controls remain visible.',
       selectControl(settings.contentAction,'Content action',[['automatic','Automatic'],['hide','Hide'],['dim','Dim']],
         value => update({contentAction:value},'content-action'))));
-    general.append(row('Amazon adapter','Selector and safety system status.',adapterHealthControl()));
+    general.append(row(`${EXP.Retailer.label()} adapter`,'Selector and safety system status.',adapterHealthControl()));
 
     const summary = el('div');
     summary.setAttribute('data-exp-activity-summary','1');
@@ -359,9 +359,20 @@ EXP.UI = (() => {
 
   function amazonView(settings) {
     const fragment = document.createDocumentFragment();
-    const amazon = section('Amazon');
+    const amazon = section(EXP.Retailer.label());
+    const features = EXP.Retailer.features();
+    const storeKey = EXP.Retailer.key();
 
     amazon.append(
+      row(`Protect ${EXP.Retailer.label()}`,'',
+        switchControl(
+          settings.retailers?.[storeKey] !== false,
+          `Protect ${EXP.Retailer.label()}`,
+          value => update({retailers:{...settings.retailers,[storeKey]:value}},'store-setting')
+        ))
+    );
+
+    if (features.coupons) amazon.append(
       row('Auto-clip coupons','',
         switchControl(
           settings.autoClipCoupons,
@@ -370,7 +381,7 @@ EXP.UI = (() => {
         ))
     );
 
-    amazon.append(
+    if (features.compactSearch) amazon.append(
       row('Compact search','',
         switchControl(
           settings.compactSearch,
@@ -379,7 +390,7 @@ EXP.UI = (() => {
         ))
     );
 
-    amazon.append(
+    if (features.recommendationCleanup) amazon.append(
       row('Recommendation cleanup','',
         switchControl(
           settings.recommendationCleanup,
@@ -388,17 +399,22 @@ EXP.UI = (() => {
         ))
     );
 
-    const couponStatus = el('div');
-    couponStatus.setAttribute('data-exp-coupon-status','1');
-    renderCouponStatus(couponStatus);
-    fragment.append(amazon,couponStatus);
+    fragment.append(amazon);
+    if (features.coupons) {
+      const couponStatus = el('div');
+      couponStatus.setAttribute('data-exp-coupon-status','1');
+      renderCouponStatus(couponStatus);
+      fragment.append(couponStatus);
+    }
     return fragment;
   }
 
   function patternsView(settings) {
-    const box = section('Amazon patterns');
+    const box = section(`${EXP.Retailer.label()} patterns`);
     box.classList.add('advanced-patterns');
+    const available = EXP.Retailer.patternIds();
     for (const [,label,id] of sourceToggles) {
+      if (!available.has(id)) continue;
       box.append(
         row(label,'',
           selectControl(
@@ -430,7 +446,7 @@ EXP.UI = (() => {
     const fragment = document.createDocumentFragment();
     fragment.append(amazonView(settings));
 
-    const advanced = ExtraPotionsCore.createDisclosure('Advanced Amazon');
+    const advanced = ExtraPotionsCore.createDisclosure(`Advanced ${EXP.Retailer.label()}`);
     const controls = section('Pattern controls');
     controls.append(
       row('Individual patterns','',
@@ -509,17 +525,18 @@ EXP.UI = (() => {
     for(const exception of EXP.Settings.snapshot().pageExceptions||[])recovery.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
 
     tools.append(ExtraPotionsCore.createCompatibilityControls());
-    data.append(row('Reset Amazon settings','Resets WARD Amazon settings and pattern overrides.',action('Reset',resetAmazon,'warn')));
+    data.append(row(`Reset ${EXP.Retailer.label()} settings`,`Resets WARD ${EXP.Retailer.label()} settings and pattern overrides.`,action('Reset',resetAmazon,'warn')));
     if ((EXP.Settings.snapshot().pageExceptions || []).length) tools.append(recovery);
     fragment.append(tools);
     return fragment;
   }
 
   function resetAmazon() {
-    if (!confirm('Reset WARD Amazon settings and pattern overrides?')) return;
+    const storeKey = EXP.Retailer.key();
+    if (!confirm(`Reset WARD ${EXP.Retailer.label()} settings and pattern overrides?`)) return;
     update(
       {
-        amazonEnabled:true,
+        retailers:{...EXP.Settings.snapshot().retailers,[storeKey]:true},
         autoClipCoupons:true,
         compactSearch:false,
         recommendationCleanup:true,
@@ -528,7 +545,7 @@ EXP.UI = (() => {
       },
       'reset-amazon'
     );
-    notify('Amazon settings reset.');
+    notify(`${EXP.Retailer.label()} settings reset.`);
   }
 
   function renderView() {

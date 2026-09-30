@@ -5,7 +5,7 @@ EXP.Settings = (() => {
   const defaults = Object.freeze({
     schema: SCHEMA,
     enabled: true,
-    amazonEnabled: true,
+    retailers: Object.freeze({ amazon: true, walmart: true, ebay: true, etsy: true }),
     protectionLevel: 'balanced',
     contentAction: 'automatic',
     confidencePolicy: 'confirmed-supported',
@@ -61,7 +61,14 @@ EXP.Settings = (() => {
     const next = ExtraPotionsCore.cloneSettings(defaults);
 	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
 	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
-    for (const name of ['enabled', 'amazonEnabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    // One switch per store. The earlier single amazonEnabled setting migrates into it.
+    const stores = { ...defaults.retailers };
+    if (typeof candidate.amazonEnabled === 'boolean') stores.amazon = candidate.amazonEnabled;
+    if (candidate.retailers && typeof candidate.retailers === 'object' && !Array.isArray(candidate.retailers)) {
+      for (const key of Object.keys(stores)) if (typeof candidate.retailers[key] === 'boolean') stores[key] = candidate.retailers[key];
+    }
+    next.retailers = stores;
     const enums = { protectionLevel: ['essential', 'balanced', 'custom'], contentAction: ['automatic', 'hide', 'dim'], confidencePolicy: ['confirmed', 'confirmed-supported', 'custom'], defaultAction: ['hide', 'dim', 'collapse', 'annotate', 'allow'], reducedMotion: ['system', 'reduce', 'allow'], explanationDetail: ['concise', 'detailed'], launcherPosition: ['automatic-end-bottom', 'end-top', 'end-bottom', 'start-top', 'start-bottom'], menuWidth: ['full', 'compact', 'narrow'], uiTheme: ['ember', 'midnight', 'glacier', 'contrast', 'verdant', 'pride', 'crimson', 'ward'] };
     for (const [name, values] of Object.entries(enums)) {
 	  const value = name === 'uiTheme' ? normalizedUiTheme : candidate[name];

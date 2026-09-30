@@ -8,7 +8,7 @@ EXP.Engine = (() => {
 
   function activityDigest() {
     const data = EXP.Activity.snapshot();
-    const adapter = EXP.AmazonAdapter.diagnose();
+    const adapter = EXP.Retailer.diagnose();
     return JSON.stringify({ active: data.active, totals: data.totals, breakdown: data.breakdown, adapter:adapter.health, coupon:couponStatus, quarantined:couponQuarantined });
   }
 
@@ -28,7 +28,7 @@ EXP.Engine = (() => {
   }
 
   function requestedDecision(evidence, pattern, settings) {
-    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode) return { action: 'allow', reason: 'protection-disabled' };
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode) return { action: 'allow', reason: 'protection-disabled' };
     if(settings.pageExceptions?.some(v=>v.path===location.hostname+location.pathname&&v.patternId===pattern.id))return {action:'allow',reason:'remembered-page-exception'};
     const patternMode = settings.patterns[pattern.id] || 'inherit';
     const categoryMode = settings.categories[pattern.category] || 'inherit';
@@ -113,12 +113,12 @@ EXP.Engine = (() => {
   }
 
   function processCoupons(roots, settings) {
-    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode || !settings.autoClipCoupons) { couponStatus = { state:'disabled', reason:'coupon-setting', lastResult:couponStatus.lastResult }; return; }
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode || !settings.autoClipCoupons || !EXP.Retailer.features().coupons) { couponStatus = { state:'disabled', reason:'coupon-setting', lastResult:couponStatus.lastResult }; return; }
     if (couponQuarantined) { couponStatus = { state:'quarantined', reason:couponStatus.reason || 'coupon-quarantine', lastResult:couponStatus.lastResult }; return; }
-    const candidates = EXP.AmazonAdapter.couponCandidates(roots);
+    const candidates = EXP.Retailer.couponCandidates(roots);
     if (!candidates.length && couponStatus.state === 'ready') couponStatus = { state:'idle', reason:'no-eligible-coupon', lastResult:null };
     for (const control of candidates) {
-      const check = EXP.AmazonAdapter.verifyCouponTarget(control);
+      const check = EXP.Retailer.verifyCouponTarget(control);
       if (!check.eligible) { if (!control.dataset.wardCouponSkipped) { control.dataset.wardCouponSkipped = check.reason; EXP.Activity.coupon('skipped'); couponStatus = { state:'attention', reason:check.reason, lastResult:'skipped' }; } continue; }
       if (couponPending.has(control)) continue;
       couponStatus = { state:'checking', reason:'awaiting-confirmation', lastResult:couponStatus.lastResult };
@@ -160,21 +160,21 @@ EXP.Engine = (() => {
   function processBatch(roots = [document]) {
     if (!active) return;
     const settings = EXP.Settings.snapshot();
-    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode || !EXP.AmazonAdapter.eligible()) { EXP.Actions.restoreAll(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
-    const pageType = EXP.AmazonAdapter.classify();
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode) { EXP.Actions.restoreAll(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
+    const pageType = EXP.Retailer.classify();
     EXP.Layout.apply(settings, pageType);
-    const evidenceList = EXP.AmazonAdapter.detect(roots);
+    const evidenceList = EXP.Retailer.detect(roots);
     const seenNodes = new Set();
     for (const evidence of evidenceList) {
       seenNodes.add(evidence.node);
       processEvidence(evidence, settings);
     }
-    if (settings.recommendationCleanup) {
-      for (const node of EXP.AmazonAdapter.cosmeticRecommendationCandidates(roots)) {
+    if (settings.recommendationCleanup && EXP.Retailer.features().recommendationCleanup) {
+      for (const node of EXP.Retailer.cosmeticRecommendationCandidates(roots)) {
         if (seenNodes.has(node)) continue;
-        const structural = EXP.AmazonAdapter.structuralSafety(node);
+        const structural = EXP.Retailer.structuralSafety(node);
         const evidence = {
-          detectorId: 'amazon.cross-sell.recommendation',
+          detectorId: `${EXP.Retailer.key()}.cross-sell.recommendation`,
           patternId: 'cross-sell.recommendation',
           pageType,
           node,
@@ -204,10 +204,10 @@ EXP.Engine = (() => {
   }
 
   function rebuild() { EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
-  function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.AmazonAdapter.nextEpoch(); EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
-  function start() { if (active) return; active = true; routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'start', lastResult:null }; EXP.AmazonAdapter.nextEpoch(); EXP.Audit?.resetRoute?.(); processBatch([document]); }
+  function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.Retailer.nextEpoch(); EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
+  function start() { if (active) return; active = true; routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'start', lastResult:null }; EXP.Retailer.nextEpoch(); EXP.Audit?.resetRoute?.(); processBatch([document]); }
   function stop() { active = false; couponPending.clear(); couponStatus = { state:'disabled', reason:'engine-stopped', lastResult:couponStatus.lastResult }; EXP.Actions.restoreAll(); EXP.Layout.cleanup(); publishSuiteState('inactive'); }
-  function cleanup() { stop(); EXP.Actions.cleanup(); EXP.PageStyles.cleanup(); EXP.AmazonAdapter.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
-  function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, adapter: EXP.AmazonAdapter.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
+  function cleanup() { stop(); EXP.Actions.cleanup(); EXP.PageStyles.cleanup(); EXP.Retailer.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
+  function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, adapter: EXP.Retailer.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();

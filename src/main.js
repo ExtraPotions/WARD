@@ -20,7 +20,7 @@ EXP.App = (() => {
 
   async function enable() {
     const settings = EXP.Settings.snapshot();
-    if (!settings.enabled || !settings.amazonEnabled) {
+    if (!EXP.Retailer.enabled(settings)) {
       scheduler.stop();
       EXP.Engine.stop();
       EXP.UI.refresh();

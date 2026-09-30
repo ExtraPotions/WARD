@@ -138,5 +138,7 @@ EXP.AmazonAdapter = (() => {
   function diagnose() { return { id: ID, version: VERSION, health, eligible: eligible(), pageType: eligible() ? classify() : 'unsupported', detectorCount: detectors.length, coverage: lastScan ? { ...lastScan, eligibleDetectors:lastScan.eligibleDetectors.slice(), matchedDetectors:lastScan.matchedDetectors.slice() } : null, errors: errors.map(({ code }) => ({ code })) }; }
   function nextEpoch() { epoch += 1; health = eligible() ? 'healthy' : 'inactive'; resetCoverage(); return epoch; }
   function cleanup() { epoch += 1; health = 'inactive'; resetCoverage(); errors.length = 0; }
-  return Object.freeze({ ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
+  const patternIds = Object.freeze([...new Set(detectors.map((detector) => detector.patternId))]);
+  return Object.freeze({ key: 'amazon', label: 'Amazon', features: Object.freeze({ coupons: true, compactSearch: true, recommendationCleanup: true }), patternIds, ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
 })();
+EXP.Retailers.register(EXP.AmazonAdapter);

@@ -3493,7 +3493,7 @@ EXP.Settings = (() => {
   const defaults = Object.freeze({
     schema: SCHEMA,
     enabled: true,
-    amazonEnabled: true,
+    retailers: Object.freeze({ amazon: true, walmart: true, ebay: true, etsy: true }),
     protectionLevel: 'balanced',
     contentAction: 'automatic',
     confidencePolicy: 'confirmed-supported',
@@ -3549,7 +3549,14 @@ EXP.Settings = (() => {
     const next = ExtraPotionsCore.cloneSettings(defaults);
 	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
 	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
-    for (const name of ['enabled', 'amazonEnabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    // One switch per store. The earlier single amazonEnabled setting migrates into it.
+    const stores = { ...defaults.retailers };
+    if (typeof candidate.amazonEnabled === 'boolean') stores.amazon = candidate.amazonEnabled;
+    if (candidate.retailers && typeof candidate.retailers === 'object' && !Array.isArray(candidate.retailers)) {
+      for (const key of Object.keys(stores)) if (typeof candidate.retailers[key] === 'boolean') stores[key] = candidate.retailers[key];
+    }
+    next.retailers = stores;
     const enums = { protectionLevel: ['essential', 'balanced', 'custom'], contentAction: ['automatic', 'hide', 'dim'], confidencePolicy: ['confirmed', 'confirmed-supported', 'custom'], defaultAction: ['hide', 'dim', 'collapse', 'annotate', 'allow'], reducedMotion: ['system', 'reduce', 'allow'], explanationDetail: ['concise', 'detailed'], launcherPosition: ['automatic-end-bottom', 'end-top', 'end-bottom', 'start-top', 'start-bottom'], menuWidth: ['full', 'compact', 'narrow'], uiTheme: ['ember', 'midnight', 'glacier', 'contrast', 'verdant', 'pride', 'crimson', 'ward'] };
     for (const [name, values] of Object.entries(enums)) {
 	  const value = name === 'uiTheme' ? normalizedUiTheme : candidate[name];
@@ -3755,6 +3762,77 @@ EXP.Audit = (() => {
   return Object.freeze({ detected, decision, revealed, concealed, prune, snapshot, resetRoute });
 })();
 
+// Store adapters register here. The engine, settings and menu talk to EXP.Retailer,
+// which forwards to whichever registered adapter matches the current site, so
+// supporting another store means adding an adapter and registering it.
+//
+// An adapter provides: key, label, patternIds, features, eligible(), classify(),
+// detect(roots), structuralSafety(node), diagnose(), nextEpoch(), cleanup().
+// Optional: couponCandidates(roots), verifyCouponTarget(control),
+// cosmeticRecommendationCandidates(roots).
+EXP.Retailers = (() => {
+  const adapters = new Map();
+  const REQUIRED = ['eligible', 'classify', 'detect', 'structuralSafety', 'diagnose', 'nextEpoch', 'cleanup'];
+
+  function register(adapter) {
+    if (!adapter || typeof adapter.key !== 'string' || !/^[a-z][a-z0-9-]*$/.test(adapter.key)) {
+      throw Object.assign(new Error('Retailer adapter needs a lowercase key'), { code: 'RETAILER_KEY' });
+    }
+    if (adapters.has(adapter.key)) throw Object.assign(new Error(`Duplicate retailer adapter: ${adapter.key}`), { code: 'RETAILER_DUPLICATE' });
+    for (const name of REQUIRED) {
+      if (typeof adapter[name] !== 'function') throw Object.assign(new Error(`Retailer adapter ${adapter.key} is missing ${name}()`), { code: 'RETAILER_INTERFACE' });
+    }
+    adapters.set(adapter.key, adapter);
+    return adapter;
+  }
+
+  function all() { return [...adapters.values()]; }
+  function get(key) { return adapters.get(key) || null; }
+  function keys() { return [...adapters.keys()]; }
+  // The adapter for the page being viewed, or null on an unsupported site.
+  function current() {
+    for (const adapter of adapters.values()) {
+      try { if (adapter.eligible()) return adapter; } catch { /* a broken adapter never claims a page */ }
+    }
+    return null;
+  }
+
+  return Object.freeze({ register, all, get, keys, current });
+})();
+
+// What the engine and menu call. Everything falls back to a safe answer on a page
+// that no adapter supports.
+EXP.Retailer = (() => {
+  const idle = Object.freeze({ id: 'none', key: 'none', label: 'Store', health: 'inactive', eligible: false, pageType: 'unsupported' });
+  const none = () => [];
+  function adapter() { return EXP.Retailers.current(); }
+  function optional(name, fallback) {
+    return (...args) => {
+      const active = adapter();
+      return active && typeof active[name] === 'function' ? active[name](...args) : fallback(...args);
+    };
+  }
+
+  return Object.freeze({
+    key: () => adapter()?.key || 'none',
+    label: () => adapter()?.label || 'Store',
+    features: () => adapter()?.features || Object.freeze({}),
+    patternIds: () => new Set(adapter()?.patternIds || []),
+    eligible: () => Boolean(adapter()),
+    // WARD acts on this page only if the master switch and this store's own switch are on.
+    enabled: (settings) => Boolean(settings?.enabled) && Boolean(adapter()) && settings.retailers?.[adapter().key] !== false,
+    classify: optional('classify', () => 'other'),
+    detect: optional('detect', none),
+    couponCandidates: optional('couponCandidates', none),
+    verifyCouponTarget: optional('verifyCouponTarget', () => ({ eligible: false, reason: 'unsupported-store' })),
+    cosmeticRecommendationCandidates: optional('cosmeticRecommendationCandidates', none),
+    structuralSafety: optional('structuralSafety', () => ({ safe: false, reason: 'unsupported-store' })),
+    diagnose: () => adapter()?.diagnose() || idle,
+    nextEpoch: () => { for (const item of EXP.Retailers.all()) item.nextEpoch(); },
+    cleanup: () => { for (const item of EXP.Retailers.all()) item.cleanup(); },
+  });
+})();
+
 EXP.AmazonAdapter = (() => {
   const ID = 'ward.retailer.amazon';
   const VERSION = '3';
@@ -3895,8 +3973,10 @@ EXP.AmazonAdapter = (() => {
   function diagnose() { return { id: ID, version: VERSION, health, eligible: eligible(), pageType: eligible() ? classify() : 'unsupported', detectorCount: detectors.length, coverage: lastScan ? { ...lastScan, eligibleDetectors:lastScan.eligibleDetectors.slice(), matchedDetectors:lastScan.matchedDetectors.slice() } : null, errors: errors.map(({ code }) => ({ code })) }; }
   function nextEpoch() { epoch += 1; health = eligible() ? 'healthy' : 'inactive'; resetCoverage(); return epoch; }
   function cleanup() { epoch += 1; health = 'inactive'; resetCoverage(); errors.length = 0; }
-  return Object.freeze({ ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
+  const patternIds = Object.freeze([...new Set(detectors.map((detector) => detector.patternId))]);
+  return Object.freeze({ key: 'amazon', label: 'Amazon', features: Object.freeze({ coupons: true, compactSearch: true, recommendationCleanup: true }), patternIds, ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
 })();
+EXP.Retailers.register(EXP.AmazonAdapter);
 
 EXP.Activity = (() => {
   const active = new Map();
@@ -4306,7 +4386,7 @@ EXP.Actions = (() => {
 EXP.Layout = (() => {
   let style;
   function apply(settings, pageType) {
-    const enabled = settings.enabled && settings.amazonEnabled && !settings.safeMode && settings.compactSearch && pageType === 'search';
+    const enabled = EXP.Retailer.enabled(settings) && EXP.Retailer.features().compactSearch && !settings.safeMode && settings.compactSearch && pageType === 'search';
     if (!enabled) { style?.remove(); style = null; return; }
     if (style?.active()) return;
     style = EXP.PageStyles.inject(`
@@ -4328,7 +4408,7 @@ EXP.Engine = (() => {
 
   function activityDigest() {
     const data = EXP.Activity.snapshot();
-    const adapter = EXP.AmazonAdapter.diagnose();
+    const adapter = EXP.Retailer.diagnose();
     return JSON.stringify({ active: data.active, totals: data.totals, breakdown: data.breakdown, adapter:adapter.health, coupon:couponStatus, quarantined:couponQuarantined });
   }
 
@@ -4348,7 +4428,7 @@ EXP.Engine = (() => {
   }
 
   function requestedDecision(evidence, pattern, settings) {
-    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode) return { action: 'allow', reason: 'protection-disabled' };
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode) return { action: 'allow', reason: 'protection-disabled' };
     if(settings.pageExceptions?.some(v=>v.path===location.hostname+location.pathname&&v.patternId===pattern.id))return {action:'allow',reason:'remembered-page-exception'};
     const patternMode = settings.patterns[pattern.id] || 'inherit';
     const categoryMode = settings.categories[pattern.category] || 'inherit';
@@ -4433,12 +4513,12 @@ EXP.Engine = (() => {
   }
 
   function processCoupons(roots, settings) {
-    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode || !settings.autoClipCoupons) { couponStatus = { state:'disabled', reason:'coupon-setting', lastResult:couponStatus.lastResult }; return; }
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode || !settings.autoClipCoupons || !EXP.Retailer.features().coupons) { couponStatus = { state:'disabled', reason:'coupon-setting', lastResult:couponStatus.lastResult }; return; }
     if (couponQuarantined) { couponStatus = { state:'quarantined', reason:couponStatus.reason || 'coupon-quarantine', lastResult:couponStatus.lastResult }; return; }
-    const candidates = EXP.AmazonAdapter.couponCandidates(roots);
+    const candidates = EXP.Retailer.couponCandidates(roots);
     if (!candidates.length && couponStatus.state === 'ready') couponStatus = { state:'idle', reason:'no-eligible-coupon', lastResult:null };
     for (const control of candidates) {
-      const check = EXP.AmazonAdapter.verifyCouponTarget(control);
+      const check = EXP.Retailer.verifyCouponTarget(control);
       if (!check.eligible) { if (!control.dataset.wardCouponSkipped) { control.dataset.wardCouponSkipped = check.reason; EXP.Activity.coupon('skipped'); couponStatus = { state:'attention', reason:check.reason, lastResult:'skipped' }; } continue; }
       if (couponPending.has(control)) continue;
       couponStatus = { state:'checking', reason:'awaiting-confirmation', lastResult:couponStatus.lastResult };
@@ -4480,21 +4560,21 @@ EXP.Engine = (() => {
   function processBatch(roots = [document]) {
     if (!active) return;
     const settings = EXP.Settings.snapshot();
-    if (!settings.enabled || !settings.amazonEnabled || settings.safeMode || !EXP.AmazonAdapter.eligible()) { EXP.Actions.restoreAll(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
-    const pageType = EXP.AmazonAdapter.classify();
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode) { EXP.Actions.restoreAll(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
+    const pageType = EXP.Retailer.classify();
     EXP.Layout.apply(settings, pageType);
-    const evidenceList = EXP.AmazonAdapter.detect(roots);
+    const evidenceList = EXP.Retailer.detect(roots);
     const seenNodes = new Set();
     for (const evidence of evidenceList) {
       seenNodes.add(evidence.node);
       processEvidence(evidence, settings);
     }
-    if (settings.recommendationCleanup) {
-      for (const node of EXP.AmazonAdapter.cosmeticRecommendationCandidates(roots)) {
+    if (settings.recommendationCleanup && EXP.Retailer.features().recommendationCleanup) {
+      for (const node of EXP.Retailer.cosmeticRecommendationCandidates(roots)) {
         if (seenNodes.has(node)) continue;
-        const structural = EXP.AmazonAdapter.structuralSafety(node);
+        const structural = EXP.Retailer.structuralSafety(node);
         const evidence = {
-          detectorId: 'amazon.cross-sell.recommendation',
+          detectorId: `${EXP.Retailer.key()}.cross-sell.recommendation`,
           patternId: 'cross-sell.recommendation',
           pageType,
           node,
@@ -4524,11 +4604,11 @@ EXP.Engine = (() => {
   }
 
   function rebuild() { EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
-  function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.AmazonAdapter.nextEpoch(); EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
-  function start() { if (active) return; active = true; routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'start', lastResult:null }; EXP.AmazonAdapter.nextEpoch(); EXP.Audit?.resetRoute?.(); processBatch([document]); }
+  function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.Retailer.nextEpoch(); EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
+  function start() { if (active) return; active = true; routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'start', lastResult:null }; EXP.Retailer.nextEpoch(); EXP.Audit?.resetRoute?.(); processBatch([document]); }
   function stop() { active = false; couponPending.clear(); couponStatus = { state:'disabled', reason:'engine-stopped', lastResult:couponStatus.lastResult }; EXP.Actions.restoreAll(); EXP.Layout.cleanup(); publishSuiteState('inactive'); }
-  function cleanup() { stop(); EXP.Actions.cleanup(); EXP.PageStyles.cleanup(); EXP.AmazonAdapter.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
-  function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, adapter: EXP.AmazonAdapter.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
+  function cleanup() { stop(); EXP.Actions.cleanup(); EXP.PageStyles.cleanup(); EXP.Retailer.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
+  function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, adapter: EXP.Retailer.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
@@ -4646,7 +4726,7 @@ EXP.UI = (() => {
   const views = [
     ['page', 'Protection'],
     ['look', 'Appearance'],
-    ['tools', 'Amazon'],
+    ['tools', EXP.Retailer.label()],
     ['system', 'System']
   ];
 
@@ -4954,7 +5034,7 @@ EXP.UI = (() => {
     general.append(row('Content action','Hide or dim matched content; purchase controls remain visible.',
       selectControl(settings.contentAction,'Content action',[['automatic','Automatic'],['hide','Hide'],['dim','Dim']],
         value => update({contentAction:value},'content-action'))));
-    general.append(row('Amazon adapter','Selector and safety system status.',adapterHealthControl()));
+    general.append(row(`${EXP.Retailer.label()} adapter`,'Selector and safety system status.',adapterHealthControl()));
 
     const summary = el('div');
     summary.setAttribute('data-exp-activity-summary','1');
@@ -4992,9 +5072,20 @@ EXP.UI = (() => {
 
   function amazonView(settings) {
     const fragment = document.createDocumentFragment();
-    const amazon = section('Amazon');
+    const amazon = section(EXP.Retailer.label());
+    const features = EXP.Retailer.features();
+    const storeKey = EXP.Retailer.key();
 
     amazon.append(
+      row(`Protect ${EXP.Retailer.label()}`,'',
+        switchControl(
+          settings.retailers?.[storeKey] !== false,
+          `Protect ${EXP.Retailer.label()}`,
+          value => update({retailers:{...settings.retailers,[storeKey]:value}},'store-setting')
+        ))
+    );
+
+    if (features.coupons) amazon.append(
       row('Auto-clip coupons','',
         switchControl(
           settings.autoClipCoupons,
@@ -5003,7 +5094,7 @@ EXP.UI = (() => {
         ))
     );
 
-    amazon.append(
+    if (features.compactSearch) amazon.append(
       row('Compact search','',
         switchControl(
           settings.compactSearch,
@@ -5012,7 +5103,7 @@ EXP.UI = (() => {
         ))
     );
 
-    amazon.append(
+    if (features.recommendationCleanup) amazon.append(
       row('Recommendation cleanup','',
         switchControl(
           settings.recommendationCleanup,
@@ -5021,17 +5112,22 @@ EXP.UI = (() => {
         ))
     );
 
-    const couponStatus = el('div');
-    couponStatus.setAttribute('data-exp-coupon-status','1');
-    renderCouponStatus(couponStatus);
-    fragment.append(amazon,couponStatus);
+    fragment.append(amazon);
+    if (features.coupons) {
+      const couponStatus = el('div');
+      couponStatus.setAttribute('data-exp-coupon-status','1');
+      renderCouponStatus(couponStatus);
+      fragment.append(couponStatus);
+    }
     return fragment;
   }
 
   function patternsView(settings) {
-    const box = section('Amazon patterns');
+    const box = section(`${EXP.Retailer.label()} patterns`);
     box.classList.add('advanced-patterns');
+    const available = EXP.Retailer.patternIds();
     for (const [,label,id] of sourceToggles) {
+      if (!available.has(id)) continue;
       box.append(
         row(label,'',
           selectControl(
@@ -5063,7 +5159,7 @@ EXP.UI = (() => {
     const fragment = document.createDocumentFragment();
     fragment.append(amazonView(settings));
 
-    const advanced = ExtraPotionsCore.createDisclosure('Advanced Amazon');
+    const advanced = ExtraPotionsCore.createDisclosure(`Advanced ${EXP.Retailer.label()}`);
     const controls = section('Pattern controls');
     controls.append(
       row('Individual patterns','',
@@ -5142,17 +5238,18 @@ EXP.UI = (() => {
     for(const exception of EXP.Settings.snapshot().pageExceptions||[])recovery.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
 
     tools.append(ExtraPotionsCore.createCompatibilityControls());
-    data.append(row('Reset Amazon settings','Resets WARD Amazon settings and pattern overrides.',action('Reset',resetAmazon,'warn')));
+    data.append(row(`Reset ${EXP.Retailer.label()} settings`,`Resets WARD ${EXP.Retailer.label()} settings and pattern overrides.`,action('Reset',resetAmazon,'warn')));
     if ((EXP.Settings.snapshot().pageExceptions || []).length) tools.append(recovery);
     fragment.append(tools);
     return fragment;
   }
 
   function resetAmazon() {
-    if (!confirm('Reset WARD Amazon settings and pattern overrides?')) return;
+    const storeKey = EXP.Retailer.key();
+    if (!confirm(`Reset WARD ${EXP.Retailer.label()} settings and pattern overrides?`)) return;
     update(
       {
-        amazonEnabled:true,
+        retailers:{...EXP.Settings.snapshot().retailers,[storeKey]:true},
         autoClipCoupons:true,
         compactSearch:false,
         recommendationCleanup:true,
@@ -5161,7 +5258,7 @@ EXP.UI = (() => {
       },
       'reset-amazon'
     );
-    notify('Amazon settings reset.');
+    notify(`${EXP.Retailer.label()} settings reset.`);
   }
 
   function renderView() {
@@ -5443,7 +5540,7 @@ EXP.App = (() => {
 
   async function enable() {
     const settings = EXP.Settings.snapshot();
-    if (!settings.enabled || !settings.amazonEnabled) {
+    if (!EXP.Retailer.enabled(settings)) {
       scheduler.stop();
       EXP.Engine.stop();
       EXP.UI.refresh();

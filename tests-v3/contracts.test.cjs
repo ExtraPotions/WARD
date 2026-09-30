@@ -39,7 +39,7 @@ test('Amazon adapter owns selectors and the coupon gate is narrow', () => {
 });
 
 test('runtime contains no unconditional polling loop or raw error message diagnostics', () => {
-  const source = ['src/audit.js','src/amazon-adapter.js','src/activity.js','src/page-styles.js','src/actions.js','src/layout.js','src/engine.js','src/release-notes.js','src/ui.js','src/main.js'].map(read).join('\n');
+  const source = ['src/audit.js','src/retailers.js','src/amazon-adapter.js','src/activity.js','src/page-styles.js','src/actions.js','src/layout.js','src/engine.js','src/release-notes.js','src/ui.js','src/main.js'].map(read).join('\n');
   assert.doesNotMatch(source, /setInterval\s*\(/);
   assert.doesNotMatch(source, /error\.message|outerHTML/);
 });
@@ -163,7 +163,7 @@ test('coupon automation reports status and supports explicit quarantine recovery
 
 test('Protection view exposes a non-color Amazon adapter health state', () => {
   const ui = read('src/ui.js');
-  assert.match(ui, /Amazon adapter/);
+  assert.ok(ui.includes('${EXP.Retailer.label()} adapter'));
   assert.match(ui, /data-exp-adapter-health/);
   assert.match(ui, /Healthy|Attention|Inactive/);
 });

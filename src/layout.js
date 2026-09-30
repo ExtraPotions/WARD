@@ -1,7 +1,7 @@
 EXP.Layout = (() => {
   let style;
   function apply(settings, pageType) {
-    const enabled = settings.enabled && settings.amazonEnabled && !settings.safeMode && settings.compactSearch && pageType === 'search';
+    const enabled = EXP.Retailer.enabled(settings) && EXP.Retailer.features().compactSearch && !settings.safeMode && settings.compactSearch && pageType === 'search';
     if (!enabled) { style?.remove(); style = null; return; }
     if (style?.active()) return;
     style = EXP.PageStyles.inject(`
