@@ -8,7 +8,7 @@ EXP.AmazonAdapter = (() => {
   let routeMatchedTargets = new WeakSet();
   let routeMatchedTargetCount = 0;
   const routeMatchedDetectors = new Set();
-  const supportedHosts = new Set(['www.amazon.com', 'smile.amazon.com']);
+  const supportedHosts = new Set(['www.amazon.com']);
   // These identify complete ad units, not arbitrary containers with ad text.
   // Their iframe/carousel children belong to the ad and can hide with the unit.
   const sponsoredWrapperSelector = 'div.ape-wrapper[id^="ape_"][id$="_wrapper"]';

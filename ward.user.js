@@ -14,7 +14,6 @@
 // @updateURL    https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js
 // @downloadURL  https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js
 // @match        https://www.amazon.com/*
-// @match        https://smile.amazon.com/*
 // @match        https://www.walmart.com/*
 // @match        https://www.ebay.com/*
 // @match        https://cart.ebay.com/*
@@ -3955,7 +3954,7 @@ EXP.AmazonAdapter = (() => {
   let routeMatchedTargets = new WeakSet();
   let routeMatchedTargetCount = 0;
   const routeMatchedDetectors = new Set();
-  const supportedHosts = new Set(['www.amazon.com', 'smile.amazon.com']);
+  const supportedHosts = new Set(['www.amazon.com']);
   // These identify complete ad units, not arbitrary containers with ad text.
   // Their iframe/carousel children belong to the ad and can hide with the unit.
   const sponsoredWrapperSelector = 'div.ape-wrapper[id^="ape_"][id$="_wrapper"]';

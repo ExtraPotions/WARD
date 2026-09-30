@@ -14,7 +14,6 @@
 // @updateURL    https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js
 // @downloadURL  https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js
 // @match        https://www.amazon.com/*
-// @match        https://smile.amazon.com/*
 // @match        https://www.walmart.com/*
 // @match        https://www.ebay.com/*
 // @match        https://cart.ebay.com/*
