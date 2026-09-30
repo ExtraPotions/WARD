@@ -36,22 +36,6 @@ jobs:
             tag="v$version"
           fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-      # One-time synchronization for this parity release. Subsequent versions
-      # build from their own committed vendor files without overriding them.
-      - name: Check out verified Core for 3.2.13
-        if: github.ref == 'refs/heads/main' && steps.release.outputs.tag == 'v3.2.13'
-        uses: actions/checkout@v7
-        with:
-          repository: ExtraPotions/exp-core
-          ref: 30132f6c152c6cf3ce6f5811d05652bae44bb9c0
-          path: .release-core
-          persist-credentials: false
-      - name: Synchronize verified Core
-        if: github.ref == 'refs/heads/main' && steps.release.outputs.tag == 'v3.2.13'
-        run: |
-          cp .release-core/dist/exp-core.js vendor/exp-core/exp-core.js
-          cp .release-core/dist/manifest.json vendor/exp-core/manifest.json
-          node --test .release-core/tests/update-version-regression.test.cjs
       - name: Build and validate release
         env:
           TAG: ${{ steps.release.outputs.tag }}
@@ -72,7 +56,7 @@ jobs:
             if ! git diff --cached --quiet; then
               git config user.name 'github-actions[bot]'
               git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-              git commit -m 'Build verified WARD 3.2.13 release artifacts'
+              git commit -m "Build verified WARD ${{ steps.release.outputs.tag }} release artifacts"
               git push origin HEAD:main
             fi
           fi
