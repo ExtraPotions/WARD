@@ -117,3 +117,43 @@ test('product pages: plan, card banner, brand ad and Walmart+ badge are found; p
   assert.ok(found.filter((item) => item.pattern !== 'pricing.reference-price').every((item) => item.safe), 'every removable target is a complete, self-contained unit');
   assert.ok(found.every((item) => !['add-to-cart-section', 'add-to-cart-button', 'ugpp-main-price', 'price-wrap'].includes(item.tag)));
 });
+
+// Cart with an item, from a signed-in walmart.com cart: the Walmart+ banner is a
+// button-free section inside the same column as the checkout button.
+const cartHtml = `<!doctype html><html><body><div data-testid="layout-container"><main data-testid="maincontent"><div data-testid="cart-page"><div data-testid="full-page-cart">
+  <div data-testid="product-tile-container"><span data-testid="badgeTagComponent"><span>100+ bought since yesterday</span></span><span data-testid="badgeTagComponent"><span>Best seller</span></span><span data-testid="badgeTagComponent"><span>Low stock</span></span><button>Remove</button></div>
+  <div class="summary"><button type="button">Continue to checkout</button>
+    <section><div><div><div data-testid="wplus-banner-title-cart">Save $6.99 now &amp; skip future order minimum fees as a member</div></div></div></section>
+    <a href="#">learn more about gifting</a></div>
+</div></div></main></div></body></html>`;
+
+test('cart with an item: pressure badges and the Walmart+ banner are found, checkout is untouched', async (t) => {
+  const browser = await chromium.launch({ headless: true });
+  t.after(() => browser.close());
+  const page = await open(browser, 'https://www.walmart.com/cart', cartHtml);
+  const found = await page.evaluate(() => EXP.Retailer.detect([document]).map((e) => ({ pattern: e.patternId, tag: e.node.tagName, text: e.node.textContent.trim().slice(0, 30), safe: e.structuralSafe, reason: e.structuralReason })));
+  const patterns = found.map((item) => item.pattern).sort();
+  assert.deepEqual(patterns, ['pressure.scarcity', 'pressure.social-proof', 'upsell.store-membership']);
+  const banner = found.find((item) => item.pattern === 'upsell.store-membership');
+  assert.equal(banner.tag, 'SECTION');
+  assert.equal(banner.safe, true);
+  assert.ok(found.every((item) => !/checkout|Remove/i.test(item.text)));
+});
+
+// Checkout review screen, from a signed-in walmart.com order review.
+const checkoutHtml = `<!doctype html><html><body><div data-testid="layout-container"><main data-testid="maincontent">
+  <div data-testid="add-or-change-payment-button"><button type="button">Add or change</button></div>
+  <div data-testid="more-ways-to-pay-component-wrapper">More ways to pay CashRewards Card Earn cash back <button>Learn how</button><button>Connect</button></div>
+  <div data-testid="wplus-opt-out-banner">Membership offer Try 30 days of Walmart+ for just $1! <button>Claim now</button></div>
+  <div data-testid="donations-roundup-banner"><input type="checkbox"><button>More details</button></div>
+  <div data-testid="purchase-order-summary"><button data-testid="place-order-button" type="button">Place order</button></div>
+</main></div></body></html>`;
+
+test('checkout review: the membership trial and card offer are found; payment, donation and place order are not', async (t) => {
+  const browser = await chromium.launch({ headless: true });
+  t.after(() => browser.close());
+  const page = await open(browser, 'https://www.walmart.com/checkout/review-order', checkoutHtml);
+  const found = await page.evaluate(() => EXP.Retailer.detect([document]).map((e) => ({ pattern: e.patternId, tag: e.node.getAttribute('data-testid'), safe: e.structuralSafe })));
+  assert.deepEqual(found.map((item) => item.tag).sort(), ['more-ways-to-pay-component-wrapper', 'wplus-opt-out-banner']);
+  assert.ok(found.every((item) => item.safe));
+});

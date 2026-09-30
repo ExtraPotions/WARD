@@ -3995,14 +3995,17 @@ EXP.WalmartAdapter = (() => {
   const supportedHosts = new Set(['www.walmart.com', 'walmart.com']);
   const badge = '[data-testid="badgeTagComponent"]';
   const essentialSelector = ['[data-testid*="add-to-cart" i]', '[data-testid="ugpp-main-price"]', '[data-testid="product-title"]', '[data-testid*="checkout" i]', '[data-testid*="fulfillment" i]', 'form[action*="cart" i]', 'button[type="submit"]'].join(',');
-  const knownStaticSelector = '[data-testid="item-addon-services-new"], [data-testid="oneDebitCardBannerLink"], [data-testid="save-with-walmart-plus-badge"]';
+  const knownStaticSelector = '[data-testid="item-addon-services-new"], [data-testid="oneDebitCardBannerLink"], [data-testid="save-with-walmart-plus-badge"], [data-testid="wplus-opt-out-banner"], [data-testid="more-ways-to-pay-component-wrapper"]';
   const protectedRootSelector = '[data-testid="maincontent"], [data-testid="main-content-container"], [data-testid="layout-container"], [data-testid="item-stack"], main, [role~="main"]';
   const detectors = Object.freeze([
-    { id: 'walmart.social-proof.badge', patternId: 'pressure.social-proof', pages: ['search', 'product', 'home'], selectors: [badge], text: /\bbought since\b|\bin [\d.,]+k?\+? people'?s carts?\b|\bpeople (?:are )?(?:viewing|looking)\b|\b[\d.,]+k?\+? (?:viewed|bought)\b/i },
+    { id: 'walmart.social-proof.badge', patternId: 'pressure.social-proof', pages: ['search', 'product', 'home', 'cart'], selectors: [badge], text: /\bbought since\b|\bin [\d.,]+k?\+? people'?s carts?\b|\bpeople (?:are )?(?:viewing|looking)\b|\b[\d.,]+k?\+? (?:viewed|bought)\b/i },
     { id: 'walmart.scarcity.badge', patternId: 'pressure.scarcity', pages: ['search', 'product', 'cart'], selectors: [badge], text: /\blow stock\b|\bonly \d+ left\b|\balmost gone\b/i },
     { id: 'walmart.urgency.badge', patternId: 'pressure.urgency', pages: ['search', 'product'], selectors: [badge], text: /^(?:deal|flash deal|ends (?:in|soon).*)$/i },
     { id: 'walmart.membership.badge', patternId: 'upsell.store-membership', pages: ['search', 'product', 'cart', 'home'], selectors: [badge], text: /^save with$|walmart\s?\+/i },
     { id: 'walmart.membership.cart-badge', patternId: 'upsell.store-membership', pages: ['cart', 'search', 'product'], selectors: ['[data-testid="save-with-walmart-plus-badge"]'] },
+    { id: 'walmart.membership.checkout-banner', patternId: 'upsell.store-membership', pages: ['checkout'], selectors: ['[data-testid="wplus-opt-out-banner"]'] },
+    { id: 'walmart.financial.more-ways-to-pay', patternId: 'upsell.financial-product', pages: ['checkout'], selectors: ['[data-testid="more-ways-to-pay-component-wrapper"]'] },
+    { id: 'walmart.membership.cart-banner', patternId: 'upsell.store-membership', pages: ['cart'], selectors: ['[data-testid="wplus-banner-title-cart"]'], unit: 'section' },
     { id: 'walmart.plan.protection', patternId: 'upsell.protection-plan', pages: ['product', 'cart'], selectors: ['[data-testid="item-addon-services-new"]'] },
     { id: 'walmart.financial.card', patternId: 'upsell.financial-product', pages: ['product', 'cart', 'checkout', 'home'], selectors: ['[data-testid="oneDebitCardBannerLink"]'] },
     { id: 'walmart.sponsored.placement', patternId: 'sponsorship.placement', pages: ['search', 'product', 'home'], selectors: ['[data-testid="skyline-ad"]', '[data-testid="brand-box-ad"]', '[data-testid="sb-container"]', '[data-ad-component-type]'] },
@@ -4026,13 +4029,16 @@ EXP.WalmartAdapter = (() => {
     return !node || node === document.documentElement || node === document.head || node === document.body ||
       Boolean(node.matches?.(protectedRootSelector)) || Boolean(node.querySelector?.(`${protectedRootSelector}, [data-exp-owned="1"]`));
   }
-  function essentialOverlap(node) { return Boolean(node.matches?.(essentialSelector) || node.closest?.(essentialSelector) || safeQueryAll(node, essentialSelector).length); }
+  const purchaseWording = /check ?out|place (?:your )?order|add to cart|buy now|continue/i;
+  function hasPurchaseControl(node) { return [...(node.querySelectorAll?.('button, a, input[type="submit"]') || [])].some((control) => purchaseWording.test(control.textContent || control.value || control.getAttribute('aria-label') || '')); }
+  function essentialOverlap(node) { return hasPurchaseControl(node) || Boolean(node.matches?.(essentialSelector) || node.closest?.(essentialSelector) || safeQueryAll(node, essentialSelector).length); }
   // Only whole badges and complete ad units are known to be self-contained.
   function structuralSafety(node) {
     if (!node?.isConnected) return { safe: false, reason: 'detached' };
     if (isProtectedPageRoot(node) || node.closest?.('[data-exp-owned="1"]')) return { safe: false, reason: 'protected-root' };
     if (essentialOverlap(node)) return { safe: false, reason: 'essential-overlap' };
     if (node.matches?.(badge)) return { safe: true, reason: 'known-badge' };
+    if (node.matches?.('section') && node.querySelector('[data-testid="wplus-banner-title-cart"]')) return { safe: true, reason: 'membership-banner' };
     if (node.matches?.(knownStaticSelector)) return { safe: true, reason: 'known-static' };
     if (node.matches?.('[data-testid="skyline-ad"], [data-testid="brand-box-ad"], [data-testid="sb-container"]')) return { safe: true, reason: 'complete-sponsored-placement' };
     return { safe: false, reason: 'unverified-container' };
@@ -4048,7 +4054,9 @@ EXP.WalmartAdapter = (() => {
     health = 'healthy';
     for (const detector of eligibleDetectors) {
       try {
-        for (const root of roots) for (const selector of detector.selectors) for (const node of [...(root.matches?.(selector) ? [root] : []), ...safeQueryAll(root, selector)]) {
+        for (const root of roots) for (const selector of detector.selectors) for (const match of [...(root.matches?.(selector) ? [root] : []), ...safeQueryAll(root, selector)]) {
+          const unit = detector.unit ? match.closest(detector.unit) : null;
+          const node = unit && !hasPurchaseControl(unit) ? unit : match;
           if (!node.isConnected || isProtectedPageRoot(node) || node.closest('[data-exp-owned="1"]')) continue;
           if (detector.text && !detector.text.test((node.textContent || '').trim())) continue;
           matchedDetectors.add(detector.id);
@@ -4057,7 +4065,7 @@ EXP.WalmartAdapter = (() => {
           const structural = structuralSafety(node);
           const confidence = essential ? 'ambiguous' : 'confirmed';
           EXP.Audit?.detected?.(node, { detectorId: detector.id, patternId: detector.patternId, confidence, structuralSafe: structural.safe, structuralReason: structural.reason });
-          if (!found.has(node)) found.set(node, Object.freeze({ evidenceId: `${detector.id}:${selector}`, detectorId: detector.id, patternId: detector.patternId, pageType, node, signals: ['adapter-selector'], exclusions: essential ? ['essential-overlap'] : [], essentialOverlap: essential, structuralSafe: structural.safe, structuralReason: structural.reason, confidence }));
+          if (!found.has(node)) found.set(node, Object.freeze({ evidenceId: `${detector.id}:${selector}`, detectorId: detector.id, patternId: detector.patternId, pageType, node, signals: ['adapter-selector'], exclusions: essential ? ['essential-overlap'] : [], essentialOverlap: essential, structuralSafe: structural.safe, structuralReason: structural.reason, confidence, epoch }));
         }
       } catch (error) { record(error, 'DETECTOR_FAILURE'); }
     }
