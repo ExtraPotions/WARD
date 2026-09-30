@@ -21,9 +21,9 @@ async function open(browser, url, html) {
 const row = (...texts) => `<div class="s-card__attribute-row">${texts.map((text) => `<span class="su-styled-text primary">${text}</span>`).join('')}</div>`;
 const card = (rows, label = '') => `<li class="s-card s-card--horizontal"><a href="/itm/1"><span class="s-card__title">Thing</span></a>${label}${rows}</li>`;
 // Markup mirrors ebay.com search: readable class names, badges as plain text spans.
-const searchHtml = `<!doctype html><html><body><main id="mainContent"><div class="srp-main"><div class="srp-river"><ul class="srp-results">
+const searchHtml = `<!doctype html><html><body><div hidden><div id="s-a">Sponsored</div><div id="s-b"></div></div><main id="mainContent"><div class="srp-main"><div class="srp-river"><ul class="srp-results">
   ${card(row('161 sold') + row('35 watchers') + row('Free delivery') + row('Save up to 20% when you buy more') + row('Last one'))}
-  ${card(row('Brand New'), '<div><span>Sponsored</span></div>')}
+  ${card(row('Brand New'), '<div class="s-card__footer"><b role="heading" aria-labelledby="s-a s-b"></b></div>')}
   ${card(row('Free returns'))}
   <li class="srp-river-answer srp-river-answer--ITEMS_CAROUSEL_WITH_COLOR"><h2>Picked For You</h2><a href="/itm/2">x</a><button aria-label="Next">next</button></li>
   <li class="srp-river-answer srp-river-answer--BASIC_PAGINATION_V2"><a href="?_pgn=2">2</a></li>

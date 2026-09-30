@@ -54,9 +54,13 @@ EXP.EbayAdapter = (() => {
     return { safe: false, reason: 'unverified-container' };
   }
 
-  // A result card is sponsored only if a label of exactly that word sits in it.
+  // eBay draws its "Sponsored" tag as a background image on a heading that points
+  // at a hidden label (aria-labelledby), so the word itself is never inside the card.
+  // A card counts only when one of those labels reads exactly "Sponsored".
+  function readsSponsored(id) { return /^sponsored$/i.test((document.getElementById(id)?.textContent || '').trim()); }
   function carriesSponsoredLabel(card) {
-    return [...card.querySelectorAll('span, div')].some((label) => !label.childElementCount && /^sponsored$/i.test((label.textContent || '').trim()));
+    return [...card.querySelectorAll('[aria-labelledby]')].some((label) => label.getAttribute('aria-labelledby').split(/s+/).some(readsSponsored)) ||
+      [...card.querySelectorAll('span, div')].some((label) => !label.childElementCount && /^sponsored$/i.test((label.textContent || '').trim()));
   }
 
   function detect(roots = [document]) {
