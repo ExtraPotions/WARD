@@ -11,13 +11,17 @@ EXP.WalmartAdapter = (() => {
   const supportedHosts = new Set(['www.walmart.com', 'walmart.com']);
   const badge = '[data-testid="badgeTagComponent"]';
   const essentialSelector = ['[data-testid*="add-to-cart" i]', '[data-testid="ugpp-main-price"]', '[data-testid="product-title"]', '[data-testid*="checkout" i]', '[data-testid*="fulfillment" i]', 'form[action*="cart" i]', 'button[type="submit"]'].join(',');
+  const knownStaticSelector = '[data-testid="item-addon-services-new"], [data-testid="oneDebitCardBannerLink"], [data-testid="save-with-walmart-plus-badge"]';
   const protectedRootSelector = '[data-testid="maincontent"], [data-testid="main-content-container"], [data-testid="layout-container"], [data-testid="item-stack"], main, [role~="main"]';
   const detectors = Object.freeze([
     { id: 'walmart.social-proof.badge', patternId: 'pressure.social-proof', pages: ['search', 'product', 'home'], selectors: [badge], text: /\bbought since\b|\bin [\d.,]+k?\+? people'?s carts?\b|\bpeople (?:are )?(?:viewing|looking)\b|\b[\d.,]+k?\+? (?:viewed|bought)\b/i },
     { id: 'walmart.scarcity.badge', patternId: 'pressure.scarcity', pages: ['search', 'product', 'cart'], selectors: [badge], text: /\blow stock\b|\bonly \d+ left\b|\balmost gone\b/i },
     { id: 'walmart.urgency.badge', patternId: 'pressure.urgency', pages: ['search', 'product'], selectors: [badge], text: /^(?:deal|flash deal|ends (?:in|soon).*)$/i },
-    { id: 'walmart.membership.badge', patternId: 'upsell.store-membership', pages: ['search', 'product', 'cart', 'home'], selectors: [badge], text: /^save with$|walmart\s?\+|\bplus\b.*\btrial\b/i },
-    { id: 'walmart.sponsored.placement', patternId: 'sponsorship.placement', pages: ['search', 'product', 'home'], selectors: ['[data-testid="skyline-ad"]', '[data-testid="sb-container"]', '[data-ad-component-type]'] },
+    { id: 'walmart.membership.badge', patternId: 'upsell.store-membership', pages: ['search', 'product', 'cart', 'home'], selectors: [badge], text: /^save with$|walmart\s?\+/i },
+    { id: 'walmart.membership.cart-badge', patternId: 'upsell.store-membership', pages: ['cart', 'search', 'product'], selectors: ['[data-testid="save-with-walmart-plus-badge"]'] },
+    { id: 'walmart.plan.protection', patternId: 'upsell.protection-plan', pages: ['product', 'cart'], selectors: ['[data-testid="item-addon-services-new"]'] },
+    { id: 'walmart.financial.card', patternId: 'upsell.financial-product', pages: ['product', 'cart', 'checkout', 'home'], selectors: ['[data-testid="oneDebitCardBannerLink"]'] },
+    { id: 'walmart.sponsored.placement', patternId: 'sponsorship.placement', pages: ['search', 'product', 'home'], selectors: ['[data-testid="skyline-ad"]', '[data-testid="brand-box-ad"]', '[data-testid="sb-container"]', '[data-ad-component-type]'] },
     { id: 'walmart.reference-price', patternId: 'pricing.reference-price', pages: ['search', 'product'], selectors: ['[data-testid="ugpp-was-price"]'] }
   ]);
 
@@ -45,7 +49,8 @@ EXP.WalmartAdapter = (() => {
     if (isProtectedPageRoot(node) || node.closest?.('[data-exp-owned="1"]')) return { safe: false, reason: 'protected-root' };
     if (essentialOverlap(node)) return { safe: false, reason: 'essential-overlap' };
     if (node.matches?.(badge)) return { safe: true, reason: 'known-badge' };
-    if (node.matches?.('[data-testid="skyline-ad"], [data-testid="sb-container"]')) return { safe: true, reason: 'complete-sponsored-placement' };
+    if (node.matches?.(knownStaticSelector)) return { safe: true, reason: 'known-static' };
+    if (node.matches?.('[data-testid="skyline-ad"], [data-testid="brand-box-ad"], [data-testid="sb-container"]')) return { safe: true, reason: 'complete-sponsored-placement' };
     return { safe: false, reason: 'unverified-container' };
   }
 
