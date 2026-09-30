@@ -4143,7 +4143,7 @@ EXP.EbayAdapter = (() => {
   // A card counts only when one of those labels reads exactly "Sponsored".
   function readsSponsored(id) { return /^sponsored$/i.test((document.getElementById(id)?.textContent || '').trim()); }
   function carriesSponsoredLabel(card) {
-    return [...card.querySelectorAll('[aria-labelledby]')].some((label) => label.getAttribute('aria-labelledby').split(/s+/).some(readsSponsored)) ||
+    return [...card.querySelectorAll('[aria-labelledby]')].some((label) => label.getAttribute('aria-labelledby').split(/\s+/).some(readsSponsored)) ||
       [...card.querySelectorAll('span, div')].some((label) => !label.childElementCount && /^sponsored$/i.test((label.textContent || '').trim()));
   }
 
