@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright');
 const root=path.resolve(__dirname,'..');
-const modules=['core.js','settings.js','patterns.js','audit.js','retailers.js','amazon-adapter.js','walmart-adapter.js','ebay-adapter.js','activity.js','page-styles.js','actions.js','layout.js','engine.js'];
+const modules=['core.js','settings.js','patterns.js','audit.js','retailers.js','amazon-adapter.js','walmart-adapter.js','ebay-adapter.js','etsy-adapter.js','activity.js','page-styles.js','actions.js','layout.js','engine.js'];
 const runtime=fs.readFileSync(path.join(root,'vendor/exp-core/exp-core.js'),'utf8')+'\nconst EXP={};'+modules.map(n=>fs.readFileSync(path.join(root,'src',n),'utf8')).join('\n')+'\nwindow.EXP=EXP;';
 const prime='<div id="prime-promo" class="mobile-gateway-strategic_prime-retention-plan-switch-homepage-wd-widget-cx"><a href="#plan">Switch to an annual plan</a></div>';
 const business='<div id="business-promo" data-card-metrics-id="abxs-yo-dsk-dynamic-upsell_yo-desktop-rightrail_0"><button>Switch to Business</button></div>';

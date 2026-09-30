@@ -17,6 +17,7 @@
 // @match        https://smile.amazon.com/*
 // @match        https://www.walmart.com/*
 // @match        https://www.ebay.com/*
+// @match        https://www.etsy.com/*
 // @run-at       document-start
 // @inject-into  content
 // @grant        GM_getValue
