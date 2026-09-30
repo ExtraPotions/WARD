@@ -7,8 +7,9 @@ const path = require('node:path');
 const script = fs.readFileSync(path.resolve(__dirname, '../ward.user.js'), 'utf8');
 
 // Amazon retired AmazonSmile (smile.amazon.com) in 2023; the host now only redirects to www.amazon.com.
-test('WARD does not run on or mention the retired smile.amazon.com host', () => {
+test('WARD does not run on or treat the retired smile.amazon.com as a supported host', () => {
   assert.doesNotMatch(script, /^\/\/ @match\s+https:\/\/smile\.amazon\.com\//mu);
-  assert.doesNotMatch(script, /smile\.amazon\.com/u);
+  // A quoted host string is a supported-host entry; the release notes may still mention the name in prose.
+  assert.doesNotMatch(script, /['"`]smile\.amazon\.com['"`]/u);
   assert.match(script, /^\/\/ @match\s+https:\/\/www\.amazon\.com\/\*$/mu, 'www.amazon.com is still supported');
 });
