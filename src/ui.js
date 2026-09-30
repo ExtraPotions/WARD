@@ -28,7 +28,10 @@ EXP.UI = (() => {
     ['sponsored', 'Sponsored placements', 'sponsorship.placement'],
     ['recommendations', 'Cross-sell recommendations', 'cross-sell.recommendation'],
     ['services', 'Amazon service promotions', 'upsell.amazon-service'],
-    ['ai', 'Amazon AI shopping prompts', 'pressure.shopping-assistant']
+    ['ai', 'Amazon AI shopping prompts', 'pressure.shopping-assistant'],
+    ['social-proof', 'Popularity claims', 'pressure.social-proof'],
+    ['store-membership', 'Store membership promotions', 'upsell.store-membership'],
+    ['reference-price', 'Reference prices', 'pricing.reference-price']
   ];
 
   const categoryControls = [
@@ -38,7 +41,9 @@ EXP.UI = (() => {
     ['subscription', 'Subscriptions'],
     ['sponsored', 'Sponsored placements'],
     ['cross-sell', 'Cross-sell recommendations'],
-    ['shopping-assistant', 'Shopping assistants']
+    ['shopping-assistant', 'Shopping assistants'],
+    ['social-proof', 'Popularity claims'],
+    ['pricing', 'Reference prices']
   ];
 
   const css = `

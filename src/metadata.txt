@@ -15,6 +15,7 @@
 // @downloadURL  https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js
 // @match        https://www.amazon.com/*
 // @match        https://smile.amazon.com/*
+// @match        https://www.walmart.com/*
 // @run-at       document-start
 // @inject-into  content
 // @grant        GM_getValue

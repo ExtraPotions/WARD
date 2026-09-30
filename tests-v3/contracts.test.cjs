@@ -18,7 +18,7 @@ test('WARD V3 settings are clean, validated, and coupon clipping defaults on', (
 test('pattern registry defines unique concepts rather than selectors', () => {
   const source = read('src/patterns.js');
   const ids = [...source.matchAll(/id: '([a-z][a-z0-9.-]+)'/g)].map((match) => match[1]);
-  assert.equal(ids.length, 11);
+  assert.equal(ids.length, 14);
   assert.equal(new Set(ids).size, ids.length);
   assert.doesNotMatch(source, /querySelector|#[a-z]|\[[a-z-]+=/i);
 });
@@ -39,7 +39,7 @@ test('Amazon adapter owns selectors and the coupon gate is narrow', () => {
 });
 
 test('runtime contains no unconditional polling loop or raw error message diagnostics', () => {
-  const source = ['src/audit.js','src/retailers.js','src/amazon-adapter.js','src/activity.js','src/page-styles.js','src/actions.js','src/layout.js','src/engine.js','src/release-notes.js','src/ui.js','src/main.js'].map(read).join('\n');
+  const source = ['src/audit.js','src/retailers.js','src/amazon-adapter.js','src/walmart-adapter.js','src/activity.js','src/page-styles.js','src/actions.js','src/layout.js','src/engine.js','src/release-notes.js','src/ui.js','src/main.js'].map(read).join('\n');
   assert.doesNotMatch(source, /setInterval\s*\(/);
   assert.doesNotMatch(source, /error\.message|outerHTML/);
 });

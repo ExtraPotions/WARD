@@ -10,7 +10,10 @@ EXP.Patterns = (() => {
     { id: 'sponsorship.placement', category: 'sponsored', label: 'Sponsored placement', defaultAction: 'hide', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'complete-placement-only' },
     { id: 'cross-sell.recommendation', category: 'cross-sell', label: 'Cross-sell recommendation', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'complete-placement-only' },
     { id: 'upsell.amazon-service', category: 'upsell', label: 'Amazon service promotion', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
-    { id: 'pressure.shopping-assistant', category: 'shopping-assistant', label: 'AI shopping assistant prompt', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'complete-placement-only' }
+    { id: 'pressure.shopping-assistant', category: 'shopping-assistant', label: 'AI shopping assistant prompt', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'complete-placement-only' },
+    { id: 'pressure.social-proof', category: 'social-proof', label: 'Popularity claim', defaultAction: 'dim', allowedActions: ['dim', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'upsell.store-membership', category: 'upsell', label: 'Store membership promotion', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'pricing.reference-price', category: 'pricing', label: 'Reference price, not verified', defaultAction: 'annotate', allowedActions: ['annotate', 'allow'], essentialPolicy: 'mixed-annotate' }
   ].map((item) => Object.freeze({ ...item }));
   const byId = new Map(definitions.map((item) => [item.id, item]));
   function validate() {
