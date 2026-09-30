@@ -24,7 +24,7 @@ EXP.WalmartAdapter = (() => {
     { id: 'walmart.membership.cart-banner', patternId: 'upsell.store-membership', pages: ['cart'], selectors: ['[data-testid="wplus-banner-title-cart"]'], unit: 'section' },
     { id: 'walmart.plan.protection', patternId: 'upsell.protection-plan', pages: ['product', 'cart'], selectors: ['[data-testid="item-addon-services-new"]'] },
     { id: 'walmart.financial.card', patternId: 'upsell.financial-product', pages: ['product', 'cart', 'checkout', 'home'], selectors: ['[data-testid="oneDebitCardBannerLink"]'] },
-    { id: 'walmart.sponsored.placement', patternId: 'sponsorship.placement', pages: ['search', 'product', 'home'], selectors: ['[data-testid="skyline-ad"]', '[data-testid="brand-box-ad"]', '[data-testid="sb-container"]', '[data-ad-component-type]'] },
+    { id: 'walmart.sponsored.placement', patternId: 'sponsorship.placement', pages: ['search', 'product', 'home'], selectors: ['[data-testid="skyline-ad"]', '[data-testid="brand-box-ad"]', '[data-testid="sp"]', '[data-testid="sb-container"]', '[data-ad-component-type]'] },
     { id: 'walmart.reference-price', patternId: 'pricing.reference-price', pages: ['search', 'product'], selectors: ['[data-testid="ugpp-was-price"]'] }
   ]);
 
@@ -56,7 +56,7 @@ EXP.WalmartAdapter = (() => {
     if (node.matches?.(badge)) return { safe: true, reason: 'known-badge' };
     if (node.matches?.('section') && node.querySelector('[data-testid="wplus-banner-title-cart"]')) return { safe: true, reason: 'membership-banner' };
     if (node.matches?.(knownStaticSelector)) return { safe: true, reason: 'known-static' };
-    if (node.matches?.('[data-testid="skyline-ad"], [data-testid="brand-box-ad"], [data-testid="sb-container"]')) return { safe: true, reason: 'complete-sponsored-placement' };
+    if (node.matches?.('[data-testid="skyline-ad"], [data-testid="brand-box-ad"], [data-testid="sp"], [data-testid="sb-container"]')) return { safe: true, reason: 'complete-sponsored-placement' };
     return { safe: false, reason: 'unverified-container' };
   }
 

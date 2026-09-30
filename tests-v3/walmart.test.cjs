@@ -99,6 +99,7 @@ const productHtml = `<!doctype html><html><body><div data-testid="layout-contain
   <div data-testid="add-to-cart-section"><button data-testid="add-to-cart-button" type="button">Add to cart</button></div>
   <div data-testid="item-addon-services-new"><section data-testid="CAREPLAN_SERVICE">Walmart Accident Plan by Allstate<button type="button">What's covered</button><input type="radio"><input type="radio"></section></div>
   <div data-testid="brand-box-ad"><div data-testid="brandbox-ad"></div></div>
+  <div data-testid="sp"><span data-spc-module-data="x"></span></div>
   <div data-testid="oneDebitCardBannerLink"><img alt=""></div>
   <div data-testid="save-with-walmart-plus-badge">Save with Walmart+</div>
 </main></div></body></html>`;
@@ -111,7 +112,7 @@ test('product pages: plan, card banner, brand ad and Walmart+ badge are found; p
   const tagsFor = (id) => found.filter((item) => item.pattern === id).map((item) => item.tag);
   assert.deepEqual(tagsFor('upsell.protection-plan'), ['item-addon-services-new']);
   assert.deepEqual(tagsFor('upsell.financial-product'), ['oneDebitCardBannerLink']);
-  assert.deepEqual(tagsFor('sponsorship.placement'), ['brand-box-ad']);
+  assert.deepEqual(tagsFor('sponsorship.placement'), ['brand-box-ad', 'sp']);
   assert.deepEqual(tagsFor('upsell.store-membership'), ['save-with-walmart-plus-badge']);
   assert.deepEqual(tagsFor('pricing.reference-price'), ['ugpp-was-price']);
   assert.ok(found.filter((item) => item.pattern !== 'pricing.reference-price').every((item) => item.safe), 'every removable target is a complete, self-contained unit');
