@@ -276,7 +276,7 @@ test('Amazon mutation batches keep open menu controls clickable', async (t) => {
   assert.equal(after.enabled, false);
 });
 
-test('menu stays compact and Settings is not a top-level route while interventions are active', async (t) => {
+test('menu keeps its shared size and Settings is not a top-level route while interventions are active', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
   const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
   const pageErrors = [];
@@ -296,11 +296,11 @@ test('menu stays compact and Settings is not a top-level route while interventio
     const root = node.shadowRoot;
     return {
       routes: [...root.querySelectorAll('.route')].map((item) => item.querySelector('.fl-tool-title')?.textContent.trim()),
-      menuWidth: node.dataset.menuWidth,
+      width: root.querySelector('.ward').getBoundingClientRect().width,
     };
   });
   assert.deepEqual([...facts.routes].sort(), ['Amazon', 'Appearance', 'Protection', 'System']);
-  assert.equal(facts.menuWidth, 'compact');
+  assert.equal(facts.width, 260);
   assert.deepEqual(pageErrors, []);
 });
 

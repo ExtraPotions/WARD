@@ -1,3 +1,8 @@
+## 3.3.9 - 2026-10-01
+
+- Removes retired menu-width preferences from stored settings without resetting other preferences.
+- Keeps the existing shared menu size and tests rendered layout instead of obsolete width-mode labels.
+
 ## 3.3.8 - 2026-10-01
 
 - Updates the shared foundation to exp-core 3.4.11.
