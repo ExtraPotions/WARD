@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.3.4
+// @version      3.3.5
 // @description  Local retail-pressure protection for Amazon, Walmart, eBay and Etsy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -1515,7 +1515,7 @@ const ExpMenuArrangement = (() => {
 // exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.4.7';
+  const version = '3.4.8';
   const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
@@ -2696,7 +2696,8 @@ const ExtraPotionsCore = (() => {
     return finish('stacked', 12, up ? band.top - h - 8 : band.bottom + 8, h);
   }
   // The single placement for update and changelog notices. With a menu open, the notice stacks beyond it
-  // (above it, or below it when the launchers are anchored at the top) and shares its right edge. With no
+  // (above it, or below it when the launchers are anchored at the top) and shares its right edge; when the
+  // window is too short for that, it sits beside the menu, on its left, instead of overlapping it. With no
   // menu open it takes the menu's place: above a reserved surface, or beside the launcher grid.
   function placeNotice(host, notice, panel = null) {
     const geometry = surfaceGeometry(host);
@@ -2707,10 +2708,20 @@ const ExtraPotionsCore = (() => {
     const menu = panel && !panel.hidden && panel.getClientRects().length ? panel.getBoundingClientRect() : null;
     let right, top;
     if (menu?.width && menu?.height) {
-      right = menu.right;
       const beyond = anchorTop ? menu.bottom + 8 : menu.top - height - 8;
       const fits = anchorTop ? beyond + height <= innerHeight - 8 : beyond >= 8;
-      top = fits ? beyond : (anchorTop ? menu.top - height - 8 : menu.bottom + 8);
+      if (fits) {
+        right = menu.right;
+        top = beyond;
+      } else if (menu.left - 8 - width >= 8) {
+        // A short window leaves no room beyond the menu: sit beside it instead, on the side away from the
+        // launchers, lined up with the menu's edge nearest them, so nothing overlaps.
+        right = menu.left - 8;
+        top = anchorTop ? menu.top : menu.bottom - height;
+      } else {
+        right = menu.right;
+        top = anchorTop ? menu.top - height - 8 : menu.bottom + 8;
+      }
     } else if (reserved && reserved.right - 8 >= width) {
       right = reserved.right;
       top = anchorTop ? reserved.bottom + 8 : reserved.top - height - 8;
@@ -5046,10 +5057,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.3.4';
+EXP.VERSION = '3.3.5';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.5': ['Updates the shared foundation to exp-core 3.4.8.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.4': ["Stops running on smile.amazon.com, which Amazon retired in 2023 and which only redirects to www.amazon.com now.","Amazon shopping on www.amazon.com works exactly as before."],
     '3.3.3': ['Updates the shared foundation to exp-core 3.4.7.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.2': ['Updates the shared foundation to exp-core 3.4.6.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
@@ -5962,7 +5974,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.3.4';
+EXP.VERSION = '3.3.5';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
