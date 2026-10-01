@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.3.6
+// @version      3.3.7
 // @description  Local retail-pressure protection for Amazon, Walmart, eBay and Etsy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -1515,7 +1515,7 @@ const ExpMenuArrangement = (() => {
 // exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.4.9';
+  const version = '3.4.10';
   const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
@@ -1576,6 +1576,7 @@ const ExtraPotionsCore = (() => {
   const registrations = new WeakMap();
   const floatingNoticeRegistrations = new WeakMap();
   const controllers = new WeakMap();
+  const menuControllers = new WeakMap();
   const baseTokenNames = ['bg', 'panel', 'line', 'text', 'muted', 'accent', 'accent2'];
   const tokenNames = [...baseTokenNames, 'raised', 'inset', 'link', 'focus', 'onAccent'];
   const hex = value => /^#[0-9a-f]{6}$/i.test(value || '') ? value : '#000000';
@@ -3069,6 +3070,86 @@ const ExtraPotionsCore = (() => {
     launcher.replaceChildren(mark); launcher.dataset.expCoreLauncher = '1'; launcher.dataset.expPart = 'launcher';
     launcher.removeAttribute('data-help');
   }
+  // Behavior-only adapter for products with a custom progress surface. Full
+  // Core chrome and custom shells share these bindings; no styles or nodes move.
+  function createMenuController(options = {}) {
+    const { id, host, shadow, panel, setOpen, getSettings = () => ({}) } = options;
+    if (!id || !host || !shadow || !panel || typeof setOpen !== 'function') {
+      throw new Error('Incomplete menu controller configuration');
+    }
+    if (menuControllers.has(host)) return menuControllers.get(host);
+    const idleTimeoutMs = 15000;
+    let open = false, destroyed = false, timer = 0, deadline = 0;
+    const removers = [];
+    const on = (node, type, handler, opts) => {
+      node.addEventListener(type, handler, opts);
+      removers.push(() => node.removeEventListener(type, handler, opts));
+    };
+    function cancelDismiss() {
+      clearTimeout(timer);
+      timer = 0;
+      deadline = 0;
+    }
+    function enforceDeadline(now = Date.now()) {
+      if (destroyed || !open || !deadline || now < deadline) return false;
+      cancelDismiss();
+      setOpen(false, false);
+      return true;
+    }
+    function scheduleDismiss() {
+      cancelDismiss();
+      if (destroyed || !open || getSettings().menuAutoClose === false) return;
+      deadline = Date.now() + idleTimeoutMs;
+      timer = setTimeout(() => enforceDeadline(), idleTimeoutMs + 20);
+    }
+    function clearOwner() {
+      if (document.documentElement.getAttribute('data-exp-open-menu') === id) {
+        document.documentElement.removeAttribute('data-exp-open-menu');
+      }
+    }
+    const keepOpen = typeof options.keepOpen === 'function' ? options.keepOpen : () => false;
+    for (const type of ['pointerdown', 'click', 'wheel', 'keydown', 'input', 'change']) {
+      on(panel, type, scheduleDismiss, { passive: type === 'wheel' });
+    }
+    on(document, 'exp-core:menu-open', () => {
+      if (open && document.documentElement.getAttribute('data-exp-open-menu') !== id) setOpen(false, false);
+    });
+    if (options.closeOnOutsidePointer !== false) on(document, 'pointerdown', event => {
+      if (!open || !event.isTrusted || event.composedPath().includes(host)) return;
+      if (shadow.activeElement instanceof HTMLSelectElement) return;
+      try { if (keepOpen(event)) return; } catch {}
+      setOpen(false, false);
+    }, true);
+    const controller = Object.freeze({
+      state(value) {
+        if (destroyed) return;
+        open = Boolean(value);
+        if (open) {
+          document.documentElement.setAttribute('data-exp-open-menu', id);
+          document.dispatchEvent(new Event('exp-core:menu-open'));
+        } else clearOwner();
+        panel.classList.toggle('fl-rail-open', open);
+        if (open) scheduleDismiss(); else cancelDismiss();
+      },
+      scheduleDismiss, cancelDismiss, enforceDeadline,
+      get isOpen() { return open; },
+      get dismissAt() { return deadline; },
+      get timerActive() { return Boolean(timer); },
+      idleTimeoutMs,
+      destroy() {
+        if (destroyed) return;
+        destroyed = true;
+        open = false;
+        cancelDismiss();
+        clearOwner();
+        removers.forEach(remove => remove());
+        menuControllers.delete(host);
+      },
+    });
+    menuControllers.set(host, controller);
+    return controller;
+  }
+
   function create(options) {
     const { id, host, shadow, launcher, panel, getSettings = () => ({}), setOpen, shortcutKey = '', productTheme, launcherSrc } = options;
     if (controllers.has(host)) return controllers.get(host);
@@ -3094,7 +3175,7 @@ const ExtraPotionsCore = (() => {
     const menuNotices=[...themeRoot.querySelectorAll('.update-notice,.changelog')].map(notice=>createMenuNotice({host,shadow,panel,notice,versionButton:notice.classList.contains('changelog')?versionButton:null,manageVersion:false,durationMs:30000}));
     if (launcherSrc) panel.querySelectorAll('.header-icon img').forEach(image => image.src = launcherSrc);
     host.dataset.coreVersion = version; host.dataset.coreSource = 'exp-core';
-    let choices = themes(productTheme), selected = choices.at(-1), open = false, destroyed = false, timer = 0, deadline = 0, frame = 0;
+    let choices = themes(productTheme), selected = choices.at(-1), open = false, destroyed = false, frame = 0;
     const removers = [];
     const on = (node,type,fn,opts) => { node.addEventListener(type,fn,opts); removers.push(() => node.removeEventListener(type,fn,opts)); };
     let localTheme = null;
@@ -3120,8 +3201,6 @@ const ExtraPotionsCore = (() => {
       publishMenuPalette(host, localTheme);
       syncThemeOwner();
     }
-    function clearTimer() { clearTimeout(timer); timer = 0; deadline = 0; }
-    function scheduleDismiss() { clearTimer(); if (!open || getSettings().menuAutoClose === false) return; deadline = Date.now()+15000; timer = setTimeout(() => { if (open && Date.now() >= deadline) setOpen(false,false); },15020); }
     function layout() {
       if (destroyed || !launcher.isConnected) return;
       const state = getSettings(); const width = 'compact';
@@ -3141,29 +3220,18 @@ const ExtraPotionsCore = (() => {
     const arrangement = ExpMenuArrangement.mount({ panel, id, onChange: queueLayout, resetLaunchers() { resetLauncherGrid(id); queueLayout(); } });
     function queueLayout() { if (!frame && !destroyed) frame = requestAnimationFrame(() => { frame = 0; normalizeControls(panel); arrangement.update(); layout(); }); }
     removers.push(bindLauncherDrag(launcher, id, { layout }));
-    for(const type of ['pointerdown','click','wheel','keydown','input','change'])on(panel,type,scheduleDismiss,{passive:type==='wheel'});
+    const menuController = createMenuController({ ...options, id, host, shadow, panel, getSettings, setOpen });
     on(window,'keydown',e=>{if(shortcutKey&&e.altKey&&e.shiftKey&&e.key.toLowerCase()===shortcutKey.toLowerCase()&&!e.repeat){e.preventDefault();setOpen(!open,true);} });
     on(window,'resize',queueLayout);on(document,'exp-core:coordination',queueLayout);
     on(document,'exp-core:coordination',syncThemeOwner);
-    on(document,'exp-core:menu-open',()=>{if(open && document.documentElement.getAttribute('data-exp-open-menu')!==id)setOpen(false,false);});
-    // Every product menu closes on a press outside it. A focused select keeps it
-    // open because native option lists render outside the page; keepOpen lets a
-    // product hold the menu open for its own reasons, such as an unsaved import.
-    const keepOpen = typeof options.keepOpen === 'function' ? options.keepOpen : () => false;
-    if (options.closeOnOutsidePointer !== false) on(document,'pointerdown',event=>{
-      if (!open || !event.isTrusted || event.composedPath().includes(host)) return;
-      if (shadow.activeElement instanceof HTMLSelectElement) return;
-      try { if (keepOpen(event)) return; } catch {}
-      setOpen(false,false);
-    },true);
     const resize = new ResizeObserver(queueLayout); resize.observe(panel);
     const mutation = new MutationObserver(records=>{if(records.some(r=>r.type==='childList'||r.attributeName==='hidden'))queueLayout();}); mutation.observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
     const controller = {
       layout, setTheme,
-      state(value) {open=Boolean(value);if(open){document.documentElement.setAttribute('data-exp-open-menu',id);document.dispatchEvent(new Event('exp-core:menu-open'));}panel.classList.toggle('fl-rail-open',open);menuNotices.forEach(notice=>notice.setMenuOpen(open));if(open)scheduleDismiss();else clearTimer();queueLayout();},
+      state(value) {open=Boolean(value);menuController.state(open);menuNotices.forEach(notice=>notice.setMenuOpen(open));queueLayout();},
       update(){normalizeControls(panel);queueLayout();},
-      get dismissAt(){return deadline;},
-      destroy(){destroyed=true;arrangement.destroy();defaultSupport?.destroy();clearTimer();cancelAnimationFrame(frame);resize.disconnect();mutation.disconnect();menuNotices.forEach(notice=>notice.destroy());removers.forEach(f=>f());styles.dispose();controllers.delete(host);}
+      get dismissAt(){return menuController.dismissAt;},
+      destroy(){destroyed=true;arrangement.destroy();defaultSupport?.destroy();menuController.destroy();cancelAnimationFrame(frame);resize.disconnect();mutation.disconnect();menuNotices.forEach(notice=>notice.destroy());removers.forEach(f=>f());styles.dispose();controllers.delete(host);}
     };
     controllers.set(host,controller);setTheme(id);
     queueLayout();return controller;
@@ -3609,7 +3677,7 @@ const ExtraPotionsCore = (() => {
     return Object.freeze({ lifecycle, diagnostics, updates });
   }
 
-  const api = Object.freeze({...ExtraPotionsTools,version,sourceVersion,protocol,gridProtocol,reference:CoreFoundation,css:canonicalCss,themes,create,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),createProductServices,registerLauncher,bindLauncherDrag,launcherPlacement,placeMenu,placeNotice,resetLauncherGrid,layout:layoutGrid,replaceMenuContent,createDisclosure,createSystemGrid,isOwnedSheet,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,publishMenuPalette,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct,registerSuiteProduct,suiteContract,suiteSnapshot,hasProductCapability,capabilityProviders,emitSuiteEvent,publishSuiteState,suiteStateSnapshot,latestSuiteState,subscribeSuiteState,onSuiteEvent,pageContext,observeNavigation,navigationObserverState,suiteTrust:SUITE_TRUST,registerPresentationProvider,presentationProviders,suiteHealth,readPresentationState,setPresentationState,clearPresentationState,presentationStateChain,isPresentationSuppressed,presentationPhases:PRESENTATION_PHASES,presentationChannels:PRESENTATION_CHANNELS,observePresentationState,observePage,observePageBatch,pageObserverState,suiteProducts:SUITE_PRODUCTS,suitePriority:SUITE_PRIORITY,productCompatibility:productCompatibilityReport,createCompatibilityControls:createSuiteCompatibilityControls,bindDiagnosticsControls:ExtraPotionsDiagnostics.bindControls,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,mountMenuArrangement:ExpMenuArrangement.mount,menuCategories:ExpMenuArrangement.categories,categorizeMenuSections:ExpMenuArrangement.describe,createMenuCategoryDisclosure:(label,category,...contents)=>ExpMenuArrangement.createDisclosure({document,label,category,contents}),collapseMenuSubmenus:ExpMenuArrangement.collapseSubmenus,compareVersions:CoreFoundation.compareVersions});
+  const api = Object.freeze({...ExtraPotionsTools,version,sourceVersion,protocol,gridProtocol,reference:CoreFoundation,css:canonicalCss,themes,create,createMenuController,createProduct,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),createProductServices,registerLauncher,bindLauncherDrag,launcherPlacement,placeMenu,placeNotice,resetLauncherGrid,layout:layoutGrid,replaceMenuContent,createDisclosure,createSystemGrid,isOwnedSheet,menuWidthForMode,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,createThemeSwatches,publishMenuPalette,createFloatingNotice,createMenuNotice,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,focusMenuSurface,registerDiagnosticsProduct,registerSuiteProduct,suiteContract,suiteSnapshot,hasProductCapability,capabilityProviders,emitSuiteEvent,publishSuiteState,suiteStateSnapshot,latestSuiteState,subscribeSuiteState,onSuiteEvent,pageContext,observeNavigation,navigationObserverState,suiteTrust:SUITE_TRUST,registerPresentationProvider,presentationProviders,suiteHealth,readPresentationState,setPresentationState,clearPresentationState,presentationStateChain,isPresentationSuppressed,presentationPhases:PRESENTATION_PHASES,presentationChannels:PRESENTATION_CHANNELS,observePresentationState,observePage,observePageBatch,pageObserverState,suiteProducts:SUITE_PRODUCTS,suitePriority:SUITE_PRIORITY,productCompatibility:productCompatibilityReport,createCompatibilityControls:createSuiteCompatibilityControls,bindDiagnosticsControls:ExtraPotionsDiagnostics.bindControls,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,mountMenuArrangement:ExpMenuArrangement.mount,menuCategories:ExpMenuArrangement.categories,categorizeMenuSections:ExpMenuArrangement.describe,createMenuCategoryDisclosure:(label,category,...contents)=>ExpMenuArrangement.createDisclosure({document,label,category,contents}),collapseMenuSubmenus:ExpMenuArrangement.collapseSubmenus,compareVersions:CoreFoundation.compareVersions});
   return api;
 })();
 
@@ -5076,10 +5144,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.3.6';
+EXP.VERSION = '3.3.7';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.7': ['Updates the shared foundation to exp-core 3.4.10.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.6': ["Updates to exp-core 3.4.9.","Install Update now always installs the latest published release, never unreleased code.","Closing the menu on outside clicks now comes from exp-core, shared with the rest of the suite."],
     '3.3.5': ['Updates the shared foundation to exp-core 3.4.8.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.4': ["Stops running on smile.amazon.com, which Amazon retired in 2023 and which only redirects to www.amazon.com now.","Amazon shopping on www.amazon.com works exactly as before."],
@@ -5980,7 +6049,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.3.6';
+EXP.VERSION = '3.3.7';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

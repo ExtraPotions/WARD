@@ -1,7 +1,8 @@
-EXP.VERSION = '3.3.6';
+EXP.VERSION = '3.3.7';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.7': ['Updates the shared foundation to exp-core 3.4.10.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.6': ["Updates to exp-core 3.4.9.","Install Update now always installs the latest published release, never unreleased code.","Closing the menu on outside clicks now comes from exp-core, shared with the rest of the suite."],
     '3.3.5': ['Updates the shared foundation to exp-core 3.4.8.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.4': ["Stops running on smile.amazon.com, which Amazon retired in 2023 and which only redirects to www.amazon.com now.","Amazon shopping on www.amazon.com works exactly as before."],
