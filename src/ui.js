@@ -6,7 +6,7 @@ EXP.UI = (() => {
   const UI_THEMES = ExtraPotionsCore.themes({"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#120b05 0 38%,#b66a16 38% 69%,#356f78 69% 100%)","canvas":"#120b05","surface":"#241409","primary":"#b66a16","companion":"#9d3131","counterpoint":"#356f78","interactive":"#d1842a","bg":"#120b05","panel":"#241409","line":"#53321f","text":"#f1dfc9","muted":"#b79e84","accent":"#b66a16","accent2":"#d1842a","skin":"linear-gradient(135deg,#b66a16 0%,#9d3131 52%,#356f78 100%)","skinVertical":"linear-gradient(180deg,#b66a16 0%,#9d3131 52%,#356f78 100%)"});
 
   let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard, noticeController;
-  let toastTimer, launcherCleanup, escapeHandler, pointerHandler;
+  let toastTimer, launcherCleanup, escapeHandler;
   let activeView = '';
   let patternsOpen = false;
 
@@ -91,8 +91,8 @@ EXP.UI = (() => {
           ? `Updated from v${previous} to v${EXP.VERSION}.`
           : `v${result.latest} is ready to install.`,
       details,
-      releaseUrl: 'https://github.com/ExtraPotions/WARD/releases',
-      actionUrl: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js',
+      releaseUrl: EXP.Updates.RELEASE_URL,
+      actionUrl: EXP.Updates.INSTALL_URL,
       showAction: !(complete || current),
       kind: current ? 'current' : complete ? 'complete' : 'available',
     });
@@ -725,8 +725,8 @@ EXP.UI = (() => {
       shadow,
       panel:shell,
       durationMs:30000,
-      releaseUrl:'https://github.com/ExtraPotions/WARD/releases',
-      installUrl:'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js'
+      releaseUrl:EXP.Updates.RELEASE_URL,
+      installUrl:EXP.Updates.INSTALL_URL
     });
     updateCard = noticeController.element;
     const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
@@ -768,20 +768,7 @@ EXP.UI = (() => {
       }
     };
 
-    pointerHandler = event => {
-      if (!event.isTrusted) return;
-      if (!shell.classList.contains('open')) return;
-      if (event.composedPath().includes(host)) return;
-
-      const active = shadow.activeElement;
-      if (active instanceof HTMLSelectElement) return;
-      if (event.target instanceof HTMLSelectElement || event.target instanceof HTMLOptionElement) return;
-
-      close();
-    };
-
     document.addEventListener('keydown',escapeHandler);
-    document.addEventListener('pointerdown',pointerHandler,true);
     renderView();
   }
 
@@ -791,7 +778,6 @@ EXP.UI = (() => {
     chrome?.destroy();
     clearTimeout(toastTimer);
     document.removeEventListener('keydown',escapeHandler);
-    document.removeEventListener('pointerdown',pointerHandler,true);
     host?.remove();
     host = shadow = launcher = shell = nav = content = toast = chrome = updateCard = noticeController = null;
   }
