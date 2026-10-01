@@ -1,0 +1,63 @@
+name: Integrate retired-width migration
+on:
+  push:
+    branches: [release/retire-width-preferences]
+    paths: [.github/workflows/integrate-sizing-migration.yml]
+permissions:
+  contents: write
+concurrency:
+  group: integrate-retired-widths
+  cancel-in-progress: false
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+          cache: npm
+      - name: Apply reviewed source migration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          gh api 'repos/ExtraPotions/exp-core/contents/.maintenance/prepare-consumer-sizing.cjs?ref=03d7037b512a4700205ec325d855837c01c57c01' --jq .content | base64 --decode > /tmp/prepare-consumer-sizing.cjs
+          node /tmp/prepare-consumer-sizing.cjs
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify pin, complete regressions and deterministic rebuild
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/verify-exp-core-pin.cjs | tee evidence/core-pin.txt
+          npm test 2>&1 | tee evidence/tests.txt
+          npm run build:check
+          git diff --check
+          sha256sum *.user.js > evidence/SHA256SUMS
+          npm run build
+          sha256sum --check evidence/SHA256SUMS
+      - name: Commit tested source and artifact only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/integrate-sizing-migration.yml
+          git add src package.json package-lock.json CHANGELOG.md *.user.js
+          for directory in tests tests-v3; do if test -d "$directory"; then git add "$directory"; fi; done
+          version="$(node -p "require('./package.json').version")"
+          git -c user.name=expDARE -c user.email=5340947+ExtraPotions@users.noreply.github.com commit -m "Prepare ${GITHUB_REPOSITORY#*/} $version retired-width migration"
+          git push origin HEAD:refs/heads/release/retire-width-preferences
+          git rev-parse HEAD > evidence/commit.txt
+          git archive --format=zip --output=evidence/candidate.zip HEAD
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: sizing-migration-${{ github.run_id }}
+          path: evidence/
+          retention-days: 7
+          if-no-files-found: error
