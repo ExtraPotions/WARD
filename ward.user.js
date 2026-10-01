@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.3.7
+// @version      3.3.8
 // @description  Local retail-pressure protection for Amazon, Walmart, eBay and Etsy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -55,6 +55,46 @@ const UI_THEMES = Object.freeze([
     { id:"dropper", name:"Dropper gem", swatch:"linear-gradient(135deg,#0b0713 0 38%,#7a46c8 38% 69%,#2a8c9b 69% 100%)", canvas:"#0b0713", surface:"#171025", primary:"#7a46c8", companion:"#b14589", counterpoint:"#2a8c9b", interactive:"#9864dc", bg:"#0b0713", panel:"#171025", line:"#3c2850", text:"#e8ddf2", muted:"#aa98bb", accent:"#7a46c8", accent2:"#9864dc", skin:"linear-gradient(135deg,#7a46c8 0%,#b14589 52%,#2a8c9b 100%)", skinVertical:"linear-gradient(180deg,#7a46c8 0%,#b14589 52%,#2a8c9b 100%)" }
   ]);
 const SHARED_UI_THEMES = Object.freeze(UI_THEMES.slice(0, 6));
+
+// A support control carries these styles into native and custom Shadow DOM shells.
+function supportControlCss() {
+    return `
+      .support-wrap { position:static; }
+      .support-button {
+        width:30px; height:30px; min-width:30px; padding:0;
+        border:1px solid #3a3a42; border-radius:8px; background:#151519; color:#b8b8c0;
+        cursor:pointer;
+      }
+      .support-button { box-sizing:border-box; display:grid; place-items:center; }
+      .support-button svg { width:15px; height:15px; fill:currentColor; }
+      .support-button:hover,
+      .support-button:focus-visible {
+        border-color:var(--theme-accent); color:var(--theme-accent2); background:#211b2b; outline:none;
+      }
+      .support-popover {
+        position:absolute; z-index:14; top:35px; right:0;
+        width:min(190px,100%); max-width:100%;
+        box-sizing:border-box; padding:8px 9px;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 46%,var(--theme-line));
+        border-radius:9px; background:var(--theme-panel); color:var(--theme-text);
+        box-shadow:0 10px 28px #0009;
+      }
+      .support-popover[hidden] { display:none; }
+      .support-popover strong { display:block; margin-bottom:3px; font-size:10px; }
+      .support-popover span { display:block; color:var(--theme-muted); font-size:8px; line-height:1.35; }
+      .support-popover a {
+        display:flex; align-items:center; justify-content:center; min-height:26px; margin-top:7px; padding:0 9px;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 58%,var(--theme-line));
+        border-radius:7px; background:color-mix(in srgb,var(--theme-panel) 76%,var(--theme-accent) 24%);
+        color:var(--theme-text); text-decoration:none; font-size:9px; font-weight:800;
+      }
+      .support-popover a:hover,
+      .support-popover a:focus-visible {
+        border-color:var(--theme-accent2); outline:none;
+        background:color-mix(in srgb,var(--theme-panel) 66%,var(--theme-accent) 34%);
+      }
+    `;
+}
 
 function css() {
     return `
@@ -157,41 +197,12 @@ function css() {
         align-items:start; gap:8px; width:100%;
       }
       .header-actions { display:flex; align-items:flex-start; gap:5px; position:static; }
-      .support-wrap { position:static; }
-      .support-button,
       [data-exp-part="close"] {
         width:30px; height:30px; min-width:30px; padding:0;
         border:1px solid #3a3a42; border-radius:8px; background:#151519; color:#b8b8c0;
         cursor:pointer;
       }
-      .support-button { display:grid; place-items:center; }
-      .support-button svg { width:15px; height:15px; fill:currentColor; }
-      .support-button:hover,
-      .support-button:focus-visible {
-        border-color:var(--theme-accent); color:var(--theme-accent2); background:#211b2b; outline:none;
-      }
-      .support-popover {
-        position:absolute; z-index:14; top:35px; right:0;
-        width:min(190px,100%); max-width:100%;
-        box-sizing:border-box; padding:8px 9px;
-        border:1px solid color-mix(in srgb,var(--theme-accent) 46%,var(--theme-line));
-        border-radius:9px; background:var(--theme-panel); color:var(--theme-text);
-        box-shadow:0 10px 28px #0009;
-      }
-      .support-popover[hidden] { display:none; }
-      .support-popover strong { display:block; margin-bottom:3px; font-size:10px; }
-      .support-popover span { display:block; color:var(--theme-muted); font-size:8px; line-height:1.35; }
-      .support-popover a {
-        display:flex; align-items:center; justify-content:center; min-height:26px; margin-top:7px; padding:0 9px;
-        border:1px solid color-mix(in srgb,var(--theme-accent) 58%,var(--theme-line));
-        border-radius:7px; background:color-mix(in srgb,var(--theme-panel) 76%,var(--theme-accent) 24%);
-        color:var(--theme-text); text-decoration:none; font-size:9px; font-weight:800;
-      }
-      .support-popover a:hover,
-      .support-popover a:focus-visible {
-        border-color:var(--theme-accent2); outline:none;
-        background:color-mix(in srgb,var(--theme-panel) 66%,var(--theme-accent) 34%);
-      }
+      ${supportControlCss()}
       .header-brand {
         display:grid; grid-template-columns:38px minmax(0,1fr);
         align-items:center; gap:8px; min-width:0; width:100%;
@@ -632,7 +643,7 @@ function compareVersions(a, b) {
     for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) { const diff = (pa[i] || 0) - (pb[i] || 0); if (diff) return diff; }
     return 0;
   }
-return Object.freeze({ PRIDE_RAINBOW, PRIDE_RAINBOW_VERTICAL, CRIMSON_THEME, UI_THEMES, SHARED_UI_THEMES, css, protectLauncherHost, compareVersions });
+return Object.freeze({ PRIDE_RAINBOW, PRIDE_RAINBOW_VERTICAL, CRIMSON_THEME, UI_THEMES, SHARED_UI_THEMES, css, supportControlCss, protectLauncherHost, compareVersions });
 })();
 
 /* Local diagnostic capture shared at build time by ExtraPotions products. */
@@ -1515,7 +1526,7 @@ const ExpMenuArrangement = (() => {
 // exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.4.10';
+  const version = '3.4.11';
   const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
@@ -3419,6 +3430,10 @@ const ExtraPotionsCore = (() => {
     if (!url) return null;
     const wrapper = document.createElement('div');
     wrapper.className = 'support-wrap';
+    const style = document.createElement('style');
+    style.dataset.expSupportControl = '1';
+    style.dataset.expOwned = '1';
+    style.textContent = CoreFoundation.supportControlCss();
     const button = document.createElement('button');
     button.type = 'button';
     button.id = 'exp-support-button';
@@ -3444,7 +3459,7 @@ const ExtraPotionsCore = (() => {
     anchor.rel = 'noopener noreferrer';
     anchor.textContent = 'Open Ko-fi';
     popover.append(strong, copy, anchor, ExtraPotionsTools.createBitcoinDonation());
-    wrapper.append(button, popover);
+    wrapper.append(style, button, popover);
     const toggle = event => {
       event?.stopPropagation?.();
       ExtraPotionsTools.placeDonationPanel(popover,button);
@@ -5144,10 +5159,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.3.7';
+EXP.VERSION = '3.3.8';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.8': ['Updates the shared foundation to exp-core 3.4.11.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.7': ['Updates the shared foundation to exp-core 3.4.10.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.6': ["Updates to exp-core 3.4.9.","Install Update now always installs the latest published release, never unreleased code.","Closing the menu on outside clicks now comes from exp-core, shared with the rest of the suite."],
     '3.3.5': ['Updates the shared foundation to exp-core 3.4.8.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
@@ -6049,7 +6065,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.3.7';
+EXP.VERSION = '3.3.8';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
