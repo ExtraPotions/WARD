@@ -1,3 +1,9 @@
+## 3.3.6 - 2026-10-01
+
+- Updates to exp-core 3.4.9.
+- Install Update now always installs the latest published release, never unreleased code.
+- Closing the menu on outside clicks now comes from exp-core, shared with the rest of the suite.
+
 ## 3.3.5 - 2026-10-01
 
 - Updates the shared foundation to exp-core 3.4.8.

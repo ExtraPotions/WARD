@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.3.5
+// @version      3.3.6
 // @description  Local retail-pressure protection for Amazon, Walmart, eBay and Etsy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -1515,7 +1515,7 @@ const ExpMenuArrangement = (() => {
 // exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.4.8';
+  const version = '3.4.9';
   const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
@@ -3146,6 +3146,16 @@ const ExtraPotionsCore = (() => {
     on(window,'resize',queueLayout);on(document,'exp-core:coordination',queueLayout);
     on(document,'exp-core:coordination',syncThemeOwner);
     on(document,'exp-core:menu-open',()=>{if(open && document.documentElement.getAttribute('data-exp-open-menu')!==id)setOpen(false,false);});
+    // Every product menu closes on a press outside it. A focused select keeps it
+    // open because native option lists render outside the page; keepOpen lets a
+    // product hold the menu open for its own reasons, such as an unsaved import.
+    const keepOpen = typeof options.keepOpen === 'function' ? options.keepOpen : () => false;
+    if (options.closeOnOutsidePointer !== false) on(document,'pointerdown',event=>{
+      if (!open || !event.isTrusted || event.composedPath().includes(host)) return;
+      if (shadow.activeElement instanceof HTMLSelectElement) return;
+      try { if (keepOpen(event)) return; } catch {}
+      setOpen(false,false);
+    },true);
     const resize = new ResizeObserver(queueLayout); resize.observe(panel);
     const mutation = new MutationObserver(records=>{if(records.some(r=>r.type==='childList'||r.attributeName==='hidden'))queueLayout();}); mutation.observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
     const controller = {
@@ -3174,6 +3184,10 @@ const ExtraPotionsCore = (() => {
     }
 
     const ENDPOINT = String(options.endpoint || ('https://api.github.com/repos/' + repository + '/releases/latest'));
+    // Installs and updates come only from published releases, never from the
+    // branch: GitHub serves the newest release's asset at this address.
+    const RELEASE_URL = 'https://github.com/' + repository + '/releases';
+    const INSTALL_URL = RELEASE_URL + '/latest/download/' + String(options.scriptAsset || (productId + '.user.js'));
     const CACHE_KEY = 'exp:v3:' + productId + ':update-cache';
     const CHECK_INTERVAL = 15 * 60 * 1000;
     const CHECK_LEASE = 30 * 1000;
@@ -3233,6 +3247,8 @@ const ExtraPotionsCore = (() => {
         lastRemoteVersion: latest || null,
         lastHttpStatus: Number(next.lastHttpStatus || 0),
         lastError: String(next.lastError || ''),
+        installUrl: INSTALL_URL,
+        releaseUrl: RELEASE_URL,
       };
     }
     function request() {
@@ -3322,6 +3338,8 @@ const ExtraPotionsCore = (() => {
     return Object.freeze({
       get CURRENT_VERSION() { return getCurrentVersion(); },
       ENDPOINT,
+      INSTALL_URL,
+      RELEASE_URL,
       CHECK_INTERVAL,
       check,
       status,
@@ -3329,7 +3347,7 @@ const ExtraPotionsCore = (() => {
     });
   }
 
-  function createSupportControl({ url, label = 'Support' } = {}) {
+  function createSupportControl({ url = SUPPORT_URL, label = 'Support' } = {}) {
     if (!url) return null;
     const wrapper = document.createElement('div');
     wrapper.className = 'support-wrap';
@@ -3544,7 +3562,7 @@ const ExtraPotionsCore = (() => {
     const area=document.createElement('textarea');area.value=text;area.style.cssText='position:fixed;left:-9999px';document.documentElement.append(area);area.select();const success=document.execCommand('copy');area.remove();if(!success)throw new Error('Clipboard unavailable');
   }
   function createDiagnosticsControls(getReport, notify = () => {}) { return ExtraPotionsDiagnostics.createControls(getReport, notify); }
-  function createProduct({id,name,version:productVersion,subtitle='',artwork,theme,sections=[],getSettings,onSettings=()=>{},priority,supportUrl=SUPPORT_URL}) {
+  function createProduct({id,name,version:productVersion,subtitle='',artwork,theme,sections=[],getSettings,onSettings=()=>{},priority,supportUrl=SUPPORT_URL,keepOpen}) {
     const host=document.createElement('div');host.id='exp-'+id+'-root';host.dataset.expOwned='1';const shadow=host.attachShadow({mode:'open'});const panel=document.createElement('aside');panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label',name+' settings');
     const header=document.createElement('header');header.className='menu-head';const brand=document.createElement('div');brand.className='header-brand';const image=document.createElement('img');image.src=artwork;image.alt='';const copy=document.createElement('div');const titleRow=document.createElement('div');const title=document.createElement('strong');title.textContent=name;const v=document.createElement('button');v.type='button';v.className='version';v.textContent='v'+productVersion;titleRow.append(title,v);const sub=document.createElement('small');sub.textContent=subtitle;copy.append(titleRow,sub);brand.append(image,copy);const close=document.createElement('button');close.className='close';close.textContent='×';close.setAttribute('aria-label','Close '+name);const actions=document.createElement('div');actions.className='header-actions';const support=createSupportControl({url:supportUrl,label:'Support '+name});if(support)actions.append(support.element);actions.append(close);header.append(brand,actions);const divider=document.createElement('div');divider.className='header-divider';const nav=document.createElement('nav');
     let isOpen=false, activeId='';let chrome;
@@ -3553,7 +3571,7 @@ const ExtraPotionsCore = (() => {
     function renderActive(){if(!activeId)return false;const entry=sectionMap.get(activeId);if(!entry||entry.body.hidden)return false;renderSection(entry.section,entry.body);return true;}
     function setOpen(value,focus=true){isOpen=Boolean(value);panel.hidden=!isOpen;launcher.setAttribute('aria-expanded',String(isOpen));if(isOpen){activeId='';nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);nav.querySelectorAll('button[data-section]').forEach(n=>n.setAttribute('aria-expanded','false'));}chrome.state(isOpen);if(focus)(isOpen?focusMenuSurface(panel):launcher.focus());}
     for(const section of sections){const group=document.createElement('section');group.className='tool-panel';const button=document.createElement('button');button.type='button';button.textContent=section.label;button.dataset.section=section.id;const body=document.createElement('div');body.className='route-body';body.hidden=true;sectionMap.set(section.id,{section,body,button});button.addEventListener('click',()=>{const opening=body.hidden;nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);nav.querySelectorAll('button[data-section]').forEach(n=>{n.classList.toggle('last-opened',n===button);n.setAttribute('aria-expanded',String(opening&&n===button));});body.hidden=!opening;activeId=opening?section.id:'';if(opening)renderSection(section,body);chrome.update();});group.append(button,body);nav.append(group);}
-    const launcher=document.createElement('button');launcher.className='launcher';launcher.type='button';launcher.setAttribute('aria-label','Open '+name);const mark=image.cloneNode(true);launcher.append(mark);launcher.addEventListener('click',()=>setOpen(!isOpen));close.addEventListener('click',()=>setOpen(false));panel.append(header,divider,nav);shadow.append(panel,launcher);document.documentElement.append(host);chrome=create({id,host,shadow,panel,launcher,getSettings,setOpen,productTheme:theme,supportUrl});const unregister=registerLauncher(host,{productId:id,priority});
+    const launcher=document.createElement('button');launcher.className='launcher';launcher.type='button';launcher.setAttribute('aria-label','Open '+name);const mark=image.cloneNode(true);launcher.append(mark);launcher.addEventListener('click',()=>setOpen(!isOpen));close.addEventListener('click',()=>setOpen(false));panel.append(header,divider,nav);shadow.append(panel,launcher);document.documentElement.append(host);chrome=create({id,host,shadow,panel,launcher,getSettings,setOpen,productTheme:theme,supportUrl,keepOpen});const unregister=registerLauncher(host,{productId:id,priority});
     const key=e=>{if(e.key==='Escape'&&isOpen)setOpen(false);};document.addEventListener('keydown',key);
     return {host,shadow,panel,launcher,versionButton:v,open:()=>setOpen(true),close:()=>setOpen(false),toggle:()=>setOpen(!isOpen),refresh:()=>chrome.update(),renderActive,get isOpen(){return isOpen;},destroy(){document.removeEventListener('keydown',key);support?.destroy();chrome.destroy();unregister();host.remove();}};
   }
@@ -3584,6 +3602,7 @@ const ExtraPotionsCore = (() => {
       repository,
       currentVersion,
       endpoint: options.endpoint,
+      scriptAsset: options.scriptAsset,
       enabled: options.enabled,
       onError: options.onError,
     });
@@ -5057,10 +5076,11 @@ EXP.Engine = (() => {
   return Object.freeze({ start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.3.5';
+EXP.VERSION = '3.3.6';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.3.6': ["Updates to exp-core 3.4.9.","Install Update now always installs the latest published release, never unreleased code.","Closing the menu on outside clicks now comes from exp-core, shared with the rest of the suite."],
     '3.3.5': ['Updates the shared foundation to exp-core 3.4.8.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.3.4': ["Stops running on smile.amazon.com, which Amazon retired in 2023 and which only redirects to www.amazon.com now.","Amazon shopping on www.amazon.com works exactly as before."],
     '3.3.3': ['Updates the shared foundation to exp-core 3.4.7.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
@@ -5170,7 +5190,7 @@ EXP.UI = (() => {
   const UI_THEMES = ExtraPotionsCore.themes({"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#120b05 0 38%,#b66a16 38% 69%,#356f78 69% 100%)","canvas":"#120b05","surface":"#241409","primary":"#b66a16","companion":"#9d3131","counterpoint":"#356f78","interactive":"#d1842a","bg":"#120b05","panel":"#241409","line":"#53321f","text":"#f1dfc9","muted":"#b79e84","accent":"#b66a16","accent2":"#d1842a","skin":"linear-gradient(135deg,#b66a16 0%,#9d3131 52%,#356f78 100%)","skinVertical":"linear-gradient(180deg,#b66a16 0%,#9d3131 52%,#356f78 100%)"});
 
   let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard, noticeController;
-  let toastTimer, launcherCleanup, escapeHandler, pointerHandler;
+  let toastTimer, launcherCleanup, escapeHandler;
   let activeView = '';
   let patternsOpen = false;
 
@@ -5255,8 +5275,8 @@ EXP.UI = (() => {
           ? `Updated from v${previous} to v${EXP.VERSION}.`
           : `v${result.latest} is ready to install.`,
       details,
-      releaseUrl: 'https://github.com/ExtraPotions/WARD/releases',
-      actionUrl: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js',
+      releaseUrl: EXP.Updates.RELEASE_URL,
+      actionUrl: EXP.Updates.INSTALL_URL,
       showAction: !(complete || current),
       kind: current ? 'current' : complete ? 'complete' : 'available',
     });
@@ -5889,8 +5909,8 @@ EXP.UI = (() => {
       shadow,
       panel:shell,
       durationMs:30000,
-      releaseUrl:'https://github.com/ExtraPotions/WARD/releases',
-      installUrl:'https://raw.githubusercontent.com/ExtraPotions/WARD/main/ward.user.js'
+      releaseUrl:EXP.Updates.RELEASE_URL,
+      installUrl:EXP.Updates.INSTALL_URL
     });
     updateCard = noticeController.element;
     const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
@@ -5932,20 +5952,7 @@ EXP.UI = (() => {
       }
     };
 
-    pointerHandler = event => {
-      if (!event.isTrusted) return;
-      if (!shell.classList.contains('open')) return;
-      if (event.composedPath().includes(host)) return;
-
-      const active = shadow.activeElement;
-      if (active instanceof HTMLSelectElement) return;
-      if (event.target instanceof HTMLSelectElement || event.target instanceof HTMLOptionElement) return;
-
-      close();
-    };
-
     document.addEventListener('keydown',escapeHandler);
-    document.addEventListener('pointerdown',pointerHandler,true);
     renderView();
   }
 
@@ -5955,7 +5962,6 @@ EXP.UI = (() => {
     chrome?.destroy();
     clearTimeout(toastTimer);
     document.removeEventListener('keydown',escapeHandler);
-    document.removeEventListener('pointerdown',pointerHandler,true);
     host?.remove();
     host = shadow = launcher = shell = nav = content = toast = chrome = updateCard = noticeController = null;
   }
@@ -5974,7 +5980,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.3.5';
+EXP.VERSION = '3.3.6';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
