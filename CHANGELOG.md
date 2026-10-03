@@ -1,0 +1,391 @@
+## 3.4.2 - 2026-10-02
+
+- Use product names without the retired V3 integration label in settings prompts and import messages.
+- Keep existing saved settings and settings exports compatible.
+
+## 3.4.1 - 2026-10-02
+
+- Make small menu text easier to read, including captions, version badges, notices, and diagnostic details.
+- Use consistent sizes for labels and controls across the menu.
+
+## 3.4.0 - 2026-10-02
+
+- Adds dedicated Target and Best Buy modules alongside Amazon, eBay, Etsy, and Walmart.
+- Review protection decisions, allow an unwanted intervention on this page, and record missed protection locally.
+- Adds a Calm Shopping preset and shared System > Site control.
+
+## 3.3.11 - 2026-10-01
+
+- Updates the shared foundation to exp-core 3.4.13.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.10 - 2026-10-01
+
+- Updates the shared foundation to exp-core 3.4.12.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.9 - 2026-10-01
+
+- Removes retired menu-width preferences from stored settings without resetting other preferences.
+- Keeps the existing shared menu size and tests rendered layout instead of obsolete width-mode labels.
+
+## 3.3.8 - 2026-10-01
+
+- Updates the shared foundation to exp-core 3.4.11.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.7 - 2026-10-01
+
+- Updates the shared foundation to exp-core 3.4.10.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.6 - 2026-10-01
+
+- Updates to exp-core 3.4.9.
+- Install Update now always installs the latest published release, never unreleased code.
+- Closing the menu on outside clicks now comes from exp-core, shared with the rest of the suite.
+
+## 3.3.5 - 2026-10-01
+
+- Updates the shared foundation to exp-core 3.4.8.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.4 - 2026-09-30
+
+- Stops running on smile.amazon.com, which Amazon retired in 2023 and which only redirects to www.amazon.com now.
+- Amazon shopping on www.amazon.com works exactly as before.
+
+## 3.3.3 - 2026-09-30
+
+- Updates the shared foundation to exp-core 3.4.7.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.2 - 2026-09-30
+
+- Updates the shared foundation to exp-core 3.4.6.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.1 - 2026-09-30
+
+- Updates the shared foundation to exp-core 3.4.5.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.3.0 - 2026-09-30
+
+- WARD now protects Walmart, eBay and Etsy as well as Amazon, each with its own on/off switch in the menu.
+- Popularity claims such as "100+ bought since yesterday" or "In 20+ carts" are dimmed, and store membership, financing and sponsored listings are collapsed.
+- Struck-through reference prices are labelled as not verified, never hidden or changed.
+- Buy, add-to-cart and checkout controls are never touched.
+
+## 3.2.31 - 2026-09-29
+
+- Updates the shared foundation to exp-core 3.4.4.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.30 - 2026-09-29
+
+- Updates the shared foundation to exp-core 3.4.3.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.29 - 2026-09-29
+
+- Adds a Check for updates button that works without turning on update notifications.
+- Checks GitHub release information only when you press it and never installs anything.
+- Reports whether an update is available, the script is current, or the check failed.
+- Leaves everything else in the product unchanged.
+
+## 3.2.28 - 2026-09-29
+
+- Updates the shared foundation to exp-core 3.4.2.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.27 - 2026-09-29
+
+- Updates the shared foundation to exp-core 3.4.1.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.26 - 2026-09-29
+
+- Updates the shared foundation to exp-core 3.4.0.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.25 - 2026-09-28
+
+- Updates the shared foundation to exp-core 3.3.17.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.24 - 2026-09-28
+
+- Updates the shared foundation to exp-core 3.3.16.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.23 - 2026-09-28
+
+- Updates the shared foundation to exp-core 3.3.15.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.22 - 2026-09-28
+
+- Updates the shared foundation to exp-core 3.3.13.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
+## 3.2.21 - 2026-09-27
+
+- Adds the shared themed outer menu border across the ExtraPotions suite.
+- Keeps current Amazon protection behavior unchanged.
+- Publishes the pending WARD shell update.
+
+## 3.2.20 - 2026-09-27
+
+- Lets every launcher move left, right, up, or down within the shared grid.
+- Persists launcher order and supports Alt+Arrow keyboard reordering.
+- Bundles exp-core 3.3.11 without changing Amazon protection behavior.
+
+## 3.2.19 - 2026-09-27
+
+- Adds layered menu surfaces so protection controls remain distinct at every menu width.
+- Uses accessible semantic colors for links, focus indicators, and accent text.
+- Bundles the verified exp-core 3.3.10 artifact without changing Amazon intervention behavior.
+
+## 3.2.18 - 2026-09-26
+
+- Compacts System menus and keeps menu width controls together on one row.
+- Groups existing menu preferences consistently while preserving saved settings.
+- Removes automatic Settings Backup and its restore controls.
+- Adds a Bitcoin donation option with address copying and wallet support.
+
+## 3.2.17 - 2026-09-26
+
+- Restores Full, Compact, and Narrow menu-width controls under System.
+- Applies width changes immediately and remembers the selection after reload.
+- Keeps wide menus within the available viewport on small screens.
+
+## 3.2.16 - 2026-09-26
+
+- Bundles exp-core 3.3.8 with section arrangement and viewport-safe menus.
+- Preserves remembered page exceptions and intervention explanations.
+- Refreshes the README and feature screenshots in a horizontal gallery.
+
+## 3.2.15 - 2026-09-26
+
+- Adds remembered per-page exceptions for individual protection patterns.
+- Displays intervention reasons and keeps allowed content out of active protections.
+- Adds settings backups, rollback, and compatibility details through exp-core 3.3.7.
+
+## 3.2.14 - 2026-09-26
+
+- Rebuilds on exp-core 3.3.6 with the shared donation button and launcher menu coordination.
+- Uses Firefox-safe settings copies and content-context injection.
+- Preserves existing Amazon protections without affiliate link rewriting.
+
+## 3.2.13 - 2026-09-25
+
+- Uses the same menu-width notice surface for Current Version, Update Available, and Update Complete, matching Dropper.
+- Forces a fresh update check for each newly installed WARD version instead of inheriting the previous version's 15-minute throttle or stale remote version.
+- Reports separate progress-card, launcher, launcher-row, menu, and notice geometry, and limits resource-error details to ownership plus asset hostname.
+
+## 3.2.12 - 2026-09-25
+
+- Preserves WARD settings across userscript updates by recovering from browser-local backup storage when manager storage is missing.
+- Mirrors validated settings to both manager storage and the local fallback, and keeps the saved Full, Compact, or Narrow menu width.
+
+## 3.2.11 - 2026-09-25
+
+- Shows each automatic update notice once for that version instead of on every page load.
+- Stacks simultaneous notices beside the complete launcher grid.
+- Moves diagnostics and recovery actions under the final System menu.
+
+## 3.2.10 - 2026-09-25
+
+- Keeps every launcher clickable when Dropper and multiple ExtraPotions products share the page.
+- Uses exp-core 3.2.19 to prevent transparent launcher containers from intercepting pointer input.
+
+## 3.2.9 - 2026-09-25
+
+- Uses the borderless WARD launcher artwork everywhere an icon is shown.
+- References the SVG by URL instead of embedding image bytes in the userscript.
+- Removes the superseded bordered SVG and raster badge files.
+
+## 3.2.8 - 2026-09-25
+
+- Adds one global Automatic, Hide, or Dim choice for all protected content.
+- Extends guarded Amazon ad and upsell coverage across home and order-history pages.
+- Adds standardized Page, Technical, Console, and Plugin diagnostics with peer conflict reporting.
+- Embeds the canonical WARD badge for userscript managers.
+
+## 3.2.7 - 2026-09-25
+
+- Hides complete Amazon display ads, sponsored product carousels, and sponsored Rufus questions.
+- Hides verified sponsored search results instead of leaving them dimmed.
+- Preserves purchasing information, temporary reveal, and protection preferences during page updates.
+
+## 3.2.6 - 2026-09-24
+
+- Removes the decorative progress ring from the WARD launcher.
+- Keeps the launcher at 48 px with 40 px artwork and the menu badge at 38 px.
+- Uses the canonical WARD SVG as the userscript-manager icon.
+
+## 3.2.5 - 2026-09-24
+
+- Uses 48 px launcher buttons with 40 px artwork and an 8 px gap between launchers.
+- Expands menu-header badge artwork to 38 px.
+- Adds a dedicated 128 px raster badge derivative without changing either SVG source.
+
+## 3.2.4 - 2026-09-24
+
+- Shows a concise, concrete current-release changelog from the WARD version control.
+- Includes the same release summary in the update-complete notice after installation.
+- Preserves stable current-version and update-complete notice roles whenever a notice is refreshed.
+
+## 3.2.3 - 2026-09-24
+
+- Shows a concise, concrete current-release changelog from the WARD version control.
+- Includes the same release summary in the update-complete notice after installation.
+- Keeps current-version and update-complete notices independently identifiable under shared Core chrome.
+
+## 3.2.2 - 2026-09-24
+
+- Shows a concise, concrete current-release changelog from the WARD version control.
+- Includes the same release summary in the update-complete notice after installation.
+- Uses concise GitHub release bullets in update-available notices when provided.
+
+## 3.2.1 - 2026-09-24
+
+- Restores visible dimming with target-level presentation that survives blocked page styles.
+- Keeps adapter coverage cumulative for the current route instead of replacing it on each mutation batch.
+- Adds current Amazon Business savings and insurance-and-warranty module coverage.
+
+## 3.2.0 - 2026-09-24
+
+- Adds page-wide and per-item controls to reveal content and reapply protection.
+- Completes Custom mode with action, confidence, explanation, category, and pattern policies.
+- Adds privacy-safe activity explanations, coupon status and recovery, and Amazon adapter health.
+- Moves intervention and compact-search styling to a CSP-safe constructed stylesheet service.
+- Adds route-specific Amazon fixtures, current generated release notes, a refreshed screenshot capture manifest, and a browser-independent release check.
+
+## 3.1.13 — 2026-09-24
+
+- Limits shared launcher and theme coordination to the active ExtraPotions products.
+- Stops shared audits from tracking the archived CLARITY and Mockingbird repositories.
+- Pins the bundled Core reference to the verified Dropper 3.2.13 release artifact.
+
+## 3.1.12 — 2026-09-24
+
+- Packs installed product launchers into Dropper's compact progress rail and restores the normal grid when the obstacle closes.
+
+## 3.1.11 — 2026-09-24
+
+- Adds the locked eight-palette system with deep Crimson and a new WARD gem.
+- Migrates saved legacy palette names to their closest new direction.
+
+## 3.1.1
+
+- Made repeated interventions idempotent so unchanged protected elements stop triggering WARD's own mutation loop.
+- Temporary reveals now persist through ordinary rescans until explicitly restored or navigation changes.
+- Essential, Balanced, and Custom now use distinct protection policies instead of silently sharing the hidden default action.
+- Recommendation cleanup now runs through the same policy/audit path as every other intervention.
+- Audit decisions update when target safety changes, disconnected targets are pruned, and reveal state is kept current.
+- Added regressions for settling behavior, reveal persistence, policy levels, audit freshness, stale-target pruning, and recommendation cleanup.
+
+## 3.1.0
+
+- Added a privacy-safe current-page intervention audit ledger.
+- Diagnostics now separate detected, acted, downgraded, skipped, revealed, duplicate-target, and structural-safety counts.
+- Each audited target reports detector, pattern, confidence, requested action, applied action, structural safety, and decision reason without page text or selectors.
+- Added duplicate-detector target reporting and current-route audit reset on rebuild/navigation.
+- Added regression coverage for all 11 Amazon detector families, surrounding-content preservation, reveal/restore, policy skips, structural downgrades, SPA navigation, and diagnostics privacy.
+
+## 3.0.9
+
+- Added DOM-safety classification for Amazon structural interventions.
+- Dynamic media, follow/creator, Rufus, live-region, and carousel widgets now avoid `hide`/`collapse` mutations.
+- Unsafe structural actions downgrade to `dim`, then `annotate`, instead of forcing `hidden`, `display:none`, or `inert`.
+- Narrowed recommendation cleanup to verified static recommendation containers.
+- Added `structuralCollapseSkipped` and reason counts to diagnostics activity totals.
+
+## 3.0.8
+
+- Reworked collapsed protection replacements into compact `Protected by WARD` reveal strips.
+- Reduced visual noise from dimmed and annotated interventions.
+- Simplified the main menu to Protection, Appearance, and Amazon.
+- Moved individual Amazon pattern switches behind a Customize control.
+- Moved diagnostics, settings transfer, and reset tools out of the main navigation.
+- Standardized the menu on a compact 260px layout and removed conflicting menu-shell geometry.
+
+## 3.0.7
+
+- Dropdown option text matches other menu label text at 11px.
+- Pride header divider matches other menu rainbow dividers (full bar, not a faded hairline).
+
+## 3.0.6
+
+- Pride menu uses a full rainbow border, divider, and accents—not just a pink overlay.
+- Keeps helper tips inside the viewport when the launcher sits at the top.
+- Trims redundant tips from menu section names.
+
+# Changelog
+
+## 3.0.5 — 2026-09-20
+
+- Four-row ExtraPotions menu: This page, Look, Tools, and Menu.
+- Launcher host protection from Amazon overlays.
+- Live Amazon pages stay interactive during DOM updates.
+- One bundled userscript — no slices or install loader.
+
+## 3.0.4 — 2026-09-20
+
+- Menu stays interactive on live Amazon pages.
+- Activity updates in place instead of rebuilding open controls.
+- Launcher clicks no longer cancel before a drag starts.
+
+## 3.0.3 — 2026-09-20
+
+- Six-row ExtraPotions menu: This page, Look, Read, Tools, Menu, and Recover.
+- Look holds palette; Read holds accessibility; Recover holds Safe Mode and diagnostics.
+
+## 3.0.2 — 2026-09-20
+
+- Four-row menu aligned with SHIFT, CLARITY, and PRISMA.
+- Pattern switches in Tools; palette and accessibility in Look.
+
+## 3.0.1 — 2026-09-19
+
+- Removed redundant status cards; diagnostics retained.
+- Dropdowns fit all menu widths; transfer actions share a row.
+- Recovery controls grouped with a separator above Amazon reset.
+
+## 3.0.0 — Local candidate
+
+- Rebuilt the Amazon predecessor as modular WARD V3 with bundled Core 3 and a clean schema-1 namespace.
+- Separated retailer eligibility, Amazon detection, generic patterns, deterministic confidence, safety policy, reversible actions, restoration, activity, layout compatibility, UI, updates, and lifecycle.
+- Added distinct Hide, Dim, Collapse, Annotate, Allow, and Temporary Reveal outcomes.
+- Preserved all audited Amazon feature families and retained recommendation/compact-search behavior pending no-gap transfer.
+- Replaced automatic Prime navigation, media-format selection, transaction selection changes, and commercial-text rewriting with safe presentation behavior.
+- Retained automatic coupon clipping as enabled by default with a dedicated eligibility/verification/quarantine contract.
+- Added adapter health, Safe Mode, sanitized diagnostics, SPA lifecycle cleanup, accessibility controls, reproducible builds, browser fixtures, and release checks.
+- Added the exact supplied WARD SVG reference and 48 px/32 px derivatives.
+- Reworked the first rejected menu UX into a WARD-specific warm visual system with grouped task navigation, protection/retailer status summaries, content-fit sizing, consolidated recovery, and corrected modal focus/launcher behavior.
+
+No GitHub release has been created.
+## 3.1.8
+
+- Migrated menu chrome, palettes, diagnostics, and launcher placement to the Dropper 3.2.8 Core contract.
+- Preserved audited protection policies, reversible interventions, and guarded coupon handling.
+- Added browser parity coverage for matte controls, floating notices, and coordinated launchers.
