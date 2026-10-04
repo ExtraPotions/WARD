@@ -12,8 +12,10 @@ EXP.AmazonAdapter = (() => {
   // These identify complete ad units, not arbitrary containers with ad text.
   // Their iframe/carousel children belong to the ad and can hide with the unit.
   const sponsoredWrapperSelector = 'div.ape-wrapper[id^="ape_"][id$="_wrapper"]';
+  const sponsoredSearchSelector = '.s-result-item.AdHolder, .s-result-item:has(.sb-desktop)';
   const completeSponsoredSelectors = [
     '[data-component-type="s-sponsored-result"]',
+    sponsoredSearchSelector,
     sponsoredWrapperSelector,
     'div.ape-placement[id^="ape_"][id$="_placement"]',
     'div.a-carousel-container[id^="sp_detail"][data-a-carousel-options]',
@@ -90,7 +92,7 @@ EXP.AmazonAdapter = (() => {
         for (const root of roots) for (const selector of detector.selectors) for (const match of [...(root.matches?.(selector) ? [root] : []), ...safeQueryAll(root, selector)]) {
           // Light ads put the disclosure beside the creative inside a wrapper.
           // Treat that whole unit once, including on incremental child scans.
-          const node = detector.id === 'amazon.sponsored.placement' ? match.closest(sponsoredWrapperSelector) || match : match;
+          const node = detector.id === 'amazon.sponsored.placement' ? match.closest(sponsoredSearchSelector) || match.closest(sponsoredWrapperSelector) || match : match;
           if (!node.isConnected || isProtectedPageRoot(node) || node.closest('[data-exp-owned="1"]')) continue;
           routeMatchedDetectors.add(detector.id);
           if (!routeMatchedTargets.has(node)) {

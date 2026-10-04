@@ -33,7 +33,7 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 - **Site control:** pause page features across active ExtraPotions products from System, temporarily or until you resume.
 - **Protection choices:** Essential, Balanced, and Custom let you choose the level of cleanup.
 - **Hide or dim:** choose a content action, or let the protection level decide.
-- **Supported Amazon clutter:** reduce sponsored placements, membership upsells, urgency messages, and selected recommendations.
+- **Supported Amazon clutter:** reduce sponsored search products and brand cards, other recognized sponsored placements, membership upsells, urgency messages, and selected recommendations.
 - **Reversible changes:** reveal affected content temporarily or restore it when needed.
 - **Coupon options:** optionally clip eligible coupons with visible status and recovery controls.
 - **Keep the essentials:** safeguards preserve important purchasing information.

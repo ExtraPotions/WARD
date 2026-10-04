@@ -54,6 +54,29 @@ test('late ad content is detected when the placement itself is the incremental s
   });
   assert.deepEqual(result,{hidden:true,action:'hide',detected:true});
 });
+
+test('live Amazon AdHolder results and sponsored brand cards respect hide, dim and restore', async t => {
+  const page=await setup(t,`<div class="s-result-item s-asin AdHolder" data-component-type="s-search-result" id="paid-result"><span class="puis-sponsored-label-text">Sponsored</span><h2>Paid product</h2></div>
+    <div class="s-result-item s-widget AdHolder" id="paid-brand"><div class="sb-desktop"><span>Sponsored</span><h2>Paid brand</h2></div></div>
+    <div class="s-result-item s-asin" data-component-type="s-search-result" id="organic-result"><h2>Organic product</h2></div>`);
+  await page.evaluate(()=>history.replaceState(null,'','/s?k=test'));
+  const result=await page.evaluate(async ()=>{
+    EXP.Engine.start();
+    const ids=['paid-result','paid-brand'];
+    const hidden=ids.map(id=>document.getElementById(id).hidden);
+    const organic=document.getElementById('organic-result');
+    const organicUntouched=!organic.hidden&&!organic.hasAttribute('data-ward-action');
+    EXP.Settings.update({contentAction:'dim'});EXP.Engine.rebuild();
+    await new Promise(resolve=>setTimeout(resolve,160));
+    const dimmed=ids.map(id=>{const n=document.getElementById(id);return {hidden:n.hidden,action:n.dataset.wardAction,opacity:getComputedStyle(n).opacity};});
+    EXP.Engine.stop();
+    return {hidden,organicUntouched,dimmed,restored:ids.every(id=>!document.getElementById(id).hidden&&!document.getElementById(id).hasAttribute('data-ward-action'))};
+  });
+  assert.deepEqual(result.hidden,[true,true]);
+  assert.equal(result.organicUntouched,true);
+  assert.deepEqual(result.dimmed,[{hidden:false,action:'dim',opacity:'0.58'},{hidden:false,action:'dim',opacity:'0.58'}]);
+  assert.equal(result.restored,true);
+});
 test('sponsored policy still respects disabled categories, essential controls and page landmarks', async t => {
   const page=await setup(t,`${ads}<div class="ape-placement" id="ape_Detail_mixed_desktop_placement"><div id="price">Price</div></div><div class="ape-placement" id="ape_Detail_shell_desktop_placement"><div role="main">Essential page</div></div>`);
   const result=await page.evaluate(ids => {
