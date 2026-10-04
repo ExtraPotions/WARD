@@ -2816,12 +2816,14 @@ const ExtraPotionsCore = (() => {
       return { top, right:Math.round(right), width, side };
     };
     if (reserved) {
-      const room = anchorTop ? innerHeight - reserved.bottom - 16 : reserved.top - 16;
+      const blockers=geometry.launchers.filter(box=>box.left<reserved.right&&box.right>reserved.right-width);
+      const edge=anchorTop?Math.max(reserved.bottom,...blockers.map(box=>box.bottom)):Math.min(reserved.top,...blockers.map(box=>box.top));
+      const room = anchorTop ? innerHeight - edge - 16 : edge - 16;
       if (room >= 200 && reserved.right - 8 >= width) {
         panel.style.maxHeight = room + 'px';
         const h = panel.offsetHeight;
         host.dataset.openDirection = anchorTop ? 'down' : 'up';
-        return finish('reserved', innerWidth - reserved.right, anchorTop ? reserved.bottom + 8 : reserved.top - 8 - h, h);
+        return finish('reserved', innerWidth - reserved.right, anchorTop ? edge + 8 : edge - 8 - h, h);
       }
     }
     if (gridLeft - 16 >= width) {
@@ -2831,7 +2833,7 @@ const ExtraPotionsCore = (() => {
       return finish('beside', innerWidth - gridLeft + 8, anchorTop ? own.top : own.bottom - h, h);
     }
     // Stacked menus clear the launcher and any reserved surface in its row.
-    const band = [...geometry.launchers, ...(reserved ? [reserved] : [])].filter(box => box.bottom > own.top - 1 && box.top < own.bottom + 1)
+    const band = [...geometry.launchers, ...(reserved ? [reserved] : [])].filter(box => box.left < innerWidth - 12 && box.right > innerWidth - 12 - width)
       .reduce((all, box) => ({ top:Math.min(all.top, box.top), bottom:Math.max(all.bottom, box.bottom) }), { top:own.top, bottom:own.bottom });
     const below = innerHeight - band.bottom - 16, above = band.top - 16;
     const up = anchorTop ? below < 160 && above > below : !(above < 160 && below > above);
@@ -5169,7 +5171,7 @@ EXP.Engine = (() => {
   function activityDigest() {
     const data = EXP.Activity.snapshot();
     const adapter = EXP.Retailer.diagnose();
-    return JSON.stringify({ active: data.active, totals: data.totals, breakdown: data.breakdown, adapter:adapter.health, coupon:couponStatus, quarantined:couponQuarantined });
+    return JSON.stringify({ active: data.active, totals: data.totals, breakdown: data.breakdown, adapter:adapter.health, coupon:couponStatus, quarantined:couponQuarantined,recovery:recovery.snapshot('protection',recoveryContext) });
   }
 
   function syncActivityUi() {
@@ -5322,7 +5324,7 @@ EXP.Engine = (() => {
     if(!active||ExtraPotionsCore.suiteSitePaused())return false;
     if(!force&&recovery.snapshot('protection',recoveryContext).suspended)return false;
     try {processBatchUnprotected(roots);recovery.succeeded('protection',recoveryContext);return true;}
-    catch(error){if(force)throw error;recovery.failed('protection',recoveryContext);EXP.Core.safeError(error,'ward.protection');return false;}
+    catch(error){if(force)throw error;recovery.failed('protection',recoveryContext);syncActivityUi();EXP.Core.safeError(error,'ward.protection');return false;}
   }
   function processBatchUnprotected(roots = [document]) {
     if (!active) return;
@@ -5498,11 +5500,12 @@ EXP.UI = (() => {
   let healthControl;
   function systemHealthSnapshot() {
     const settings=EXP.Settings.snapshot(),data=EXP.Engine.diagnostics(),checkedAt=Date.now();
-    if(settings.safeMode||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
+    if(settings.safeMode||settings.enabled===false||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
     if(data.adapter.health==='inactive')return {state:'waiting',reason:'This page has no supported retailer module.',checkedAt};
+    if(!EXP.Retailer.enabled(settings))return {state:'paused',reason:'Protection is disabled for this retailer.',checkedAt};
+    if(data.coupon.state==='attention')return {state:'attention',reason:'A coupon action could not be confirmed. Review its status before attempting it again.',checkedAt};
     if(data.coupon.quarantined||data.recovery?.suspended)return {state:'attention',reason:data.coupon.quarantined?'Coupon collection stopped after an unsafe or failed attempt.':'Protection processing stopped after repeated failures.',checkedAt,action:{label:'Retry',run:()=>{if(!EXP.Settings.snapshot().safeMode&&!ExtraPotionsCore.suiteSitePaused())return data.coupon.quarantined?EXP.Engine.resumeCoupons():EXP.Engine.retry();}}};
     if(data.adapter.health==='degraded')return {state:'attention',reason:'Some retailer detection is unavailable. Essential content is kept visible.',checkedAt};
-    if(!EXP.Retailer.enabled(settings))return {state:'paused',reason:'Protection is disabled for this retailer.',checkedAt};
     return {state:'working',reason:'Protection is active for supported content. Coverage varies by category.',checkedAt};
   }
   const ICON_URL = 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg';
@@ -6117,6 +6120,7 @@ EXP.UI = (() => {
   }
 
   function refreshActivity() {
+    healthControl?.refresh();
     if (!shell?.classList.contains('open') || !content) return;
     renderActivitySummary(content.querySelector('[data-exp-activity-summary]'));
     renderCouponStatus(content.querySelector('[data-exp-coupon-status]'));

@@ -12,7 +12,7 @@ EXP.Engine = (() => {
   function activityDigest() {
     const data = EXP.Activity.snapshot();
     const adapter = EXP.Retailer.diagnose();
-    return JSON.stringify({ active: data.active, totals: data.totals, breakdown: data.breakdown, adapter:adapter.health, coupon:couponStatus, quarantined:couponQuarantined });
+    return JSON.stringify({ active: data.active, totals: data.totals, breakdown: data.breakdown, adapter:adapter.health, coupon:couponStatus, quarantined:couponQuarantined,recovery:recovery.snapshot('protection',recoveryContext) });
   }
 
   function syncActivityUi() {
@@ -165,7 +165,7 @@ EXP.Engine = (() => {
     if(!active||ExtraPotionsCore.suiteSitePaused())return false;
     if(!force&&recovery.snapshot('protection',recoveryContext).suspended)return false;
     try {processBatchUnprotected(roots);recovery.succeeded('protection',recoveryContext);return true;}
-    catch(error){if(force)throw error;recovery.failed('protection',recoveryContext);EXP.Core.safeError(error,'ward.protection');return false;}
+    catch(error){if(force)throw error;recovery.failed('protection',recoveryContext);syncActivityUi();EXP.Core.safeError(error,'ward.protection');return false;}
   }
   function processBatchUnprotected(roots = [document]) {
     if (!active) return;

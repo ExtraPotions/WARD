@@ -2,11 +2,12 @@ EXP.UI = (() => {
   let healthControl;
   function systemHealthSnapshot() {
     const settings=EXP.Settings.snapshot(),data=EXP.Engine.diagnostics(),checkedAt=Date.now();
-    if(settings.safeMode||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
+    if(settings.safeMode||settings.enabled===false||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
     if(data.adapter.health==='inactive')return {state:'waiting',reason:'This page has no supported retailer module.',checkedAt};
+    if(!EXP.Retailer.enabled(settings))return {state:'paused',reason:'Protection is disabled for this retailer.',checkedAt};
+    if(data.coupon.state==='attention')return {state:'attention',reason:'A coupon action could not be confirmed. Review its status before attempting it again.',checkedAt};
     if(data.coupon.quarantined||data.recovery?.suspended)return {state:'attention',reason:data.coupon.quarantined?'Coupon collection stopped after an unsafe or failed attempt.':'Protection processing stopped after repeated failures.',checkedAt,action:{label:'Retry',run:()=>{if(!EXP.Settings.snapshot().safeMode&&!ExtraPotionsCore.suiteSitePaused())return data.coupon.quarantined?EXP.Engine.resumeCoupons():EXP.Engine.retry();}}};
     if(data.adapter.health==='degraded')return {state:'attention',reason:'Some retailer detection is unavailable. Essential content is kept visible.',checkedAt};
-    if(!EXP.Retailer.enabled(settings))return {state:'paused',reason:'Protection is disabled for this retailer.',checkedAt};
     return {state:'working',reason:'Protection is active for supported content. Coverage varies by category.',checkedAt};
   }
   const ICON_URL = 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg';
@@ -621,6 +622,7 @@ EXP.UI = (() => {
   }
 
   function refreshActivity() {
+    healthControl?.refresh();
     if (!shell?.classList.contains('open') || !content) return;
     renderActivitySummary(content.querySelector('[data-exp-activity-summary]'));
     renderCouponStatus(content.querySelector('[data-exp-coupon-status]'));
