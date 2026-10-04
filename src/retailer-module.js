@@ -33,6 +33,6 @@ EXP.createRetailerModule = (config) => {
   return Object.freeze({ key:config.key, label:config.label, ID:`ward.retailer.${config.key}`, VERSION:'1', patternIds:Object.freeze([...new Set(config.detectors.map(item => item.patternId))]), features:Object.freeze({ coupons:false, compactSearch:false, recommendationCleanup:false }), eligible, classify, detect, structuralSafety,
     diagnose:() => ({ id:`ward.retailer.${config.key}`, version:'1', health, eligible:eligible(), pageType:eligible() ? classify() : 'unsupported', detectorCount:config.detectors.length, coverage, errors:errors.slice() }),
     nextEpoch() { epoch++; coverage = null; health = eligible() ? 'healthy' : 'inactive'; return epoch; }, cleanup() { epoch++; coverage = null; health = 'inactive'; errors.length = 0; },
-    patterns:() => config.detectors.map(item => ({ id:`${config.key}.${item.id}`, patternId:item.patternId, pages:item.pages.slice() }))
+    patterns:() => config.detectors.map(item => ({ id:`${config.key}.${item.id}`, patternId:item.patternId, complete:Boolean(item.complete), pages:item.pages.slice() }))
   });
 };

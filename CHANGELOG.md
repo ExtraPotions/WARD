@@ -1,3 +1,9 @@
+## 3.4.3 - 2026-10-03
+
+- Show a clear System status with safe retry for a suspended protection scan.
+- Choose Standard, Large, or Extra Large menus on each site.
+- Show retailer coverage for supported complete units, conservative detection, and uncovered categories.
+
 ## 3.4.2 - 2026-10-02
 
 - Use product names without the retired V3 integration label in settings prompts and import messages.

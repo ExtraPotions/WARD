@@ -42,6 +42,12 @@ EXP.Retailer = (() => {
   const idle = Object.freeze({ id: 'none', key: 'none', label: 'Store', health: 'inactive', eligible: false, pageType: 'unsupported' });
   const none = () => [];
   function adapter() { return EXP.Retailers.current(); }
+  function coverage() {
+    const active=adapter(),patterns=active?.patterns?.(),ids=active?.patternIds||[],rows=Array.isArray(patterns)?patterns:[];
+    const supportedCategories=[...new Set(rows.filter(row=>row.complete===true).map(row=>row.patternId))];
+    const conservativeCategories=[...new Set(ids)].filter(id=>!supportedCategories.includes(id));
+    return {retailer:active?.key||'none',supportedCategories,conservativeCategories,unsupportedCategories:EXP.Patterns.all().map(row=>row.id).filter(id=>!ids.includes(id))};
+  }
   function optional(name, fallback) {
     return (...args) => {
       const active = adapter();
@@ -50,6 +56,7 @@ EXP.Retailer = (() => {
   }
 
   return Object.freeze({
+    coverage,
     key: () => adapter()?.key || 'none',
     label: () => adapter()?.label || 'Store',
     features: () => adapter()?.features || Object.freeze({}),

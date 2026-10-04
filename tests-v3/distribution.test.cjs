@@ -137,7 +137,7 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(changed.visibleBodies, 1);
   assert.equal(changed.openRoute, 'Amazon');
   assert.equal(changed.coupon, 'true');
-  assert.equal(changed.nested, 2);
+  assert.equal(changed.nested, 3);
   assert.ok(changed.switches > 0);
   const reopened = await page.locator('#exp-ward-root').evaluate((host) => {
     const root=host.shadowRoot;root.querySelector('.ward-launcher').click();root.querySelector('.ward-launcher').click();

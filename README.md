@@ -20,9 +20,12 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 ## What you can do
 
+- **System status:** see Working, Waiting, Paused, or Needs attention, with a reason and a safe recovery action when available.
+- **Coverage:** see recognized complete units, conservative detection, and uncovered categories for the active retailer. Essential purchasing controls remain visible.
+
 - **Keep your settings:** saved preferences and existing settings exports remain supported as product naming is simplified.
 
-- **Readable menus:** labels and controls use 13px text, with an 11px minimum for small captions, notices, and supporting details.
+- **Readable menus:** choose Standard, Large, or Extra Large from System > Menu preferences. The choice applies to ExtraPotions menus on this site.
 
 - **Six retailer modules:** separate controls for Amazon, eBay, Etsy, Walmart, Target, and Best Buy. Target and Best Buy begin with conservative coverage; unsupported or mixed content stays visible.
 - **Protection review:** review handled content, allow a pattern on this page, and record missed protection locally. Reviews stay on your device.

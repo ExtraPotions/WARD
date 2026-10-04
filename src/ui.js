@@ -1,4 +1,14 @@
 EXP.UI = (() => {
+  let healthControl;
+  function systemHealthSnapshot() {
+    const settings=EXP.Settings.snapshot(),data=EXP.Engine.diagnostics(),checkedAt=Date.now();
+    if(settings.safeMode||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
+    if(data.adapter.health==='inactive')return {state:'waiting',reason:'This page has no supported retailer module.',checkedAt};
+    if(data.coupon.quarantined||data.recovery?.suspended)return {state:'attention',reason:data.coupon.quarantined?'Coupon collection stopped after an unsafe or failed attempt.':'Protection processing stopped after repeated failures.',checkedAt,action:{label:'Retry',run:()=>{if(!EXP.Settings.snapshot().safeMode&&!ExtraPotionsCore.suiteSitePaused())return data.coupon.quarantined?EXP.Engine.resumeCoupons():EXP.Engine.retry();}}};
+    if(data.adapter.health==='degraded')return {state:'attention',reason:'Some retailer detection is unavailable. Essential content is kept visible.',checkedAt};
+    if(!EXP.Retailer.enabled(settings))return {state:'paused',reason:'Protection is disabled for this retailer.',checkedAt};
+    return {state:'working',reason:'Protection is active for supported content. Coverage varies by category.',checkedAt};
+  }
   const ICON_URL = 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg';
   const BADGE = ICON_URL;
   const LAUNCHER = ICON_URL;
@@ -381,6 +391,11 @@ EXP.UI = (() => {
     const fragment = document.createDocumentFragment();
     const amazon = section(EXP.Retailer.label());
     const features = EXP.Retailer.features();
+    const coverage=EXP.Retailer.coverage(),coverageCard=ExtraPotionsCore.createDisclosure('Coverage');
+    for(const [field,label] of [['supportedCategories','Supported complete units'],['conservativeCategories','Conservative detection'],['unsupportedCategories','Not covered']]){
+      const text=el('p');text.textContent=`${label}: ${coverage[field].map(id=>EXP.Patterns.get(id)?.label||id).join(', ')||'None'}`;coverageCard.append(text);
+    }
+    const coverageNote=el('p');coverageNote.textContent='Coverage applies to recognized page patterns. Mixed content and essential purchasing controls remain visible.';coverageCard.append(coverageNote);fragment.append(coverageCard);
     const storeKey = EXP.Retailer.key();
 
     amazon.append(
@@ -490,12 +505,14 @@ EXP.UI = (() => {
     const settings = EXP.Settings.snapshot();
     const box = section();
     const preferences = ExtraPotionsCore.createDisclosure('Menu preferences');
+    preferences.append(ExtraPotionsCore.createMenuSizeControls());
     for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
       preferences.append(row(label,'',switchControl(settings[key],label,value=>{
         update({[key]:value},key);
         if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
       })));
     }
+    healthControl?.dispose();healthControl=ExtraPotionsCore.createHealthControls(systemHealthSnapshot,notify);box.append(healthControl.element);
     box.append(
       EXP.Diagnostics.createDiagnosticsControls(
         () => EXP.Diagnostics.createDiagnosticsReport(
@@ -790,7 +807,7 @@ EXP.UI = (() => {
     renderView();
   }
 
-  function cleanup() {
+  function cleanup() {healthControl?.dispose();
     noticeController?.destroy();
     launcherCleanup?.();
     chrome?.destroy();
