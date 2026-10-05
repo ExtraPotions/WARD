@@ -20,6 +20,7 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 ## What you can do
 
+- **Distinct menu colors:** WARD keeps its signature appearance alongside other ExtraPotions products.
 - **System status:** see Working, Waiting, Paused, or Needs attention, with a reason and a safe recovery action when available.
 - **Coverage:** see recognized complete units, conservative detection, and uncovered categories for the active retailer. Essential purchasing controls remain visible.
 

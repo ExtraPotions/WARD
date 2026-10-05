@@ -1,5 +1,6 @@
 ## 3.4.3 - 2026-10-03
 
+- Keep WARD's signature menu colors alongside other ExtraPotions products.
 - Show a clear System status with safe retry for a suspended protection scan.
 - Choose Standard, Large, or Extra Large menus on each site.
 - Show retailer coverage for supported complete units, conservative detection, and uncovered categories.
