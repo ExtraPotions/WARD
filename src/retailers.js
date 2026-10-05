@@ -5,7 +5,7 @@
 // An adapter provides: key, label, patternIds, features, eligible(), classify(),
 // detect(roots), structuralSafety(node), diagnose(), nextEpoch(), cleanup().
 // Optional: couponCandidates(roots), verifyCouponTarget(control),
-// cosmeticRecommendationCandidates(roots).
+// cosmeticRecommendationCandidates(roots), sellerFacts(root), listingBrands(roots).
 EXP.Retailers = (() => {
   const adapters = new Map();
   const REQUIRED = ['eligible', 'classify', 'detect', 'structuralSafety', 'diagnose', 'nextEpoch', 'cleanup'];
@@ -70,6 +70,9 @@ EXP.Retailer = (() => {
     verifyCouponTarget: optional('verifyCouponTarget', () => ({ eligible: false, reason: 'unsupported-store' })),
     cosmeticRecommendationCandidates: optional('cosmeticRecommendationCandidates', none),
     structuralSafety: optional('structuralSafety', () => ({ safe: false, reason: 'unsupported-store' })),
+    supportsSellerClarity: () => typeof adapter()?.sellerFacts === 'function',
+    sellerFacts: optional('sellerFacts', () => null),
+    listingBrands: optional('listingBrands', none),
     diagnose: () => adapter()?.diagnose() || idle,
     nextEpoch: () => { for (const item of EXP.Retailers.all()) item.nextEpoch(); },
     cleanup: () => { for (const item of EXP.Retailers.all()) item.cleanup(); },

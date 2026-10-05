@@ -436,6 +436,21 @@ EXP.UI = (() => {
     );
 
     fragment.append(amazon);
+    if (EXP.Retailer.supportsSellerClarity()) {
+      const clarity = section('Seller clarity');
+      clarity.append(
+        row('Seller notes','Notes on product pages when brand, seller or ratings deserve a second look.',
+          switchControl(settings.sellerClarity,'Seller notes',value => update({sellerClarity:value},'seller-clarity'))),
+        row('Search brand labels','Labels generated-style brand names in search results.',
+          switchControl(settings.sellerClaritySearch,'Search brand labels',value => update({sellerClaritySearch:value},'seller-clarity-search'))),
+        row('Always show seller summary','Show brand, seller and shipping on every product page.',
+          switchControl(settings.sellerClarityAlways,'Always show seller summary',value => update({sellerClarityAlways:value},'seller-clarity-always')))
+      );
+      const trustedCount = (settings.trustedBrands || []).length;
+      if (trustedCount) clarity.append(row('Trusted brands',`${trustedCount} brand${trustedCount === 1 ? '' : 's'} trusted on this device.`,
+        action('Clear',() => { update({trustedBrands:[]},'trusted-brands-cleared'); notify('Trusted brands cleared.'); })));
+      fragment.append(clarity);
+    }
     if (features.coupons) {
       const couponStatus = el('div');
       couponStatus.setAttribute('data-exp-coupon-status','1');

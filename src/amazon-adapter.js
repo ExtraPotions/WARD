@@ -137,10 +137,42 @@ EXP.AmazonAdapter = (() => {
     return { eligible: true, component };
   }
 
+  // Seller Clarity facts. Read-only: text the product page already shows.
+  const textOf = (node) => (node?.textContent || '').replace(/\s+/g, ' ').trim();
+  function firstText(root, selectors) {
+    for (const selector of selectors) { const value = textOf(safeQueryAll(root, selector)[0]); if (value) return value; }
+    return '';
+  }
+  function sellerFacts(root = document) {
+    if (!eligible() || classify() !== 'product') return null;
+    const byline = safeQueryAll(root, '#bylineInfo')[0];
+    let brand = firstText(root, ['#productOverview_feature_div tr.po-brand td.a-span9 span']);
+    if (!brand && byline) brand = textOf(byline).replace(/^Visit the\s+/i, '').replace(/\s+Store$/i, '').replace(/^Brand:\s*/i, '');
+    const seller = firstText(root, ['#sellerProfileTriggerId', '[offer-display-feature-name="desktop-merchant-info"] .offer-display-feature-text-message', '#merchantInfoFeature_feature_div .offer-display-feature-text-message']);
+    const shipsFrom = firstText(root, ['[offer-display-feature-name="desktop-fulfiller-info"] .offer-display-feature-text-message', '#fulfillerInfoFeature_feature_div .offer-display-feature-text-message']);
+    const ratingTitle = safeQueryAll(root, '#acrPopover')[0]?.getAttribute('title') || '';
+    const rating = Number((/([\d.]+)\s+out of 5/i.exec(ratingTitle) || [])[1]) || 0;
+    const ratingCount = Number(firstText(root, ['#acrCustomerReviewText']).replace(/[^\d]/g, '')) || 0;
+    const distribution = {};
+    for (const link of safeQueryAll(root, '#cm_cr_dp_d_rating_histogram a[aria-label], #histogramTable a[aria-label]')) {
+      const match = /(\d+)\s*percent of reviews have (\d) stars?/i.exec(link.getAttribute('aria-label') || '');
+      if (match) distribution[match[2]] = Number(match[1]);
+    }
+    const anchor = byline?.closest('#bylineInfo_feature_div') || byline || safeQueryAll(root, '#title_feature_div')[0] || null;
+    if (!brand && !seller) return null;
+    return { brand, seller, firstParty: /^amazon(?:\.com)?(?:\s+services(?:\s+llc)?)?$/i.test(seller), shipsFrom, rating, ratingCount, distribution, anchor };
+  }
+  function listingBrands(roots = [document]) {
+    if (!eligible() || classify() !== 'search') return [];
+    const selector = '[data-component-type="s-search-result"] [data-cy="title-recipe"] h2.a-size-mini > span.a-size-base-plus.a-color-base';
+    const nodes = roots.flatMap((root) => [...(root.matches?.(selector) ? [root] : []), ...safeQueryAll(root, selector)]);
+    return nodes.filter((node, index) => nodes.indexOf(node) === index && !node.closest('[data-exp-owned="1"]')).map((brandNode) => ({ brand: textOf(brandNode), brandNode }));
+  }
+
   function diagnose() { return { id: ID, version: VERSION, health, eligible: eligible(), pageType: eligible() ? classify() : 'unsupported', detectorCount: detectors.length, coverage: lastScan ? { ...lastScan, eligibleDetectors:lastScan.eligibleDetectors.slice(), matchedDetectors:lastScan.matchedDetectors.slice() } : null, errors: errors.map(({ code }) => ({ code })) }; }
   function nextEpoch() { epoch += 1; health = eligible() ? 'healthy' : 'inactive'; resetCoverage(); return epoch; }
   function cleanup() { epoch += 1; health = 'inactive'; resetCoverage(); errors.length = 0; }
   const patternIds = Object.freeze([...new Set(detectors.map((detector) => detector.patternId))]);
-  return Object.freeze({ key: 'amazon', label: 'Amazon', features: Object.freeze({ coupons: true, compactSearch: true, recommendationCleanup: true }), patternIds, ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
+  return Object.freeze({ key: 'amazon', label: 'Amazon', features: Object.freeze({ coupons: true, compactSearch: true, recommendationCleanup: true }), patternIds, ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, sellerFacts, listingBrands, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
 })();
 EXP.Retailers.register(EXP.AmazonAdapter);

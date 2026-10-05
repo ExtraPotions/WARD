@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.4.4
+// @version      3.5.0
 // @description  Local retail-pressure protection for Amazon, eBay, Etsy, Walmart, Target and Best Buy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -3922,6 +3922,10 @@ EXP.Settings = (() => {
     autoClipCoupons: true,
     compactSearch: false,
     recommendationCleanup: true,
+    sellerClarity: true,
+    sellerClaritySearch: true,
+    sellerClarityAlways: false,
+    trustedBrands: [],
     reducedMotion: 'system',
     nonColorIndicators: true,
     explanationDetail: 'concise',
@@ -3970,7 +3974,7 @@ EXP.Settings = (() => {
     const next = ExtraPotionsCore.cloneSettings(defaults);
 	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
 	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
-    for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'sellerClarity', 'sellerClaritySearch', 'sellerClarityAlways', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
     // One switch per store. The earlier single amazonEnabled setting migrates into it.
     const stores = { ...defaults.retailers };
     if (typeof candidate.amazonEnabled === 'boolean') stores.amazon = candidate.amazonEnabled;
@@ -3987,6 +3991,7 @@ EXP.Settings = (() => {
     for (const field of ['categories', 'patterns']) if (candidate[field] && typeof candidate[field] === 'object' && !Array.isArray(candidate[field])) next[field] = Object.fromEntries(Object.entries(candidate[field]).filter(([id, value]) => /^[a-z][a-z0-9.-]+$/.test(id) && ['inherit', 'on', 'off'].includes(value)));
     next.pageExceptions=Array.isArray(candidate.pageExceptions)?candidate.pageExceptions.filter(v=>v&&typeof v.path==='string'&&v.path.length<=500&&typeof v.patternId==='string'&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)).slice(0,200).map(v=>({path:v.path,patternId:v.patternId})):[];
     next.protectionReviews=Array.isArray(candidate.protectionReviews)?candidate.protectionReviews.filter(v=>v&&['correct','wrong','missed'].includes(v.verdict)&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)&&Object.keys(stores).includes(v.retailer)).slice(-100).map(v=>({verdict:v.verdict,patternId:v.patternId,retailer:v.retailer,at:Number(v.at)||0})):[];
+    next.trustedBrands=Array.isArray(candidate.trustedBrands)?[...new Set(candidate.trustedBrands.filter(v=>typeof v==='string'&&/^[a-z0-9]{1,60}$/.test(v)))].slice(-200):[];
     next.uiTheme = 'ward';
     return next;
   }
@@ -4201,7 +4206,7 @@ EXP.Audit = (() => {
 // An adapter provides: key, label, patternIds, features, eligible(), classify(),
 // detect(roots), structuralSafety(node), diagnose(), nextEpoch(), cleanup().
 // Optional: couponCandidates(roots), verifyCouponTarget(control),
-// cosmeticRecommendationCandidates(roots).
+// cosmeticRecommendationCandidates(roots), sellerFacts(root), listingBrands(roots).
 EXP.Retailers = (() => {
   const adapters = new Map();
   const REQUIRED = ['eligible', 'classify', 'detect', 'structuralSafety', 'diagnose', 'nextEpoch', 'cleanup'];
@@ -4266,6 +4271,9 @@ EXP.Retailer = (() => {
     verifyCouponTarget: optional('verifyCouponTarget', () => ({ eligible: false, reason: 'unsupported-store' })),
     cosmeticRecommendationCandidates: optional('cosmeticRecommendationCandidates', none),
     structuralSafety: optional('structuralSafety', () => ({ safe: false, reason: 'unsupported-store' })),
+    supportsSellerClarity: () => typeof adapter()?.sellerFacts === 'function',
+    sellerFacts: optional('sellerFacts', () => null),
+    listingBrands: optional('listingBrands', none),
     diagnose: () => adapter()?.diagnose() || idle,
     nextEpoch: () => { for (const item of EXP.Retailers.all()) item.nextEpoch(); },
     cleanup: () => { for (const item of EXP.Retailers.all()) item.cleanup(); },
@@ -4411,11 +4419,43 @@ EXP.AmazonAdapter = (() => {
     return { eligible: true, component };
   }
 
+  // Seller Clarity facts. Read-only: text the product page already shows.
+  const textOf = (node) => (node?.textContent || '').replace(/\s+/g, ' ').trim();
+  function firstText(root, selectors) {
+    for (const selector of selectors) { const value = textOf(safeQueryAll(root, selector)[0]); if (value) return value; }
+    return '';
+  }
+  function sellerFacts(root = document) {
+    if (!eligible() || classify() !== 'product') return null;
+    const byline = safeQueryAll(root, '#bylineInfo')[0];
+    let brand = firstText(root, ['#productOverview_feature_div tr.po-brand td.a-span9 span']);
+    if (!brand && byline) brand = textOf(byline).replace(/^Visit the\s+/i, '').replace(/\s+Store$/i, '').replace(/^Brand:\s*/i, '');
+    const seller = firstText(root, ['#sellerProfileTriggerId', '[offer-display-feature-name="desktop-merchant-info"] .offer-display-feature-text-message', '#merchantInfoFeature_feature_div .offer-display-feature-text-message']);
+    const shipsFrom = firstText(root, ['[offer-display-feature-name="desktop-fulfiller-info"] .offer-display-feature-text-message', '#fulfillerInfoFeature_feature_div .offer-display-feature-text-message']);
+    const ratingTitle = safeQueryAll(root, '#acrPopover')[0]?.getAttribute('title') || '';
+    const rating = Number((/([\d.]+)\s+out of 5/i.exec(ratingTitle) || [])[1]) || 0;
+    const ratingCount = Number(firstText(root, ['#acrCustomerReviewText']).replace(/[^\d]/g, '')) || 0;
+    const distribution = {};
+    for (const link of safeQueryAll(root, '#cm_cr_dp_d_rating_histogram a[aria-label], #histogramTable a[aria-label]')) {
+      const match = /(\d+)\s*percent of reviews have (\d) stars?/i.exec(link.getAttribute('aria-label') || '');
+      if (match) distribution[match[2]] = Number(match[1]);
+    }
+    const anchor = byline?.closest('#bylineInfo_feature_div') || byline || safeQueryAll(root, '#title_feature_div')[0] || null;
+    if (!brand && !seller) return null;
+    return { brand, seller, firstParty: /^amazon(?:\.com)?(?:\s+services(?:\s+llc)?)?$/i.test(seller), shipsFrom, rating, ratingCount, distribution, anchor };
+  }
+  function listingBrands(roots = [document]) {
+    if (!eligible() || classify() !== 'search') return [];
+    const selector = '[data-component-type="s-search-result"] [data-cy="title-recipe"] h2.a-size-mini > span.a-size-base-plus.a-color-base';
+    const nodes = roots.flatMap((root) => [...(root.matches?.(selector) ? [root] : []), ...safeQueryAll(root, selector)]);
+    return nodes.filter((node, index) => nodes.indexOf(node) === index && !node.closest('[data-exp-owned="1"]')).map((brandNode) => ({ brand: textOf(brandNode), brandNode }));
+  }
+
   function diagnose() { return { id: ID, version: VERSION, health, eligible: eligible(), pageType: eligible() ? classify() : 'unsupported', detectorCount: detectors.length, coverage: lastScan ? { ...lastScan, eligibleDetectors:lastScan.eligibleDetectors.slice(), matchedDetectors:lastScan.matchedDetectors.slice() } : null, errors: errors.map(({ code }) => ({ code })) }; }
   function nextEpoch() { epoch += 1; health = eligible() ? 'healthy' : 'inactive'; resetCoverage(); return epoch; }
   function cleanup() { epoch += 1; health = 'inactive'; resetCoverage(); errors.length = 0; }
   const patternIds = Object.freeze([...new Set(detectors.map((detector) => detector.patternId))]);
-  return Object.freeze({ key: 'amazon', label: 'Amazon', features: Object.freeze({ coupons: true, compactSearch: true, recommendationCleanup: true }), patternIds, ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
+  return Object.freeze({ key: 'amazon', label: 'Amazon', features: Object.freeze({ coupons: true, compactSearch: true, recommendationCleanup: true }), patternIds, ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, sellerFacts, listingBrands, diagnose, nextEpoch, cleanup, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
 })();
 EXP.Retailers.register(EXP.AmazonAdapter);
 
@@ -5216,6 +5256,204 @@ EXP.Actions = (() => {
   return Object.freeze({ apply, reveal, endReveal, restore, restoreAll, cleanup, snapshot, prune });
 })();
 
+// Seller Clarity reads brand, seller, fulfillment and rating facts that the store
+// already shows and adds a short note when they deserve a second look. Everything is
+// read from the current page, nothing is sent anywhere, and diagnostics keep only
+// signal IDs and counts. Store adapters supply the facts; this module stays
+// store-neutral and never clicks, hides or changes store content.
+EXP.SellerClarity = (() => {
+  const OWNER = 'seller-clarity';
+  // Short all-caps names that are established brands rather than generated ones.
+  const ESTABLISHED = new Set(['SCHWINN', 'STRYKER', 'KRYPTONITE', 'BRITA', 'NZXT', 'SKLZ', 'TRXTRAINING', 'DEWALT', 'RYOBI', 'ZAGG', 'OTTERBOX', 'NETGEAR', 'SKULLCANDY', 'CRKT', 'KRK', 'SHURE', 'BLACKWING', 'VTECH']);
+  const SIGNALS = Object.freeze({
+    'seller.not-brand': { kind: 'hint', text: 'Sold by a third-party seller that is not the brand or the store.' },
+    'brand.generated-name': { kind: 'hint', text: 'Brand name looks machine-generated, a pattern common to rebadged generic products.' },
+    'ratings.polarized': { kind: 'hint', text: 'Ratings are split between many 5-star and many 1-star reviews.' },
+    'ratings.thin-high': { kind: 'hint', text: 'A very high score from only a few ratings.' }
+  });
+  let style;
+  let notes = new Set();
+  let counts = Object.create(null);
+
+  function normalize(value) { return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+
+  function generatedBrandName(raw) {
+    const name = String(raw || '').trim();
+    if (!/^[A-Z]{5,10}$/.test(name) || ESTABLISHED.has(name)) return false;
+    const runs = name.split(/[AEIOUY]/).map((part) => part.length);
+    if (!/[AEIOUY]/.test(name)) return true;
+    return Math.max(...runs) >= 4;
+  }
+
+  function sellerIsBrand(seller, brand) {
+    const a = normalize(seller), b = normalize(brand);
+    if (!a || !b) return false;
+    return a.includes(b) || b.includes(a);
+  }
+
+  function trusted(brand, settings) {
+    const key = normalize(brand);
+    return Boolean(key) && (settings.trustedBrands || []).includes(key);
+  }
+
+  // facts: { brand, seller, firstParty, shipsFrom, rating, ratingCount, distribution:{1..5 percent} }
+  function signalsFor(facts, settings) {
+    const found = [];
+    if (!facts) return found;
+    const brandTrusted = trusted(facts.brand, settings);
+    if (facts.seller && !facts.firstParty && facts.brand && !sellerIsBrand(facts.seller, facts.brand) && !brandTrusted) found.push('seller.not-brand');
+    if (facts.brand && !brandTrusted && generatedBrandName(facts.brand)) found.push('brand.generated-name');
+    const share = facts.distribution || {};
+    if (Number(share[5]) >= 55 && Number(share[1]) >= 15) found.push('ratings.polarized');
+    if (Number(facts.ratingCount) > 0 && Number(facts.ratingCount) < 25 && Number(facts.rating) >= 4.7) found.push('ratings.thin-high');
+    return found;
+  }
+
+  function ensureStyles() {
+    if (style?.active()) return;
+    style = EXP.PageStyles.inject(`
+      .exp-ward-clarity{
+        display:block!important;
+        box-sizing:border-box!important;
+        max-width:560px!important;
+        margin:8px 0!important;
+        padding:8px 10px!important;
+        border:1px solid rgba(40,92,150,.35)!important;
+        border-radius:6px!important;
+        background:rgba(232,242,255,.8)!important;
+        color:#1d3550!important;
+        font:500 12px/1.4 system-ui,sans-serif!important;
+        text-align:left!important
+      }
+      .exp-ward-clarity-title{display:block!important;margin:0 0 4px!important;font-weight:800!important}
+      .exp-ward-clarity-facts{display:block!important;margin:0 0 4px!important;opacity:.85!important}
+      .exp-ward-clarity-list{margin:0 0 6px!important;padding:0 0 0 16px!important;list-style:disc!important}
+      .exp-ward-clarity-list li{margin:2px 0!important}
+      .exp-ward-clarity-trust{
+        display:inline-block!important;
+        padding:3px 8px!important;
+        border:1px solid rgba(40,92,150,.45)!important;
+        border-radius:5px!important;
+        background:#fff!important;
+        color:#1d3550!important;
+        font:700 11px/1.25 system-ui,sans-serif!important;
+        cursor:pointer!important
+      }
+      .exp-ward-clarity-trust:focus-visible{outline:2px solid #1b70c9!important;outline-offset:2px!important}
+      .exp-ward-clarity-chip{
+        display:inline-block!important;
+        margin:2px 4px!important;
+        padding:2px 5px!important;
+        border:1px solid rgba(40,92,150,.35)!important;
+        border-radius:5px!important;
+        background:rgba(232,242,255,.8)!important;
+        color:#1d3550!important;
+        font:700 10px/1.2 system-ui,sans-serif!important
+      }
+    `, { wardSellerClarity: '1' });
+  }
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function own(node) {
+    node.dataset.expOwned = '1';
+    node.dataset.wardOwner = OWNER;
+    notes.add(node);
+    return node;
+  }
+
+  function count(id) { counts[id] = (counts[id] || 0) + 1; }
+
+  function trustBrand(brand) {
+    const key = normalize(brand);
+    if (!key) return;
+    const current = EXP.Settings.snapshot().trustedBrands || [];
+    if (current.includes(key)) return;
+    EXP.Settings.update({ trustedBrands: [...current, key] }, 'trusted-brand');
+  }
+
+  function renderProduct(facts, signals, settings) {
+    const showAll = settings.sellerClarityAlways === true;
+    if (!signals.length && !showAll) return;
+    const anchor = facts.anchor;
+    if (!anchor?.isConnected) return;
+    const digest = JSON.stringify([signals, facts.brand, facts.seller, facts.shipsFrom]);
+    const existing = anchor.nextElementSibling;
+    if (existing?.dataset?.wardOwner === OWNER && existing.dataset.wardDigest === digest) return;
+    if (existing?.dataset?.wardOwner === OWNER) { notes.delete(existing); existing.remove(); }
+    ensureStyles();
+    const note = own(element('div', 'exp-ward-clarity'));
+    note.dataset.wardDigest = digest;
+    note.setAttribute('role', 'note');
+    note.setAttribute('aria-label', 'WARD seller clarity');
+    note.append(element('strong', 'exp-ward-clarity-title', signals.length ? 'Seller clarity: worth a second look' : 'Seller clarity'));
+    const summary = [
+      facts.brand ? `Brand: ${facts.brand}` : '',
+      facts.seller ? `Sold by: ${facts.seller}` : '',
+      facts.shipsFrom ? `Ships from: ${facts.shipsFrom}` : ''
+    ].filter(Boolean);
+    if (summary.length) note.append(element('span', 'exp-ward-clarity-facts', summary.join(' · ')));
+    if (signals.length) {
+      const list = element('ul', 'exp-ward-clarity-list');
+      for (const id of signals) { const item = element('li', '', SIGNALS[id].text); item.dataset.wardSignal = id; list.append(item); }
+      note.append(list);
+    }
+    if (facts.brand && signals.some((id) => id === 'seller.not-brand' || id === 'brand.generated-name')) {
+      const button = element('button', 'exp-ward-clarity-trust', `Trust ${facts.brand}`);
+      button.type = 'button';
+      button.addEventListener('click', () => trustBrand(facts.brand));
+      note.append(button);
+    }
+    anchor.after(note);
+    for (const id of signals) count(id);
+  }
+
+  function renderListing(listing, settings) {
+    if (!listing?.brandNode?.isConnected || trusted(listing.brand, settings) || !generatedBrandName(listing.brand)) return;
+    const next = listing.brandNode.nextElementSibling;
+    if (next?.dataset?.wardOwner === OWNER) return;
+    ensureStyles();
+    const chip = own(element('span', 'exp-ward-clarity-chip', 'Generated-style brand'));
+    chip.title = SIGNALS['brand.generated-name'].text;
+    chip.dataset.wardSignal = 'brand.generated-name';
+    listing.brandNode.after(chip);
+    count('brand.generated-name');
+  }
+
+  function active(settings) {
+    return EXP.Retailer.enabled(settings) && !settings.safeMode && settings.sellerClarity !== false && EXP.Retailer.supportsSellerClarity();
+  }
+
+  function process(roots, settings, pageType) {
+    if (!active(settings)) { clear(); return; }
+    if (pageType === 'product') {
+      const facts = EXP.Retailer.sellerFacts(document);
+      if (facts) renderProduct(facts, signalsFor(facts, settings), settings);
+    } else if (pageType === 'search' && settings.sellerClaritySearch !== false) {
+      for (const listing of EXP.Retailer.listingBrands(roots)) renderListing(listing, settings);
+    }
+    for (const node of [...notes]) if (!node.isConnected) notes.delete(node);
+  }
+
+  function clear() {
+    for (const node of notes) node.remove();
+    for (const node of document.querySelectorAll(`[data-ward-owner="${OWNER}"]`)) node.remove();
+    notes = new Set();
+    counts = Object.create(null);
+  }
+
+  function cleanup() { clear(); style?.remove(); style = null; }
+
+  function snapshot() { return { notes: notes.size, signals: { ...counts } }; }
+
+  return Object.freeze({ SIGNALS, generatedBrandName, sellerIsBrand, signalsFor, process, clear, cleanup, snapshot, normalize });
+})();
+
 EXP.Layout = (() => {
   let style;
   function apply(settings, pageType) {
@@ -5403,7 +5641,7 @@ EXP.Engine = (() => {
   function processBatchUnprotected(roots = [document]) {
     if (!active) return;
     const settings = EXP.Settings.snapshot();
-    if (!EXP.Retailer.enabled(settings) || settings.safeMode) { EXP.Actions.restoreAll(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode) { EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
     const pageType = EXP.Retailer.classify();
     EXP.Layout.apply(settings, pageType);
     const evidenceList = EXP.Retailer.detect(roots);
@@ -5438,6 +5676,7 @@ EXP.Engine = (() => {
         processEvidence(evidence, settings);
       }
     }
+    try { EXP.SellerClarity?.process(roots, settings, pageType); } catch (error) { EXP.Core.safeError(Object.assign(error, { code: 'SELLER_CLARITY' }), 'ward.seller-clarity'); }
     processCoupons(roots, settings);
     EXP.Actions.prune();
     EXP.Audit?.prune?.();
@@ -5446,19 +5685,20 @@ EXP.Engine = (() => {
     publishSuiteState(pageType);
   }
 
-  function rebuild() { EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
-  function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.Retailer.nextEpoch(); EXP.Actions.restoreAll(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
+  function rebuild() { EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.Layout.cleanup(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
+  function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.Retailer.nextEpoch(); EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
   function start() { if (active) return; active = true; routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'start', lastResult:null }; EXP.Retailer.nextEpoch(); EXP.Audit?.resetRoute?.(); processBatch([document]); }
-  function stop() { active = false; couponPending.clear(); couponStatus = { state:'disabled', reason:'engine-stopped', lastResult:couponStatus.lastResult }; EXP.Actions.restoreAll(); EXP.Layout.cleanup(); publishSuiteState('inactive'); }
-  function cleanup() { stop(); EXP.Actions.cleanup(); EXP.PageStyles.cleanup(); EXP.Retailer.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
-  function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, recovery:recovery.snapshot('protection',recoveryContext),adapter: EXP.Retailer.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
+  function stop() { active = false; couponPending.clear(); couponStatus = { state:'disabled', reason:'engine-stopped', lastResult:couponStatus.lastResult }; EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.Layout.cleanup(); publishSuiteState('inactive'); }
+  function cleanup() { stop(); EXP.Actions.cleanup(); EXP.SellerClarity?.cleanup(); EXP.PageStyles.cleanup(); EXP.Retailer.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
+  function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, recovery:recovery.snapshot('protection',recoveryContext),adapter: EXP.Retailer.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), sellerClarity: EXP.SellerClarity?.snapshot() || null, audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
   return Object.freeze({ retry, start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.4.4';
+EXP.VERSION = '3.5.0';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.5.0': ["Adds Seller Clarity on Amazon: a short note when the seller is not the brand, the brand name looks machine-generated, or ratings are unusually split or thin.","Labels generated-style brand names in Amazon search results, with switches for notes, search labels, and an always-on seller summary.","Trust a brand to quiet its notes; trusted brands stay on this device and in your settings exports."],
     '3.4.4': ["Simplify System to Product Timeline, Show and Copy Diagnostics, issue reporting, Menu Preferences, and Reset All Settings.","Open GitHub Issues with a prefilled product and version template.","Require two confirmations before clearing this product settings and stored data."],
     '3.4.3': ["Keep WARD's signature menu colors alongside other ExtraPotions products.","Show a clear System status with safe retry for a suspended protection scan.","Choose Standard, Large, or Extra Large menus on each site.","Show retailer coverage for supported complete units, conservative detection, and uncovered categories."],
     '3.4.2': ["Use product names without the retired V3 integration label in settings prompts and import messages.","Keep existing saved settings and settings exports compatible."],
@@ -6009,6 +6249,21 @@ EXP.UI = (() => {
     );
 
     fragment.append(amazon);
+    if (EXP.Retailer.supportsSellerClarity()) {
+      const clarity = section('Seller clarity');
+      clarity.append(
+        row('Seller notes','Notes on product pages when brand, seller or ratings deserve a second look.',
+          switchControl(settings.sellerClarity,'Seller notes',value => update({sellerClarity:value},'seller-clarity'))),
+        row('Search brand labels','Labels generated-style brand names in search results.',
+          switchControl(settings.sellerClaritySearch,'Search brand labels',value => update({sellerClaritySearch:value},'seller-clarity-search'))),
+        row('Always show seller summary','Show brand, seller and shipping on every product page.',
+          switchControl(settings.sellerClarityAlways,'Always show seller summary',value => update({sellerClarityAlways:value},'seller-clarity-always')))
+      );
+      const trustedCount = (settings.trustedBrands || []).length;
+      if (trustedCount) clarity.append(row('Trusted brands',`${trustedCount} brand${trustedCount === 1 ? '' : 's'} trusted on this device.`,
+        action('Clear',() => { update({trustedBrands:[]},'trusted-brands-cleared'); notify('Trusted brands cleared.'); })));
+      fragment.append(clarity);
+    }
     if (features.coupons) {
       const couponStatus = el('div');
       couponStatus.setAttribute('data-exp-coupon-status','1');
@@ -6393,7 +6648,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.4.4';
+EXP.VERSION = '3.5.0';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

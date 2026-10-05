@@ -1,3 +1,9 @@
+## 3.5.0 - 2026-10-05
+
+- Adds Seller Clarity on Amazon: a short note when the seller is not the brand, the brand name looks machine-generated, or ratings are unusually split or thin.
+- Labels generated-style brand names in Amazon search results, with switches for notes, search labels, and an always-on seller summary.
+- Trust a brand to quiet its notes; trusted brands stay on this device and in your settings exports.
+
 ## 3.4.4 - 2026-10-04
 
 - Simplify System to Product Timeline, Show and Copy Diagnostics, issue reporting, Menu Preferences, and Reset All Settings.

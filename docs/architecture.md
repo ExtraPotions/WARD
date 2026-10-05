@@ -17,6 +17,7 @@ Retailer/page eligibility → Amazon adapter evidence → pattern definition
 - `activity.js`: deduplicated route/session counts without page content.
 - `page-styles.js`: constructed page stylesheets with a managed fallback for CSP-constrained pages.
 - `actions.js`: Hide, Dim, Collapse, Annotate, Allow, Temporary Reveal, and exact restoration.
+- `seller-clarity.js`: store-neutral Seller Clarity notes built from adapter-supplied brand, seller, fulfillment, and rating facts; read-only, with WARD-owned notes removed on every restore path.
 - `layout.js`: retained off-by-default compact search compatibility behavior.
 - `engine.js`: confidence/policy/safety resolution, coupon executor and recovery state, route lifecycle, and diagnostics.
 - `release-notes.js`: version-keyed current release notes used by the in-app changelog.
@@ -46,6 +47,10 @@ The executor accepts only recognized, connected, enabled, unclaimed native coupo
 ## Adapter fixtures
 
 Sanitized local fixtures cover Amazon home, search, product, cart, checkout, and dynamic-widget page families. Each fixture declares the detector IDs expected to match, and the browser suite validates the adapter coverage report without collecting retailer text.
+
+## Seller Clarity
+
+Adapters that implement `sellerFacts()` and `listingBrands()` opt in. On product pages, a note is added after the brand byline when the seller is neither the brand nor the store, the brand name looks machine-generated, ratings are polarized, or a very high score rests on few ratings. On search results, only generated-style brand names receive a label. Notes never hide, click, or change store content. Trusted brands are stored as normalized names in local settings.
 
 ## Privacy
 
