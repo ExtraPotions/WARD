@@ -20,6 +20,8 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 ## What you can do
 
+- **Simple System menu:** open Product Timeline, show or copy diagnostics, create a GitHub issue, adjust menu preferences, or reset this product after two confirmations.
+
 - **Distinct menu colors:** WARD keeps its signature appearance alongside other ExtraPotions products.
 - **System status:** see Working, Waiting, Paused, or Needs attention, with a reason and a safe recovery action when available.
 - **Coverage:** see recognized complete units, conservative detection, and uncovered categories for the active retailer. Essential purchasing controls remain visible.
@@ -31,7 +33,6 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 - **Six retailer modules:** separate controls for Amazon, eBay, Etsy, Walmart, Target, and Best Buy. Target and Best Buy begin with conservative coverage; unsupported or mixed content stays visible.
 - **Protection review:** review handled content, allow a pattern on this page, and record missed protection locally. Reviews stay on your device.
 - **Calm Shopping:** apply balanced cleanup in one step.
-- **Site control:** pause page features across active ExtraPotions products from System, temporarily or until you resume.
 - **Protection choices:** Essential, Balanced, and Custom let you choose the level of cleanup.
 - **Hide or dim:** choose a content action, or let the protection level decide.
 - **Supported Amazon clutter:** reduce sponsored search products and brand cards, other recognized sponsored placements, membership upsells, urgency messages, and selected recommendations.

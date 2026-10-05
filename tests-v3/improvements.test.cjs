@@ -191,16 +191,16 @@ test('main Protection screen changes all content between Dim, Hide and Automatic
   assert.equal(await host.locator('input[type="checkbox"]').count(),0);
 });
 
-test('System Safe Mode restores protection targets and preserves preferences',async t=>{
+test('Advanced page tools Safe Mode restores protection targets and preserves preferences',async t=>{
  const browser=await chromium.launch();t.after(()=>browser.close());const page=await browser.newPage();
  await page.route('https://www.amazon.com/**',r=>r.fulfill({contentType:'text/html',body:'<main><div id="sims-fbt">Recommendations</div></main>'}));
  await page.goto('https://www.amazon.com/dp/fixture');await page.addScriptTag({content:distribution});
- const host=page.locator('#exp-ward-root');await host.locator('.ward-launcher').click();await host.locator('[data-view="system"]').click();
+ const host=page.locator('#exp-ward-root');await host.locator('.ward-launcher').click();await host.locator('[data-view="tools"]').click();await host.getByText('Page tools',{exact:true}).click();
  const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('exp:v3:ward:settings')||'{}'));
  const toggle=host.getByRole('switch',{name:'Safe Mode',exact:true});await toggle.click();
  await page.waitForFunction(()=>!document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));
  assert.equal(await toggle.getAttribute('aria-checked'),'true');
- await toggle.click();await page.waitForFunction(()=>document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));
+ const pageTools=host.getByText('Page tools',{exact:true});if(!await pageTools.evaluate(n=>n.parentElement.open))await pageTools.click();await toggle.click();await page.waitForFunction(()=>document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));
  assert.equal(await toggle.getAttribute('aria-checked'),'false');
  const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('exp:v3:ward:settings')||'{}'));
  assert.equal(after.contentAction,before.contentAction);

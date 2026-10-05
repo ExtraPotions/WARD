@@ -32,6 +32,7 @@ EXP.Settings = (() => {
   const listeners = new Set();
   const key = (name) => `${PREFIX}:${name}`;
   function read(name) {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return undefined;
     const storageKey = key(name);
     try {
       if (typeof GM_getValue === 'function') {
@@ -51,6 +52,7 @@ EXP.Settings = (() => {
     return memory.get(storageKey);
   }
   function write(name, value) {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return;
     const storageKey = key(name);
     memory.set(storageKey, value);
     try { if (typeof GM_setValue === 'function') GM_setValue(storageKey, value); } catch {}
@@ -88,10 +90,16 @@ EXP.Settings = (() => {
     return snapshot();
   }
   function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
-  function replace(value, reason = 'replace') { const next=validate(value);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
+  function replace(value, reason = 'replace') { if(ExtraPotionsCore.productDataResetting?.('ward'))return snapshot(); const next=validate(value);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
   function exportData() { return { product: 'ward', generation: 3, schema: SCHEMA, settings: snapshot() }; }
   function prepareImport(payload) { if (!payload || payload.product !== 'ward' || payload.generation !== 3 || payload.schema !== SCHEMA) throw Object.assign(new Error('Unsupported WARD export'), { code: 'IMPORT_SCHEMA' }); return validate(payload.settings); }
-  return Object.freeze({PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
+  function resetAll() {
+    ExtraPotionsCore.clearProductData('ward');
+    memory.clear();state = ExtraPotionsCore.cloneSettings(defaults);
+    for (const listener of listeners) listener(snapshot(), 'product-reset');
+    return snapshot();
+  }
+  return Object.freeze({resetAll, PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
 })();

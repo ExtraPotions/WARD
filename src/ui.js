@@ -497,33 +497,17 @@ EXP.UI = (() => {
     advanced.append(controls);
     if (settings.protectionLevel === 'custom') advanced.append(customPolicyView(settings));
     if (patternsOpen) advanced.append(patternsView(settings));
-    fragment.append(advanced);
+    fragment.append(advanced,settingsTransferView(),pageToolsView());
     return fragment;
   }
 
-  function systemView() {
-    const fragment = document.createDocumentFragment();
-    const settings = EXP.Settings.snapshot();
-    const box = section();
-    const preferences = ExtraPotionsCore.createDisclosure('Menu preferences');
-    preferences.append(ExtraPotionsCore.createMenuSizeControls());
-    for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
-      preferences.append(row(label,'',switchControl(settings[key],label,value=>{
-        update({[key]:value},key);
-        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
-      })));
-    }
-    healthControl?.dispose();healthControl=ExtraPotionsCore.createHealthControls(systemHealthSnapshot,notify);box.append(healthControl.element);
-    box.append(
-      EXP.Diagnostics.createDiagnosticsControls(
-        () => EXP.Diagnostics.createDiagnosticsReport(
-          'WARD',
-          {host,settings:EXP.Settings.snapshot(),...EXP.Engine.diagnostics()}
-        ),
-        notify
-      )
-    );
-
+  function pageToolsView() {
+    const tools=ExtraPotionsCore.createDisclosure('Page tools');
+    tools.append(row('Safe Mode','Pause protection and coupon actions without changing saved preferences.',switchControl(EXP.Settings.snapshot().safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'))));
+    for(const exception of EXP.Settings.snapshot().pageExceptions||[])tools.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
+    return tools;
+  }
+  function settingsTransferView() {
     const transfers = el('div','settings-transfer');
     transfers.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0';
 
@@ -555,21 +539,24 @@ EXP.UI = (() => {
       })
     );
 
-    const data = ExtraPotionsCore.createDisclosure('Settings',transfers);
-    fragment.append(box);
-    preferences.append(row('Check for updates now','',action('Check now',() => EXP.Updates.check(true).then(result => notify(result.available ? 'A WARD update is available.' : result.state === 'failed' ? 'Update check failed quietly.' : 'WARD is up to date.')))));
-    const tools = ExtraPotionsCore.createSystemGrid(preferences,data);
-    const safeMode = switchControl(settings.safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'));
-    safeMode.title='Pause protection and coupon actions without changing saved preferences.';
-    box.append(row('Safe Mode','',safeMode));
-    const recovery = ExtraPotionsCore.createDisclosure('Page exceptions');
-    for(const exception of EXP.Settings.snapshot().pageExceptions||[])recovery.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
-
-    tools.append(ExtraPotionsCore.createSuiteSiteControls(), ExtraPotionsCore.createCompatibilityControls());
-    data.append(row(`Reset ${EXP.Retailer.label()} settings`,`Resets WARD ${EXP.Retailer.label()} settings and pattern overrides.`,action('Reset',resetAmazon,'warn')));
-    if ((EXP.Settings.snapshot().pageExceptions || []).length) tools.append(recovery);
-    fragment.append(tools);
-    return fragment;
+    const data = ExtraPotionsCore.createDisclosure('Settings transfer',transfers);
+    return data;
+  }
+  function systemView() {
+    const settings=EXP.Settings.snapshot();
+    const preferences = ExtraPotionsCore.createDisclosure('Menu Preferences');
+    preferences.append(ExtraPotionsCore.createMenuSizeControls());
+    for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
+      preferences.append(row(label,'',switchControl(settings[key],label,value=>{
+        update({[key]:value},key);
+        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
+      })));
+    }
+    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify);
+    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,timeline:healthControl.element,
+      diagnostics:EXP.Diagnostics.createDiagnosticsControls(()=>EXP.Diagnostics.createDiagnosticsReport('WARD',{host,product:{id:'ward',version:EXP.VERSION},settings:EXP.Settings.snapshot(),...EXP.Engine.diagnostics()}),notify),
+      preferences,onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
+    });
   }
 
   function resetAmazon() {

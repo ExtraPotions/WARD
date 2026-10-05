@@ -51,7 +51,7 @@ test('distribution is reproducible and has ExtraPotions metadata', () => {
     assert.equal(fs.existsSync(path.join(root, file)), false, `leftover file still present: ${file}`);
   }
   const bytes = Buffer.byteLength(source);
-  assert.ok(bytes >= 100000 && bytes <= 400000, `install size ${bytes} is outside 100-400KB`);
+  assert.ok(bytes >= 100000 && bytes <= 425000, `install size ${bytes} is outside the 100-425KB shared Core budget`);
   assert.doesNotMatch(source, /@resource/);
   assert.doesNotMatch(source, /GM_getResourceText/);
   assert.doesNotMatch(source, /expPart0/);
@@ -132,12 +132,17 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(result.nav.includes('Recover'), false);
   const changed = await page.locator('#exp-ward-root').evaluate((host) => {
     const root = host.shadowRoot; root.querySelector('.route[data-view="tools"]').click();
-    return { visibleBodies: [...root.querySelectorAll('.route-body')].filter((body) => !body.hidden).length, openRoute: root.querySelector('.route[aria-expanded="true"] .fl-tool-title')?.textContent, coupon: root.querySelector('[role="switch"][aria-label="Auto-clip coupons"]')?.getAttribute('aria-checked'), switches:root.querySelectorAll('[role="switch"]').length, nested: root.querySelectorAll('.route-body:not([hidden]) details').length };
+    return { visibleBodies: [...root.querySelectorAll('.route-body')].filter((body) => !body.hidden).length, openRoute: root.querySelector('.route[aria-expanded="true"] .fl-tool-title')?.textContent, coupon: root.querySelector('[role="switch"][aria-label="Auto-clip coupons"]')?.getAttribute('aria-checked'), switches:root.querySelectorAll('[role="switch"]').length, nested: [...root.querySelectorAll('.route-body:not([hidden]) details > summary')].map(n=>n.textContent.trim()) };
   });
   assert.equal(changed.visibleBodies, 1);
   assert.equal(changed.openRoute, 'Amazon');
   assert.equal(changed.coupon, 'true');
-  assert.equal(changed.nested, 3);
+  assert.equal(changed.nested.length,5);
+  assert.ok(changed.nested.includes('Settings transfer'));assert.ok(changed.nested.includes('Page tools'));
+  await page.locator('#exp-ward-root [data-view="system"]').click();
+  assert.deepEqual(await page.locator('#exp-ward-root [data-exp-product-system] > [data-exp-system-item]').evaluateAll(nodes=>nodes.map(n=>n.dataset.expSystemItem)),['timeline','diagnostics','issue','preferences','reset']);
+  assert.equal(await page.locator('#exp-ward-root [data-exp-product-system] [aria-label="Safe Mode"]').count(),0);
+  await page.locator('#exp-ward-root [data-view="tools"]').click();
   assert.ok(changed.switches > 0);
   const reopened = await page.locator('#exp-ward-root').evaluate((host) => {
     const root=host.shadowRoot;root.querySelector('.ward-launcher').click();root.querySelector('.ward-launcher').click();

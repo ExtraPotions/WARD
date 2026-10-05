@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.4.3
+// @version      3.4.4
 // @description  Local retail-pressure protection for Amazon, eBay, Etsy, Walmart, Target and Best Buy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -27,6 +27,8 @@
 // @inject-into  content
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_listValues
+// @grant        GM_deleteValue
 // @grant        GM_xmlhttpRequest
 // @connect      api.github.com
 // ==/UserScript==
@@ -1407,7 +1409,70 @@ const ExtraPotionsTools = (() => {
     const duration=document.createElement('select');duration.setAttribute('aria-label','Temporary suite pause duration');for(const [value,label] of [['15','15 minutes'],['60','1 hour'],['240','4 hours']]){const option=document.createElement('option');option.value=value;option.textContent=label;duration.append(option);}const temporary=button('Pause temporarily',()=>{ExtraPotionsCore.setSuiteSitePaused(true,location.hostname,Number(duration.value));refresh();});
     d.addEventListener('toggle',()=>{if(d.open)refresh();});d.append(row,duration,temporary,out);refresh();return d;
   }
-  return Object.freeze({placeDonationPanel,createBitcoinDonation,compatibilitySnapshot,createCompatibilityControls,createSuiteSiteControls});
+  const productRepositories = Object.freeze({dropper:'Dropper',shift:'SHIFT',prisma:'PRISMA',ward:'WARD'});
+  function productIssueUrl(id, version) {
+    if (!Object.hasOwn(productRepositories,id)) throw new Error('Unknown product');
+    const product=productRepositories[id];
+    const safeVersion=/^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/.test(String(version))?String(version):'unknown';
+    // Exclude diagnostics, page URLs, account names, and free-form data.
+    const body=`Product: ${product} v${safeVersion}\n\nWhat happened?\n\nSteps to reproduce\n1. \n\nExpected behavior\n\nActual behavior\n\nBrowser and userscript manager\n\nDiagnostics (optional)\nReview Show Diagnostics and remove private information before attaching.\n`;
+    return 'https://github.com/ExtraPotions/'+product+'/issues/new?title='+encodeURIComponent('['+product+' '+safeVersion+'] Issue')+'&body='+encodeURIComponent(body);
+  }
+  const productTimelines=new Map(),resettingProducts=new Set();
+  const productDataResetting=id=>resettingProducts.has(id);
+  function clearProductData(id, {legacyKeys=[]} = {}) {
+    if (!Object.hasOwn(productRepositories,id)) throw new Error('Unknown product');
+    resettingProducts.add(id);
+    try {
+    const owns=key=>key.startsWith(`exp:v3:${id}:`)||legacyKeys.some(base=>key===base||key.startsWith(base+':account:'));
+    const known=new Set([`exp:v3:${id}:settings`,`exp:v3:${id}:update-cache`,`exp:v3:${id}:installed-version`,`exp:v3:${id}:last-version-v2`,...legacyKeys]);
+    for(const storageName of ['localStorage','sessionStorage']) {
+      let storage;try{storage=globalThis[storageName];}catch{throw new Error('Could not access product storage.');}if(!storage)continue;
+      for(let i=0;i<storage.length;i++){const key=storage.key(i);if(key&&owns(key))known.add(key);}
+      for(const key of known) { try{storage.removeItem(key);}catch{throw new Error('Could not clear '+id+' data. Check browser storage permissions.');} }
+    }
+    try{if(typeof GM_listValues==='function')for(const key of GM_listValues())if(owns(key))known.add(key);}catch{throw new Error('Could not list product storage.');}
+    for(const key of known){if(typeof GM_deleteValue==='function')GM_deleteValue(key);else if(typeof GM_setValue==='function')GM_setValue(key,undefined);}
+    productTimelines.delete(id);
+    return [...known];
+    } catch(error){resettingProducts.delete(id);throw error;}
+  }
+  function createProductTimeline(id,getHealth,notify=()=>{}) {
+    if(!Object.hasOwn(productRepositories,id))throw new Error('Unknown product');
+    const rows=document.createElement('div');rows.dataset.expProductTimeline='1';
+    let disposed=false;
+    function render(){rows.replaceChildren();for(const entry of (productTimelines.get(id)||[]).slice().reverse()){
+      const line=document.createElement('p');line.textContent=new Date(entry.at).toLocaleTimeString()+' · '+entry.state+' · '+entry.reason;
+      line.style.cssText='margin:6px 0;overflow-wrap:anywhere';rows.append(line);
+    }}
+    async function observedHealth(){const value=await getHealth();if(!disposed){
+      const history=productTimelines.get(id)||[];
+      const state=String(value?.state||'waiting').slice(0,30),reason=String(value?.reason||'Status unavailable.').replace(/https?:\/\/\S+/gi,'[page]').slice(0,500),last=history.at(-1);
+      if(!last||last.state!==state||last.reason!==reason){history.push({at:Date.now(),state,reason});if(history.length>30)history.shift();productTimelines.set(id,history);}
+      render();
+    }return value;}
+    const health=ExtraPotionsCore.createHealthControls(observedHealth,notify);
+    const timeline=ExtraPotionsCore.createDisclosure(id==='dropper'?'Dropper Status':'Product Timeline',health.element,rows);
+    timeline.addEventListener('toggle',()=>{if(timeline.open)health.refresh();});
+    return {element:timeline,dispose(){disposed=true;health.dispose();},refresh:health.refresh};
+  }
+  function createProductSystem({id,version,timeline,diagnostics,preferences,onReset,notify=()=>{}}) {
+    if(!Object.hasOwn(productRepositories,id))throw new Error('Unknown product');
+    const system=document.createElement('div');system.dataset.expProductSystem=id;
+    system.style.cssText='display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0;max-width:100%;overflow-wrap:anywhere';
+    const issue=button('Create GitHub Issue',()=>{const link=document.createElement('a');link.href=productIssueUrl(id,version);link.target='_blank';link.rel='noopener noreferrer';link.click();});
+    issue.style.cssText='width:100%;min-width:0;white-space:normal;border-radius:7px';
+    const reset=button('Reset All Settings',async()=>{
+      if(!confirm(`Reset all ${productRepositories[id]} settings and stored product data?`))return;
+      if(!confirm(`Confirm permanent reset of ${productRepositories[id]} data. This cannot be undone.`))return;
+      reset.disabled=true;
+      try{await onReset();notify(productRepositories[id]+' reset complete.');}catch{notify('Reset did not complete. Check storage permissions and try again.');}finally{reset.disabled=false;}
+    });
+    reset.style.cssText='width:100%;min-width:0;white-space:normal;border:1px solid #ff2438;border-radius:7px;background:#e11428;color:#fff;font-weight:700';
+    for(const [key,node] of [['timeline',timeline],['diagnostics',diagnostics],['issue',issue],['preferences',preferences],['reset',reset]]){node.dataset.expSystemItem=key;node.style.minWidth='0';node.style.maxWidth='100%';const summary=node.tagName==='DETAILS'?node.querySelector(':scope > summary'):null;if(summary)summary.style.cssText+=';min-height:28px;padding:4px 0;box-sizing:border-box;cursor:pointer';system.append(node);}
+    return system;
+  }
+  return Object.freeze({productIssueUrl,productDataResetting,clearProductData,createProductTimeline,createProductSystem,placeDonationPanel,createBitcoinDonation,compatibilitySnapshot,createCompatibilityControls,createSuiteSiteControls});
 })();
 
 // Shared ExtraPotions menu categories, submenu behavior, reordering, and visibility.
@@ -1640,7 +1705,7 @@ const ExpMenuPreferences = (() => {
 // exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.6.0';
+  const version = '3.6.1';
   const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
@@ -3416,6 +3481,7 @@ const ExtraPotionsCore = (() => {
       return { ...memory };
     }
     function writeState(value) {
+      if(ExtraPotionsTools.productDataResetting(productId))return;
       memory = { ...(value || {}) };
       try { if (typeof GM_setValue === 'function') GM_setValue(CACHE_KEY, memory); } catch {}
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(memory)); } catch {}
@@ -3873,6 +3939,7 @@ EXP.Settings = (() => {
   const listeners = new Set();
   const key = (name) => `${PREFIX}:${name}`;
   function read(name) {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return undefined;
     const storageKey = key(name);
     try {
       if (typeof GM_getValue === 'function') {
@@ -3892,6 +3959,7 @@ EXP.Settings = (() => {
     return memory.get(storageKey);
   }
   function write(name, value) {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return;
     const storageKey = key(name);
     memory.set(storageKey, value);
     try { if (typeof GM_setValue === 'function') GM_setValue(storageKey, value); } catch {}
@@ -3929,12 +3997,18 @@ EXP.Settings = (() => {
     return snapshot();
   }
   function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
-  function replace(value, reason = 'replace') { const next=validate(value);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
+  function replace(value, reason = 'replace') { if(ExtraPotionsCore.productDataResetting?.('ward'))return snapshot(); const next=validate(value);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
   function exportData() { return { product: 'ward', generation: 3, schema: SCHEMA, settings: snapshot() }; }
   function prepareImport(payload) { if (!payload || payload.product !== 'ward' || payload.generation !== 3 || payload.schema !== SCHEMA) throw Object.assign(new Error('Unsupported WARD export'), { code: 'IMPORT_SCHEMA' }); return validate(payload.settings); }
-  return Object.freeze({PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
+  function resetAll() {
+    ExtraPotionsCore.clearProductData('ward');
+    memory.clear();state = ExtraPotionsCore.cloneSettings(defaults);
+    for (const listener of listeners) listener(snapshot(), 'product-reset');
+    return snapshot();
+  }
+  return Object.freeze({resetAll, PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
 })();
 
 EXP.Patterns = (() => {
@@ -5381,10 +5455,11 @@ EXP.Engine = (() => {
   return Object.freeze({ retry, start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.4.3';
+EXP.VERSION = '3.4.4';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.4': ["Simplify System to Product Timeline, Show and Copy Diagnostics, issue reporting, Menu Preferences, and Reset All Settings.","Open GitHub Issues with a prefilled product and version template.","Require two confirmations before clearing this product settings and stored data."],
     '3.4.3': ["Keep WARD's signature menu colors alongside other ExtraPotions products.","Show a clear System status with safe retry for a suspended protection scan.","Choose Standard, Large, or Extra Large menus on each site.","Show retailer coverage for supported complete units, conservative detection, and uncovered categories."],
     '3.4.2': ["Use product names without the retired V3 integration label in settings prompts and import messages.","Keep existing saved settings and settings exports compatible."],
     '3.4.1': ["Make small menu text easier to read, including captions, version badges, notices, and diagnostic details.","Use consistent sizes for labels and controls across the menu."],
@@ -5995,33 +6070,17 @@ EXP.UI = (() => {
     advanced.append(controls);
     if (settings.protectionLevel === 'custom') advanced.append(customPolicyView(settings));
     if (patternsOpen) advanced.append(patternsView(settings));
-    fragment.append(advanced);
+    fragment.append(advanced,settingsTransferView(),pageToolsView());
     return fragment;
   }
 
-  function systemView() {
-    const fragment = document.createDocumentFragment();
-    const settings = EXP.Settings.snapshot();
-    const box = section();
-    const preferences = ExtraPotionsCore.createDisclosure('Menu preferences');
-    preferences.append(ExtraPotionsCore.createMenuSizeControls());
-    for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
-      preferences.append(row(label,'',switchControl(settings[key],label,value=>{
-        update({[key]:value},key);
-        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
-      })));
-    }
-    healthControl?.dispose();healthControl=ExtraPotionsCore.createHealthControls(systemHealthSnapshot,notify);box.append(healthControl.element);
-    box.append(
-      EXP.Diagnostics.createDiagnosticsControls(
-        () => EXP.Diagnostics.createDiagnosticsReport(
-          'WARD',
-          {host,settings:EXP.Settings.snapshot(),...EXP.Engine.diagnostics()}
-        ),
-        notify
-      )
-    );
-
+  function pageToolsView() {
+    const tools=ExtraPotionsCore.createDisclosure('Page tools');
+    tools.append(row('Safe Mode','Pause protection and coupon actions without changing saved preferences.',switchControl(EXP.Settings.snapshot().safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'))));
+    for(const exception of EXP.Settings.snapshot().pageExceptions||[])tools.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
+    return tools;
+  }
+  function settingsTransferView() {
     const transfers = el('div','settings-transfer');
     transfers.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0';
 
@@ -6053,21 +6112,24 @@ EXP.UI = (() => {
       })
     );
 
-    const data = ExtraPotionsCore.createDisclosure('Settings',transfers);
-    fragment.append(box);
-    preferences.append(row('Check for updates now','',action('Check now',() => EXP.Updates.check(true).then(result => notify(result.available ? 'A WARD update is available.' : result.state === 'failed' ? 'Update check failed quietly.' : 'WARD is up to date.')))));
-    const tools = ExtraPotionsCore.createSystemGrid(preferences,data);
-    const safeMode = switchControl(settings.safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'));
-    safeMode.title='Pause protection and coupon actions without changing saved preferences.';
-    box.append(row('Safe Mode','',safeMode));
-    const recovery = ExtraPotionsCore.createDisclosure('Page exceptions');
-    for(const exception of EXP.Settings.snapshot().pageExceptions||[])recovery.append(row(exception.path,exception.patternId,action('Remove exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
-
-    tools.append(ExtraPotionsCore.createSuiteSiteControls(), ExtraPotionsCore.createCompatibilityControls());
-    data.append(row(`Reset ${EXP.Retailer.label()} settings`,`Resets WARD ${EXP.Retailer.label()} settings and pattern overrides.`,action('Reset',resetAmazon,'warn')));
-    if ((EXP.Settings.snapshot().pageExceptions || []).length) tools.append(recovery);
-    fragment.append(tools);
-    return fragment;
+    const data = ExtraPotionsCore.createDisclosure('Settings transfer',transfers);
+    return data;
+  }
+  function systemView() {
+    const settings=EXP.Settings.snapshot();
+    const preferences = ExtraPotionsCore.createDisclosure('Menu Preferences');
+    preferences.append(ExtraPotionsCore.createMenuSizeControls());
+    for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
+      preferences.append(row(label,'',switchControl(settings[key],label,value=>{
+        update({[key]:value},key);
+        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
+      })));
+    }
+    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify);
+    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,timeline:healthControl.element,
+      diagnostics:EXP.Diagnostics.createDiagnosticsControls(()=>EXP.Diagnostics.createDiagnosticsReport('WARD',{host,product:{id:'ward',version:EXP.VERSION},settings:EXP.Settings.snapshot(),...EXP.Engine.diagnostics()}),notify),
+      preferences,onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
+    });
   }
 
   function resetAmazon() {
@@ -6331,7 +6393,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.4.3';
+EXP.VERSION = '3.4.4';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
