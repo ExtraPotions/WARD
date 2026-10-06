@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.4.5
+// @version      3.4.6
 // @description  Local retail-pressure protection for Amazon, eBay, Etsy, Walmart, Target and Best Buy.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping
@@ -5514,10 +5514,11 @@ EXP.Engine = (() => {
   return Object.freeze({ retry, start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.4.5';
+EXP.VERSION = '3.4.6';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.6': ["Keep Status open in System with its reason, recovery action, and recent activity.","Group Copy Diagnostics, Show Diagnostics, and Report a Problem under Support; reports include the current status.","Confirm Reset with a second tap inside the menu instead of browser dialogs.","Move Menu Preferences to the end of Appearance."],
     '3.4.5': ['Updates the shared foundation to exp-core 3.7.0.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.4.4': ["Simplify System to Product Timeline, Show and Copy Diagnostics, issue reporting, Menu Preferences, and Reset All Settings.","Open GitHub Issues with a prefilled product and version template.","Require two confirmations before clearing this product settings and stored data."],
     '3.4.3': ["Keep WARD's signature menu colors alongside other ExtraPotions products.","Show a clear System status with safe retry for a suspended protection scan.","Choose Standard, Large, or Extra Large menus on each site.","Show retailer coverage for supported complete units, conservative detection, and uncovered categories."],
@@ -6016,7 +6017,7 @@ EXP.UI = (() => {
           value => update({nonColorIndicators:value},'non-color')
         ))
     );
-    fragment.append(accessibility);
+    fragment.append(accessibility, menuPreferences(settings));
 
     return fragment;
   }
@@ -6175,8 +6176,7 @@ EXP.UI = (() => {
     const data = ExtraPotionsCore.createDisclosure('Settings transfer',transfers);
     return data;
   }
-  function systemView() {
-    const settings=EXP.Settings.snapshot();
+  function menuPreferences(settings) {
     const preferences = ExtraPotionsCore.createDisclosure('Menu Preferences');
     preferences.append(ExtraPotionsCore.createMenuSizeControls());
     for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
@@ -6185,10 +6185,13 @@ EXP.UI = (() => {
         if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
       })));
     }
-    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify);
-    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,timeline:healthControl.element,
+    return preferences;
+  }
+  function systemView() {
+    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify,{layout:'grouped'});
+    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,timeline:healthControl.element,layout:'grouped',
       diagnostics:EXP.Diagnostics.createDiagnosticsControls(()=>EXP.Diagnostics.createDiagnosticsReport('WARD',{host,product:{id:'ward',version:EXP.VERSION},settings:EXP.Settings.snapshot(),...EXP.Engine.diagnostics()}),notify),
-      preferences,onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
+      onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
     });
   }
 
@@ -6453,7 +6456,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.4.5';
+EXP.VERSION = '3.4.6';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

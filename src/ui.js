@@ -383,7 +383,7 @@ EXP.UI = (() => {
           value => update({nonColorIndicators:value},'non-color')
         ))
     );
-    fragment.append(accessibility);
+    fragment.append(accessibility, menuPreferences(settings));
 
     return fragment;
   }
@@ -542,8 +542,7 @@ EXP.UI = (() => {
     const data = ExtraPotionsCore.createDisclosure('Settings transfer',transfers);
     return data;
   }
-  function systemView() {
-    const settings=EXP.Settings.snapshot();
+  function menuPreferences(settings) {
     const preferences = ExtraPotionsCore.createDisclosure('Menu Preferences');
     preferences.append(ExtraPotionsCore.createMenuSizeControls());
     for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
@@ -552,10 +551,13 @@ EXP.UI = (() => {
         if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
       })));
     }
-    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify);
-    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,timeline:healthControl.element,
+    return preferences;
+  }
+  function systemView() {
+    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify,{layout:'grouped'});
+    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,timeline:healthControl.element,layout:'grouped',
       diagnostics:EXP.Diagnostics.createDiagnosticsControls(()=>EXP.Diagnostics.createDiagnosticsReport('WARD',{host,product:{id:'ward',version:EXP.VERSION},settings:EXP.Settings.snapshot(),...EXP.Engine.diagnostics()}),notify),
-      preferences,onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
+      onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
     });
   }
 
