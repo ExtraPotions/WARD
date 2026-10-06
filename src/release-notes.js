@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.4';
+EXP.VERSION = '3.4.5';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.5': ['Updates the shared foundation to exp-core 3.7.0.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],
     '3.4.4': ["Simplify System to Product Timeline, Show and Copy Diagnostics, issue reporting, Menu Preferences, and Reset All Settings.","Open GitHub Issues with a prefilled product and version template.","Require two confirmations before clearing this product settings and stored data."],
     '3.4.3': ["Keep WARD's signature menu colors alongside other ExtraPotions products.","Show a clear System status with safe retry for a suspended protection scan.","Choose Standard, Large, or Extra Large menus on each site.","Show retailer coverage for supported complete units, conservative detection, and uncovered categories."],
     '3.4.2': ["Use product names without the retired V3 integration label in settings prompts and import messages.","Keep existing saved settings and settings exports compatible."],
