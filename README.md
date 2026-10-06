@@ -20,7 +20,7 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 ## What you can do
 
-- **Simple System menu:** open Product Timeline, show or copy diagnostics, create a GitHub issue, adjust menu preferences, or reset this product after two confirmations.
+- **Simple System menu:** Status stays open with its reason and recovery action, plus recent activity. Support holds Copy Diagnostics and Report a Problem. Reset asks for a second tap inside the menu.
 
 - **Distinct menu colors:** WARD keeps its signature appearance alongside other ExtraPotions products.
 - **System status:** see Working, Waiting, Paused, or Needs attention, with a reason and a safe recovery action when available.
@@ -28,7 +28,7 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 - **Keep your settings:** saved preferences and existing settings exports remain supported as product naming is simplified.
 
-- **Readable menus:** choose Standard, Large, or Extra Large from System > Menu preferences. The choice applies to ExtraPotions menus on this site.
+- **Readable menus:** choose Standard, Large, or Extra Large from Appearance > Menu Preferences. The choice applies to ExtraPotions menus on this site.
 
 - **Six retailer modules:** separate controls for Amazon, eBay, Etsy, Walmart, Target, and Best Buy. Target and Best Buy begin with conservative coverage; unsupported or mixed content stays visible.
 - **Protection review:** review handled content, allow a pattern on this page, and record missed protection locally. Reviews stay on your device.
