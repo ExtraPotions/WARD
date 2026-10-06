@@ -1,3 +1,9 @@
+## 3.4.5 - 2026-10-06
+
+- Updates the shared foundation to exp-core 3.7.0.
+- Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.
+- Leaves WARD product-specific engine behavior unchanged.
+
 ## 3.4.4 - 2026-10-04
 
 - Simplify System to Product Timeline, Show and Copy Diagnostics, issue reporting, Menu Preferences, and Reset All Settings.
