@@ -2,7 +2,7 @@
 
 # WARD
 
-Current release: **3.4.9**.
+Current release: **3.4.10**.
 
 **Less shopping pressure, more room to decide**
 
