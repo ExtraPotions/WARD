@@ -112,7 +112,7 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(result.role, 'dialog');
   assert.equal(result.modal, 'true');
   assert.equal(result.launcherExpanded, 'true');
-  assert.equal(result.width, 260);
+  assert.equal(result.width, 288);
   assert.equal(result.sections, 4);
   assert.equal(result.visibleBodies, 0);
   assert.equal(result.noticeOutside, true);

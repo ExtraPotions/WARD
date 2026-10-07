@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.7';
+EXP.VERSION = '3.4.8';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.8': ["Makes menu labels and captions easier to read at every size.","Aligns dropdowns, toggles, buttons, and section headings with consistent spacing.","Gives menus more room while keeping each product's signature colors."],
     '3.4.7': ["The standalone install is smaller while keeping all features bundled.","Existing shopping cleanup and recovery controls remain available."],
     '3.4.6': ["Keep Status open in System with its reason, recovery action, and recent activity.","Group Copy Diagnostics, Show Diagnostics, and Report a Problem under Support; reports include the current status.","Confirm Reset with a second tap inside the menu instead of browser dialogs.","Move Menu Preferences to the end of Appearance."],
     '3.4.5': ['Updates the shared foundation to exp-core 3.7.0.','Rebuilds shared UI, launcher, diagnostics, notices, and coordination from the pinned Core release.','Leaves WARD product-specific engine behavior unchanged.'],

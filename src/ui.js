@@ -59,7 +59,7 @@ EXP.UI = (() => {
 
   const css = `
     .ward-shell{display:contents}
-    .row-help{display:block;margin-top:2px;color:var(--muted);font:500 8px/1.3 system-ui,sans-serif}
+    .row-help{display:block;margin-top:4px;color:var(--muted);font:400 var(--exp-font-size-small,12px)/1.5 "Segoe UI",system-ui,sans-serif}
     .activity-breakdown{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0}
     .activity-reasons,.current-protections{display:grid;gap:4px;margin-top:6px}
     .health-healthy,.coupon-confirmed{color:#95e6ae!important}
