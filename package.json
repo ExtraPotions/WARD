@@ -2,8 +2,7 @@
   "name": "extrapotions-ward",
   "private": true,
   "engines": {
-    "node": ">=24",
-    "npm": ">=10"
+    "node": ">=24"
   },
   "description": "WARD local shopping-pressure protection for six retailers",
   "scripts": {
@@ -17,7 +16,7 @@
     "test:installed-browser": "node scripts/test-installed-browser.cjs"
   },
   "devDependencies": {
-    "playwright": "1.55.1",
+    "playwright": "1.63.0",
     "terser": "5.51.2"
   },
   "version": "3.4.8"
