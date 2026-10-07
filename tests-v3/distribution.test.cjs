@@ -6,11 +6,12 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
+const { loadSource } = require('./load-source.cjs');
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 
 test('distribution is reproducible and has ExtraPotions metadata', () => {
   execFileSync(process.execPath, [path.join(root, 'scripts/build.cjs'), '--check'], { cwd: root, stdio: 'pipe' });
-  const source = fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8');
+  const source = loadSource();
   assert.match(source, /@name\s+WARD/);
   assert.match(source, new RegExp(`@version\\s+${pkg.version.replaceAll('.', '\\.')}`));
   assert.match(source, /^\/\/ @icon\s+https:\/\/raw\.githubusercontent\.com\/ExtraPotions\/WARD\/main\/assets\/ward-launcher\.svg$/m);
@@ -50,7 +51,7 @@ test('distribution is reproducible and has ExtraPotions metadata', () => {
   for (const file of leftovers) {
     assert.equal(fs.existsSync(path.join(root, file)), false, `leftover file still present: ${file}`);
   }
-  const bytes = Buffer.byteLength(source);
+  const bytes = fs.statSync(path.join(root, 'ward.user.js')).size;
   assert.ok(bytes >= 100000 && bytes <= 425000, `install size ${bytes} is outside the 100-425KB shared Core budget`);
   assert.doesNotMatch(source, /@resource/);
   assert.doesNotMatch(source, /GM_getResourceText/);
@@ -191,4 +192,16 @@ test('WARD settings survive manager storage gaps', () => {
   assert.match(settings, /localStorage\.setItem\(storageKey, JSON\.stringify\(value\)\);/u);
   assert.match(settings, /function load\(\) \{\s*const stored = read\('settings'\);[\s\S]*?state = validate\(stored \|\| defaults\);\s*write\('settings', state\);/u);
   assert.doesNotMatch(settings, /GM_setValue\(key\(name\), value\); return;/u);
+});
+
+ test('installed executable body is compact while metadata stays intact', () => {
+  const install = fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8');
+  const metadata = fs.readFileSync(path.join(root, 'src', 'metadata.txt'), 'utf8').replace(/\r\n/g, '\n').trimEnd();
+  assert.ok(install.startsWith(metadata + '\n\n'));
+  assert.doesNotMatch(install, /\beval\s*\(|new\s+Function\b|^\/\/ @(?:require|resource)\s|\bGM_getResourceText\b|data:image\//m);
+  assert.ok(Buffer.byteLength(install) < Buffer.byteLength(loadSource()) * 0.8, 'Install must be substantially smaller than readable assembly');
+  const body = install.slice(metadata.length).trim();
+  assert.ok(body.split('\n').length < 10, 'Executable body must be minified regardless of install size');
+  const grants = text => [...text.matchAll(/^\/\/ @grant\s+(.+)$/gm)].map(match => match[1].trim());
+  assert.deepEqual(grants(install), grants(metadata), 'Every declared grant must be preserved');
 });

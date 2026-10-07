@@ -63,3 +63,5 @@ Screenshots show the current product with sample content.
 ## About
 
 WARD is an independent project and is not affiliated with or endorsed by the retailers where it is used.
+
+Smaller install files keep installation lightweight without removing features.

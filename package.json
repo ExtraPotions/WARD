@@ -17,7 +17,8 @@
     "test:installed-browser": "node scripts/test-installed-browser.cjs"
   },
   "devDependencies": {
-    "playwright": "1.55.1"
+    "playwright": "1.55.1",
+    "terser": "5.51.2"
   },
-  "version": "3.4.6"
+  "version": "3.4.7"
 }

@@ -33,12 +33,14 @@ test('every sanitized Amazon fixture maps only to declared detector IDs', () => 
   }
 });
 
-test('generated userscript orders CSP styles and release notes before their consumers', () => {
+test('readable assembly orders CSP styles and release notes before their consumers', () => {
   const script = read('ward.user.js');
-  const styles = script.indexOf('EXP.PageStyles = (() => {');
-  const actions = script.indexOf('EXP.Actions = (() => {');
-  const notes = script.indexOf('EXP.ReleaseNotes = (() => {');
-  const ui = script.indexOf('EXP.UI = (() => {');
+  // Ordering is a source contract; installed UI markers remain checked below.
+  const readable = require('./load-source.cjs').loadSource();
+  const styles = readable.indexOf('EXP.PageStyles = (() => {');
+  const actions = readable.indexOf('EXP.Actions = (() => {');
+  const notes = readable.indexOf('EXP.ReleaseNotes = (() => {');
+  const ui = readable.indexOf('EXP.UI = (() => {');
   assert.ok(styles >= 0 && styles < actions);
   assert.ok(notes >= 0 && notes < ui);
   assert.match(script, /Resume coupon clipping/);
@@ -48,9 +50,13 @@ test('generated userscript orders CSP styles and release notes before their cons
 
 test('current Amazon product modules and route-wide coverage protections ship in the bundle', () => {
   const script = read('ward.user.js');
-  for (const marker of ['insuranceAndWarranty_feature_div', 'businessSavings_feature_div', 'routeMatchedDetectors', 'EXP.Core.injectStyle(document, css, data)']) {
-    assert.match(script, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  for (const marker of ['insuranceAndWarranty_feature_div', 'businessSavings_feature_div', 'matchedDetectors']) {
+    assert.ok(script.includes(marker), marker);
   }
+  assert.match(script, /\.Core\.injectStyle\(document,/);
+  const readable = require('./load-source.cjs').loadSource();
+  assert.ok(readable.includes('routeMatchedDetectors'));
+  assert.ok(readable.includes('EXP.Core.injectStyle(document, css, data)'));
 });
 
 test('visual capture manifest targets the current menu and fixture set without theme or warm output', () => {

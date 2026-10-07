@@ -1,3 +1,8 @@
+## 3.4.7 - 2026-10-07
+
+- The standalone install is smaller while keeping all features bundled.
+- Existing shopping cleanup and recovery controls remain available.
+
 ## 3.4.6 - 2026-10-06
 
 - Keep Status open in System with its reason, recovery action, and recent activity.

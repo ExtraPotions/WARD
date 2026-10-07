@@ -17,7 +17,7 @@ test('WARD delegates suite and presentation metadata to Core diagnostics bootstr
 
 test('generated WARD userscript keeps the same Core-owned interoperability bootstrap', () => {
   const built = read('ward.user.js');
-  assert.match(built, /registerDiagnosticsProduct\('ward'/);
+  assert.match(built, /registerDiagnosticsProduct\(['"]ward['"]/);
   assert.doesNotMatch(built, /registerSuiteProduct\?\./u);
   assert.doesNotMatch(built, /registerPresentationProvider\?\./u);
 });
