@@ -1,7 +1,7 @@
-## Unreleased
+## 3.4.9 - 2026-10-07
 
-- Adds Amazon Seller Clarity notes and optional search brand labels.
-- Lets you always show a seller summary or trust a brand to quiet brand and seller hints.
+- Adds Amazon Seller Clarity notes, optional search brand labels and an always-visible seller summary option.
+- Trust a brand to quiet brand and seller hints while keeping rating hints.
 - Keeps notes readable alongside SHIFT and removes outdated notes when listings change.
 - Keeps trusted-brand names out of diagnostics.
 

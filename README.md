@@ -2,6 +2,8 @@
 
 # WARD
 
+Current release: **3.4.9**.
+
 **Less shopping pressure, more room to decide**
 
 Reduce supported shopping promotions and distractions while keeping essential product and purchasing information available.
