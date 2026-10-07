@@ -15,6 +15,10 @@ EXP.Settings = (() => {
     autoClipCoupons: true,
     compactSearch: false,
     recommendationCleanup: true,
+    sellerClarity: true,
+    sellerClaritySearch: true,
+    sellerClarityAlways: false,
+    trustedBrands: [],
     reducedMotion: 'system',
     nonColorIndicators: true,
     explanationDetail: 'concise',
@@ -63,7 +67,7 @@ EXP.Settings = (() => {
     const next = ExtraPotionsCore.cloneSettings(defaults);
 	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
 	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
-    for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'sellerClarity', 'sellerClaritySearch', 'sellerClarityAlways', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
     // One switch per store. The earlier single amazonEnabled setting migrates into it.
     const stores = { ...defaults.retailers };
     if (typeof candidate.amazonEnabled === 'boolean') stores.amazon = candidate.amazonEnabled;
@@ -80,6 +84,7 @@ EXP.Settings = (() => {
     for (const field of ['categories', 'patterns']) if (candidate[field] && typeof candidate[field] === 'object' && !Array.isArray(candidate[field])) next[field] = Object.fromEntries(Object.entries(candidate[field]).filter(([id, value]) => /^[a-z][a-z0-9.-]+$/.test(id) && ['inherit', 'on', 'off'].includes(value)));
     next.pageExceptions=Array.isArray(candidate.pageExceptions)?candidate.pageExceptions.filter(v=>v&&typeof v.path==='string'&&v.path.length<=500&&typeof v.patternId==='string'&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)).slice(0,200).map(v=>({path:v.path,patternId:v.patternId})):[];
     next.protectionReviews=Array.isArray(candidate.protectionReviews)?candidate.protectionReviews.filter(v=>v&&['correct','wrong','missed'].includes(v.verdict)&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)&&Object.keys(stores).includes(v.retailer)).slice(-100).map(v=>({verdict:v.verdict,patternId:v.patternId,retailer:v.retailer,at:Number(v.at)||0})):[];
+    next.trustedBrands=Array.isArray(candidate.trustedBrands)?[...new Set(candidate.trustedBrands.filter(v=>typeof v==='string'&&/^[a-z0-9]{1,60}$/.test(v)))].slice(-200):[];
     next.uiTheme = 'ward';
     return next;
   }
@@ -90,6 +95,10 @@ EXP.Settings = (() => {
     return snapshot();
   }
   function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
+  function diagnosticSnapshot() {
+    const { trustedBrands, ...settings } = snapshot();
+    return { ...settings, trustedBrandCount: trustedBrands.length };
+  }
   function replace(value, reason = 'replace') { if(ExtraPotionsCore.productDataResetting?.('ward'))return snapshot(); const next=validate(value);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
@@ -101,5 +110,5 @@ EXP.Settings = (() => {
     for (const listener of listeners) listener(snapshot(), 'product-reset');
     return snapshot();
   }
-  return Object.freeze({resetAll, PREFIX, SCHEMA, defaults, validate, load, snapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
+  return Object.freeze({resetAll, PREFIX, SCHEMA, defaults, validate, load, snapshot, diagnosticSnapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
 })();

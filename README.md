@@ -32,6 +32,7 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 - **Six retailer modules:** separate controls for Amazon, eBay, Etsy, Walmart, Target, and Best Buy. Target and Best Buy begin with conservative coverage; unsupported or mixed content stays visible.
 - **Protection review:** review handled content, allow a pattern on this page, and record missed protection locally. Reviews stay on your device.
+- **Seller Clarity:** on Amazon, see the brand, seller and fulfillment details, with optional hints about a different seller, an unusual brand-name pattern or unusual ratings. These hints do not establish quality or authenticity. Trust a brand to quiet its brand and seller hints; rating hints remain. Everything stays on your device.
 - **Calm Shopping:** apply balanced cleanup in one step.
 - **Protection choices:** Essential, Balanced, and Custom let you choose the level of cleanup.
 - **Hide or dim:** choose a content action, or let the protection level decide.

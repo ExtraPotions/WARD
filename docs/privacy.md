@@ -10,6 +10,8 @@ WARD does not collect or transmit:
 - search terms, browsing history, coupon text, or coupon values;
 - copied DOM/HTML or full page URLs.
 
+Seller Clarity reads brand, seller, shipping, and rating text from the current product or search page to build its notes. That text is not stored, logged, or sent. Brands you choose to trust are saved only as normalized names in WARD's local settings and are included in settings exports you create.
+
 Activity contains local category/action/count/status/reason records only. Diagnostics contain bounded product/Core/adapter versions, page-type and detector/pattern IDs, confidence/action/safety states, coupon execution status, processing counts, and sanitized error codes.
 
 Update notifications are off by default. If enabled, WARD requests only bounded release metadata from the configured ExtraPotions GitHub endpoint. No page, activity, coupon, or settings data is included.
