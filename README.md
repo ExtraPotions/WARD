@@ -22,7 +22,9 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 ## What you can do
 
-- **Simple System menu:** Status stays open with its reason and recovery action, plus recent activity. Support holds Copy Diagnostics and Report a Problem. Reset asks for a second tap inside the menu.
+- **Compact submenu tabs:** switch between related settings without opening a stack of nested menus. Each product keeps its own colors, and System stays last.
+
+- **Simple System menu:** The Status tab shows its reason and recovery action, plus recent activity. Support holds Copy Diagnostics and Report a Problem. Reset asks for a second tap inside the menu.
 
 - **Distinct menu colors:** WARD keeps its signature appearance alongside other ExtraPotions products.
 - **System status:** see Working, Waiting, Paused, or Needs attention, with a reason and a safe recovery action when available.
@@ -30,7 +32,7 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 - **Keep your settings:** saved preferences and existing settings exports remain supported as product naming is simplified.
 
-- **Readable menus:** choose Standard (14px text), Large (16px), or Extra Large (18px) from Appearance > Menu Preferences. Captions start at 12px. Labels, dropdowns, toggles, and buttons share consistent spacing and alignment. The choice applies to ExtraPotions menus on this site.
+- **Readable menus:** choose Standard (14px text), Large (16px), or Extra Large (18px) from Appearance > Menu. Captions start at 12px. Labels, dropdowns, toggles, and buttons share consistent spacing and alignment. The choice applies to ExtraPotions menus on this site.
 
 - **Six retailer modules:** separate controls for Amazon, eBay, Etsy, Walmart, Target, and Best Buy. Target and Best Buy begin with conservative coverage; unsupported or mixed content stays visible.
 - **Protection review:** review handled content, allow a pattern on this page, and record missed protection locally. Reviews stay on your device.

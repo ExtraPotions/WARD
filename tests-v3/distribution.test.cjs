@@ -141,7 +141,7 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(changed.nested.length,5);
   assert.ok(changed.nested.includes('Settings transfer'));assert.ok(changed.nested.includes('Page tools'));
   await page.locator('#exp-ward-root [data-view="system"]').click();
-  assert.deepEqual(await page.locator('#exp-ward-root [data-exp-product-system] > [data-exp-system-item]').evaluateAll(nodes=>nodes.map(n=>n.dataset.expSystemItem)),['status','support','reset']);
+  assert.deepEqual(await page.locator('#exp-ward-root [data-exp-product-system] [data-exp-system-item]').evaluateAll(nodes=>nodes.map(n=>n.dataset.expSystemItem)),['status','support','reset']);
   assert.equal(await page.locator('#exp-ward-root [data-exp-product-system] [aria-label="Safe Mode"]').count(),0);
   await page.locator('#exp-ward-root [data-view="tools"]').click();
   assert.ok(changed.switches > 0);
