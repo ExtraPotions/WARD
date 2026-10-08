@@ -112,7 +112,7 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(result.role, 'dialog');
   assert.equal(result.modal, 'true');
   assert.equal(result.launcherExpanded, 'true');
-  assert.equal(result.width, await page.evaluate(() => ExtraPotionsCore.menuWidth()));
+  assert.equal(result.width, await page.evaluate(() => parseFloat(getComputedStyle(document.getElementById('exp-ward-root')).getPropertyValue('--exp-menu-width'))));
   assert.equal(result.sections, 4);
   assert.equal(result.visibleBodies, 0);
   assert.equal(result.noticeOutside, true);

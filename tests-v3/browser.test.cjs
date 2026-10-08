@@ -291,7 +291,7 @@ test('menu keeps its shared size and Settings is not a top-level route while int
   const host = page.locator('#exp-ward-root');
   await host.locator('.ward-launcher').click();
   const panel = host.locator('.ward');
-  assert.equal(await panel.evaluate((node) => node.getBoundingClientRect().width), await page.evaluate(() => ExtraPotionsCore.menuWidth()));
+  assert.equal(await panel.evaluate((node) => node.getBoundingClientRect().width), await page.evaluate(() => parseFloat(getComputedStyle(document.getElementById('exp-ward-root')).getPropertyValue('--exp-menu-width'))));
   const facts = await host.evaluate((node) => {
     const root = node.shadowRoot;
     return {
@@ -300,7 +300,7 @@ test('menu keeps its shared size and Settings is not a top-level route while int
     };
   });
   assert.deepEqual([...facts.routes].sort(), ['Amazon', 'Appearance', 'Protection', 'System']);
-  assert.equal(facts.width, await page.evaluate(() => ExtraPotionsCore.menuWidth()));
+  assert.equal(facts.width, await page.evaluate(() => parseFloat(getComputedStyle(document.getElementById('exp-ward-root')).getPropertyValue('--exp-menu-width'))));
   assert.deepEqual(pageErrors, []);
 });
 
