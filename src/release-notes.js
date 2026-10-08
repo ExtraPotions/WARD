@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.10';
+EXP.VERSION = '3.4.11';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.11': ["Gives menus a lighter layout with subtle section dividers and softly filled tabs.","Keeps every existing control, setting, and product color, with consistent spacing and readable text."],
     '3.4.10': ["Organizes related menu settings into compact tabs, with System last.","Keeps your selected tab during menu refreshes and supports keyboard navigation."],
     '3.4.9': ["Adds Amazon Seller Clarity notes, optional search brand labels and an always-visible seller summary option.","Trust a brand to quiet brand and seller hints while keeping rating hints.","Keeps notes readable alongside SHIFT and removes outdated notes when listings change.","Keeps trusted-brand names out of diagnostics."],
     '3.4.8': ["Makes menu labels and captions easier to read at every size.","Aligns dropdowns, toggles, buttons, and section headings with consistent spacing.","Gives menus more room while keeping each product's signature colors."],
