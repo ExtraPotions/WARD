@@ -291,7 +291,7 @@ test('menu keeps its shared size and Settings is not a top-level route while int
   const host = page.locator('#exp-ward-root');
   await host.locator('.ward-launcher').click();
   const panel = host.locator('.ward');
-  assert.equal(await panel.evaluate((node) => node.getBoundingClientRect().width), 288);
+  assert.equal(await panel.evaluate((node) => node.getBoundingClientRect().width), await page.evaluate(() => ExtraPotionsCore.menuWidth()));
   const facts = await host.evaluate((node) => {
     const root = node.shadowRoot;
     return {
@@ -300,7 +300,7 @@ test('menu keeps its shared size and Settings is not a top-level route while int
     };
   });
   assert.deepEqual([...facts.routes].sort(), ['Amazon', 'Appearance', 'Protection', 'System']);
-  assert.equal(facts.width, 288);
+  assert.equal(facts.width, await page.evaluate(() => ExtraPotionsCore.menuWidth()));
   assert.deepEqual(pageErrors, []);
 });
 
