@@ -2,7 +2,7 @@
 
 # WARD
 
-Current release: **3.4.12**.
+Current release: **3.4.13**.
 
 **Less shopping pressure, more room to decide**
 
@@ -22,7 +22,7 @@ Open Protection to choose a level and Content action. Use the retailer controls 
 
 ## What you can do
 
-- **Lean menus:** subtle dividers and compact tabs keep related settings easy to reach. Every control and setting remains available, each product keeps its own colors, and System stays last.
+- **Lean menus:** distinct category icons, tighter typography, and smaller panels keep settings easy to reach. Every control remains available, with Standard, Large, and Extra Large sizes.
 
 - **Simple System menu:** The Status tab shows its reason and recovery action, plus recent activity. Support holds Copy Diagnostics and Report a Problem. Reset asks for a second tap inside the menu.
 
