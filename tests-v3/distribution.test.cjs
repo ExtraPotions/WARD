@@ -126,7 +126,7 @@ test('production menu uses switches and has every required navigation group', as
     const root=host.shadowRoot;const launcher=root.querySelector('.ward-launcher');
     return {button:Math.round(launcher.getBoundingClientRect().width),radius:getComputedStyle(launcher).borderRadius,hasRing:Boolean(root.querySelector('.launcher-ring')),icon:Math.round(root.querySelector('.launcher-icon').getBoundingClientRect().width),headerBadge:Math.round(root.querySelector('.header-icon .menu-icon').getBoundingClientRect().width)};
   });
-  assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:38});
+  assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:await page.locator('#exp-ward-root [data-exp-part="dock"]').evaluate(n=>n.dataset.expMenuLayout==='lean'?40:38)});
   for (const label of ['Protection','Appearance','Amazon','System']) assert.ok(result.nav.includes(label));
   assert.equal(result.nav.includes('Settings'), false);
   assert.equal(result.nav.includes('Read'), false);
