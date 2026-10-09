@@ -59,8 +59,7 @@ test('current Amazon product modules and route-wide coverage protections ship in
   assert.ok(readable.includes('EXP.Core.injectStyle(document, css, data)'));
 });
 
-test('the README shot list targets the README screenshots without theme or warm output', () => {
-  const config = require('../docs/screenshots.config.cjs');
-  assert.deepEqual(config.shots.map(shot => shot.file).sort(), ['amazon.png', 'protection.png']);
+// screenshots-config.test.cjs checks the shot list against the README.
+test('the README shot list has no theme or warm output', () => {
   assert.doesNotMatch(read('docs/screenshots.config.cjs'), /warm-charcoal\.png/);
 });
