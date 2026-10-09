@@ -82,6 +82,12 @@ EXP.UI = (() => {
     chrome?.layout();
   }
 
+  function markLauncherUpdate(result = {}) {
+    if (!launcher) return;
+    const ready = Boolean(result.available && result.latest);
+    launcher.classList.toggle('update-available', ready);
+    launcher.setAttribute('aria-label', ready ? `Open WARD · Update v${result.latest} Available` : 'Open WARD');
+  }
   function showUpdateCard(result = {}, complete = false, previous = '', current = false) {
     if (!noticeController) return;
     const version = complete || current ? EXP.VERSION : result.latest;
@@ -563,7 +569,7 @@ EXP.UI = (() => {
     for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
       preferences.append(row(label,'',switchControl(settings[key],label,value=>{
         update({[key]:value},key);
-        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>notify(result.available?'A WARD update is available.':'WARD update check complete.'));
+        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>{markLauncherUpdate(result);notify(result.available?'A WARD update is available.':'WARD update check complete.');});
       })));
     }
     return preferences;
@@ -771,8 +777,8 @@ EXP.UI = (() => {
     });
     updateCard = noticeController.element;
     const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
-    if(previous)showUpdateCard({},true,previous);
-    if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{if(r.available)showUpdateCard(r);});
+    if(previous&&!EXP.ReleaseNotes.isQuietUpgrade(previous))showUpdateCard({},true,previous);
+    if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{markLauncherUpdate(r);if(r.available&&!r.quiet)showUpdateCard(r);});
 
     escapeHandler = event => {
       if (!shell.classList.contains('open')) return;

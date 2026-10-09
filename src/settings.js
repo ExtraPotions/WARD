@@ -22,7 +22,7 @@ EXP.Settings = (() => {
     reducedMotion: 'system',
     nonColorIndicators: true,
     explanationDetail: 'concise',
-    updateNotifications: false,
+    updateNotifications: true,
     launcherPosition: 'automatic-end-bottom',
     uiTheme: 'ward',
     menuAutoClose: true,
