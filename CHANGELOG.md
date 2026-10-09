@@ -1,3 +1,8 @@
+## 3.4.15 - 2026-10-09
+
+- Shows a badge on the launcher when an update is ready.
+- Checks for updates by default on new installs, at most every 12 hours.
+
 ## 3.4.14 - 2026-10-09
 
 - Shortens the README to a quick overview of what WARD does.

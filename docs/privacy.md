@@ -14,6 +14,6 @@ Seller Clarity reads brand, seller, shipping, and rating text from the current p
 
 Activity contains local category/action/count/status/reason records only. Diagnostics contain bounded product/Core/adapter versions, page-type and detector/pattern IDs, confidence/action/safety states, coupon execution status, processing counts, and sanitized error codes.
 
-Update notifications are off by default. If enabled, WARD requests only bounded release metadata from the configured ExtraPotions GitHub endpoint. No page, activity, coupon, or settings data is included.
+Update notifications are on by default for new installs and can be turned off; existing installs keep their saved choice. While enabled, WARD requests only bounded release metadata from the configured ExtraPotions GitHub endpoint. No page, activity, coupon, or settings data is included.
 
 WARD loads no remote executable code, selector lists, fonts, images, analytics, or telemetry.

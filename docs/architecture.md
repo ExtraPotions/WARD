@@ -21,7 +21,7 @@ Retailer/page eligibility → Amazon adapter evidence → pattern definition
 - `layout.js`: retained off-by-default compact search compatibility behavior.
 - `engine.js`: confidence/policy/safety resolution, coupon executor and recovery state, route lifecycle, and diagnostics.
 - `release-notes.js`: version-keyed current release notes used by the in-app changelog.
-- `updates.js`: opt-in bounded release-metadata check.
+- `updates.js`: bounded release-metadata check (on by default for new installs, user can disable).
 - `ui.js`: compact three-section menu, activity explanations, adapter health, and control wiring.
 - `main.js`: lifecycle composition.
 

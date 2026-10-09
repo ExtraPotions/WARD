@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.14';
+EXP.VERSION = '3.4.15';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.15': ["Shows a badge on the launcher when an update is ready.","Checks for updates by default on new installs, at most every 12 hours."],
     '3.4.14': ["Shortens the README to a quick overview of what WARD does.","Replaces the README screenshots with current captures of the menu."],
     '3.4.13': ["Gives each menu category a distinct, meaningful icon.","Tightens typography and reduces panel width and spacing while preserving every control and setting.","Keeps readable text, menu-size preferences, compact tabs, and each product color."],
     '3.4.12': ["Matches the approved Lean menu proportions, header, flat surfaces, section navigation, compact tabs, controls, and footer.","Preserves every existing control and setting, each product color, readable menu sizes, and System last."],
