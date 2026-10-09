@@ -8,7 +8,7 @@
   "scripts": {
     "build": "node scripts/build.cjs",
     "build:check": "node scripts/build.cjs --check",
-    "visual:capture": "node scripts/capture-visuals.cjs",
+    "screenshots": "node ../exp-core/scripts/capture-screenshots.cjs WARD",
     "test:fallback": "node scripts/fallback-check.cjs",
     "test": "node scripts/build.cjs && node --test tests-v3/*.test.cjs",
     "release:check": "node scripts/release-check.cjs",
