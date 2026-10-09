@@ -6,6 +6,7 @@
 //   RELEASE_NOTES_JSON='["First note.","Second note."]' node scripts/prepare-feature-release.cjs
 //
 // Optional: RELEASE_VERSION=x.y.z to choose the version instead of the next patch.
+// Optional: RELEASE_QUIET=1 marks the release quiet: people see only the launcher badge, no notice cards.
 // Run npm test afterward so the generated userscript is rebuilt.
 
 const fs = require('node:fs');
@@ -33,6 +34,7 @@ if (!Array.isArray(notes) || notes.length < 2 || notes.length > 4 || notes.some(
   throw new Error('Feature releases need 2-4 non-empty release notes');
 }
 notes = notes.map(note => note.trim());
+const quiet = process.env.RELEASE_QUIET === '1';
 
 const pkg = JSON.parse(read('package.json'));
 const previous = pkg.version;
@@ -61,11 +63,20 @@ write('src/release-notes.js', replaceRequired(
   (match, indent) => `${indent}'${next}': ${JSON.stringify(notes)},\n${match}`,
   'in-app release notes',
 ));
+if (quiet) {
+  const quietLine = /const QUIET_RELEASES = Object\.freeze\((\[[^\]\n]*\])\);/;
+  const releaseNotes = read('src/release-notes.js');
+  const match = releaseNotes.match(quietLine);
+  if (!match) throw new Error('Could not locate QUIET_RELEASES');
+  const listed = JSON.parse(match[1]);
+  if (!listed.includes(next)) listed.unshift(next);
+  write('src/release-notes.js', releaseNotes.replace(quietLine, `const QUIET_RELEASES = Object.freeze(${JSON.stringify(listed)});`));
+}
 
 // Match the separator the changelog already uses (em dash or hyphen).
 const changelog = read('CHANGELOG.md');
 const separator = /^## \d+\.\d+\.\d+ (—|-) /m.exec(changelog)?.[1] || '—';
-const section = `## ${next} ${separator} ${date}\n\n${notes.map(note => `- ${note}`).join('\n')}\n\n`;
+const section = `## ${next} ${separator} ${date}${quiet ? ' (quiet)' : ''}\n\n${notes.map(note => `- ${note}`).join('\n')}\n\n`;
 write('CHANGELOG.md', changelog.startsWith(`## ${next} `) ? changelog : section + changelog);
 
-console.log(`Prepared ${pkg.name || 'product'} ${next} from ${previous} with ${notes.length} release notes. Run npm test to rebuild.`);
+console.log(`Prepared ${pkg.name || 'product'} ${next} from ${previous} with ${notes.length} release notes${quiet ? ' (quiet)' : ''}. Run npm test to rebuild.`);

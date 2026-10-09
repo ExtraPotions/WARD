@@ -118,5 +118,7 @@ EXP.ReleaseNotes = (() => {
     ])
   });
   function current() { return notes[EXP.VERSION] || Object.freeze(['Current WARD improvements and fixes.']); }
-  return Object.freeze({ current });
+  const QUIET_RELEASES = Object.freeze([]);
+  function isQuietUpgrade(previous) { return ExtraPotionsCore.isQuietUpgrade(previous, EXP.VERSION, Object.keys(notes), QUIET_RELEASES); }
+  return Object.freeze({ current, isQuietUpgrade, QUIET_RELEASES });
 })();
