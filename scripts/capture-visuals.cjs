@@ -1,57 +1,70 @@
 'use strict';
+
+// Regenerates the README screenshots from the built userscript against a local sample page.
+//   npm run visual:capture
+// Images are captured into a temporary folder first, so a failed run never leaves docs/screenshots half updated.
+
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
-const crypto = require('node:crypto');
 const { chromium } = require('playwright');
+
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'docs', 'screenshots');
+const HOST = '#exp-ward-root';
 
+// [section, tab, file]
 const shots = [
-  { file: 'menu-overview.png', view: null, theme: null },
-  { file: 'protection.png', view: 'page', theme: null },
-  { file: 'amazon.png', view: 'tools', theme: null },
+  ['Protection', 'Overview', 'protection.png'],
+  ['Amazon', 'Store', 'amazon.png'],
 ];
 
+const samplePage = '<!doctype html><meta charset="utf-8"><title>Amazon</title><body style="margin:0;font:17px/1.6 system-ui;background:#f4f5f8;color:#1b1d22"><main style="max-width:560px;margin:40px;padding:32px 36px;background:#fff;border:1px solid #d9dde5;border-radius:14px"><h1>Sample product</h1><p>Product details for a sample listing.</p></main></body>';
+
+function gmStub() {
+  const values = new Map();
+  window.GM_getValue = (key, fallback) => (values.has(key) ? values.get(key) : fallback);
+  window.GM_setValue = (key, value) => values.set(key, value);
+  window.GM_deleteValue = (key) => values.delete(key);
+  window.GM_listValues = () => [...values.keys()];
+  window.GM_addValueChangeListener = () => 1;
+  window.GM_registerMenuCommand = () => {};
+  window.GM_xmlhttpRequest = (options) => { queueMicrotask(() => options.onerror?.({ status: 0 })); return { abort() {} }; };
+}
+
+// Use Playwright's bundled Chromium when installed, otherwise the system Edge.
+const launch = () => chromium.launch().catch(() => chromium.launch({ channel: 'msedge' }));
+
 (async () => {
-  fs.mkdirSync(output, { recursive: true });
-  const browser = await chromium.launch({ headless: true });
+  const work = fs.mkdtempSync(path.join(os.tmpdir(), 'ward-shots-'));
+  const browser = await launch();
   try {
-    const page = await browser.newPage({ viewport: { width: 1280, height: 1300 }, deviceScaleFactor: 2 });
-    await page.route('https://www.amazon.com/**', (route) => route.fulfill({
-      status: 200,
-      contentType: 'text/html',
-      body: '<!doctype html><html><body style="margin:0;background:#eef1f5;font:16px system-ui;color:#17191d"><main style="max-width:760px;margin:40px;padding:30px;background:white;border:1px solid #ccd2db;border-radius:14px"><h1>WARD Amazon fixture</h1><p>Controlled local content for visual verification.</p><div id="primeDPUpsellStaticContainerNPA">Prime membership promotion</div><div id="dealBadge_feature_div">Limited-time deal</div><div id="sims-fbt">Recommended products</div></main></body></html>',
-    }));
-    await page.goto('https://www.amazon.com/dp/ward-visual-fixture');
-    await page.addScriptTag({ content: fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8') });
-    const host = page.locator('#exp-ward-root');
-    await host.evaluate((node) => {
-      const root = node.shadowRoot;
-      root.querySelector('.ward-launcher').click();
-      root.querySelector('.route[data-view="page"]').click();
+    const page = await browser.newPage({ viewport: { width: 960, height: 1400 }, deviceScaleFactor: 2 });
+    await page.addInitScript(gmStub);
+    await page.route('**/*', (route) => {
+      const asset = route.request().url().match(/raw\.githubusercontent\.com\/ExtraPotions\/WARD\/main\/(assets\/.+)$/);
+      if (asset) return route.fulfill({ path: path.join(root, asset[1]) });
+      if (route.request().isNavigationRequest()) return route.fulfill({ status: 200, contentType: 'text/html', body: samplePage });
+      return route.abort();
     });
-    await page.waitForTimeout(200);
-    await page.screenshot({ path: path.join(output, 'current-fixture.png'), fullPage: true });
-    for (const shot of shots) {
-      await host.evaluate((node, { view, theme }) => {
-        const root = node.shadowRoot;
-        root.querySelector('.close')?.click();
-        root.querySelector('.ward-launcher').click();
-        for (const button of root.querySelectorAll('.route[aria-expanded="true"]')) button.click();
-        if (view) root.querySelector(`.route[data-view="${view}"]`).click();
-        if (theme) root.querySelector(`.exp-theme-swatch[aria-label="${theme}"]`)?.click();
-      }, { view: shot.view, theme: shot.theme });
-      await page.waitForTimeout(200);
-      const clip = await host.evaluate(() => {
-        const rect = document.querySelector('#exp-ward-root').shadowRoot.querySelector('.ward').getBoundingClientRect();
-        return { x: Math.max(0, rect.x - 8), y: Math.max(0, rect.y - 8), width: rect.width + 16, height: rect.height + 16 };
-      });
-      await page.screenshot({ path: path.join(output, shot.file), clip });
+    await page.goto('https://www.amazon.com/dp/sample');
+    await page.addScriptTag({ content: fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8') });
+    const host = page.locator(HOST);
+    await host.locator('[data-exp-part="launcher"]').click();
+    await page.waitForTimeout(400);
+    for (const [section, tab, file] of shots) {
+      const header = host.locator('.fl-tool-header').filter({ hasText: section });
+      if (await header.getAttribute('aria-expanded') !== 'true') await header.click();
+      await host.getByRole('tab', { name: tab, exact: true }).click();
+      await page.mouse.move(0, 0);
+      await page.waitForTimeout(300);
+      await host.locator('[data-exp-part="dock"]').screenshot({ path: path.join(work, file) });
     }
-    const hashes = ['current-fixture.png',...shots.map(({ file }) => file)].map((file) => crypto.createHash('sha256').update(fs.readFileSync(path.join(output, file))).digest('hex'));
-    if (new Set(hashes).size !== hashes.length) throw new Error('WARD screenshot capture produced duplicate images');
+    fs.mkdirSync(output, { recursive: true });
+    for (const [, , file] of shots) fs.copyFileSync(path.join(work, file), path.join(output, file));
   } finally {
     await browser.close();
+    fs.rmSync(work, { recursive: true, force: true });
   }
-  console.log(`Captured ${shots.length + 1} WARD screenshots in ${path.relative(root, output)}/`);
+  console.log(`Captured ${shots.length} WARD screenshots in ${path.relative(root, output)}/`);
 })().catch((error) => { console.error(error); process.exit(1); });

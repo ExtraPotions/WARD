@@ -1,3 +1,8 @@
+## 3.4.14 - 2026-10-09
+
+- Shortens the README to a quick overview of what WARD does.
+- Replaces the README screenshots with current captures of the menu.
+
 ## 3.4.13 - 2026-10-08
 
 - Gives each menu category a distinct, meaningful icon.

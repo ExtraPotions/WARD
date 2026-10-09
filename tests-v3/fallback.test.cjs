@@ -59,9 +59,9 @@ test('current Amazon product modules and route-wide coverage protections ship in
   assert.ok(readable.includes('EXP.Core.injectStyle(document, css, data)'));
 });
 
-test('visual capture manifest targets the current menu and fixture set without theme or warm output', () => {
+test('visual capture manifest targets the README screenshots without theme or warm output', () => {
   const capture = read('scripts/capture-visuals.cjs');
-  for (const file of ['current-fixture.png', 'menu-overview.png', 'protection.png', 'amazon.png']) {
+  for (const file of ['protection.png', 'amazon.png']) {
     assert.match(capture, new RegExp(file.replaceAll('.', '\\.')));
   }
   assert.doesNotMatch(capture, /warm-charcoal\.png/);
