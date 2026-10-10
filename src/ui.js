@@ -275,15 +275,17 @@ EXP.UI = (() => {
     }
 
     const pageActions = el('div','settings-transfer');
+    const reapply = action('Reapply protection',() => {
+      for (const item of EXP.Actions.snapshot()) EXP.Actions.endReveal(item.id);
+      refreshActivity();
+    });
+    reapply.dataset.expPrimary = '1';
     pageActions.append(
       action('Reveal this page',() => {
         for (const item of EXP.Actions.snapshot()) EXP.Actions.reveal(item.id);
         refreshActivity();
       },'primary'),
-      action('Reapply protection',() => {
-        for (const item of EXP.Actions.snapshot()) EXP.Actions.endReveal(item.id);
-        refreshActivity();
-      })
+      reapply
     );
     box.append(pageActions);
 
@@ -756,6 +758,7 @@ EXP.UI = (() => {
     shadow.append(launcher,shell,toast);
     document.documentElement.append(host);
 
+    ExtraPotionsCore.setMenuStatus('ward',systemHealthSnapshot);
     launcherCleanup = EXP.Core.registerLauncher(host,{productId:'ward'});
     chrome = EXP.MenuChrome.create({
       id:'ward',

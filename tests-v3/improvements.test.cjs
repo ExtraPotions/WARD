@@ -149,7 +149,7 @@ test('compact UI exposes health, activity, reversible controls, and nested Custo
   await page.addScriptTag({ content:distribution });
   const host = page.locator('#exp-ward-root');
   await host.locator('.ward-launcher').click();
-  await host.locator('.route[data-view="page"]').click();
+  await host.locator('[data-exp-section-tab="exp-ward-view-page"]').click();
   assert.equal(await host.locator('[data-exp-adapter-health]').textContent(),'Healthy');
   assert.equal(await host.locator('[data-exp-activity-summary]').getByText('Active protections').count(),1);
   assert.equal(await host.getByRole('button',{ name:'Show',exact:true }).count(),0);
@@ -159,7 +159,7 @@ test('compact UI exposes health, activity, reversible controls, and nested Custo
   assert.equal(await host.getByRole('button',{ name:'Protect again',exact:true }).count(),1);
   await host.getByRole('tab',{name:'Overview',exact:true}).click();
   await host.getByLabel('Protection level').selectOption('custom');
-  await host.locator('.route[data-view="tools"]').click();
+  await host.locator('[data-exp-section-tab="exp-ward-view-tools"]').click();
   await host.getByRole('tab',{name:'Patterns',exact:true}).click();
   for (const label of ['Default action','Confidence policy','Explanation detail']) assert.equal(await host.getByLabel(label).count(),1);
   assert.ok(await host.getByText('Category controls',{ exact:true }).isVisible());
@@ -174,7 +174,7 @@ test('main Protection screen changes all content between Dim, Hide and Automatic
     await page.addScriptTag({content:distribution});
     const host=page.locator('#exp-ward-root');
     await host.locator('.ward-launcher').click();
-    await host.locator('.route[data-view="page"]').click();
+    await host.locator('[data-exp-section-tab="exp-ward-view-page"]').click();
     return host;
   };
   const state=() => page.evaluate(() => ['ad','sims-fbt'].map(id => {const n=document.getElementById(id);return {hidden:n.hidden,action:n.dataset.wardAction};}));
@@ -196,7 +196,7 @@ test('Advanced page tools Safe Mode restores protection targets and preserves pr
  const browser=await chromium.launch();t.after(()=>browser.close());const page=await browser.newPage();
  await page.route('https://www.amazon.com/**',r=>r.fulfill({contentType:'text/html',body:'<main><div id="sims-fbt">Recommendations</div></main>'}));
  await page.goto('https://www.amazon.com/dp/fixture');await page.addScriptTag({content:distribution});
- const host=page.locator('#exp-ward-root');await host.locator('.ward-launcher').click();await host.locator('[data-view="tools"]').click();await host.getByRole('tab',{name:'Tools',exact:true}).click();
+ const host=page.locator('#exp-ward-root');await host.locator('.ward-launcher').click();await host.locator('[data-exp-section-tab="exp-ward-view-tools"]').click();await host.getByRole('tab',{name:'Tools',exact:true}).click();
  const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('exp:v3:ward:settings')||'{}'));
  const toggle=host.getByRole('switch',{name:'Safe Mode',exact:true});await toggle.click();
  await page.waitForFunction(()=>!document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));

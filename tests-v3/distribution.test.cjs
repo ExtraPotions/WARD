@@ -60,7 +60,11 @@ test('distribution is reproducible and has ExtraPotions metadata', () => {
   assert.doesNotMatch(changelog, /Amazon Reveal|Dark Pattern Blocker settings/);
   assert.match(source, /function protectLauncherHost/);
   assert.match(source, /setInterval\(ensure, 2000\)/);
-  assert.equal([...source.matchAll(/setInterval\s*\(/g)].length, 1);
+  // Core 3.8.0 adds two header-status refresh intervals (10s), started only while the menu is visible and cleared on every visibility change.
+  assert.equal([...source.matchAll(/setInterval\s*\(/g)].length, 3);
+  assert.equal([...source.matchAll(/setInterval\(ensure, 2000\)/g)].length, 1);
+  assert.equal([...source.matchAll(/clearInterval\(statusTimer\);statusTimer=0;if\(!panel\.hidden\)\{refreshStatus\(\);statusTimer=setInterval\(refreshStatus,10000\);\}/g)].length, 1);
+  assert.equal([...source.matchAll(/refreshStatus\(\);if\(!panel\.hidden\)statusTimer=setInterval\(refreshStatus,10000\);/g)].length, 1);
   const launcher = fs.readFileSync(path.join(root, 'assets', 'ward-launcher.svg'), 'utf8');
   assert.ok(source.includes('https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg'));
   assert.doesNotMatch(launcher, /<rect x="32"|<rect x="42"|id="border"/u);
@@ -108,25 +112,25 @@ test('production menu uses switches and has every required navigation group', as
   });
   assert.equal(result.open, true);
   assert.equal(result.checkboxes, 0);
-  assert.ok([0, result.nav.length - 1].includes(result.switches)); // Sections can only be hidden in older Core menus.
+  assert.equal(result.switches, 1); // Core 3.8.0 tabs have no per-section switches; only the WARD protection switch in the open Protection body.
   assert.equal(result.role, 'dialog');
   assert.equal(result.modal, 'true');
   assert.equal(result.launcherExpanded, 'true');
   assert.equal(result.width, await page.evaluate(() => parseFloat(getComputedStyle(document.getElementById('exp-ward-root')).getPropertyValue('--exp-menu-width'))));
   assert.equal(result.sections, 4);
-  assert.equal(result.visibleBodies, 0);
+  assert.equal(result.visibleBodies, 1); // one section is always open: the first, Protection
   assert.equal(result.noticeOutside, true);
   assert.equal(result.notice.title, 'WARD Changelog');
   assert.equal(result.notice.version, `v${pkg.version}`);
   assert.equal(result.notice.hasList, true);
   assert.ok(result.notice.bullets.length >= 2 && result.notice.bullets.length <= 4, JSON.stringify(result.notice));
   assert.ok(result.notice.bullets.every((item) => item !== 'Current WARD improvements and fixes.'));
-  assert.equal(result.openRoute, undefined);
+  assert.equal(result.openRoute, 'Protection');
   const launcherChrome = await page.locator('#exp-ward-root').evaluate((host) => {
     const root=host.shadowRoot;const launcher=root.querySelector('.ward-launcher');
     return {button:Math.round(launcher.getBoundingClientRect().width),radius:getComputedStyle(launcher).borderRadius,hasRing:Boolean(root.querySelector('.launcher-ring')),icon:Math.round(root.querySelector('.launcher-icon').getBoundingClientRect().width),headerBadge:Math.round(root.querySelector('.header-icon .menu-icon').getBoundingClientRect().width)};
   });
-  assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:await page.locator('#exp-ward-root [data-exp-part="dock"]').evaluate(n=>n.dataset.expMenuLayout==='lean'?40:38)});
+  assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:await page.locator('#exp-ward-root [data-exp-part="dock"]').evaluate(n=>n.dataset.expMenuLayout==='lean'?30:38)});
   for (const label of ['Protection','Appearance','Amazon','System']) assert.ok(result.nav.includes(label));
   assert.equal(result.nav.includes('Settings'), false);
   assert.equal(result.nav.includes('Read'), false);
@@ -140,16 +144,20 @@ test('production menu uses switches and has every required navigation group', as
   assert.equal(changed.coupon, 'true');
   assert.equal(changed.nested.length,5);
   assert.ok(changed.nested.includes('Settings transfer'));assert.ok(changed.nested.includes('Page tools'));
-  await page.locator('#exp-ward-root [data-view="system"]').click();
+  await page.locator('#exp-ward-root [data-exp-section-tab="exp-ward-view-system"]').click();
   assert.deepEqual(await page.locator('#exp-ward-root [data-exp-product-system] [data-exp-system-item]').evaluateAll(nodes=>nodes.map(n=>n.dataset.expSystemItem)),['status','support','reset']);
   assert.equal(await page.locator('#exp-ward-root [data-exp-product-system] [aria-label="Safe Mode"]').count(),0);
-  await page.locator('#exp-ward-root [data-view="tools"]').click();
+  await page.locator('#exp-ward-root [data-exp-section-tab="exp-ward-view-tools"]').click();
   assert.ok(changed.switches > 0);
   const reopened = await page.locator('#exp-ward-root').evaluate((host) => {
     const root=host.shadowRoot;root.querySelector('.ward-launcher').click();root.querySelector('.ward-launcher').click();
     return {visibleBodies:[...root.querySelectorAll('.route-body')].filter((body)=>!body.hidden).length,marker:root.querySelector('.route.last-opened')?.textContent};
   });
   assert.deepEqual(reopened,{visibleBodies:0,marker:'Amazon▸'});
+  // Core 3.8.0: after reopening, the remembered tab (Amazon) is selected and exactly one body is open.
+  await page.waitForFunction(() => { const r = document.getElementById('exp-ward-root').shadowRoot; return [...r.querySelectorAll('.route-body')].filter((b) => !b.hidden).length === 1; });
+  assert.equal(await page.locator('#exp-ward-root [data-exp-section-tab="exp-ward-view-tools"]').getAttribute('aria-selected'), 'true');
+  assert.equal(await page.locator('#exp-ward-root [data-exp-section-tab][aria-selected="true"]').count(), 1);
 });
 
 test('version action reuses the update-complete card for the current changelog', async (t) => {

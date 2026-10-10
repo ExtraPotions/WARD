@@ -249,7 +249,7 @@ test('Amazon mutation batches keep open menu controls clickable', async (t) => {
   await page.waitForSelector('#exp-ward-root', { state: 'attached' });
   const host = page.locator('#exp-ward-root');
   await host.locator('.ward-launcher').click();
-  await host.locator('.route[data-view="page"]').click();
+  await host.locator('[data-exp-section-tab="exp-ward-view-page"]').click();
   const protection = host.locator('[role="switch"][aria-label="WARD protection"]');
   await protection.evaluate((node) => { node.dataset.expProbe = '1'; });
   await page.evaluate(async () => {
