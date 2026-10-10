@@ -576,7 +576,7 @@ EXP.UI = (() => {
   }
   function systemView() {
     healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify,{layout:'grouped'});
-    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,timeline:healthControl.element,layout:'grouped',
+    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,issueSettings:()=>({current:EXP.Settings.snapshot(),defaults:EXP.Settings.defaults}),timeline:healthControl.element,layout:'grouped',
       diagnostics:EXP.Diagnostics.createDiagnosticsControls(()=>EXP.Diagnostics.createDiagnosticsReport('WARD',{host,product:{id:'ward',version:EXP.VERSION},settings:EXP.Settings.diagnosticSnapshot(),...EXP.Engine.diagnostics()}),notify),
       onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
     });
