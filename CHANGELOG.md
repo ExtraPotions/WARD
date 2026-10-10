@@ -1,3 +1,8 @@
+## 3.4.19 - 2026-10-10
+
+- Redesigned menu with tabs and a cleaner look.
+- Shows a live status line in the menu header.
+
 ## 3.4.18 - 2026-10-10
 
 - Report a Problem fills in the GitHub issue with a short summary and copies the full diagnostics.

@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.18';
+EXP.VERSION = '3.4.19';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.19': ["Redesigned menu with tabs and a cleaner look.","Shows a live status line in the menu header."],
     '3.4.18': ["Report a Problem fills in the GitHub issue with a short summary and copies the full diagnostics.","Removes the menu footer."],
     '3.4.17': ["Shares what it hides and collapses with the other ExtraPotions tools, so PRISMA leaves that content alone.","Includes the faster shared ExtraPotions core."],
     '3.4.16': ["Captures README screenshots with the shared ExtraPotions tool.","Keeps the README screenshot list in step with the README."],

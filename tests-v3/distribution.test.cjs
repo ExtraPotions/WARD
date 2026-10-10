@@ -60,11 +60,12 @@ test('distribution is reproducible and has ExtraPotions metadata', () => {
   assert.doesNotMatch(changelog, /Amazon Reveal|Dark Pattern Blocker settings/);
   assert.match(source, /function protectLauncherHost/);
   assert.match(source, /setInterval\(ensure, 2000\)/);
-  // Core 3.8.0 adds two header-status refresh intervals (10s), started only while the menu is visible and cleared on every visibility change.
+  // Core 3.8.0 adds two header-status refresh intervals (10s), started only while the menu is on screen and cleared when it leaves the screen.
   assert.equal([...source.matchAll(/setInterval\s*\(/g)].length, 3);
   assert.equal([...source.matchAll(/setInterval\(ensure, 2000\)/g)].length, 1);
-  assert.equal([...source.matchAll(/clearInterval\(statusTimer\);statusTimer=0;if\(!panel\.hidden\)\{refreshStatus\(\);statusTimer=setInterval\(refreshStatus,10000\);\}/g)].length, 1);
-  assert.equal([...source.matchAll(/refreshStatus\(\);if\(!panel\.hidden\)statusTimer=setInterval\(refreshStatus,10000\);/g)].length, 1);
+  assert.equal([...source.matchAll(/const shown=\(\)=>!panel\.hidden&&panel\.getClientRects\(\)\.length>0;/g)].length, 1);
+  assert.equal([...source.matchAll(/clearInterval\(statusTimer\);statusTimer=0;\s*if\(now\)\{refreshStatus\(\);statusTimer=setInterval\(refreshStatus,10000\);\}/g)].length, 1);
+  assert.equal([...source.matchAll(/refreshStatus\(\);if\(statusShown\)statusTimer=setInterval\(refreshStatus,10000\);/g)].length, 1);
   const launcher = fs.readFileSync(path.join(root, 'assets', 'ward-launcher.svg'), 'utf8');
   assert.ok(source.includes('https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg'));
   assert.doesNotMatch(launcher, /<rect x="32"|<rect x="42"|id="border"/u);
