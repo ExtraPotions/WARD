@@ -13,8 +13,10 @@ if (metadataVersion !== pkg.version) throw new Error(`Metadata version ${metadat
 for (const marker of ['@name         WARD','@grant        GM_getValue','@connect      api.github.com','exp:v3:ward']) if (!script.includes(marker)) throw new Error(`Missing distribution marker: ${marker}`);
 if (/data:image\//u.test(script)) throw new Error('Images must be referenced by URL instead of embedded data.');
 if (/^\/\/ @require\s+/m.test(script)) throw new Error('Remote executable JavaScript dependency detected.');
+// Core 3.8.0 adds two header-status refresh intervals that run only while the menu is on screen.
 const intervalCount = [...readable.matchAll(/setInterval\s*\(/g)].length;
-if (intervalCount !== 1 || !readable.includes('setInterval(ensure, 2000)') || !readable.includes('autoClipCoupons: true')) throw new Error('Expected one bounded launcher host protection interval.');
+const statusIntervals = [...readable.matchAll(/statusTimer\s*=\s*setInterval\(refreshStatus\s*,\s*10000\)/g)].length;
+if (intervalCount - statusIntervals !== 1 || statusIntervals !== 2 || !readable.includes('setInterval(ensure, 2000)') || !readable.includes('autoClipCoupons: true')) throw new Error('Expected one bounded launcher host protection interval.');
 execFileSync(process.execPath, [path.join(root, 'scripts', 'build.cjs'), '--check'], { stdio: 'inherit' });
 const tests = fs.readdirSync(path.join(root, 'tests-v3')).filter((name) => name.endsWith('.test.cjs')).map((name) => path.join(root, 'tests-v3', name));
 execFileSync(process.execPath, ['--test', ...tests], { stdio: 'inherit' });
