@@ -67,7 +67,9 @@ test('live Amazon AdHolder results and sponsored brand cards respect hide, dim a
     const organic=document.getElementById('organic-result');
     const organicUntouched=!organic.hidden&&!organic.hasAttribute('data-ward-action');
     EXP.Settings.update({contentAction:'dim'});EXP.Engine.rebuild();
-    await new Promise(resolve=>setTimeout(resolve,160));
+    // The dim fades in over 120 ms; wait for it to settle rather than for a fixed time.
+    const settled=()=>ids.every(id=>getComputedStyle(document.getElementById(id)).opacity==='0.58');
+    for(const started=performance.now();!settled()&&performance.now()-started<2000;)await new Promise(resolve=>setTimeout(resolve,20));
     const dimmed=ids.map(id=>{const n=document.getElementById(id);return {hidden:n.hidden,action:n.dataset.wardAction,opacity:getComputedStyle(n).opacity};});
     EXP.Engine.stop();
     return {hidden,organicUntouched,dimmed,restored:ids.every(id=>!document.getElementById(id).hidden&&!document.getElementById(id).hasAttribute('data-ward-action'))};
