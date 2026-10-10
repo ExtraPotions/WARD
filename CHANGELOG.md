@@ -1,3 +1,8 @@
+## 3.4.17 - 2026-10-10
+
+- Shares what it hides and collapses with the other ExtraPotions tools, so PRISMA leaves that content alone.
+- Includes the faster shared ExtraPotions core.
+
 ## 3.4.16 - 2026-10-09 (quiet)
 
 - Captures README screenshots with the shared ExtraPotions tool.

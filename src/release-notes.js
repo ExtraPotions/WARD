@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.16';
+EXP.VERSION = '3.4.17';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.17': ["Shares what it hides and collapses with the other ExtraPotions tools, so PRISMA leaves that content alone.","Includes the faster shared ExtraPotions core."],
     '3.4.16': ["Captures README screenshots with the shared ExtraPotions tool.","Keeps the README screenshot list in step with the README."],
     '3.4.15': ["Shows a badge on the launcher when an update is ready.","Checks for updates by default on new installs, at most every 12 hours."],
     '3.4.14': ["Shortens the README to a quick overview of what WARD does.","Replaces the README screenshots with current captures of the menu."],
