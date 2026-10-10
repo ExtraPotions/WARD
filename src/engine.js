@@ -149,7 +149,7 @@ EXP.Engine = (() => {
     const records = EXP.Actions.snapshot();
     const counts = { hide: 0, dim: 0, collapse: 0, annotate: 0 };
     for (const record of records) if (Object.hasOwn(counts, record.action)) counts[record.action] += 1;
-    globalThis.ExtraPotionsCore?.publishSuiteState?.('ward', 'ward.state-changed', {
+    ExtraPotionsCore.publishSuiteState('ward', 'ward.state-changed', {
       active: Boolean(active),
       pageType: String(pageType || 'unknown'),
       interventions: records.length,
