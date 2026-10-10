@@ -1,3 +1,8 @@
+## 3.4.18 - 2026-10-10
+
+- Report a Problem fills in the GitHub issue with a short summary and copies the full diagnostics.
+- Removes the menu footer.
+
 ## 3.4.17 - 2026-10-10
 
 - Shares what it hides and collapses with the other ExtraPotions tools, so PRISMA leaves that content alone.
