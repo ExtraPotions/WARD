@@ -10,10 +10,11 @@
     "build:check": "node scripts/build.cjs --check",
     "screenshots": "node ../exp-core/scripts/capture-screenshots.cjs WARD",
     "test:fallback": "node scripts/fallback-check.cjs",
-    "test": "node scripts/build.cjs && node --test tests-v3/*.test.cjs",
+    "test": "node scripts/build.cjs && node scripts/run-tests.cjs",
     "release:check": "node scripts/release-check.cjs",
     "prepare:release:feature": "node scripts/prepare-feature-release.cjs && npm run build",
-    "test:installed-browser": "node scripts/test-installed-browser.cjs"
+    "test:installed-browser": "node scripts/test-installed-browser.cjs",
+    "verify:release": "npm run build && npm run release:check"
   },
   "devDependencies": {
     "playwright": "1.63.0",

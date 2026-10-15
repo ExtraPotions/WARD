@@ -1,10 +1,20 @@
 name: Verify userscript
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      release:
+        type: boolean
+        default: false
+
 permissions:
   contents: read
 
 jobs:
   browser:
+    if: inputs.release || github.event_name != 'push' || !(startsWith(github.ref, 'refs/tags/') || startsWith(github.event.head_commit.message, 'Release WARD '))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -13,9 +23,41 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+        if: '!inputs.release'
       - name: Check Core rollout preparer
+        if: '!inputs.release'
         run: node --check scripts/prepare-core-release.cjs
       - run: npx playwright install --with-deps chromium
+        if: '!inputs.release'
       - run: npm test
+        if: '!inputs.release'
       - name: Verify pinned exp-core
+        if: '!inputs.release'
         run: node scripts/verify-exp-core-pin.cjs
+      - name: Verify release once
+        if: inputs.release
+        run: |
+          set -euo pipefail
+          npm ci
+          node --check scripts/prepare-core-release.cjs
+          npx playwright install --with-deps chromium
+          npm run verify:release
+          node --check ward.user.js
+          git diff --exit-code -- ward.user.js vendor/exp-core/exp-core.js vendor/exp-core/manifest.json
+          version="$(node -p "require('./package.json').version")"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then test "$GITHUB_REF_NAME" = "v$version"; fi
+          test "$(sed -n 's|^// @version[[:space:]]*||p' ward.user.js)" = "$version"
+          mkdir .verified-release
+          cp ward.user.js .verified-release/
+          cp assets/ward-launcher.svg .verified-release/
+          printf '%s\n' "$GITHUB_SHA" > .verified-release/commit.txt
+          (cd .verified-release && sha256sum ward.user.js ward-launcher.svg > SHA256SUMS)
+      - name: Retain verified release
+        if: inputs.release
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: verified-release-${{ github.sha }}
+          include-hidden-files: true
+          path: .verified-release/
+          if-no-files-found: error
+          retention-days: 7

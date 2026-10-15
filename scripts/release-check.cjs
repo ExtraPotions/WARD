@@ -18,6 +18,5 @@ const intervalCount = [...readable.matchAll(/setInterval\s*\(/g)].length;
 const statusIntervals = [...readable.matchAll(/statusTimer\s*=\s*setInterval\(refreshStatus\s*,\s*10000\)/g)].length;
 if (intervalCount - statusIntervals !== 1 || statusIntervals !== 2 || !readable.includes('setInterval(ensure, 2000)') || !readable.includes('autoClipCoupons: true')) throw new Error('Expected one bounded launcher host protection interval.');
 execFileSync(process.execPath, [path.join(root, 'scripts', 'build.cjs'), '--check'], { stdio: 'inherit' });
-const tests = fs.readdirSync(path.join(root, 'tests-v3')).filter((name) => name.endsWith('.test.cjs')).map((name) => path.join(root, 'tests-v3', name));
-execFileSync(process.execPath, ['--test', ...tests], { stdio: 'inherit' });
+execFileSync(process.execPath, [path.join(__dirname, 'run-tests.cjs')], { stdio: 'inherit' });
 console.log('Release check passed locally. No remote action was performed.');
