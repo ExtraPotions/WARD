@@ -1,0 +1,23 @@
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const { execFileSync } = require('node:child_process');
+const root = path.resolve(__dirname, '..');
+execFileSync(process.execPath, [path.join(root, 'scripts', 'verify-exp-core-pin.cjs')], { stdio: 'inherit' });
+const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const readable = require('./build.cjs').assembleSource().readable;
+const script = fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8');
+for (const asset of ['ward-launcher.svg']) if (!fs.existsSync(path.join(root, 'assets', asset))) throw new Error(`Missing WARD asset: ${asset}`);
+const metadataVersion = script.match(/^\/\/ @version\s+(.+)$/m)?.[1].trim();
+if (metadataVersion !== pkg.version) throw new Error(`Metadata version ${metadataVersion} does not match package ${pkg.version}.`);
+for (const marker of ['@name         WARD','@grant        GM_getValue','@connect      api.github.com','exp:v3:ward']) if (!script.includes(marker)) throw new Error(`Missing distribution marker: ${marker}`);
+if (/data:image\//u.test(script)) throw new Error('Images must be referenced by URL instead of embedded data.');
+if (/^\/\/ @require\s+/m.test(script)) throw new Error('Remote executable JavaScript dependency detected.');
+// Core 3.8.0 adds two header-status refresh intervals that run only while the menu is on screen.
+const intervalCount = [...readable.matchAll(/setInterval\s*\(/g)].length;
+const statusIntervals = [...readable.matchAll(/statusTimer\s*=\s*setInterval\(refreshStatus\s*,\s*10000\)/g)].length;
+if (intervalCount - statusIntervals !== 1 || statusIntervals !== 2 || !readable.includes('setInterval(ensure, 2000)') || !readable.includes('autoClipCoupons: true')) throw new Error('Expected one bounded launcher host protection interval.');
+execFileSync(process.execPath, [path.join(root, 'scripts', 'build.cjs'), '--check'], { stdio: 'inherit' });
+const tests = fs.readdirSync(path.join(root, 'tests-v3')).filter((name) => name.endsWith('.test.cjs')).map((name) => path.join(root, 'tests-v3', name));
+execFileSync(process.execPath, ['--test', ...tests], { stdio: 'inherit' });
+console.log('Release check passed locally. No remote action was performed.');

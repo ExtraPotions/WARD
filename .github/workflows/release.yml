@@ -1,0 +1,77 @@
+name: Publish release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/') || startsWith(github.event.head_commit.message, 'Release WARD ')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Resolve release tag
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            version="$(node -p "require('./package.json').version")"
+            tag="v$version"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Build and validate release
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          npm run build
+          npm run release:check
+          node --check ward.user.js
+          grep -q "^// @version[[:space:]]*$version$" ward.user.js
+      - name: Commit verified generated artifacts
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            git diff --exit-code -- ward.user.js vendor/exp-core/exp-core.js vendor/exp-core/manifest.json
+          else
+            git add ward.user.js vendor/exp-core/exp-core.js vendor/exp-core/manifest.json
+            if ! git diff --cached --quiet; then
+              git config user.name 'expDARE'
+              git config user.email '5340947+ExtraPotions@users.noreply.github.com'
+              git commit -m "Build verified WARD ${{ steps.release.outputs.tag }} release artifacts"
+              git push origin HEAD:main
+            fi
+          fi
+      - name: Publish assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then exit 0; fi
+          awk '
+            /^## / { section += 1; if (section > 1) exit }
+            { print }
+          ' CHANGELOG.md > release-notes.md
+          sha256sum ward.user.js > SHA256SUMS
+          (cd assets && sha256sum ward-launcher.svg) >> SHA256SUMS
+          gh release create "$TAG" ward.user.js assets/ward-launcher.svg SHA256SUMS \
+            --target "$(git rev-parse HEAD)" --title "WARD $TAG" --notes-file release-notes.md
