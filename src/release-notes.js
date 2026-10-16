@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.32';
+EXP.VERSION = '3.4.33';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.33': ["Uses less memory before the menu is first opened, with shared foundation exp-core 3.9.5.","Leaves saved page paths and private settings out of diagnostics.","Starts protection when re-enabled after loading paused and restores recycled results when their detection evidence disappears."],
     '3.4.32': ["Maintenance release; product features and settings are unchanged.","Includes the current shared foundation."],
     '3.4.31': ["Restores the signup popup scroll lock when protection is paused during an Attentive fade.","Keeps the popup and page scrolling in sync when protection resumes."],
     '3.4.30': ["Puts a sign-up pop-up's scroll lock back when WARD is paused or gives the pop-up back, even while the pop-up is fading.","Keeps product updates reliable right after a new shared foundation is published."],
