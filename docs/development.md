@@ -26,14 +26,14 @@ WARD's tests live in `tests-v3/`, not `tests/`.
 
 ## Things the checks hold fixed
 
-- The release check counts `setInterval` calls in the readable build. It allows the launcher host protection interval and the two status refresh timers, and nothing else. A new interval fails the release in CI, so run `release:check` locally after any timer change.
+- The release check counts `setInterval` calls in the readable build. It allows the launcher host protection interval and the two status refresh timers, and nothing else. Run this optional check when reviewing timer changes.
 - The install stays between 100 and 425 KB.
 - README screenshots (`protection.png`, `amazon.png`) match `docs/screenshots.config.cjs`.
 
-## Single local release gate
+## Manual checks and publication
 
-Run `npm run verify:release` once. It builds and runs all release checks, including the full suite and published Core pin check. Do not run `npm test` separately first. Windows test entry points limit concurrency to two files; CI keeps its normal concurrency.
+Build the changed product and choose relevant manual tests. `release:check` and `verify:release` remain optional diagnostics, including their legacy published Core-pin checks; neither is a publication prerequisite. Windows test runners use concurrency two.
 
-Publishing calls the reusable Verify workflow and reuses its checked artifact for the exact commit. Commit generated files before requesting a release; CI rejects build drift rather than committing or rebasing during publication. The publisher checks the stored commit and SHA256 checksums and does not rebuild.
+Both GitHub workflows are manual: Manual tests runs the suite; Publish release uploads the selected commit's existing built assets and SHA256SUMS without rebuilding or testing. Commit generated files before an authorized publication. Publishing requires an explicit user request; commits, pushes and tag pushes do not start it. Existing releases are not overwritten.
 
-Claude, Codex and Antigravity should follow this gate and acknowledge the applicable workflow rules in their next handoff. The workspace AGENTS.md contains the shared routing; completed history belongs in HANDOFF.md, with TASK.md limited to the current assignment.
+Core synchronization is deliberate local work. There is no scheduled sync, automatic product release, pin wait or release-order gate. See the suite guide's Shipping section. Claim and handoff rules remain in workspace AGENTS.md.

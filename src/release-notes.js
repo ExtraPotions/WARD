@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.31';
+EXP.VERSION = '3.4.32';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.32': ["Maintenance release; product features and settings are unchanged.","Includes the current shared foundation."],
     '3.4.31': ["Restores the signup popup scroll lock when protection is paused during an Attentive fade.","Keeps the popup and page scrolling in sync when protection resumes."],
     '3.4.30': ["Puts a sign-up pop-up's scroll lock back when WARD is paused or gives the pop-up back, even while the pop-up is fading.","Keeps product updates reliable right after a new shared foundation is published."],
     '3.4.29': ["Hides store sign-up pop-ups without changing the store's own page styles, taking back only the sign-up provider's exact scroll lock.","Puts the pop-up's scroll lock back when you switch from Hide to Dim, and forgets it once the provider closes its pop-up.","Updates the shared foundation to exp-core 3.9.3."],
@@ -135,7 +136,7 @@ EXP.ReleaseNotes = (() => {
     ])
   });
   function current() { return notes[EXP.VERSION] || Object.freeze(['Current WARD improvements and fixes.']); }
-  const QUIET_RELEASES = Object.freeze(["3.4.16"]);
+  const QUIET_RELEASES = Object.freeze(["3.4.32","3.4.16"]);
   function isQuietUpgrade(previous) { return ExtraPotionsCore.isQuietUpgrade(previous, EXP.VERSION, Object.keys(notes), QUIET_RELEASES); }
   return Object.freeze({ current, isQuietUpgrade, QUIET_RELEASES });
 })();

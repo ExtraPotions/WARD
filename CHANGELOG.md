@@ -1,3 +1,8 @@
+## 3.4.32 - 2026-10-16 (quiet)
+
+- Maintenance release; product features and settings are unchanged.
+- Includes the current shared foundation.
+
 ## 3.4.31 - 2026-10-15
 
 - Restores the signup popup scroll lock when protection is paused during an Attentive fade.
