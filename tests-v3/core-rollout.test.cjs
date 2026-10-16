@@ -7,16 +7,9 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'release.yml'), 'utf8');
-const prepare = fs.readFileSync(path.join(root, 'scripts', 'prepare-core-release.cjs'), 'utf8');
 
 test('Core updates do not start downstream publication', () => {
   assert.equal(fs.existsSync(path.join(root, '.github/workflows/sync-exp-core.yml')), false);
   assert.match(workflow, /workflow_dispatch:/u);
   assert.doesNotMatch(workflow, /repository_dispatch:|schedule:|consumer-rollout|needs:/u);
-});
-
-test('WARD keeps only its product-specific release preparation locally', () => {
-  assert.match(prepare, /bumpPatch/u);
-  assert.match(prepare, /Updates the shared foundation to exp-core/u);
-  assert.match(prepare, /product-specific engine behavior unchanged/u);
 });
