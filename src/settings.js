@@ -95,9 +95,9 @@ EXP.Settings = (() => {
     return snapshot();
   }
   function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
-  function diagnosticSnapshot() {
-    const { trustedBrands, ...settings } = snapshot();
-    return { ...settings, trustedBrandCount: trustedBrands.length };
+  function diagnosticSnapshot(value = snapshot()) {
+    const { trustedBrands, pageExceptions, ...settings } = value;
+    return { ...settings, trustedBrandCount: trustedBrands.length, pageExceptionCount: pageExceptions.length };
   }
   function replace(value, reason = 'replace') { if(ExtraPotionsCore.productDataResetting?.('ward'))return snapshot(); const next=validate(value);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
