@@ -14,7 +14,12 @@ EXP.App = (() => {
       { source:'ward' }
     );
     navigationCleanup = EXP.Core.onNavigation(() => EXP.Engine.navigation());
-    settingsCleanup = EXP.Settings.subscribe(() => EXP.Engine.rebuild());
+    settingsCleanup = EXP.Settings.subscribe(() => {
+      if (lifecycle?.state === 'enabled' && !ExtraPotionsCore.suiteSitePaused() && EXP.Retailer.enabled(EXP.Settings.snapshot()) && !EXP.Engine.active) {
+        EXP.Engine.start();
+        scheduler.start();
+      } else EXP.Engine.rebuild();
+    });
     try { EXP.UI.init(); } catch (error) { error.code = error.code || 'UI_INIT_FAILED'; throw error; }
   }
 

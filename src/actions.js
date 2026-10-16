@@ -321,6 +321,12 @@ EXP.Actions = (() => {
     for (const id of [...records.keys()]) restore(id);
   }
 
+  function reconcile(roots, detected) {
+    for (const [id, record] of records) {
+      if (!detected.has(record.node) && roots.some(root => root === record.node || root.contains?.(record.node))) restore(id);
+    }
+  }
+
   function cleanup() {
     restoreAll();
     style?.remove();
@@ -356,5 +362,5 @@ EXP.Actions = (() => {
     }
   }
 
-  return Object.freeze({ apply, reveal, endReveal, restore, restoreNode, restoreAll, cleanup, snapshot, prune });
+  return Object.freeze({ apply, reveal, endReveal, restore, restoreNode, restoreAll, reconcile, cleanup, snapshot, prune });
 })();

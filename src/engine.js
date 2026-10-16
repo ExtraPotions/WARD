@@ -173,6 +173,7 @@ EXP.Engine = (() => {
   }
   function processBatchUnprotected(roots = [document]) {
     if (!active) return;
+    roots = [...new Set(roots.map(root => root.closest?.('[data-ward-instance]') || root))];
     const settings = EXP.Settings.snapshot();
     if (!EXP.Retailer.enabled(settings) || settings.safeMode) { EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
     const pageType = EXP.Retailer.classify();
@@ -207,8 +208,10 @@ EXP.Engine = (() => {
           structuralReason: evidence.structuralReason
         });
         processEvidence(evidence, settings);
+        seenNodes.add(node);
       }
     }
+    EXP.Actions.reconcile(roots, seenNodes);
     try { EXP.SellerClarity?.process(roots, settings, pageType); } catch (error) { EXP.Core.safeError(Object.assign(error, { code: 'SELLER_CLARITY' }), 'ward.seller-clarity'); }
     processCoupons(roots, settings);
     EXP.Actions.prune();
