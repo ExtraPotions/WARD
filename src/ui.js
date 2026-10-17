@@ -675,6 +675,8 @@ EXP.UI = (() => {
 
   function restack() {
     if (!host || host.parentNode !== document.documentElement || !host.nextSibling) return;
+    // Moving a popover closes it; Core owns the top-layer order.
+    if (host.hasAttribute('popover')) return;
     if (shadow?.activeElement) return;
     document.documentElement.append(host);
   }
