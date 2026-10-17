@@ -1,3 +1,8 @@
+## 3.4.35 - 2026-10-17
+
+- Keeps its launcher tile reachable when the shared flyout opens.
+- Preserves shared launcher layering during repeated page scans.
+
 ## 3.4.34 - 2026-10-17
 
 - Keeps native dropdown options readable with matching menu colors.
