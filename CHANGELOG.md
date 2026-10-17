@@ -1,3 +1,8 @@
+## 3.4.34 - 2026-10-17
+
+- Keeps native dropdown options readable with matching menu colors.
+- Includes Core 3.9.6 to avoid parsing duplicate injected menu styles.
+
 ## 3.4.33 - 2026-10-16
 
 - Uses less memory before the menu is first opened, with shared foundation exp-core 3.9.5.
