@@ -1,5 +1,6 @@
 EXP.UI = (() => {
   let healthControl;
+  let pageActions;
   function systemHealthSnapshot() {
     const settings=EXP.Settings.snapshot(),data=EXP.Engine.diagnostics(),checkedAt=Date.now();
     if(settings.safeMode||settings.enabled===false||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
@@ -138,8 +139,7 @@ EXP.UI = (() => {
   function row(label, _help, control) {
     const line = el('div','row');
     const copy = el('div','row-copy');
-    copy.append(el('strong','',label));
-    if (_help) copy.append(el('small','row-help',_help));
+    const title=el('strong','',label);ExtraPotionsCore.setMenuHelp(title,_help);copy.append(title);
     line.append(copy, control);
     return line;
   }
@@ -319,24 +319,20 @@ EXP.UI = (() => {
     setTimeout(() => syncActivityCount(container),0);
   }
 
-  // Core builds the Activity submenu row after the menu renders, so the count
-  // is placed on that row once it exists rather than inside the panel.
+  // Keep the protection count visible while its inline details are closed.
   function syncActivityCount(summary) {
-    const panel = summary.closest('.exp-submenu-tabpanel');
-    const button = panel && summary.getRootNode().querySelector(`.exp-submenu-row[aria-controls="${panel.id}"]`);
+    const button = summary.closest('details')?.querySelector(':scope > summary');
     if (!button) return;
     let count = button.querySelector('[data-ward-activity-count]');
     const text = summary.dataset.wardActivityText || '';
-    if (!text) { count?.previousSibling?.remove(); count?.remove(); button.style.removeProperty('grid-template-columns'); return; }
+    if (!text) { count?.remove(); return; }
     if (!count) {
-      // Core replaces product stylesheets, so this row's layout is set inline.
       count = el('span');
       count.dataset.wardActivityCount = '1';
-      count.style.cssText = 'padding:3px 7px;border:1px solid var(--theme-line);border-radius:6px;color:var(--theme-text);font:500 var(--exp-font-size-small,12px)/1.2 "Segoe UI",system-ui,sans-serif;white-space:nowrap';
-      button.style.gridTemplateColumns = 'minmax(0,1fr) auto 14px';
-      button.firstElementChild.after(' ',count);
+      count.style.cssText = 'display:inline-block;margin-left:4px;padding:2px 4px;border:1px solid var(--theme-line);border-radius:4px;color:var(--theme-text);font:500 11px/1.2 "Segoe UI",system-ui,sans-serif;white-space:nowrap';
+      button.append(count);
     }
-    count.textContent = text;
+    count.textContent = ' '+text;
   }
 
   function couponStateLabel(coupon) {
@@ -596,7 +592,7 @@ EXP.UI = (() => {
     return data;
   }
   function menuPreferences(settings) {
-    const preferences = ExtraPotionsCore.createDisclosure('Menu Preferences');
+    const preferences = document.createElement('div');
     preferences.append(ExtraPotionsCore.createMenuSizeControls());
     for (const [key,label] of [['menuAutoClose','Auto-close menu'],['updateNotifications','Update notifications']]) {
       preferences.append(row(label,'',switchControl(settings[key],label,value=>{
@@ -607,7 +603,7 @@ EXP.UI = (() => {
     return preferences;
   }
   function systemView() {
-    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify,{layout:'grouped'});
+    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify,{layout:'grouped',showActivity:false});
     return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,issueSettings:()=>({current:EXP.Settings.diagnosticSnapshot(),defaults:EXP.Settings.diagnosticSnapshot(EXP.Settings.defaults)}),timeline:healthControl.element,layout:'grouped',
       diagnostics:EXP.Diagnostics.createDiagnosticsControls(()=>EXP.Diagnostics.createDiagnosticsReport('WARD',{host,product:{id:'ward',version:EXP.VERSION},settings:EXP.Settings.diagnosticSnapshot(),...EXP.Engine.diagnostics()}),notify),
       onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
@@ -638,7 +634,7 @@ EXP.UI = (() => {
     applyUiTheme('ward');
     host.dataset.expNonColor = settings.nonColorIndicators ? '1' : '0';
 
-    for (const button of nav.querySelectorAll(':scope > .tool-panel > .route')) {
+    for (const button of nav.querySelectorAll('.tool-panel > .route')) {
       const active = button.dataset.view === activeView;
       const body = button.parentElement.querySelector('.route-body');
 
@@ -664,6 +660,7 @@ EXP.UI = (() => {
   }
 
   function refreshActivity() {
+    pageActions?.refresh();
     healthControl?.refresh();
     if (!shell?.classList.contains('open') || !content) return;
     renderActivitySummary(content.querySelector('[data-exp-activity-summary]'));
@@ -682,6 +679,7 @@ EXP.UI = (() => {
   }
 
   function refresh() {
+    pageActions?.refresh();
     if (shell?.classList.contains('open')) renderView();
   }
 
@@ -802,11 +800,12 @@ EXP.UI = (() => {
       setOpen,
       shortcutKey:'w'
     });
+    pageActions=ExtraPotionsCore.createPageActions({host,shadow,label:'WARD',visible:()=>{const state=EXP.Settings.snapshot();return state.enabled&&!state.safeMode&&!ExtraPotionsCore.suiteSitePaused()&&EXP.Actions.snapshot().length>0;},actions:[{label:'Reveal this page',run:()=>{for(const item of EXP.Actions.snapshot())EXP.Actions.reveal(item.id);refreshActivity();}},{label:'Reapply protection',run:()=>{for(const item of EXP.Actions.snapshot())EXP.Actions.endReveal(item.id);refreshActivity();}}]});
     noticeController = ExtraPotionsCore.createProductNotice({
       host,
       shadow,
       panel:shell,
-      durationMs:30000,
+      durationMs:30000,returnFocus:shell.querySelector('.version'),
       releaseUrl:EXP.Updates.RELEASE_URL,
       installUrl:EXP.Updates.INSTALL_URL
     });
@@ -855,6 +854,7 @@ EXP.UI = (() => {
   }
 
   function cleanup() {healthControl?.dispose();
+    pageActions?.destroy();pageActions=null;
     noticeController?.destroy();
     launcherCleanup?.();
     chrome?.destroy();

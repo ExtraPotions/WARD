@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.35';
+EXP.VERSION = '3.4.36';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.36': ["Uses a compact sidebar with inline settings, bounded help and three menu sizes.","Keeps diagnostics buttons readable and removes the activity list that repeated Status."],
     '3.4.35': ["Keeps its launcher tile reachable when the shared flyout opens.","Preserves shared launcher layering during repeated page scans."],
     '3.4.34': ["Keeps native dropdown options readable with matching menu colors.","Includes Core 3.9.6 to avoid parsing duplicate injected menu styles."],
     '3.4.33': ["Uses less memory before the menu is first opened, with shared foundation exp-core 3.9.5.","Leaves saved page paths and private settings out of diagnostics.","Starts protection when re-enabled after loading paused and restores recycled results when their detection evidence disappears."],

@@ -25,11 +25,11 @@ test('Amazon keeps everyday switches up front and moves seller clarity and cover
   await host.locator('[data-exp-part="launcher"]').click();
   await host.locator('[data-exp-section-tabs] [role=tab][aria-label="Amazon"]').click();
   const tools = host.locator('#exp-ward-view-tools');
-  assert.deepEqual(await tools.locator('.exp-submenu-row').allTextContents(), ['Seller clarity','Coverage','Retailers','Patterns','Tools']);
+  assert.deepEqual(await tools.locator(':scope > details > summary').allTextContents(), ['Coverage','Seller clarity','Retailer modules','Advanced Amazon','Settings transfer','Page tools']);
   assert.equal(await host.getByRole('switch', { name:'Protect Amazon', exact:true }).isVisible(), true);
   assert.equal(await host.getByRole('switch', { name:'Seller notes', exact:true }).isVisible(), false);
   assert.equal(await host.getByText('Coverage applies to recognized page patterns', { exact:false }).isVisible(), false);
-  await tools.locator('.exp-submenu-row').filter({ hasText:/^Seller clarity$/ }).click();
+  await tools.locator('summary').filter({ hasText:/^Seller clarity$/ }).click();
   assert.equal(await host.getByRole('switch', { name:'Seller notes', exact:true }).isVisible(), true);
-  assert.equal(await host.getByText('Labels generated-style brand names in search results.', { exact:true }).isVisible(), true);
+  const label=host.locator('.row-copy strong').filter({hasText:/^Seller notes$/});assert.equal(await label.getAttribute('aria-description'),'Notes on product pages when brand, seller or ratings deserve a second look.');await label.focus();assert.equal(await host.getByRole('tooltip').isVisible(),true);
 });

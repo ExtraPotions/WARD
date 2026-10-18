@@ -216,7 +216,7 @@ for (const [property, invisible, visible] of [['opacity', '0', '1'], ['visibilit
   assert.equal(await action(tab, 'attentive_overlay'), null);
   await tab.evaluate(([property, value]) => { document.getElementById('attentive_creative').style[property] = value; }, [property, visible]);
   await tab.evaluate(() => __ward.App.lifecycle.enable());
-  await tab.waitForFunction(() => document.getElementById('attentive_overlay').dataset.wardAction === 'hide' && document.body.style.overflow === '');
+  await tab.waitForFunction(() => document.getElementById('attentive_overlay').dataset.wardAction === 'hide' && [document.body,document.documentElement].every(node=>!/hidden|clip/.test(getComputedStyle(node).overflowY)));
   assert.equal(await scrolls(tab), true);
 });
 
@@ -302,9 +302,9 @@ test('the store tab is named Shopify store, lists the new patterns, and its swit
   await storeTab.evaluate((node) => node.click());
   const storeSwitch = host.locator('button[role="switch"][aria-label="Protect Shopify store"]').first();
   assert.equal(await storeSwitch.getAttribute('aria-checked'), 'true');
-  await host.locator('.exp-submenu-row:visible').filter({ hasText: /^Patterns/ }).first().evaluate((node) => node.click());
+  await host.locator('summary:visible').filter({ hasText: /^Advanced Shopify/ }).first().evaluate((node) => node.click());
   await host.locator('button:visible').filter({ hasText: /^Customize$/ }).first().evaluate((node) => node.click());
-  assert.deepEqual(await host.locator('.row-copy strong:visible').allTextContents(), ['Individual patterns', 'Email sign-up pop-ups', 'Announcement bars', 'Urgency messages', 'Scarcity messages', 'Cross-sell recommendations', 'Popularity claims']);
+  assert.deepEqual(await host.locator('.row-copy strong:visible').allTextContents(), ['Protect Shopify store', 'Individual patterns', 'Email sign-up pop-ups', 'Announcement bars', 'Urgency messages', 'Scarcity messages', 'Cross-sell recommendations', 'Popularity claims']);
   const off = await open(t, 'https://www.keychron.com/products/q1', page(SHOPIFY_HEAD, `${ANNOUNCEMENT}${PRODUCT}`), { init: true, settings: { retailers: { shopify: false } } });
   assert.equal(await action(off, 'shopify-section-sections--22739711426649__announcement'), null);
 });

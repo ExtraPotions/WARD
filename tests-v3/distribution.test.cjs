@@ -89,7 +89,7 @@ test('production menu uses switches and has every required navigation group', as
     root.querySelector('.version').click();
     const notice = root.querySelector('.update-notice');
     return {
-      nav: [...root.querySelectorAll('.ward-nav > .tool-panel > .route')].map((node) => node.querySelector('.fl-tool-title')?.textContent),
+      nav: [...root.querySelectorAll('.exp-section-tabs [role=tab]')].map(node=>node.getAttribute('aria-label')),
       switches: root.querySelectorAll('[role="switch"]').length,
       checkboxes: root.querySelectorAll('input[type="checkbox"]').length,
       open: panel.classList.contains('open'),
@@ -131,8 +131,8 @@ test('production menu uses switches and has every required navigation group', as
     const root=host.shadowRoot;const launcher=root.querySelector('.ward-launcher');
     return {button:Math.round(launcher.getBoundingClientRect().width),radius:getComputedStyle(launcher).borderRadius,hasRing:Boolean(root.querySelector('.launcher-ring')),icon:Math.round(root.querySelector('.launcher-icon').getBoundingClientRect().width),headerBadge:Math.round(root.querySelector('.header-icon .menu-icon').getBoundingClientRect().width)};
   });
-  assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:await page.locator('#exp-ward-root [data-exp-part="dock"]').evaluate(n=>n.dataset.expMenuLayout==='lean'?30:38)});
-  for (const label of ['Protection','Appearance','Amazon','System']) assert.ok(result.nav.includes(label));
+  assert.deepEqual(launcherChrome,{button:48,radius:'10px',hasRing:false,icon:40,headerBadge:await page.locator('#exp-ward-root [data-exp-part="dock"]').evaluate(n=>n.dataset.expMenuLayout==='lean'?28:38)});
+  for (const label of ['Protect','Look','Amazon','System']) assert.ok(result.nav.includes(label));
   assert.equal(result.nav.includes('Settings'), false);
   assert.equal(result.nav.includes('Read'), false);
   assert.equal(result.nav.includes('Recover'), false);
