@@ -744,7 +744,7 @@ EXP.UI = (() => {
       action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false || updateCard.dataset.noticeKind !== 'current') showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
     );
 
-    title.append(titleRow,el('small','','Calmer shopping'));
+    title.append(titleRow,el('small','','Calmer pages. Clearer choices.'));
     brand.append(mark,title);
 
     const closeButton = el('button','close','×');

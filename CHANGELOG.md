@@ -1,3 +1,9 @@
+## 3.4.37 - 2026-10-20
+
+- Uses a new octagonal gem with connected amber facets and the approved tagline.
+- Uses the shared compact menu with support and reset grouped inside System.
+- Keeps paired diagnostics controls readable in smaller layouts.
+
 ## 3.4.36 - 2026-10-18
 
 - Uses a compact sidebar with inline settings, bounded help and three menu sizes.

@@ -60,7 +60,7 @@ test('launcher measurements and badge assets match the shared suite contract', (
   assert.match(core, /launcher\.replaceChildren\(mark\)/u);
   assert.doesNotMatch(core, /launcher\.append\(ring/u);
   const launcher = fs.readFileSync(path.join(root, 'assets', 'ward-launcher.svg'));
-  assert.equal(crypto.createHash('sha256').update(launcher).digest('hex'), 'c1a12bad2c6145ce097dc139177293a5832824b97a251324da58b98dcf4a8702');
+  assert.equal(crypto.createHash('sha256').update(launcher).digest('hex'), '04283fb3d4791a8a3d69e8906850a8e229d2d001d1984b6a76f871c31eec9d85');
   for (const removed of ['ward.svg', 'ward-128.png', 'ward-48.png', 'ward-32.png']) {
     assert.equal(fs.existsSync(path.join(root, 'assets', removed)), false, removed);
   }

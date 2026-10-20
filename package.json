@@ -17,8 +17,9 @@
     "verify:release": "npm run build && npm run release:check"
   },
   "devDependencies": {
-    "playwright": "1.63.0",
+    "playwright": "1.64.1",
     "terser": "5.51.2"
   },
-  "version": "3.4.36"
+  "version": "3.4.37",
+  "author": "expDARE"
 }

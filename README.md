@@ -2,7 +2,7 @@
 
 # WARD
 
-**Less shopping pressure, more room to decide.**
+**Calmer pages. Clearer choices.**
 
 [![Install WARD](docs/badges/install.svg)](https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js)
 [![Code: PolyForm Noncommercial 1.0.0](docs/badges/code.svg)](LICENSE-CODE.md)
@@ -32,6 +32,8 @@
 </table>
 
 Screenshots use sample content.
+
+All ExtraPotions menus share the same Core template. Open **System** for status, diagnostics, troubleshooting and Reset. Donations remain in the header heart.
 
 ## Support
 

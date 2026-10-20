@@ -7,4 +7,4 @@ WARD is distributed under a split-license model:
 
 The embedded or referenced WARD icon remains a creative asset licensed under CC BY-NC-SA 4.0 when distributed with the userscript source.
 
-Copyright 2026 ExtraPotions.
+Copyright 2026 expDARE.
