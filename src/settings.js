@@ -14,6 +14,7 @@ EXP.Settings = (() => {
     safeMode: false,
     autoClipCoupons: true,
     compactSearch: false,
+    siteDarkMode: false,
     recommendationCleanup: true,
     sellerClarity: true,
     sellerClaritySearch: true,
@@ -68,6 +69,7 @@ EXP.Settings = (() => {
 	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
 	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
     for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'sellerClarity', 'sellerClaritySearch', 'sellerClarityAlways', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    if (typeof candidate.siteDarkMode === 'boolean') next.siteDarkMode = candidate.siteDarkMode;
     // One switch per store. The earlier single amazonEnabled setting migrates into it.
     const stores = { ...defaults.retailers };
     if (typeof candidate.amazonEnabled === 'boolean') stores.amazon = candidate.amazonEnabled;

@@ -396,8 +396,8 @@ EXP.UI = (() => {
 
   function lookView(settings) {
     const fragment = document.createDocumentFragment();
-
-
+    fragment.append(row('Site dark mode','Use the Obsidian palette on supported stores. Product photos keep their original colors.',
+      switchControl(settings.siteDarkMode,'Site dark mode',value => update({siteDarkMode:value},'site-dark-mode'))));
     const accessibility = section('Accessibility');
     accessibility.append(
       row('Reduce motion','',

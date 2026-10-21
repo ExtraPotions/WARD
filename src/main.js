@@ -1,4 +1,4 @@
-EXP.VERSION = '3.4.39';
+EXP.VERSION = '3.4.40';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
@@ -15,6 +15,7 @@ EXP.App = (() => {
     );
     navigationCleanup = EXP.Core.onNavigation(() => EXP.Engine.navigation());
     settingsCleanup = EXP.Settings.subscribe(() => {
+      EXP.SiteTheme.apply();
       if (lifecycle?.state === 'enabled' && !ExtraPotionsCore.suiteSitePaused() && EXP.Retailer.enabled(EXP.Settings.snapshot()) && !EXP.Engine.active) {
         EXP.Engine.start();
         scheduler.start();
@@ -25,6 +26,7 @@ EXP.App = (() => {
 
   async function enable() {
     const settings = EXP.Settings.snapshot();
+    EXP.SiteTheme.apply(settings);
     if (!EXP.Retailer.enabled(settings)) {
       scheduler.stop();
       EXP.Engine.stop();
@@ -38,12 +40,14 @@ EXP.App = (() => {
   }
 
   async function disable() {
+    EXP.SiteTheme.clear();
     scheduler.stop();
     EXP.Engine.stop();
     EXP.UI.refresh();
   }
 
   async function cleanup() {
+    EXP.SiteTheme.clear();
     scheduler?.stop();
     settingsCleanup?.();
     navigationCleanup?.();

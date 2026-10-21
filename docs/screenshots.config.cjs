@@ -12,5 +12,6 @@ module.exports = {
   shots: [
     { file: 'protection.png', section: 'Protect' },
     { file: 'amazon.png', section: 'Amazon' },
+    { file: 'look.png', section: 'Look' },
   ],
 };

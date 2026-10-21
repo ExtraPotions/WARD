@@ -28,9 +28,11 @@ WARD's tests live in `tests-v3/`, not `tests/`.
 
 - The release check counts `setInterval` calls in the readable build. It allows the launcher host protection interval and the two status refresh timers, and nothing else. Run this optional check when reviewing timer changes.
 - The install stays between 100 and 425 KB.
-- README screenshots (`protection.png`, `amazon.png`) match `docs/screenshots.config.cjs`.
+- README screenshots (`protection.png`, `amazon.png`, `look.png`) match `docs/screenshots.config.cjs`.
 
 ## Manual checks and publication
+
+`siteDarkMode` defaults off. Look exposes the optional Obsidian page palette (#03060a, #1a2530, #495a68, #899ca7, #c9d7df), separately from the WARD menu theme. Scoped CSS covers the supported retailer adapters and recognized Shopify storefronts, without inversion, image changes, or purchasing-control handlers. Turning it off, Safe Mode, disabling the store or disabling WARD removes the owned stylesheet and root marker. Dynamic content inherits the same CSS. Fixture coverage does not establish live-site or third-party shadow/iframe coverage.
 
 Build the changed product and choose relevant manual tests. `release:check` and `verify:release` remain optional diagnostics, including their legacy published Core-pin checks; neither is a publication prerequisite. Windows test runners use concurrency two.
 

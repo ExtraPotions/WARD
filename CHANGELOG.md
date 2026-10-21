@@ -1,3 +1,8 @@
+## 3.4.40 - 2026-10-20
+
+- Add optional Site dark mode in Look using the Obsidian palette across supported stores.
+- Keep product photos in their original colors and restore site styling when dark mode or protection is turned off.
+
 ## 3.4.39 - 2026-10-20
 
 - Add extra spacing above Reset All Settings in System.
