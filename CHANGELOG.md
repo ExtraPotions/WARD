@@ -1,3 +1,8 @@
+## 3.4.38 - 2026-10-20
+
+- Keep Show Diagnostics, Copy Diagnostics and Reset All Settings directly accessible in System.
+- Keep shared menus, themes and launchers working independently of retired SHIFT.
+
 ## 3.4.37 - 2026-10-20
 
 - Uses a new octagonal gem with connected amber facets and the approved tagline.
