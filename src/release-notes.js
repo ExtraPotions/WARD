@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.38';
+EXP.VERSION = '3.4.39';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.39': ["Add extra spacing above Reset All Settings in System.","Update bundled Core to 3.9.10 with the shared Reset placement rule."],
     '3.4.38': ["Keep Show Diagnostics, Copy Diagnostics and Reset All Settings directly accessible in System.","Keep shared menus, themes and launchers working independently of retired SHIFT."],
     '3.4.37': ["Uses a new octagonal gem with connected amber facets and the approved tagline.","Uses the shared compact menu with support and reset grouped inside System.","Keeps paired diagnostics controls readable in smaller layouts."],
     '3.4.36': ["Uses a compact sidebar with inline settings, bounded help and three menu sizes.","Keeps diagnostics buttons readable and removes the activity list that repeated Status."],

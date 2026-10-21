@@ -1,4 +1,4 @@
-EXP.VERSION = '3.4.38';
+EXP.VERSION = '3.4.39';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;

@@ -1,3 +1,8 @@
+## 3.4.39 - 2026-10-20
+
+- Add extra spacing above Reset All Settings in System.
+- Update bundled Core to 3.9.10 with the shared Reset placement rule.
+
 ## 3.4.38 - 2026-10-20
 
 - Keep Show Diagnostics, Copy Diagnostics and Reset All Settings directly accessible in System.
