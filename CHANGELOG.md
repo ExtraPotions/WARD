@@ -1,3 +1,8 @@
+## 3.4.41 - 2026-10-22
+
+- Replace Site dark mode with a Site colors menu: Obsidian plus six palettes that follow your system light or dark mode.
+- Keep store buttons, badges and white-logo headers in their own colors so they stay readable.
+
 ## 3.4.40 - 2026-10-20
 
 - Add optional Site dark mode in Look using the Obsidian palette across supported stores.
