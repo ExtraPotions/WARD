@@ -16,7 +16,7 @@
 
 ## What you can do
 
-- **Use site dark mode:** turn on **Look → Site dark mode** for the Obsidian palette across supported stores. Product photos retain their original colors; switching it off restores the site's colors.
+- **Choose site colors:** pick a palette in **Look → Site colors** to recolor supported stores: Obsidian, or Default, Indigo, Blue, Green, Red or Gray, which follow your system light or dark mode. Product photos retain their original colors; Off restores the site's colors.
 - **Calm the page:** hide or dim sponsored placements, upsells, urgency messages, and pushy recommendations at the level you choose. Essential purchasing information stays visible.
 - **Shop six stores and Shopify shops:** Amazon, eBay, Etsy, Walmart, Target, Best Buy, and any store built on Shopify, each with its own controls. On Shopify stores, WARD hides email sign-up pop-ups and dims announcement bars.
 - **Undo changes:** reveal hidden content, allow a pattern on a page, or pause WARD entirely.
@@ -34,7 +34,7 @@
 
 Screenshots use sample content.
 
-![WARD Look controls with the optional Site dark mode switch](docs/screenshots/look.png)
+![WARD Look controls with the Site colors menu](docs/screenshots/look.png)
 
 All ExtraPotions menus share the same Core template. Open **System** for status, diagnostics, troubleshooting and Reset. Donations remain in the header heart.
 
