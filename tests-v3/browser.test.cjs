@@ -12,8 +12,12 @@ const distribution = fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8');
 test('WARD does not mount a launcher inside an iframe', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
   const page = await browser.newPage();
-  await page.setContent('<!doctype html><html><body><iframe srcdoc="<!doctype html><html><body><main>Embedded</main></body></html>"></iframe></body></html>');
+  // Use a matched store origin and an actual child document. CloakBrowser can stall on
+  // about:blank/srcdoc load; a routed fixture also exercises the retailer gate in the frame.
+  await page.route('https://www.amazon.com/**',route=>route.fulfill({contentType:'text/html',body:route.request().url().endsWith('/embedded')?'<main>Embedded</main>':'<iframe src="/embedded"></iframe>'}));
+  await page.goto('https://www.amazon.com/frame-test');
   const frame = page.frames().find((candidate) => candidate !== page.mainFrame());
+  await frame.waitForSelector('main');
   await frame.evaluate(() => { const values = new Map(); window.GM_getValue = (key, fallback) => values.has(key) ? values.get(key) : fallback; window.GM_setValue = (key, value) => values.set(key, value); window.GM_xmlhttpRequest = () => {}; });
   await frame.addScriptTag({ content: distribution });
   await page.waitForTimeout(100);

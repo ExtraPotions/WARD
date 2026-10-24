@@ -16,7 +16,7 @@
 
 ## What you can do
 
-- **Choose site colors:** pick a palette in **Look → Site colors** to recolor supported stores: Obsidian, or Default, Indigo, Blue, Green, Red or Gray, which follow your system light or dark mode. Product photos retain their original colors; Off restores the site's colors.
+- **Choose site colors:** pick a palette in **Look → Site colors** to recolor supported stores: Obsidian, or Default, Indigo, Blue, Green, Red or Gray, which follow your system light or dark mode. Page surfaces, navigation, forms and neutral controls use the chosen palette. Product photos and promotional artwork retain their colors; text, details panels and review fades follow the surface beneath them. Purchase and status colors remain meaningful. Off restores the site's colors.
 - **Calm the page:** hide or dim sponsored placements, upsells, urgency messages, and pushy recommendations at the level you choose. Essential purchasing information stays visible.
 - **Shop six stores and Shopify shops:** Amazon, eBay, Etsy, Walmart, Target, Best Buy, and any store built on Shopify, each with its own controls. On Shopify stores, WARD hides email sign-up pop-ups and dims announcement bars.
 - **Undo changes:** reveal hidden content, allow a pattern on a page, or pause WARD entirely.

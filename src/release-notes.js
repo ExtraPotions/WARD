@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.41';
+EXP.VERSION = '3.4.42';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.42': ["Recolor store surfaces, panels and controls while keeping product photos and promotional artwork intact.","Fix Amazon page gutters, detail panels, review fades and monochrome control icons.","Preserve readable text on media overlays and meaningful deal and purchase colors.","Handle repeated page textures, restrictive style policies and restoring native colors when disabled."],
     '3.4.41': ["Replace Site dark mode with a Site colors menu: Obsidian plus six palettes that follow your system light or dark mode.","Keep store buttons, badges and white-logo headers in their own colors so they stay readable."],
     '3.4.40': ["Add optional Site dark mode in Look using the Obsidian palette across supported stores.","Keep product photos in their original colors and restore site styling when dark mode or protection is turned off."],
     '3.4.39': ["Add extra spacing above Reset All Settings in System.","Update bundled Core to 3.9.10 with the shared Reset placement rule."],

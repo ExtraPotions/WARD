@@ -1,3 +1,10 @@
+## 3.4.42 - 2026-10-23
+
+- Recolor store surfaces, panels and controls while keeping product photos and promotional artwork intact.
+- Fix Amazon page gutters, detail panels, review fades and monochrome control icons.
+- Preserve readable text on media overlays and meaningful deal and purchase colors.
+- Handle repeated page textures, restrictive style policies and restoring native colors when disabled.
+
 ## 3.4.41 - 2026-10-22
 
 - Replace Site dark mode with a Site colors menu: Obsidian plus six palettes that follow your system light or dark mode.
