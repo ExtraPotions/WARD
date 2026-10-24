@@ -1,3 +1,8 @@
+## 3.4.44 - 2026-10-24
+
+- Keep Protection Review compact with a full-width missed-content selector.
+- Use the compact shared menu while retaining review corrections and themes.
+
 ## 3.4.43 - 2026-10-23
 
 - Keep protected sign-up popups hidden after repeated page scans or resuming protection.

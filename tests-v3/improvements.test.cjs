@@ -159,6 +159,11 @@ test('compact UI exposes health, activity, reversible controls, and nested Custo
   await host.locator('.ward-launcher').click();
   await host.locator('[data-exp-section-tab="exp-ward-view-page"]').click();
   assert.equal(await host.locator('[data-exp-adapter-health]').textContent(),'Healthy');
+  assert.equal(await host.locator('[data-exp-adapter-health]').isVisible(),false,'healthy coverage does not need a second status row');
+  await host.locator('[data-exp-adapter-health]').evaluate(n=>{n.dataset.expAdapterHealth='attention';n.textContent='Attention';});
+  assert.equal(await host.locator('[data-exp-adapter-health]').isVisible(),true,'a later abnormal state appears without rebuilding the menu');
+  await host.locator('[data-exp-adapter-health]').evaluate(n=>{n.dataset.expAdapterHealth='healthy';n.textContent='Healthy';});
+  assert.equal(await host.locator('[data-exp-adapter-health]').isVisible(),false);
   assert.equal(await host.locator('[data-exp-activity-summary]').getByText('Active protections').count(),1);
   assert.equal(await host.getByRole('button',{ name:'Show',exact:true }).count(),0);
   await openSubmenu(host,'Activity');

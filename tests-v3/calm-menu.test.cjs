@@ -31,5 +31,6 @@ test('Amazon keeps everyday switches up front and moves seller clarity and cover
   assert.equal(await host.getByText('Coverage applies to recognized page patterns', { exact:false }).isVisible(), false);
   await tools.locator('summary').filter({ hasText:/^Seller clarity$/ }).click();
   assert.equal(await host.getByRole('switch', { name:'Seller notes', exact:true }).isVisible(), true);
-  const label=host.locator('.row-copy strong').filter({hasText:/^Seller notes$/});assert.equal(await label.getAttribute('aria-description'),'Notes on product pages when brand, seller or ratings deserve a second look.');await label.focus();assert.equal(await host.getByRole('tooltip').isVisible(),true);
+  const label=host.locator('.row-copy strong').filter({hasText:/^Seller notes$/});assert.equal(await label.getAttribute('role'),null,'label does not compete with its switch');
+  const control=host.getByRole('switch',{name:'Seller notes',exact:true});assert.equal(await control.getAttribute('aria-description'),'Notes on product pages when brand, seller or ratings deserve a second look.');await control.focus();assert.equal(await host.getByRole('tooltip').isVisible(),true);
 });

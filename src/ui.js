@@ -137,9 +137,9 @@ EXP.UI = (() => {
   }
 
   function row(label, _help, control) {
-    const line = el('div','row');
-    const copy = el('div','row-copy');
-    const title=el('strong','',label);ExtraPotionsCore.setMenuHelp(title,_help);copy.append(title);
+    const line = el(control.matches('button[role="switch"],select,input,textarea')?'label':'div','row');
+    const copy = el('span','row-copy');
+    const title=el('strong','',label);ExtraPotionsCore.setMenuHelp(control,_help);copy.append(title);
     line.append(copy, control);
     return line;
   }
@@ -350,7 +350,7 @@ EXP.UI = (() => {
 
   function pageView(settings) {
     const fragment = document.createDocumentFragment();
-    const general = section('Protection');
+    const general = section();
 
     general.append(
       row('WARD protection','',
@@ -382,16 +382,17 @@ EXP.UI = (() => {
 
   function protectionReview() {
     const card=ExtraPotionsCore.createDisclosure('Protection Review');
-    card.append(el('p','','Reviews stay on this device. Wrong-target corrections can allow a protection type for this page. Missed reports are recorded for review; they do not guess a target to hide.'));
+    card.dataset.wardReview='1';
     const record=(verdict,patternId)=>{const state=EXP.Settings.snapshot();update({protectionReviews:[...(state.protectionReviews||[]),{verdict,patternId,retailer:EXP.Retailer.key(),at:Date.now()}].slice(-100)},'protection-review');notify('Local review saved.');};
     for(const item of EXP.Actions.snapshot().filter(value=>value.connected&&value.action!=='allow').slice(0,8)){
-      const line=section(EXP.Patterns.get(item.patternId)?.label||item.patternId);line.append(el('p','',`${item.action} · ${item.confidence} · ${reasonLabel(item.reason)}`));
+      const line=section();const title=el('div','',EXP.Patterns.get(item.patternId)?.label||item.patternId);title.style.cssText='padding:4px 8px 0;font-weight:600';title.title=`${item.action} · ${item.confidence} · ${reasonLabel(item.reason)}`;line.append(title);
       const controls=el('div','settings-transfer');controls.append(action('Correct',()=>record('correct',item.patternId)),action('Wrong target',()=>{record('wrong',item.patternId);if(!confirm('Allow this protection type for this page?'))return;const state=EXP.Settings.snapshot(),path=location.hostname+location.pathname;update({pageExceptions:[...state.pageExceptions.filter(value=>value.path!==path||value.patternId!==item.patternId),{path,patternId:item.patternId}]},'review-page-correction');notify('Page correction saved.');}));line.append(controls);card.append(line);
     }
     let missed=EXP.Retailer.patternIds().values().next().value||'';
     const choices=[...EXP.Retailer.patternIds()].map(id=>[id,EXP.Patterns.get(id)?.label||id]);
-    card.append(row('Missed protection type','',selectControl(missed,'Missed protection type',choices,value=>{missed=value;})),action('Record missed content',()=>{if(missed)record('missed',missed);}));
-    card.append(el('p','',`${EXP.Settings.snapshot().protectionReviews.length} local reviews saved.`));return card;
+    const missedField=el('label','');missedField.style.cssText='display:flex;flex-direction:column;gap:2px;padding:4px 8px';missedField.append(el('span','','Missed content'),selectControl(missed,'Missed protection type',choices,value=>{missed=value;}));
+    card.append(missedField,action('Record missed content',()=>{if(missed)record('missed',missed);}));
+    const count=el('div','',`${EXP.Settings.snapshot().protectionReviews.length} reviews saved`);count.style.cssText='padding:4px 8px';card.append(count);return card;
   }
 
   function lookView(settings) {
@@ -744,7 +745,7 @@ EXP.UI = (() => {
       action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false || updateCard.dataset.noticeKind !== 'current') showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
     );
 
-    title.append(titleRow,el('small','','Calmer pages. Clearer choices.'));
+    title.append(titleRow);
     brand.append(mark,title);
 
     const closeButton = el('button','close','×');
@@ -800,6 +801,8 @@ EXP.UI = (() => {
       setOpen,
       shortcutKey:'w'
     });
+    // MenuChrome replaces initial sheets; install this state rule after its shell is mounted.
+    ExtraPotionsCore.injectStyle(shadow,':host .row:has([data-exp-adapter-health="healthy"]){display:none!important}',{wardMenuState:'1'});
     pageActions=ExtraPotionsCore.createPageActions({host,shadow,label:'WARD',visible:()=>{const state=EXP.Settings.snapshot();return state.enabled&&!state.safeMode&&!ExtraPotionsCore.suiteSitePaused()&&EXP.Actions.snapshot().length>0;},actions:[{label:'Reveal this page',run:()=>{for(const item of EXP.Actions.snapshot())EXP.Actions.reveal(item.id);refreshActivity();}},{label:'Reapply protection',run:()=>{for(const item of EXP.Actions.snapshot())EXP.Actions.endReveal(item.id);refreshActivity();}}]});
     noticeController = ExtraPotionsCore.createProductNotice({
       host,
