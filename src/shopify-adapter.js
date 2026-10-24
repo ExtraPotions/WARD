@@ -188,7 +188,10 @@ EXP.ShopifyAdapter = (() => {
         const layer = outermostFixed(marker), shown = provider.frame ? marker : layer;
         // An iframe's words cannot be read; Attentive's frame is itself the evidence, and it must be on screen.
         if (!eligible(layer)) continue;
-        if (!onScreen(shown)) { recheckFade(shown); continue; }
+        // Our hidden ancestor gives the iframe an empty rectangle. Keep its detection until
+        // the provider actually closes; otherwise the next scan restores it and its scroll lock.
+        const managedHidden = hiddenLayers.has(layer) && layer.dataset.wardAction === 'hide' && providerActive(layer, provider) !== false;
+        if (!onScreen(shown) && !managedHidden) { recheckFade(shown); continue; }
         if (provider.frame || promotional(layer)) found.add(layer);
       }
     }

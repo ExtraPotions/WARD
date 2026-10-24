@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.42';
+EXP.VERSION = '3.4.43';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.43': ["Keep protected sign-up popups hidden after repeated page scans or resuming protection.","Preserve scrolling while keeping native popup closure and unrelated lock handling intact."],
     '3.4.42': ["Recolor store surfaces, panels and controls while keeping product photos and promotional artwork intact.","Fix Amazon page gutters, detail panels, review fades and monochrome control icons.","Preserve readable text on media overlays and meaningful deal and purchase colors.","Handle repeated page textures, restrictive style policies and restoring native colors when disabled."],
     '3.4.41': ["Replace Site dark mode with a Site colors menu: Obsidian plus six palettes that follow your system light or dark mode.","Keep store buttons, badges and white-logo headers in their own colors so they stay readable."],
     '3.4.40': ["Add optional Site dark mode in Look using the Obsidian palette across supported stores.","Keep product photos in their original colors and restore site styling when dark mode or protection is turned off."],

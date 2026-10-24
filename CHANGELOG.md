@@ -1,3 +1,8 @@
+## 3.4.43 - 2026-10-23
+
+- Keep protected sign-up popups hidden after repeated page scans or resuming protection.
+- Preserve scrolling while keeping native popup closure and unrelated lock handling intact.
+
 ## 3.4.42 - 2026-10-23
 
 - Recolor store surfaces, panels and controls while keeping product photos and promotional artwork intact.

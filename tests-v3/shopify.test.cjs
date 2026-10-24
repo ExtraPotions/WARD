@@ -220,6 +220,24 @@ for (const [property, invisible, visible] of [['opacity', '0', '1'], ['visibilit
   assert.equal(await scrolls(tab), true);
 });
 
+for (const state of ['visible', 'opacity', 'visibility']) test(`repeated scans retain a managed Attentive popup during ${state} and after resume`, async (t) => {
+  const tab = await open(t, 'https://www.allbirds.com/', page(SHOPIFY_HEAD, PRODUCT), { init:true, instrument:true });
+  await attentive(tab);
+  const scan = () => tab.evaluate((state) => {
+    const frame = document.getElementById('attentive_creative');
+    if (state === 'opacity') frame.style.opacity = '0';
+    if (state === 'visibility') frame.style.visibility = 'hidden';
+    for (let count = 0; count < 3; count++) __ward.Engine.processBatch([document]);
+    return { action:document.getElementById('attentive_overlay').dataset.wardAction,
+      scrolling:[document.body,document.documentElement].every(node=>!/hidden|clip/.test(getComputedStyle(node).overflowY)) };
+  }, state);
+  assert.deepEqual(await scan(), {action:'hide', scrolling:true});
+  await tab.evaluate(() => __ward.App.lifecycle.disable());
+  assert.equal(await scrolls(tab), false, 'pause restores the provider lock');
+  await tab.evaluate(() => { const frame=document.getElementById('attentive_creative');frame.style.opacity='1';frame.style.visibility='visible';return __ward.App.lifecycle.enable(); });
+  assert.deepEqual(await scan(), {action:'hide', scrolling:true});
+});
+
 for (const closed of ['removed', 'hidden']) test(`a provider ${closed} while hidden leaves no lock to restore or clean up`, async (t) => {
   const tab = await open(t, 'https://www.allbirds.com/', page(SHOPIFY_HEAD, PRODUCT), { init:true, instrument:true });
   await attentive(tab);
