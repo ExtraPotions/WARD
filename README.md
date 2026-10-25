@@ -33,7 +33,7 @@
 
 <table>
   <tr>
-    <td width="50%" valign="top" align="center"><a href="docs/screenshots/protection.png"><img src="docs/screenshots/protection.png" width="220" alt="WARD: protection level and content action"></a><br><strong>Protection level and content action</strong></td>
+    <td width="50%" valign="top" align="center"><a href="docs/screenshots/protection.gif"><img src="docs/screenshots/protection.gif" width="220" alt="WARD: protection level and content action"></a><br><strong>Protection level and content action</strong></td>
     <td width="50%" valign="top" align="center"><a href="docs/screenshots/amazon.png"><img src="docs/screenshots/amazon.png" width="220" alt="WARD: Amazon coverage and options"></a><br><strong>Amazon coverage and options</strong></td>
   </tr>
 </table>
