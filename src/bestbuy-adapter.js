@@ -1,6 +1,6 @@
 EXP.BestBuyAdapter = EXP.createRetailerModule({
   key:'bestbuy', label:'Best Buy', hosts:['www.bestbuy.com','bestbuy.com'],
-  routes:[[/^\/checkout(?:\/|$)/,'checkout'],[/^\/cart(?:\/|$)/,'cart'],[/^\/site\/[^/]+\/\d+\.p$/,'product'],[/^\/site\/searchpage\.jsp$/,'search']],
+  routes:[[/^\/checkout(?:\/|$)/,'checkout'],[/^\/cart(?:\/|$)/,'cart'],[/^\/site\/(?:[^/]+\/)*\d+\.p$/,'product'],[/^\/site\/searchpage\.jsp$/,'search']],
   detectors:[
     { id:'sponsored', patternId:'sponsorship.placement', pages:['home','search','product'], selectors:['.sponsored-label','[data-testid="sponsored-label"]'], text:/^sponsored$/i },
     { id:'scarcity', patternId:'pressure.scarcity', pages:['product','search'], selectors:['.availability-message','[data-testid="low-stock-message"]'], text:/only \d+ left|low stock|almost gone/i },

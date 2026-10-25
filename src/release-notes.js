@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.45';
+EXP.VERSION = '3.4.46';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.46': ["Expand Best Buy product route pattern to support nested category item URLs.","Improve product page detection across deep retailer navigation structures."],
     '3.4.45': ["Use compact settings and shorter review and transfer actions at all three widths.","Keep preferences private with verified saves and recoverable original data.","Confirm coupons only from positive control or exact coupon-tile evidence."],
     '3.4.44': ["Keep Protection Review compact with a full-width missed-content selector.","Use the compact shared menu while retaining review corrections and themes."],
     '3.4.43': ["Keep protected sign-up popups hidden after repeated page scans or resuming protection.","Preserve scrolling while keeping native popup closure and unrelated lock handling intact."],

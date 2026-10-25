@@ -1,3 +1,8 @@
+## 3.4.46 - 2026-10-25
+
+- Expand Best Buy product route pattern to support nested category item URLs.
+- Improve product page detection across deep retailer navigation structures.
+
 ## 3.4.45 - 2026-10-25
 
 - Use compact settings and shorter review and transfer actions at all three widths.
