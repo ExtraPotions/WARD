@@ -46,3 +46,5 @@ Build the changed product and choose relevant manual tests. `release:check` and 
 Both GitHub workflows are manual: Manual tests runs the suite; Publish release uploads the selected commit's existing built assets and SHA256SUMS without rebuilding or testing. Commit generated files before an authorized publication. Publishing requires an explicit user request; commits, pushes and tag pushes do not start it. Existing releases are not overwritten.
 
 Core synchronization is deliberate local work. There is no scheduled sync, automatic product release, pin wait or release-order gate. See the suite guide's Shipping section. Claim and handoff rules remain in workspace AGENTS.md.
+
+Settings persist in isolated userscript-manager storage. Existing page-storage copies are archived and verified in manager storage before removal; originals are retained if archival fails. Failed writes stay temporary with a retry action. Malformed settings enter safe recovery without overwriting saved data. Recovery exports and an explicit safe-defaults action remain available.

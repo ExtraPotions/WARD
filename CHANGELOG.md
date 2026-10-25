@@ -1,3 +1,9 @@
+## 3.4.45 - 2026-10-25
+
+- Use compact settings and shorter review and transfer actions at all three widths.
+- Keep preferences private with verified saves and recoverable original data.
+- Confirm coupons only from positive control or exact coupon-tile evidence.
+
 ## 3.4.44 - 2026-10-24
 
 - Keep Protection Review compact with a full-width missed-content selector.

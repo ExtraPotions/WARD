@@ -19,3 +19,5 @@ Activity contains local category/action/count/status/reason records only. Diagno
 Update notifications are on by default for new installs and can be turned off; existing installs keep their saved choice. While enabled, WARD requests only bounded release metadata from the configured ExtraPotions GitHub endpoint. No page, activity, coupon, or settings data is included.
 
 WARD loads no remote executable code, selector lists, fonts, images, analytics, or telemetry.
+
+Settings use isolated userscript-manager storage. WARD no longer mirrors settings into website localStorage. A prior page copy is preserved as exact bytes in a verified manager archive before that page copy is removed. If storage is unavailable, changes are marked temporary and existing records are kept.

@@ -19,7 +19,7 @@ const runtime = `${fs.readFileSync(path.join(root,'vendor/exp-core/exp-core.js')
 const distribution = fs.readFileSync(path.join(root,'ward.user.js'),'utf8');
 
 async function modulePage(browser, body, pathname = '/dp/test') {
-  const page = await browser.newPage();
+  const page = await browser.newPage();await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({ status:200, contentType:'text/html', body }));
   await page.goto(`https://www.amazon.com${pathname}`);
   await page.addScriptTag({ content:runtime });
@@ -151,7 +151,7 @@ test('coupon quarantine is visible and can be explicitly resumed', async (t) => 
 test('compact UI exposes health, activity, reversible controls, and nested Custom policy', async (t) => {
   const browser = await chromium.launch({ headless:true });
   t.after(() => browser.close());
-  const page = await browser.newPage({ viewport:{ width:900,height:700 } });
+  const page = await browser.newPage({ viewport:{ width:900,height:700 } });await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**',(route) => route.fulfill({ status:200,contentType:'text/html',body:'<!doctype html><html><body><div id="sims-fbt">Recommendations</div></body></html>' }));
   await page.goto('https://www.amazon.com/dp/ward');
   await page.addScriptTag({ content:distribution });
@@ -181,7 +181,7 @@ test('compact UI exposes health, activity, reversible controls, and nested Custo
 
 test('main Protection screen changes all content between Dim, Hide and Automatic and remembers the choice', async (t) => {
   const browser=await chromium.launch({headless:true}); t.after(() => browser.close());
-  const page=await browser.newPage({viewport:{width:900,height:700}});
+  const page=await browser.newPage({viewport:{width:900,height:700}});await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('**/*',route => route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html><body><div id="ad" data-component-type="s-sponsored-result">Sponsored</div><div id="sims-fbt">Recommendations</div></body></html>'}));
   const open=async () => {
     await page.addScriptTag({content:distribution});
@@ -206,16 +206,16 @@ test('main Protection screen changes all content between Dim, Hide and Automatic
 });
 
 test('Advanced page tools Safe Mode restores protection targets and preserves preferences',async t=>{
- const browser=await chromium.launch();t.after(()=>browser.close());const page=await browser.newPage();
+ const browser=await chromium.launch();t.after(()=>browser.close());const page=await browser.newPage();await page.addInitScript({content:require('./manager-storage.cjs')});
  await page.route('https://www.amazon.com/**',r=>r.fulfill({contentType:'text/html',body:'<main><div id="sims-fbt">Recommendations</div></main>'}));
  await page.goto('https://www.amazon.com/dp/fixture');await page.addScriptTag({content:distribution});
  const host=page.locator('#exp-ward-root');await host.locator('.ward-launcher').click();await host.locator('[data-exp-section-tab="exp-ward-view-tools"]').click();await openSubmenu(host,'Tools');
- const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('exp:v3:ward:settings')||'{}'));
+ const before=await page.evaluate(()=>GM_getValue('exp:v3:ward:settings',{}));
  const toggle=host.getByRole('switch',{name:'Safe Mode',exact:true});await toggle.click();
  await page.waitForFunction(()=>!document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));
  assert.equal(await toggle.getAttribute('aria-checked'),'true');
  await openSubmenu(host,'Tools');await toggle.click();await page.waitForFunction(()=>document.querySelector('#sims-fbt').hasAttribute('data-ward-action'));
  assert.equal(await toggle.getAttribute('aria-checked'),'false');
- const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('exp:v3:ward:settings')||'{}'));
+ const after=await page.evaluate(()=>GM_getValue('exp:v3:ward:settings',{}));
  assert.equal(after.contentAction,before.contentAction);
 });

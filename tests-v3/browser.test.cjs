@@ -11,7 +11,7 @@ const distribution = fs.readFileSync(path.join(root, 'ward.user.js'), 'utf8');
 
 test('WARD does not mount a launcher inside an iframe', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
-  const page = await browser.newPage();
+  const page = await browser.newPage();await page.addInitScript({content:require('./manager-storage.cjs')});
   // Use a matched store origin and an actual child document. CloakBrowser can stall on
   // about:blank/srcdoc load; a routed fixture also exercises the retailer gate in the frame.
   await page.route('https://www.amazon.com/**',route=>route.fulfill({contentType:'text/html',body:route.request().url().endsWith('/embedded')?'<main>Embedded</main>':'<iframe src="/embedded"></iframe>'}));
@@ -24,7 +24,7 @@ test('WARD does not mount a launcher inside an iframe', async (t) => {
   assert.equal(await frame.locator('#exp-ward-root').count(), 0);
 });
 async function amazonPage(browser, body, pathname = '/dp/test') {
-  const page = await browser.newPage();
+  const page = await browser.newPage();await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: `<!doctype html><html><body>${body}</body></html>` }));
   await page.goto(`https://www.amazon.com${pathname}`);
   await page.addScriptTag({ content: runtime });
@@ -252,7 +252,7 @@ test('Core navigation observes pushState and preserves the appropriate wrapper l
 
 test('a real pointer click opens the launcher without a drag cancel', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
-  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><html><body><div id="a-page"><main>Product</main></div></body></html>' }));
   await page.goto('https://www.amazon.com/dp/test');
   await page.addScriptTag({ content: distribution });
@@ -265,7 +265,7 @@ test('a real pointer click opens the launcher without a drag cancel', async (t) 
 
 test('Amazon host clipping is repaired so the launcher stays clickable', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
-  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><html><body><div id="a-page"><main>Product</main></div></body></html>' }));
   await page.goto('https://www.amazon.com/dp/test');
   await page.addScriptTag({ content: distribution });
@@ -290,7 +290,7 @@ test('Amazon host clipping is repaired so the launcher stays clickable', async (
 
 test('Amazon mutation batches keep open menu controls clickable', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
-  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><html><body><div id="a-page"><main>Product</main><div id="primeDPUpsellStaticContainerNPA">Prime</div></div></body></html>' }));
   await page.goto('https://www.amazon.com/dp/test');
   await page.addScriptTag({ content: distribution });
@@ -314,7 +314,7 @@ test('Amazon mutation batches keep open menu controls clickable', async (t) => {
   await protection.click();
   const after = await page.evaluate(() => {
     const root = document.querySelector('#exp-ward-root').shadowRoot;
-    const stored = JSON.parse(localStorage.getItem('exp:v3:ward:settings') || 'null');
+    const stored = GM_getValue('exp:v3:ward:settings',null);
     return {
       checked: root.querySelector('[role="switch"][aria-label="WARD protection"]')?.getAttribute('aria-checked'),
       enabled: stored?.enabled
@@ -326,7 +326,7 @@ test('Amazon mutation batches keep open menu controls clickable', async (t) => {
 
 test('menu keeps its shared size and Settings is not a top-level route while interventions are active', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
-  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });await page.addInitScript({content:require('./manager-storage.cjs')});
   const pageErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({
@@ -379,7 +379,7 @@ test('dynamic Amazon widgets downgrade structural actions instead of hiding DOM'
 
 test('static annotated Amazon content settles without WARD rewriting its own companion', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
-  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({
     status: 200,
     contentType: 'text/html',
@@ -404,7 +404,7 @@ test('static annotated Amazon content settles without WARD rewriting its own com
 
 test('launcher omits the retired helper tooltip', async (t) => {
   const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
-  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });await page.addInitScript({content:require('./manager-storage.cjs')});
   await page.route('https://www.amazon.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><html><body><main>Product</main></body></html>' }));
   await page.goto('https://www.amazon.com/dp/test');
   await page.addScriptTag({ content: distribution });
@@ -430,3 +430,5 @@ test('launcher omits the retired helper tooltip', async (t) => {
   assert.equal(facts.headingTips, false);
   assert.equal(facts.controlTips, false);
 });
+
+test('cancelled coupon activation stays unconfirmed even when its outer wrapper lacks unclaimed',async t=>{const browser=await chromium.launch();t.after(()=>browser.close());const page=await amazonPage(browser,'<div data-component-type="s-coupon-component"><label class="s-coupon-tile unclaimed"><input id="cancelled-coupon" type="checkbox"></label></div>','/s?k=audit');await page.evaluate(()=>{document.querySelector('#cancelled-coupon').addEventListener('click',e=>e.preventDefault());EXP.Engine.start();});await page.waitForTimeout(350);const value=await page.evaluate(()=>({checked:document.querySelector('#cancelled-coupon').checked,unclaimed:document.querySelector('.s-coupon-tile').classList.contains('unclaimed'),state:EXP.Engine.diagnostics().coupon.state}));assert.equal(value.checked,false);assert.equal(value.unclaimed,true);assert.notEqual(value.state,'confirmed');});

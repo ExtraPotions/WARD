@@ -161,7 +161,8 @@ EXP.AmazonAdapter = (() => {
     const component = promotion || control.closest('[data-component-type="s-coupon-component"], .ct-coupon-tile');
     if (!component) return { eligible: false, reason: 'ambiguous-control' };
     if (component.closest('#addToCart, #buyNow, #checkout, [name="placeYourOrder1"], [data-testid*="checkout"]')) return { eligible: false, reason: 'unsafe-context' };
-    return { eligible: true, component, kind: promotion ? 'redeem' : 'checkbox' };
+    const tile=promotion?null:control.closest('.s-coupon-tile, .ct-coupon-tile');
+    return { eligible: true, component, tile, kind: promotion ? 'redeem' : 'checkbox' };
   }
 
   // Seller Clarity facts. Read-only: text the product page already shows.

@@ -103,15 +103,15 @@ EXP.Engine = (() => {
     EXP.Actions.apply(evidence.node, { action: appliedAction, pattern, confidence: evidence.confidence, structuralSafe: evidence.structuralSafe, reason });
   }
 
-  function verifyCoupon(control, component, epoch, href, kind = 'checkbox', attempt = 0) {
+  function verifyCoupon(control, component, epoch, href, kind = 'checkbox', attempt = 0, tile = null) {
     setTimeout(() => {
       couponPending.delete(control);
       if (epoch !== routeEpoch || !active) return;
       if (location.href !== href) { couponQuarantined = true; couponStatus = { state:'quarantined', reason:'unexpected-navigation', lastResult:'failed' }; EXP.Activity.coupon('failed'); control.dataset.wardCouponFailure = 'unexpected-navigation'; syncActivityUi(); return; }
       const claimed = kind === 'redeem'
         ? component.isConnected && /\b(redeemed|promotion applied|promo code applied)\b/i.test(component.textContent || '')
-        : control.checked || (component.isConnected && (!component.classList.contains('unclaimed') || component.matches('.claimed, [data-claimed="true"]')));
-      if (!claimed && kind === 'redeem' && component.isConnected && attempt < 9) { couponPending.add(control); verifyCoupon(control, component, epoch, href, kind, attempt + 1); return; }
+        : component.isConnected && (control.isConnected && control.checked || tile?.isConnected && component.contains(tile) && tile.matches('.claimed, [data-claimed="true"]'));
+      if (!claimed && component.isConnected && attempt < 9) { couponPending.add(control); verifyCoupon(control, component, epoch, href, kind, attempt + 1, tile); return; }
       if (claimed) { EXP.Activity.coupon('confirmed'); couponStatus = { state:'confirmed', reason:'coupon-confirmed', lastResult:'confirmed' }; }
       else { const reason = component.isConnected ? 'no-confirmation' : 'detached'; EXP.Activity.coupon('failed'); control.dataset.wardCouponFailure = reason; couponStatus = { state:'attention', reason, lastResult:'failed' }; }
       syncActivityUi();
@@ -130,7 +130,7 @@ EXP.Engine = (() => {
       if (couponPending.has(control)) continue;
       couponStatus = { state:'checking', reason:'awaiting-confirmation', lastResult:couponStatus.lastResult };
       control.dataset.wardCouponAttempted = '1'; couponPending.add(control);
-      try { const href = location.href; control.click(); verifyCoupon(control, check.component, routeEpoch, href, check.kind); }
+      try { const href = location.href; control.click(); verifyCoupon(control, check.component, routeEpoch, href, check.kind, 0, check.tile); }
       catch (error) { couponPending.delete(control); couponQuarantined = true; couponStatus = { state:'quarantined', reason:'activation-error', lastResult:'failed' }; EXP.Activity.coupon('failed'); EXP.Core.safeError(Object.assign(error, { code: 'COUPON_ACTIVATION' }), 'ward.amazon.coupon'); }
     }
   }

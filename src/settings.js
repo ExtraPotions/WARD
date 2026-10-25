@@ -36,32 +36,44 @@ EXP.Settings = (() => {
   let state;
   const listeners = new Set();
   const key = (name) => `${PREFIX}:${name}`;
+  let storageError='',invalidSaved,unsaved=false,readFailed=false;
+  const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  function managerWrite(storageKey,value) {
+    if(typeof GM_setValue!=='function'||typeof GM_getValue!=='function')throw Error('Manager storage is unavailable. Changes are temporary.');
+    GM_setValue(storageKey,ExtraPotionsCore.cloneSettings(value));
+    if(!same(GM_getValue(storageKey,undefined),value))throw Error('Settings were not saved. Retry saving.');
+  }
+  function pageCopy(storageKey){try{return localStorage.getItem(storageKey);}catch{return null;}}
+  // Preserve the exact legacy bytes in isolated storage before removing a page-readable copy.
+  function archivePageCopy(storageKey) {
+    const text=pageCopy(storageKey);if(text===null)return;
+    const backup=key('page-settings-backup:'+encodeURIComponent(location.origin||location.hostname));
+    const previous=typeof GM_getValue==='function'?GM_getValue(backup,[]):[];
+    const copies=Array.isArray(previous)?previous:[];
+    managerWrite(backup,copies.includes(text)?copies:[...copies,text]);
+    localStorage.removeItem(storageKey);
+  }
   function read(name) {
     if(ExtraPotionsCore.productDataResetting?.('ward'))return undefined;
-    const storageKey = key(name);
+    const storageKey=key(name);
+    if(unsaved&&memory.has(storageKey))return memory.get(storageKey);
+    readFailed=false;
     try {
-      if (typeof GM_getValue === 'function') {
-        const value = GM_getValue(storageKey, undefined);
-        if (value !== undefined) return value;
+      if(typeof GM_getValue==='function'){
+        const value=GM_getValue(storageKey,undefined);
+        if(value!==undefined)return value;
       }
-    } catch {}
-    try {
-      const value = localStorage.getItem(storageKey);
-      if (value !== null) {
-        const parsed = JSON.parse(value);
-        memory.set(storageKey, parsed);
-        try { if (typeof GM_setValue === 'function') GM_setValue(storageKey, parsed); } catch {}
-        return parsed;
-      }
-    } catch {}
-    return memory.get(storageKey);
+      const text=pageCopy(storageKey);
+      return text===null?memory.get(storageKey):JSON.parse(text);
+    } catch {readFailed=true;storageError='Saved data could not be read. Reload or export before retrying.';return memory.get(storageKey);}
   }
-  function write(name, value) {
-    if(ExtraPotionsCore.productDataResetting?.('ward'))return;
-    const storageKey = key(name);
-    memory.set(storageKey, value);
-    try { if (typeof GM_setValue === 'function') GM_setValue(storageKey, value); } catch {}
-    try { localStorage.setItem(storageKey, JSON.stringify(value)); } catch {}
+  function write(name,value) {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return false;
+    const storageKey=key(name);memory.set(storageKey,ExtraPotionsCore.cloneSettings(value));
+    try {managerWrite(storageKey,value);unsaved=false;storageError='';
+      try{archivePageCopy(storageKey);}catch{storageError='Settings saved. A legacy page copy could not be archived.';}
+      return true;
+    }catch{unsaved=true;storageError='Settings are temporary. Storage is unavailable; retry saving.';return false;}
   }
   function validate(candidate) {
     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) throw Object.assign(new Error('Settings must be an object'), { code: 'SETTINGS_TYPE' });
@@ -94,7 +106,10 @@ EXP.Settings = (() => {
   }
   function load() {
     const stored = read('settings');
-    state = validate(stored || defaults);
+    if(unsaved&&state)return snapshot();
+    try{state = validate(stored ?? defaults);invalidSaved=undefined;}
+    catch{invalidSaved=ExtraPotionsCore.cloneSettings(stored);state=ExtraPotionsCore.cloneSettings(defaults);state.safeMode=true;storageError='Saved settings need recovery. Original data is preserved.';return snapshot();}
+    if(readFailed){state.safeMode=true;return snapshot();}
     write('settings', state);
     return snapshot();
   }
@@ -103,16 +118,28 @@ EXP.Settings = (() => {
     const { trustedBrands, pageExceptions, ...settings } = value;
     return { ...settings, trustedBrandCount: trustedBrands.length, pageExceptionCount: pageExceptions.length };
   }
-  function replace(value, reason = 'replace') { if(ExtraPotionsCore.productDataResetting?.('ward'))return snapshot(); const next=validate(value);state=next;write('settings', state); for (const listener of listeners) listener(snapshot(), reason); return snapshot(); }
+  function replace(value,reason='replace') {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return snapshot();
+    if(readFailed){storageError='Saved data is unreadable. Retry before changing settings.';return snapshot();}
+    const next=validate(value);
+    if(invalidSaved!==undefined){
+      try{managerWrite(key('recovery:'+Date.now()),invalidSaved);}catch{storageError='Original data could not be backed up. Retry recovery.';return snapshot();}
+    }
+    state=next;invalidSaved=undefined;write('settings',next);
+    for(const listener of listeners)listener(snapshot(),reason);return snapshot();
+  }
+  function storageStatus(){return {error:storageError,unsaved,recovery:invalidSaved!==undefined};}
+  function recoveryData(){return {product:'ward',saved:invalidSaved===undefined?read('settings'):ExtraPotionsCore.cloneSettings(invalidSaved)};}
+  function retrySave(){if(readFailed){read('settings');if(readFailed)return snapshot();storageError='';return load();}if(invalidSaved!==undefined)return replace({...defaults,safeMode:true},'recover-settings');write('settings',snapshot());for(const listener of listeners)listener(snapshot(),'retry-save');return snapshot();}
   function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
   function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
   function exportData() { return { product: 'ward', generation: 3, schema: SCHEMA, settings: snapshot() }; }
   function prepareImport(payload) { if (!payload || payload.product !== 'ward' || payload.generation !== 3 || payload.schema !== SCHEMA) throw Object.assign(new Error('Unsupported WARD export'), { code: 'IMPORT_SCHEMA' }); return validate(payload.settings); }
   function resetAll() {
     ExtraPotionsCore.clearProductData('ward');
-    memory.clear();state = ExtraPotionsCore.cloneSettings(defaults);
+    memory.clear();storageError='';invalidSaved=undefined;unsaved=false;state = ExtraPotionsCore.cloneSettings(defaults);
     for (const listener of listeners) listener(snapshot(), 'product-reset');
     return snapshot();
   }
-  return Object.freeze({resetAll, PREFIX, SCHEMA, defaults, validate, load, snapshot, diagnosticSnapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
+  return Object.freeze({storageStatus,recoveryData,retrySave,resetAll, PREFIX, SCHEMA, defaults, validate, load, snapshot, diagnosticSnapshot, replace, update, subscribe, exportData, prepareImport, hasStored: () => read('settings') !== undefined });
 })();

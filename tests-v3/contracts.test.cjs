@@ -12,7 +12,7 @@ test('WARD settings are clean, validated, and coupon clipping defaults on', () =
   assert.match(source, /const PREFIX = 'exp:v3:ward'/);
   assert.match(source, /autoClipCoupons: true/);
   assert.match(source, /compactSearch: false/);
-  assert.doesNotMatch(source, /adpb:amazon|GM_listValues|legacy/i);
+  assert.doesNotMatch(source, /adpb:amazon|GM_listValues/i);
 });
 
 test('pattern registry defines unique concepts rather than selectors', () => {

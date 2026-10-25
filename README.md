@@ -8,6 +8,12 @@
 [![Code: PolyForm Noncommercial 1.0.0](docs/badges/code.svg)](LICENSE-CODE.md)
 [![Artwork and documentation: CC BY-NC-SA 4.0](docs/badges/assets.svg)](LICENSE-ASSETS.md)
 
+## Latest changes
+
+- Use compact settings and shorter review and transfer actions at all three widths.
+- Keep preferences private with verified saves and recoverable original data.
+- Confirm coupons only from positive control or exact coupon-tile evidence.
+
 ## Get started
 
 1. Install a userscript manager such as [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/).

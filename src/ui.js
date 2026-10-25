@@ -2,6 +2,8 @@ EXP.UI = (() => {
   let healthControl;
   let pageActions;
   function systemHealthSnapshot() {
+    const storage=EXP.Settings.storageStatus();
+    if(storage.error)return {state:'attention',reason:storage.error,checkedAt:Date.now(),action:{label:storage.recovery?'Use safe defaults':'Retry saving',run:()=>EXP.Settings.retrySave()}};
     const settings=EXP.Settings.snapshot(),data=EXP.Engine.diagnostics(),checkedAt=Date.now();
     if(settings.safeMode||settings.enabled===false||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
     if(data.adapter.health==='inactive')return {state:'waiting',reason:'This page has no supported retailer module.',checkedAt};
@@ -189,6 +191,7 @@ EXP.UI = (() => {
 
   function update(patch, reason) {
     const next = EXP.Settings.update(patch, reason);
+    if(EXP.Settings.storageStatus().error)notify(EXP.Settings.storageStatus().error);
     
     if (shell?.classList.contains('open')) renderView();
     else chrome?.update();
@@ -383,15 +386,15 @@ EXP.UI = (() => {
   function protectionReview() {
     const card=ExtraPotionsCore.createDisclosure('Protection Review');
     card.dataset.wardReview='1';
-    const record=(verdict,patternId)=>{const state=EXP.Settings.snapshot();update({protectionReviews:[...(state.protectionReviews||[]),{verdict,patternId,retailer:EXP.Retailer.key(),at:Date.now()}].slice(-100)},'protection-review');notify('Local review saved.');};
+    const record=(verdict,patternId)=>{const state=EXP.Settings.snapshot();update({protectionReviews:[...(state.protectionReviews||[]),{verdict,patternId,retailer:EXP.Retailer.key(),at:Date.now()}].slice(-100)},'protection-review');notify(EXP.Settings.storageStatus().unsaved?EXP.Settings.storageStatus().error:'Local review saved.');};
     for(const item of EXP.Actions.snapshot().filter(value=>value.connected&&value.action!=='allow').slice(0,8)){
       const line=section();const title=el('div','',EXP.Patterns.get(item.patternId)?.label||item.patternId);title.style.cssText='padding:4px 8px 0;font-weight:600';title.title=`${item.action} · ${item.confidence} · ${reasonLabel(item.reason)}`;line.append(title);
-      const controls=el('div','settings-transfer');controls.append(action('Correct',()=>record('correct',item.patternId)),action('Wrong target',()=>{record('wrong',item.patternId);if(!confirm('Allow this protection type for this page?'))return;const state=EXP.Settings.snapshot(),path=location.hostname+location.pathname;update({pageExceptions:[...state.pageExceptions.filter(value=>value.path!==path||value.patternId!==item.patternId),{path,patternId:item.patternId}]},'review-page-correction');notify('Page correction saved.');}));line.append(controls);card.append(line);
+      const controls=el('div','settings-transfer');controls.append(action('Correct',()=>record('correct',item.patternId)),action('Wrong target',()=>{record('wrong',item.patternId);if(!confirm('Allow this protection type for this page?'))return;const state=EXP.Settings.snapshot(),path=location.hostname+location.pathname;update({pageExceptions:[...state.pageExceptions.filter(value=>value.path!==path||value.patternId!==item.patternId),{path,patternId:item.patternId}]},'review-page-correction');notify(EXP.Settings.storageStatus().unsaved?EXP.Settings.storageStatus().error:'Page correction saved.');}));line.append(controls);card.append(line);
     }
     let missed=EXP.Retailer.patternIds().values().next().value||'';
     const choices=[...EXP.Retailer.patternIds()].map(id=>[id,EXP.Patterns.get(id)?.label||id]);
-    const missedField=el('label','');missedField.style.cssText='display:flex;flex-direction:column;gap:2px;padding:4px 8px';missedField.append(el('span','','Missed content'),selectControl(missed,'Missed protection type',choices,value=>{missed=value;}));
-    card.append(missedField,action('Record missed content',()=>{if(missed)record('missed',missed);}));
+    const missedField=el('label','');missedField.style.cssText='display:flex;flex-direction:column;gap:2px;padding:4px 8px';const missedChoice=selectControl(missed,'Missed protection type',choices,value=>{missed=value;});missedChoice.dataset.expFullWidth='1';missedField.append(el('span','','Missed content'),missedChoice);
+    card.append(missedField,action('Record',()=>{if(missed)record('missed',missed);}));
     const count=el('div','',`${EXP.Settings.snapshot().protectionReviews.length} reviews saved`);count.style.cssText='padding:4px 8px';card.append(count);return card;
   }
 
@@ -562,9 +565,9 @@ EXP.UI = (() => {
     transfers.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0';
 
     transfers.append(
-      action('Export settings',async () => {
+      action('Export',async () => {
         try {
-          await navigator.clipboard.writeText(JSON.stringify(EXP.Settings.exportData(),null,2));
+          await navigator.clipboard.writeText(JSON.stringify(EXP.Settings.storageStatus().recovery?EXP.Settings.recoveryData():EXP.Settings.exportData(),null,2));
           notify('WARD settings copied.');
         } catch (error) {
           EXP.Core.safeError(Object.assign(error,{code:'EXPORT_COPY'}),'ward.ui');
@@ -574,13 +577,13 @@ EXP.UI = (() => {
     );
 
     transfers.append(
-      action('Import settings',() => {
+      action('Import',() => {
         const raw = prompt('Paste a WARD settings export');
         if (raw === null) return;
         try {
           const prepared = EXP.Settings.prepareImport(JSON.parse(raw));
           EXP.Settings.replace(prepared,'import');
-          notify('WARD settings imported.');
+          notify(EXP.Settings.storageStatus().unsaved||EXP.Settings.storageStatus().recovery?EXP.Settings.storageStatus().error:'WARD settings imported.');
           renderView();
         } catch (error) {
           EXP.Core.safeError(error,'ward.import');

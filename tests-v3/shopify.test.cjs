@@ -28,8 +28,8 @@ async function open(t, url, html, { settings, init = false, instrument = false }
   const browser = await chromium.launch({ headless: true });
   t.after(() => browser.close());
   const tab = await browser.newPage({ viewport: { width: 1000, height: 800 } });
-  if (settings) await tab.addInitScript((settings) => localStorage.setItem('exp:v3:ward:settings', JSON.stringify(settings)), settings);
-  if (init) await tab.addInitScript({ content: source });
+  const seed=settings?`GM_setValue('exp:v3:ward:settings',${JSON.stringify(settings)});`:'';
+  await tab.addInitScript({content:require('./manager-storage.cjs')+seed+(init?source:'')});
   const origin = new URL(url).origin;
   await tab.route(`${origin}/**`, (route) => route.request().isNavigationRequest() ? route.fulfill({ status: 200, contentType: 'text/html', body: html }) : route.fulfill({ status: 200, body: '' }));
   await tab.goto(url);
@@ -53,8 +53,8 @@ test('WARD stays out of a page that is not a store, even one loading images and 
 });
 
 test('listed stores still start at document-start; Shopify storefronts start once the page is parsed', async (t) => {
-  // WARD saves its settings as soon as it starts, so a script in the page body can see whether it already ran.
-  const probe = '<script>window.wardSeenWhileParsing = localStorage.getItem(\'exp:v3:ward:settings\') !== null;</script>';
+  // The authored manager stand-in records startup before/after body parsing; production page scripts cannot read manager values.
+  const probe = '<script>window.wardSeenWhileParsing = GM_getValue(\'exp:v3:ward:settings\', null) !== null;</script>';
   const amazon = await open(t, 'https://www.amazon.com/dp/ward', page('', `<main>Item</main>${probe}`), { init: true });
   assert.equal(await amazon.evaluate(() => window.wardSeenWhileParsing), true);
   const shopify = await open(t, 'https://www.keychron.com/products/q1', page(SHOPIFY_HEAD, `${ANNOUNCEMENT}${PRODUCT}${probe}`), { init: true });

@@ -1,0 +1,3 @@
+'use strict';
+// Authored manager stand-in: a fixture-only session snapshot permits reload tests.
+module.exports = `(()=>{const key='__fixture_manager_values__',values=new Map(JSON.parse(sessionStorage.getItem(key)||'[]'));window.GM_getValue=(key,fallback)=>values.has(key)?structuredClone(values.get(key)):fallback;window.GM_setValue=(key,value)=>{values.set(key,structuredClone(value));sessionStorage.setItem('__fixture_manager_values__',JSON.stringify([...values]));};window.GM_deleteValue=key=>{values.delete(key);sessionStorage.setItem('__fixture_manager_values__',JSON.stringify([...values]));};window.GM_listValues=()=>[...values.keys()];})();`;
