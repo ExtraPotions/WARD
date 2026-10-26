@@ -28,7 +28,7 @@ WARD's tests live in `tests-v3/`, not `tests/`.
 
 - The release check counts `setInterval` calls in the readable build. It allows the launcher host protection interval and the two status refresh timers, and nothing else. Run this optional check when reviewing timer changes.
 - The install stays between 100 and 425 KB.
-- README screenshots (`protection.png`, `amazon.png`, `look.png`) match `docs/screenshots.config.cjs`.
+- README screenshots (`protection.gif`, `amazon.png`, `look.png`) match `docs/screenshots.config.cjs`.
 
 ## Manual checks and publication
 

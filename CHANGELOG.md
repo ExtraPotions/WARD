@@ -1,3 +1,8 @@
+## 3.4.48 - 2026-10-26
+
+- Restore rounded-square header buttons with the existing touch targets.
+- Simplify documentation and remove unused badges and superseded screenshots.
+
 ## 3.4.47 - 2026-10-26
 
 - Unify Amazon Hero Quick Promo sponsored ad wrappers to prevent top-of-page ad flashing.

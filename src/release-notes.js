@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.47';
+EXP.VERSION = '3.4.48';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.4.48': ["Restore rounded-square header buttons with the existing touch targets.","Simplify documentation and remove unused badges and superseded screenshots."],
     '3.4.47': ["Unify Amazon Hero Quick Promo sponsored ad wrappers to prevent top-of-page ad flashing.","Harden incremental scan and reconciliation handling for SafeFrame placements and disclosure links."],
     '3.4.46': ["Expand Best Buy product route pattern to support nested category item URLs.","Improve product page detection across deep retailer navigation structures."],
     '3.4.45': ["Use compact settings and shorter review and transfer actions at all three widths.","Keep preferences private with verified saves and recoverable original data.","Confirm coupons only from positive control or exact coupon-tile evidence."],
