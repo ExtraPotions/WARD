@@ -1,3 +1,8 @@
+## 3.4.47 - 2026-10-26
+
+- Unify Amazon Hero Quick Promo sponsored ad wrappers to prevent top-of-page ad flashing.
+- Harden incremental scan and reconciliation handling for SafeFrame placements and disclosure links.
+
 ## 3.4.46 - 2026-10-25
 
 - Expand Best Buy product route pattern to support nested category item URLs.

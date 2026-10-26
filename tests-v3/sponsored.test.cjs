@@ -92,3 +92,102 @@ test('sponsored policy still respects disabled categories, essential controls an
   assert.deepEqual(result.safety,{mixedHidden:false,mixedAction:'annotate',shellHidden:false,shellAction:''});
   assert.equal(result.disabled,true);
 });
+
+test('hero quick promo ad unit with sibling feedback disclosure hides cleanly and never flashes on incremental child mutations', async t => {
+  const hqpAd = `
+<div id="hqpWrapper" class="centerColAlign">
+  <div id="heroQuickPromoContainer" class="celwidget" data-feature-name="heroQuickPromoContainer">
+    <hr aria-hidden="true" class="a-spacing-medium a-divider-normal"/>
+    <div id="heroQuickPromo_feature_div" class="celwidget" data-feature-name="heroQuickPromo">
+      <div id="ape_Detail_hero-quick-promo_Desktop_test_placement" class="text/x-dacx-safeframe ape-placement">
+        <iframe title="Sponsored ad"></iframe>
+      </div>
+      <div id="ape_Detail_hero-quick-promo_Desktop_test_placement_Feedback" class="ape-feedback">
+        <a id="af-label-primary-link-hero-quick-promo" aria-label="Leave feedback on Sponsored ad">
+          <span id="ad-feedback-text-hero-quick-promo">Sponsored</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>`;
+  const page = await setup(t, hqpAd);
+  const result = await page.evaluate(() => {
+    EXP.Engine.start();
+    const wrapper = document.getElementById('hqpWrapper');
+    const placement = document.getElementById('ape_Detail_hero-quick-promo_Desktop_test_placement');
+    const feedback = document.getElementById('ape_Detail_hero-quick-promo_Desktop_test_placement_Feedback');
+    const container = document.getElementById('heroQuickPromoContainer');
+
+    const initialHidden = wrapper.hidden && wrapper.dataset.wardAction === 'hide';
+
+    // Simulate late SafeFrame mutations inside placement and feedback
+    placement.innerHTML = '<iframe title="Updated ad"></iframe>';
+    EXP.Engine.processBatch([placement]);
+    const afterPlacementBatch = wrapper.hidden && !placement.hasAttribute('data-ward-action');
+
+    feedback.innerHTML = '<a id="af-label-primary-link-hero-quick-promo"><span>Updated Sponsored</span></a>';
+    EXP.Engine.processBatch([feedback]);
+    const afterFeedbackBatch = wrapper.hidden && !feedback.hasAttribute('data-ward-action');
+
+    // Simulate mutation on container
+    container.setAttribute('data-updated', '1');
+    EXP.Engine.processBatch([container]);
+    const afterContainerBatch = wrapper.hidden;
+
+    EXP.Engine.stop();
+    const restored = !wrapper.hidden && !wrapper.hasAttribute('data-ward-action');
+
+    return { initialHidden, afterPlacementBatch, afterFeedbackBatch, afterContainerBatch, restored };
+  });
+
+  assert.deepEqual(result, {
+    initialHidden: true,
+    afterPlacementBatch: true,
+    afterFeedbackBatch: true,
+    afterContainerBatch: true,
+    restored: true
+  });
+});
+
+test('hero quick promo without hqpWrapper hides heroQuickPromoContainer and remains intact on child mutations', async t => {
+  const hqpAd = `
+<div id="heroQuickPromoContainer" class="celwidget" data-feature-name="heroQuickPromoContainer">
+  <div id="heroQuickPromo_feature_div" class="celwidget" data-feature-name="heroQuickPromo">
+    <div id="ape_Detail_hero-quick-promo_Desktop_test2_placement" class="text/x-dacx-safeframe ape-placement">
+      <iframe title="Sponsored ad"></iframe>
+    </div>
+    <div id="ape_Detail_hero-quick-promo_Desktop_test2_placement_Feedback" class="ape-feedback">
+      <a id="af-label-primary-link-hero-quick-promo"><span>Sponsored</span></a>
+    </div>
+  </div>
+</div>`;
+  const page = await setup(t, hqpAd);
+  const result = await page.evaluate(() => {
+    EXP.Engine.start();
+    const container = document.getElementById('heroQuickPromoContainer');
+    const placement = document.getElementById('ape_Detail_hero-quick-promo_Desktop_test2_placement');
+    const feedback = document.getElementById('ape_Detail_hero-quick-promo_Desktop_test2_placement_Feedback');
+
+    const initialHidden = container.hidden && container.dataset.wardAction === 'hide';
+
+    placement.innerHTML = '<iframe title="Updated ad"></iframe>';
+    EXP.Engine.processBatch([placement]);
+    const afterPlacementBatch = container.hidden && !placement.hasAttribute('data-ward-action');
+
+    feedback.innerHTML = '<a id="af-label-primary-link-hero-quick-promo"><span>Updated Sponsored</span></a>';
+    EXP.Engine.processBatch([feedback]);
+    const afterFeedbackBatch = container.hidden && !feedback.hasAttribute('data-ward-action');
+
+    EXP.Engine.stop();
+    const restored = !container.hidden && !container.hasAttribute('data-ward-action');
+
+    return { initialHidden, afterPlacementBatch, afterFeedbackBatch, restored };
+  });
+
+  assert.deepEqual(result, {
+    initialHidden: true,
+    afterPlacementBatch: true,
+    afterFeedbackBatch: true,
+    restored: true
+  });
+});

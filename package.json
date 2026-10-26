@@ -20,6 +20,6 @@
     "playwright": "1.64.1",
     "terser": "5.51.2"
   },
-  "version": "3.4.46",
+  "version": "3.4.47",
   "author": "expDARE"
 }
