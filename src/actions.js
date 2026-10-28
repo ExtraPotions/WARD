@@ -208,6 +208,17 @@ EXP.Actions = (() => {
     const id = idFor(node);
     const record = records.get(id);
     capture(record);
+    record.guard ??= new MutationObserver(() => {
+      if (!records.has(id) || record.revealed || presentationIntact(record, record.action)) return;
+      apply(node, {
+        action: record.action,
+        pattern: { id:record.patternId, category:record.category, label:EXP.Patterns.get(record.patternId)?.label || 'protected content' },
+        confidence: record.confidence,
+        structuralSafe: record.structuralSafe,
+        reason: record.reason
+      });
+    });
+    record.guard.observe(node, { attributes:true, attributeFilter:['style','hidden','inert','class','data-ward-action'] });
 
     const structuralAction = proposal.action === 'hide' || proposal.action === 'collapse';
     const nextAction = structuralAction && proposal.structuralSafe === false ? 'dim' : proposal.action;
@@ -301,6 +312,7 @@ EXP.Actions = (() => {
   function restore(id, forget = true) {
     const record = records.get(id);
     if (!record) return false;
+    record.guard?.disconnect();
     clearPresentation(record);
     record.node.removeAttribute('data-ward-revealed');
     record.node.removeAttribute('data-ward-instance');
@@ -355,6 +367,7 @@ EXP.Actions = (() => {
     for (const [id, record] of records) {
       if (record.node.isConnected && record.action === 'annotate' && MESSAGE_PATTERNS.has(record.patternId) && emptied(record.node)) { restore(id); continue; }
       if (record.node.isConnected) continue;
+      record.guard?.disconnect();
       record.companion?.remove();
       records.delete(id);
       byNode.delete(record.node);

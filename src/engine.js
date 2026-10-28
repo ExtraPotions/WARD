@@ -175,7 +175,6 @@ EXP.Engine = (() => {
     if (!active) return;
     roots = [...new Set(roots.map(root => root.closest?.('[data-ward-instance]') || root))];
     const settings = EXP.Settings.snapshot();
-    EXP.SiteTheme?.apply(settings, roots);
     if (!EXP.Retailer.enabled(settings) || settings.safeMode) { EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
     const pageType = EXP.Retailer.classify();
     EXP.Layout.apply(settings, pageType);

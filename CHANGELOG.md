@@ -1,3 +1,10 @@
+## 3.4.49 - 2026-10-28
+
+- Clear store colors on checkout pages and restore the saved palette on return.
+- Keep protected ads hidden when the site resets their presentation.
+- Apply saved site colors at document start, before the page body loads.
+- Coalesce subtree repaint work and skip unchanged palette requests.
+
 ## 3.4.48 - 2026-10-26
 
 - Restore rounded-square header buttons with the existing touch targets.

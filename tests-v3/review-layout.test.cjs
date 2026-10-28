@@ -6,6 +6,7 @@ test('protection review keeps full-width type choices and working review actions
  await page.goto('https://www.amazon.com/dp/sample');await page.addScriptTag({content:fs.readFileSync(path.join(__dirname,'../ward.user.js'),'utf8')});const host=page.locator('#exp-ward-root');await host.locator('[data-exp-part=launcher]').click();
  for(const [size,width]of [['standard',324],['compact',304],['mini',280]]){
   await page.evaluate(size=>{GM_setValue('exp:suite:menu-size',size);localStorage.setItem('exp:suite:menu-size',size);document.dispatchEvent(new CustomEvent('exp-core:menu-size',{detail:size}));},size);
+  await page.waitForFunction(width=>Math.abs(document.querySelector('#exp-ward-root').shadowRoot.querySelector('[data-exp-part=dock]').getBoundingClientRect().width-width)<.1,width);
   const card=host.locator('[data-ward-review]');if(!await card.evaluate(n=>n.open))await card.locator(':scope>summary').click();
   const choice=card.getByRole('combobox',{name:'Missed protection type'});await choice.selectOption({label:'Prime membership promotion'});
   const facts=await card.evaluate(n=>{const s=n.querySelector('select'),face=s.parentElement,r=face.getBoundingClientRect();return{width:n.closest('[data-exp-part=dock]').getBoundingClientRect().width,height:n.getBoundingClientRect().height,choiceWidth:r.width,available:n.clientWidth,paragraphs:n.querySelectorAll('p').length,overflow:n.scrollWidth-n.clientWidth};});

@@ -1,7 +1,8 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.4.48
+// @version      3.4.49
+// @run-at       document-start
 // @description  Local retail-pressure protection for Amazon, eBay, Etsy, Walmart, Target, Best Buy and Shopify stores.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
 // @tag          shopping

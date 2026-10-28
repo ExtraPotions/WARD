@@ -1,19 +1,24 @@
-EXP.VERSION = '3.4.48';
+EXP.VERSION = '3.4.49';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
-  const ready = () => document.body
-    ? Promise.resolve()
-    : new Promise(resolve => addEventListener('DOMContentLoaded', resolve, { once:true }));
+  const ready = () => document.body ? Promise.resolve() : new Promise(resolve => {
+    const finish = () => { observer.disconnect(); removeEventListener('DOMContentLoaded',finish); resolve(); };
+    const observer = new MutationObserver(() => { if(document.body)finish(); });
+    observer.observe(document,{ childList:true, subtree:true });
+    addEventListener('DOMContentLoaded',finish,{ once:true });
+  });
 
   async function initialize() {
     EXP.Settings.load();
+    if(document.documentElement)EXP.SiteTheme.apply();
     await ready();
+    EXP.SiteTheme.apply();
     scheduler = EXP.Core.createScheduler(
       roots => EXP.Engine.processBatch(roots),
       { source:'ward' }
     );
-    navigationCleanup = EXP.Core.onNavigation(() => EXP.Engine.navigation());
+    navigationCleanup = EXP.Core.onNavigation(() => { EXP.SiteTheme.apply(); EXP.Engine.navigation(); });
     settingsCleanup = EXP.Settings.subscribe(() => {
       EXP.SiteTheme.apply();
       if (lifecycle?.state === 'enabled' && !ExtraPotionsCore.suiteSitePaused() && EXP.Retailer.enabled(EXP.Settings.snapshot()) && !EXP.Engine.active) {
