@@ -25,7 +25,6 @@
 // @match        https://www.bestbuy.com/*
 // @match        https://bestbuy.com/*
 // @match        https://*/*
-// @run-at       document-start
 // @inject-into  content
 // @grant        GM_getValue
 // @grant        GM_setValue

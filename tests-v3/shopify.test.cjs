@@ -123,7 +123,7 @@ test('a sign-up pop-up that fades in from transparent is hidden once it is visib
   const tab = await open(t, 'https://www.keychron.com/', page(SHOPIFY_HEAD, `${PRODUCT}`), { init: true });
   // Klaviyo-style entrance: inserted transparent, then faded in by the theme a moment later.
   await tab.evaluate((html) => { document.body.insertAdjacentHTML('beforeend', html.replace('display:flex;', 'display:flex;opacity:0;transition:opacity .2s;')); setTimeout(() => { document.getElementById('popup-layer').style.opacity = '1'; }, 300); }, POPUP);
-  await tab.waitForFunction(() => document.getElementById('popup-layer').dataset.wardAction === 'hide', null, { timeout: 4000 });
+  await tab.waitForFunction(() => document.getElementById('popup-layer').dataset.wardAction === 'hide', null, { timeout: 4000, polling: 100 });
   assert.equal(await tab.evaluate(() => getComputedStyle(document.getElementById('popup-layer')).display), 'none');
 });
 
@@ -137,7 +137,7 @@ const scrolls = (tab) => tab.evaluate(() => [document.body, document.documentEle
 async function attentive(tab) {
   await tab.route('https://creatives.attn.tv/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<p>Get 15% off by text</p>' }));
   await tab.evaluate(([html, lock]) => { document.body.insertAdjacentHTML('beforeend', html); const write = new Function(`(${lock})()`); setTimeout(write, 100); setTimeout(write, 250); }, [ATTENTIVE, ATTENTIVE_LOCK.toString()]);
-  await tab.waitForFunction(() => document.getElementById('attentive_overlay').dataset.wardAction === 'hide', null, { timeout: 4000 });
+  await tab.waitForFunction(() => document.getElementById('attentive_overlay').dataset.wardAction === 'hide', null, { timeout: 4000, polling: 100 });
   await tab.waitForTimeout(600);
 }
 
