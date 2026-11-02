@@ -17,11 +17,9 @@ Supports Amazon, eBay, Etsy, Walmart, Target, Best Buy and Shopify stores. Essen
 
 ## Screenshots
 
-<img src="docs/screenshots/menu-light.png" width="324" alt="WARD Light menu with expandable groups closed">
-
-<img src="docs/screenshots/menu-dark.png" width="324" alt="WARD Dark menu with expandable groups closed">
-
-<img src="docs/screenshots/changelog.png" width="324" alt="WARD changelog notice with the current version and release notes">
+| Light | Dark | Changelog |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/menu-light.png" width="324" alt="WARD Light menu with expandable groups closed"> | <img src="docs/screenshots/menu-dark.png" width="324" alt="WARD Dark menu with expandable groups closed"> | <img src="docs/screenshots/changelog.png" width="324" alt="WARD changelog notice with the current version and release notes"> |
 
 ---
 
