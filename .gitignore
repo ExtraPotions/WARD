@@ -1,5 +1,19 @@
-node_modules/
-test-results/
-*Edit conflict*
-*conflicted copy*
-*Name clash*
+# Public distributions only. Development files stay local.
+*
+!/assets/
+!/docs/
+!/docs/screenshots/
+!/.gitattributes
+!/.gitignore
+!/CHANGELOG.md
+!/LICENSE-ASSETS.md
+!/LICENSE-CODE.md
+!/NOTICE.md
+!/README.md
+!/assets/ward-launcher.svg
+!/ward.user.js
+!/docs/usage.md
+!/docs/privacy.md
+!/docs/screenshots/menu-light.png
+!/docs/screenshots/menu-dark.png
+!/docs/screenshots/changelog.png
