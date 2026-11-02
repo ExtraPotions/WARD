@@ -17,7 +17,7 @@ EXP.UI = (() => {
   const BADGE = ICON_URL;
   const LAUNCHER = ICON_URL;
 
-  const UI_THEMES = ExtraPotionsCore.themes({"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#120b05 0 38%,#b66a16 38% 69%,#356f78 69% 100%)","canvas":"#120b05","surface":"#241409","primary":"#b66a16","companion":"#9d3131","counterpoint":"#356f78","interactive":"#d1842a","bg":"#120b05","panel":"#241409","line":"#53321f","text":"#f1dfc9","muted":"#b79e84","accent":"#b66a16","accent2":"#d1842a","skin":"linear-gradient(135deg,#b66a16 0%,#9d3131 52%,#356f78 100%)","skinVertical":"linear-gradient(180deg,#b66a16 0%,#9d3131 52%,#356f78 100%)"});
+  const UI_THEMES = ExtraPotionsCore.themes();
 
   let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard, noticeController;
   let toastTimer, launcherCleanup, escapeHandler;
@@ -69,8 +69,8 @@ EXP.UI = (() => {
     .row-help{display:block;margin-top:4px;color:var(--muted);font:400 var(--exp-font-size-small,12px)/1.5 "Segoe UI",system-ui,sans-serif}
     .activity-breakdown{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0}
     .activity-reasons,.current-protections{display:grid;gap:4px;margin-top:6px}
-    .health-healthy,.coupon-confirmed{color:#95e6ae!important}
-    .health-attention,.coupon-attention,.coupon-quarantined{color:#ffd17a!important}
+    .health-healthy,.coupon-confirmed{color:light-dark(#21643b,#95e6ae)!important}
+    .health-attention,.coupon-attention,.coupon-quarantined{color:light-dark(#7a4b00,#ffd17a)!important}
     .health-inactive,.coupon-disabled{color:var(--muted)!important}
     :host([data-exp-non-color="1"]) .health-healthy::before{content:'✓ ';font-weight:900}
     :host([data-exp-non-color="1"]) :is(.health-attention,.coupon-attention,.coupon-quarantined)::before{content:'! ';font-weight:900}
@@ -400,8 +400,7 @@ EXP.UI = (() => {
 
   function lookView(settings) {
     const fragment = document.createDocumentFragment();
-    fragment.append(row('Site colors','Recolor supported stores with a palette. Obsidian is always dark; the others follow your device’s light or dark mode. Product photos keep their original colors.',
-      selectControl(settings.siteColors,'Site colors',EXP.SiteTheme.choices(),value => update({siteColors:value},'site-colors'))));
+    fragment.append(ExtraPotionsCore.createThemeModeControl({value:settings.uiTheme,onChange:uiTheme=>update({uiTheme},'menu-theme')}),ExtraPotionsCore.createSiteColorControl({value:settings.siteColors,onChange:siteColors=>update({siteColors},'site-theme')}));
     const accessibility = section('Accessibility');
     accessibility.append(
       row('Reduce motion','',
@@ -635,7 +634,7 @@ EXP.UI = (() => {
     if (!nav) return;
 
     const settings = EXP.Settings.snapshot();
-    applyUiTheme('ward');
+    applyUiTheme(EXP.Settings.snapshot().uiTheme);
     host.dataset.expNonColor = settings.nonColorIndicators ? '1' : '0';
 
     for (const button of nav.querySelectorAll('.tool-panel > .route')) {

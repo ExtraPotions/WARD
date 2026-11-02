@@ -10,7 +10,7 @@
 
 ## Features and controls
 
-- **Choose site colors:** pick a palette in **Look → Site colors** to recolor supported stores: Obsidian, or Default, Indigo, Blue, Green, Red or Gray, which follow your system light or dark mode. Page surfaces, navigation, forms and neutral controls use the chosen palette. Product photos and promotional artwork retain their colors; text, details panels and review fades follow the surface beneath them. Purchase and status colors remain meaningful. Off restores the site's colors.
+- **Site theme:** choose Slate Blue Light, Dark or System in **Look → Site theme**. Product photos and artwork retain their colors; neutral surfaces, forms and review fades follow the mode. Purchase and status colors remain meaningful.
 - **Calm the page:** hide or dim sponsored placements, upsells, urgency messages, and pushy recommendations at the level you choose. Essential purchasing information stays visible.
 - **Shop six stores and Shopify shops:** Amazon, eBay, Etsy, Walmart, Target, Best Buy, and any store built on Shopify, each with its own controls. On Shopify stores, WARD hides email sign-up pop-ups and dims announcement bars.
 - **Undo changes:** reveal hidden content, allow a pattern on a page, or pause WARD entirely.
@@ -24,3 +24,7 @@ Open **System** for status, diagnostics, troubleshooting and Reset. Menu sizing 
 ## Support and verification
 
 [Report a problem](https://github.com/ExtraPotions/WARD/issues) or read the [development notes](development.md) for supported behavior and verification limits. Screenshots use sample content; iPad-sized captures use touch emulation and do not establish installed iPad browser support.
+
+## Appearance
+
+Menu theme uses Slate Blue with Light, Dark and System. System follows your device and updates when its appearance changes. Site theme has the same three choices and is independent of the menu. Legacy palette settings migrate to System. Gem themes, palette choices and custom menu opacity are no longer available.

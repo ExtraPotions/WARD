@@ -1,7 +1,8 @@
-EXP.VERSION = '3.4.49';
+EXP.VERSION = '3.5.0';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.5.0': ["Use Slate Blue Light, Dark or System for menus and supported site themes.","Migrate retired color choices to System and remove extra theme and opacity controls.","Show product-only Light, Dark and current changelog screenshots."],
     '3.4.49': ["Clear store colors on checkout pages and restore the saved palette on return.","Keep protected ads hidden when the site resets their presentation.","Apply saved site colors at document start, before the page body loads.","Coalesce subtree repaint work and skip unchanged palette requests."],
     '3.4.48': [],
     '3.4.47': [],

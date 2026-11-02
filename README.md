@@ -15,20 +15,13 @@ After installing, refresh a supported store and open the WARD gem. [Setup and co
 
 Supports Amazon, eBay, Etsy, Walmart, Target, Best Buy and Shopify stores. Essential purchasing information stays visible; seller hints do not judge quality or authenticity.
 
-## See it in action
+## Screenshots
 
-<img src="docs/screenshots/amazon.png" width="324" alt="WARD Amazon controls">
+<img src="docs/screenshots/menu-light.png" width="324" alt="WARD Light menu with expandable groups closed">
 
-<details>
-<summary>More screenshots</summary>
+<img src="docs/screenshots/menu-dark.png" width="324" alt="WARD Dark menu with expandable groups closed">
 
-![Protection and menu walkthrough](docs/screenshots/protection.gif)
-
-![Site color controls](docs/screenshots/look.png)
-
-</details>
-
-Screenshots use sample content.
+<img src="docs/screenshots/changelog.png" width="324" alt="WARD changelog notice with the current version and release notes">
 
 ---
 
@@ -37,3 +30,4 @@ Screenshots use sample content.
 Donations are optional. All features remain available without donating.
 
 WARD is independent and is not affiliated with or endorsed by the retailers where it is used.
+Menus use Slate Blue in Light, Dark or System mode. Site themes offer the same three modes.

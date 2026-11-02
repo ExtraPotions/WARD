@@ -1,7 +1,5 @@
 // Page paint is transformed by role; transparent layers and media pixels are not surfaces.
 EXP.SiteTheme = (() => {
-  const obsidian={bg:'#03060a',panel:'#03060a',raised:'#1a2530',inset:'#1a2530',line:'#495a68',text:'#c9d7df',muted:'#899ca7',accent:'#c9d7df',onAccent:'#03060a'};
-  const extra=[{id:'obsidian',name:'Obsidian',dark:obsidian,light:obsidian}];
   const owned='[id^="exp-"],[data-exp-owned]';
   const marker='data-exp-ward-paint',records=new Map();
   const C=EXP.SiteColor;
@@ -176,7 +174,7 @@ EXP.SiteTheme = (() => {
       // All geometry/color reads finish before DOM writes, to avoid read/write layout thrashing.
       for(const [node,row]of writes){if(node.getAttribute(marker)!==row.id)node.setAttribute(marker,row.id);for(const [property,entry]of row.inline)if(node.style.getPropertyValue(property)!==entry.patched)node.style.setProperty(property,entry.patched,'important');}
       stats.passes++;stats.nodes=writes.length;
-      return `${scope}{color-scheme:${p.id==='obsidian'?'dark':p.mode};background-color:${p.bg}!important;color:${p.text}!important}${scope} body{background-color:${p.bg}!important;color:${p.text}!important}${scope} ::selection{background:${p.line};color:${p.text}}${[...records.values()].map(r=>r.css).join('')}`;
+    return `${scope}{color-scheme:${p.mode};background-color:${p.bg}!important;color:${p.text}!important}${scope} body{background-color:${p.bg}!important;color:${p.text}!important}${scope} ::selection{background:${p.line};color:${p.text}}${[...records.values()].map(r=>r.css).join('')}`;
     }finally{if(saved==='ward')html.setAttribute('data-exp-site-colors',saved);rendering=false;observe();stats.lastMs=Math.round(performance.now()-start);stats.maxMs=Math.max(stats.maxMs,stats.lastMs);}
   }
   function observe(){if(listening&&observer)observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style','hidden','open','disabled']});}
@@ -194,18 +192,18 @@ EXP.SiteTheme = (() => {
     timer=setTimeout(()=>{timer=0;if(listening){const changed=[...pending];pending.clear();roots=changed;controller().refresh();}},80);
   }
   const events=['scroll','resize','pointerover','pointerout','focusin','focusout','load'];
-  const controller=()=>colors??=ExtraPotionsCore.createSiteColors({product:'ward',extra,css:render,inject:(text,data)=>EXP.Core.injectStyle(document,text,data)});
+  const controller=()=>colors??=ExtraPotionsCore.createSiteColors({product:'ward',css:render,inject:(text,data)=>EXP.Core.injectStyle(document,text,data)});
   function clear(){
     listening=false;clearTimeout(timer);timer=0;pending.clear();for(const event of events)document.removeEventListener(event,schedule,true);
     observer?.disconnect();observer=null;removeEventListener('resize',schedule);colors?.clear();for(const [node,row]of records)restore(node,row);records.clear();key='';
   }
   function apply(settings=EXP.Settings.snapshot(),changed){
-    if(!settings.enabled||settings.siteColors==='off'||settings.safeMode||!EXP.Retailer.enabled(settings)||ExtraPotionsCore.suiteSitePaused()){clear();return;}
+    if(!settings.enabled||settings.safeMode||!EXP.Retailer.enabled(settings)||ExtraPotionsCore.suiteSitePaused()){clear();return;}
     if(listening&&controller().palette()?.id===settings.siteColors){if(changed){changed.forEach(queue);schedule();}return;}
     roots=changed||[document];
     controller().apply(settings.siteColors);
     if(!listening){listening=true;addEventListener('resize',schedule,{passive:true});for(const event of events)document.addEventListener(event,schedule,{capture:true,passive:true});observer=new MutationObserver(items=>{for(const m of items){if(m.target.closest?.(owned))continue;if(m.target.matches?.('style')||[...m.addedNodes,...m.removedNodes].some(n=>n.nodeType===1&&!n.matches(owned)&&n.matches('style,link[rel~="stylesheet"]'))){queue(document);continue;}if(m.type==='childList'&&m.addedNodes.length&&!m.removedNodes.length){for(const node of m.addedNodes)queue(node);}else queue(m.target);}schedule();});observe();}
   }
-  const choices=()=>[['off','Off'],...[...extra,...ExtraPotionsCore.sitePalettes].map(p=>[p.id,p.name])];
+  const choices=()=>ExtraPotionsCore.sitePalettes.map(p=>[p.id,p.name]);
   return Object.freeze({apply,clear,choices,ids:()=>choices().map(([id])=>id),health:()=>({...stats,records:records.size})});
 })();

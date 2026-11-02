@@ -14,7 +14,7 @@ EXP.Settings = (() => {
     safeMode: false,
     autoClipCoupons: true,
     compactSearch: false,
-    siteColors: 'off',
+    siteColors: 'system',
     recommendationCleanup: true,
     sellerClarity: true,
     sellerClaritySearch: true,
@@ -25,7 +25,7 @@ EXP.Settings = (() => {
     explanationDetail: 'concise',
     updateNotifications: true,
     launcherPosition: 'automatic-end-bottom',
-    uiTheme: 'ward',
+    uiTheme: 'system',
     menuAutoClose: true,
     menuNotifications: true,
     shortcut: '',
@@ -78,12 +78,8 @@ EXP.Settings = (() => {
   function validate(candidate) {
     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) throw Object.assign(new Error('Settings must be an object'), { code: 'SETTINGS_TYPE' });
     const next = ExtraPotionsCore.cloneSettings(defaults);
-	const themeAliases = { warm: 'ember', discord: 'glacier', pine: 'verdant', obsidian: 'contrast' };
-	const normalizedUiTheme = themeAliases[candidate.uiTheme] || candidate.uiTheme;
     for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'sellerClarity', 'sellerClaritySearch', 'sellerClarityAlways', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
-    // Site colors replaced the single Obsidian switch; an enabled switch keeps Obsidian.
-    if (['off','obsidian','default','indigo','blue','green','red','gray'].includes(candidate.siteColors)) next.siteColors = candidate.siteColors;
-    else if (candidate.siteDarkMode === true) next.siteColors = 'obsidian';
+    next.siteColors = ['light','dark','system'].includes(candidate.siteColors) ? candidate.siteColors : 'system';
     // One switch per store. The earlier single amazonEnabled setting migrates into it.
     const stores = { ...defaults.retailers };
     if (typeof candidate.amazonEnabled === 'boolean') stores.amazon = candidate.amazonEnabled;
@@ -91,9 +87,9 @@ EXP.Settings = (() => {
       for (const key of Object.keys(stores)) if (typeof candidate.retailers[key] === 'boolean') stores[key] = candidate.retailers[key];
     }
     next.retailers = stores;
-    const enums = { protectionLevel: ['essential', 'balanced', 'custom'], contentAction: ['automatic', 'hide', 'dim'], confidencePolicy: ['confirmed', 'confirmed-supported', 'custom'], defaultAction: ['hide', 'dim', 'collapse', 'annotate', 'allow'], reducedMotion: ['system', 'reduce', 'allow'], explanationDetail: ['concise', 'detailed'], launcherPosition: ['automatic-end-bottom', 'end-top', 'end-bottom', 'start-top', 'start-bottom'], uiTheme: ['ember', 'midnight', 'glacier', 'contrast', 'verdant', 'pride', 'crimson', 'ward'] };
+    const enums = { protectionLevel: ['essential', 'balanced', 'custom'], contentAction: ['automatic', 'hide', 'dim'], confidencePolicy: ['confirmed', 'confirmed-supported', 'custom'], defaultAction: ['hide', 'dim', 'collapse', 'annotate', 'allow'], reducedMotion: ['system', 'reduce', 'allow'], explanationDetail: ['concise', 'detailed'], launcherPosition: ['automatic-end-bottom', 'end-top', 'end-bottom', 'start-top', 'start-bottom'], uiTheme: ['light', 'dark', 'system'] };
     for (const [name, values] of Object.entries(enums)) {
-	  const value = name === 'uiTheme' ? normalizedUiTheme : candidate[name];
+	  const value = candidate[name];
 	  if (values.includes(value)) next[name] = value;
 	}
     if (typeof candidate.shortcut === 'string' && candidate.shortcut.length <= 40) next.shortcut = candidate.shortcut;
@@ -101,7 +97,6 @@ EXP.Settings = (() => {
     next.pageExceptions=Array.isArray(candidate.pageExceptions)?candidate.pageExceptions.filter(v=>v&&typeof v.path==='string'&&v.path.length<=500&&typeof v.patternId==='string'&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)).slice(0,200).map(v=>({path:v.path,patternId:v.patternId})):[];
     next.protectionReviews=Array.isArray(candidate.protectionReviews)?candidate.protectionReviews.filter(v=>v&&['correct','wrong','missed'].includes(v.verdict)&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)&&Object.keys(stores).includes(v.retailer)).slice(-100).map(v=>({verdict:v.verdict,patternId:v.patternId,retailer:v.retailer,at:Number(v.at)||0})):[];
     next.trustedBrands=Array.isArray(candidate.trustedBrands)?[...new Set(candidate.trustedBrands.filter(v=>typeof v==='string'&&/^[a-z0-9]{1,60}$/.test(v)))].slice(-200):[];
-    next.uiTheme = 'ward';
     return next;
   }
   function load() {
