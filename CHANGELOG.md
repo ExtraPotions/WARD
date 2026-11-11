@@ -1,3 +1,10 @@
+## 3.6.0 - 2026-11-11
+
+- Remove repeated retailer and coupon headings from the menu.
+- Give every retailer tab its own shopping-bag icon.
+- Keep Diagnostics on one row with Show and Copy, and outline Reset all settings.
+- Use sentence-case labels and a refreshed menu header.
+
 ## 3.5.0 - 2026-11-02
 
 - Use Slate Blue Light, Dark or System for menus and supported site themes.
