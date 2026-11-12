@@ -10,7 +10,7 @@
 
 ## Features and controls
 
-- **Site theme:** choose Slate Blue Light, Dark or System in **Look → Site theme**. Product photos and artwork retain their colors; neutral surfaces, forms and review fades follow the mode. Purchase and status colors remain meaningful.
+- **Site theme:** choose Slate Blue Light, Dark or System in **Look → Site theme**. Product photos and artwork retain their colors; in Dark, photos are shown slightly dimmed and return to full brightness when you hover or focus them. Neutral surfaces, forms and review fades follow the mode. Purchase and status colors remain meaningful.
 - **Calm the page:** hide or dim sponsored placements, upsells, urgency messages, and pushy recommendations at the level you choose. Essential purchasing information stays visible.
 - **Shop six stores and Shopify shops:** Amazon, eBay, Etsy, Walmart, Target, Best Buy, and any store built on Shopify, each with its own controls. On Shopify stores, WARD hides email sign-up pop-ups and dims announcement bars.
 - **Undo changes:** reveal hidden content, allow a pattern on a page, or pause WARD entirely.

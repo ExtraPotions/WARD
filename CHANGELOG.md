@@ -1,3 +1,10 @@
+## 3.7.0 - 2026-11-12
+
+- Soften product photos on dark site colors; hover or focus a photo to see it at full brightness.
+- Fix unreadable dark-on-dark text on Amazon with dark site colors.
+- Use less processor time while scrolling and on pages that keep changing.
+- Use sentence-case wording in update and changelog notices.
+
 ## 3.6.0 - 2026-11-11
 
 - Remove repeated retailer and coupon headings from the menu.
