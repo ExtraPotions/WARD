@@ -1,3 +1,10 @@
+## 3.9.0 - 2026-11-12
+
+- Show menu sections as drawers in charcoal with WARD amber; the menu reopens on the drawer you used last.
+- Keep product photos at their own brightness on dark site colours.
+- Place Amazon seller notes below the byline and rating row instead of inside it.
+- Restore page colours correctly after Safe Mode is turned off and on again.
+
 ## 3.8.0 - 2026-11-12
 
 - Recolor stores with a new, lighter engine that restyles a page once instead of after every change.
