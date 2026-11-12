@@ -1,3 +1,9 @@
+## 3.8.0 - 2026-11-12
+
+- Recolor stores with a new, lighter engine that restyles a page once instead of after every change.
+- Keep purchase buttons their true colors with a readable label, and keep small icons visible, in Dark.
+- Tidy the update and changelog notices to match the other products.
+
 ## 3.7.0 - 2026-11-12
 
 - Soften product photos on dark site colors; hover or focus a photo to see it at full brightness.
