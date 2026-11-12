@@ -1,3 +1,8 @@
+## 3.10.0 - 2026-11-12
+
+- Remove the floating page-actions bar; its actions stay in the menu.
+- Drop hover tips from settings that explain themselves, such as Seller notes, Active protections and the per-store switches.
+
 ## 3.9.0 - 2026-11-12
 
 - Show menu sections as drawers in charcoal with WARD amber; the menu reopens on the drawer you used last.
