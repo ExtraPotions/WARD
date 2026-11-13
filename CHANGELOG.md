@@ -1,3 +1,8 @@
+## 3.12.0 - 2026-11-13
+
+- Labels are in Title Case.
+- Built on Core 3.17.0.
+
 ## 3.11.1 - 2026-11-13
 
 - In Light, Amazon's header keeps its own colours, so its logo and search button stay clear.
