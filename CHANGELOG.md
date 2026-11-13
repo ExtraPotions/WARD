@@ -1,3 +1,10 @@
+## 3.11.0 - 2026-11-13
+
+- Walmart, eBay and Etsy now run on the same store module as Target, Best Buy and Shopify, so every store treats purchase controls alike: a cue that touches one is labelled, never hidden.
+- The Coverage card lists what WARD can act on at Walmart, eBay and Etsy instead of None.
+- The old colour engine is gone; the current one is the only engine.
+- Built on Core 3.16.0.
+
 ## 3.10.1 - 2026-11-13
 
 - Protect again keeps the reason the menu showed before.
