@@ -1,3 +1,9 @@
+## 3.10.1 - 2026-11-13
+
+- Protect again keeps the reason the menu showed before.
+- The seller note never shows twice when the store page changes around it.
+- Built on Core 3.15.1: menu lists and scrollbars are light in Light, and update cards take turns.
+
 ## 3.10.0 - 2026-11-12
 
 - Remove the floating page-actions bar; its actions stay in the menu.
