@@ -1,3 +1,8 @@
+## 3.11.1 - 2026-11-13
+
+- In Light, Amazon's header keeps its own colours, so its logo and search button stay clear.
+- In Dark, department headings drawn as pictures, such as Electronics, read on the dark bar.
+
 ## 3.11.0 - 2026-11-13
 
 - Walmart, eBay and Etsy now run on the same store module as Target, Best Buy and Shopify, so every store treats purchase controls alike: a cue that touches one is labelled, never hidden.
