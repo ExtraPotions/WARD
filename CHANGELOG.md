@@ -1,3 +1,8 @@
+## 3.12.2 - 2026-11-14
+
+- WARD has a new green emerald gem, and its menus use the matching green.
+- Built on Core 3.17.2.
+
 ## 3.12.1 - 2026-11-13
 
 - Release notes show in full in the changelog card.

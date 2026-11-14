@@ -1,12 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
-  <title id="title">WARD Launcher Gem</title>
-  <desc id="desc">Borderless octagonal emerald-cut crystal in gold, orange and red. Broad joined facets, with no shield or inset symbol.</desc>
-  <polygon points="36,4 92,4 64,72" fill="#fff58a"/>
-  <polygon points="92,4 114,28 64,72" fill="#ffd23c"/>
-  <polygon points="114,28 114,100 64,72" fill="#f6a313"/>
-  <polygon points="114,100 92,124 64,72" fill="#ff6d32"/>
-  <polygon points="92,124 36,124 64,72" fill="#9f1744"/>
-  <polygon points="36,124 14,100 64,72" fill="#671b2d"/>
-  <polygon points="14,100 14,28 64,72" fill="#b94719"/>
-  <polygon points="14,28 36,4 64,72" fill="#fff2a6"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc"><title id="title">WARD Launcher Gem</title><desc id="desc">Tall green step-cut emerald with a bright table facet, lit from the top left. No shield or inset symbol.</desc><polygon points="44,6 84,6 74.4,28.04 53.6,28.04" fill="#d6fbe9"/><polygon points="84,6 104,26 84.8,40.44 74.4,28.04" fill="#86ebbf"/><polygon points="104,26 104,102 84.8,87.56 84.8,40.44" fill="#22c47e"/><polygon points="104,102 84,122 74.4,99.96 84.8,87.56" fill="#13844f"/><polygon points="84,122 44,122 53.6,99.96 74.4,99.96" fill="#0b6b43"/><polygon points="44,122 24,102 43.2,87.56 53.6,99.96" fill="#08502f"/><polygon points="24,102 24,26 43.2,40.44 43.2,87.56" fill="#139a5f"/><polygon points="24,26 44,6 53.6,28.04 43.2,40.44" fill="#b4f3d4"/><polygon points="53.6,28.04 74.4,28.04 84.8,40.44 84.8,87.56 74.4,99.96 53.6,99.96 43.2,87.56 43.2,40.44" fill="#2fcf88"/><polygon points="43.2,40.44 53.6,28.04 74.4,28.04 53.6,99.96" fill="#5fe0a6"/></svg>
