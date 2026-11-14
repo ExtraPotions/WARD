@@ -28,4 +28,4 @@ Supports Amazon, eBay, Etsy, Walmart, Target, Best Buy and Shopify stores. Essen
 Donations are optional. All features remain available without donating.
 
 WARD is independent and is not affiliated with or endorsed by the retailers where it is used.
-Menus use Slate Blue in Light, Dark or System mode. Site themes offer the same three modes.
+Menus are charcoal with green highlights in Light, Dark or System mode. Site themes use Slate Blue in the same three modes.

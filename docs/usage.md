@@ -27,4 +27,4 @@ Each section is a drawer: opening one closes the others, and the menu reopens on
 
 ## Look
 
-The menu is charcoal with amber highlights, in Light, Dark and System. System follows your device and updates when its appearance changes. Site theme uses Slate Blue with the same three choices and is independent of the menu. Legacy palette settings migrate to System. Gem themes, palette choices and custom menu opacity are no longer available.
+The menu is charcoal with green highlights, in Light, Dark and System. System follows your device and updates when its appearance changes. Site theme uses Slate Blue with the same three choices and is independent of the menu. Legacy palette settings migrate to System. Gem themes, palette choices and custom menu opacity are no longer available.
