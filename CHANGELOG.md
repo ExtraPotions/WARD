@@ -1,4 +1,4 @@
-## 3.12.4 - 2026-11-15
+## 3.12.4 - 2026-11-14
 
 - On Etsy, a labelled ad stays inside its listing, so result rows keep their shape.
 - Shopify announcement bars named as header banners are dimmed, and eBay’s sponsored store banner above results is recognised.
