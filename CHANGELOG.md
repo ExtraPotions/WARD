@@ -1,3 +1,10 @@
+## 3.12.4 - 2026-11-15
+
+- On Etsy, a labelled ad stays inside its listing, so result rows keep their shape.
+- Shopify announcement bars named as header banners are dimmed, and eBay’s sponsored store banner above results is recognised.
+- In Dark, Target’s cart icon and badges and Etsy’s outlined buttons are readable.
+- Built on Core 3.17.4.
+
 ## 3.12.3 - 2026-11-14
 
 - WARD's tile in the shared launcher is green, matching its menus and gem.
