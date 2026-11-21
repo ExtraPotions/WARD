@@ -1,3 +1,8 @@
+## 3.12.5 - 2026-11-20
+
+- The launcher is a tab on the right edge of the window instead of a badge in the corner.
+- With other ExtraPotions products on the page, each has its own tab; drag to move them, Shift+drag to reorder.
+
 ## 3.12.4 - 2026-11-14
 
 - On Etsy, a labelled ad stays inside its listing, so result rows keep their shape.

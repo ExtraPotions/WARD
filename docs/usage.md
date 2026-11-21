@@ -6,7 +6,7 @@
 
 1. Install a userscript manager such as [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/).
 2. [Install WARD](https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js) and confirm in your userscript manager.
-3. Refresh a supported store and open the WARD launcher. With other ExtraPotions products installed, they share one launcher: open it and choose WARD.
+3. Refresh a supported store and open the WARD tab on the right edge of the window. Other ExtraPotions products on the page have their own tabs beside it.
 
 ## Features and controls
 
