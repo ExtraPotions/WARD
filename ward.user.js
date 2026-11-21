@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.12.5
+// @version      3.12.6
 // @run-at       document-start
 // @description  Local retail-pressure protection for Amazon, eBay, Etsy, Walmart, Target, Best Buy and Shopify stores.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
@@ -39,4 +39,9023 @@
 // Description: Local retail-pressure protection, for supported retailers and Shopify stores. Loads on every https page and exits at once unless the page is a listed store or a Shopify storefront.
 // Tags: shopping, dark-patterns, privacy
 
-(()=>{"use strict";const e=Object.create(null);((e,t)=>{if(["www.amazon.com","www.walmart.com","www.ebay.com","cart.ebay.com","pay.ebay.com","www.etsy.com","www.target.com","target.com","www.bestbuy.com","bestbuy.com"].includes(location.hostname))return void t();if(window.top!==window.self||/\/checkouts?\//.test(location.pathname))return;const n=()=>{document.querySelector('#shopify-features,meta[name="shopify-digital-wallet"],meta[name="shopify-checkout-api-token"]')&&t()};"loading"===document.readyState?document.addEventListener("DOMContentLoaded",n,{once:!0}):n()})(0,()=>{const t=(()=>{const e=Object.freeze(["light","dark","system"]),t=t=>e.includes(t)?t:"system",n=Object.freeze({light:Object.freeze({bg:"#f4f6fa",panel:"#ffffff",raised:"#e6ecf5",inset:"#edf1f7",line:"#718096",text:"#182230",muted:"#4c5d73",accent:"#2459b8",accent2:"#2459b8",link:"#2459b8",focus:"#2459b8",onAccent:"#ffffff"}),dark:Object.freeze({bg:"#111720",panel:"#1b2430",raised:"#283547",inset:"#0c121a",line:"#8293ab",text:"#edf2f8",muted:"#afbed1",accent:"#8cb7ff",accent2:"#8cb7ff",link:"#8cb7ff",focus:"#8cb7ff",onAccent:"#111720"})}),o=Object.freeze({light:Object.freeze({bg:"#dcdad7",panel:"#ebe9e6",raised:"#d2cfcb",inset:"#d8d5d1",line:"#86807a",text:"#1c1a19",muted:"#57524d",onAccent:"#ffffff"}),dark:Object.freeze({bg:"#141416",panel:"#1d1d20",raised:"#29292d",inset:"#0f0f11",line:"#6c6c74",text:"#ececee",muted:"#a8a8ae",onAccent:"#141416"})}),r=Object.freeze({dropper:Object.freeze({light:"#862ff1",dark:"#a869f5"}),ward:Object.freeze({light:"#0d7246",dark:"#1fbf7a"}),thread:Object.freeze({light:"#bd3300",dark:"#ff4500"})});function a(e,a=""){const i=t(e),s="system"===i?"function"==typeof matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":i,c=function(e,t){const a=r[e]?.[t];return a?{...o[t],accent:a,accent2:a,link:a,focus:a}:n[t]}(a,s);return{...c,id:i,mode:s,name:i[0].toUpperCase()+i.slice(1),swatch:c.accent,canvas:c.bg,surface:c.panel,primary:c.accent,companion:c.accent,counterpoint:c.accent,interactive:c.accent,skin:c.accent,skinVertical:c.accent,skinMode:"flat"}}const i=Object.freeze(e.map(e=>Object.freeze(a(e)))),s=i;return Object.freeze({THEME_MODES:e,SLATE_BLUE:n,CHARCOAL:o,PRODUCT_ACCENTS:r,normalizeThemeMode:t,resolveTheme:a,UI_THEMES:i,SHARED_UI_THEMES:s,css:function(){return'\n      :host { all: initial; --exp-font-size-small:11px; --exp-font-size-body:13px; }\n      * { box-sizing: border-box; }\n      small { font-size:var(--exp-font-size-small,11px); }\n      .exp-core-theme {\n        position: fixed; right: 12px; z-index: 2147483600;\n        display: flex; flex-direction: column-reverse; align-items: flex-end;\n        width: max-content; max-width: calc(100vw - 24px); gap: 8px;\n        --exp-ui-opacity:1; --exp-menu-width:260px;\n        font: 13px/1.42 ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: var(--theme-text);\n      }\n      .exp-core-theme.open-up { flex-direction: column; }\n      [data-exp-part="dock"],\n      .update-notice {\n        opacity:var(--exp-ui-opacity,1);\n        transition:opacity .15s ease;\n      }\n      .exp-core-theme [data-exp-part="dock"],\n      .exp-core-theme > .update-notice[data-placement="menu"] {\n        width:min(var(--exp-menu-width,260px), calc(100vw - 24px));\n      }\n\n      .progress-age { color:#a7a7b0; }\n      .progress-age.warn { color:#f59e0b; }\n      .progress-age.bad { color:#ef4444; font-weight:800; }\n      /* 3.2.0 progress panel */\n      .exp-core-theme{pointer-events:none!important}\n      .exp-core-theme :is([data-exp-part="dock"],.update-notice,[data-exp-part="launcher"]){pointer-events:auto!important}\n      .exp-core-theme .badge-row{position:fixed!important;min-height:112px!important;height:auto!important;justify-content:flex-end!important;align-items:center!important;pointer-events:none!important}\n\n      .badge-row {display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:8px!important;width:100%!important;min-height:112px!important;height:auto!important;position:relative!important}\n\n      [data-exp-part="launcher"] {\n        position:relative; width:48px; min-width:48px; height:48px; min-height:48px; align-self:flex-end; padding:0; margin:0;\n        display:grid; place-items:center; border:1px solid color-mix(in srgb,var(--theme-accent) 30%,transparent); border-radius:10px;\n        background:var(--theme-panel,#18181b); box-shadow:0 6px 22px #0006; cursor:grab; touch-action:none; user-select:none;\n        transition:.14s border-color,.14s box-shadow,.14s background,.14s transform;\n      }\n      .action-separator{grid-column:1/-1;width:100%;border:0;border-top:1px solid var(--theme-line,#34343b);margin:8px 0 0}\n      .stream-subsection-label{grid-column:1/-1;min-width:0;margin:1px 0 2px;color:var(--theme-accent2);font-size:var(--exp-font-size-small,11px);font-weight:900;line-height:1.2;letter-spacing:.08em;text-transform:uppercase}\n      .stream-subsection-label.with-divider{margin-top:7px;padding-top:8px;border-top:1px solid var(--theme-line,#34343b)}\n      .queue-switches{display:grid;grid-template-columns:minmax(58px,.7fr) minmax(0,1.3fr);column-gap:10px;row-gap:0;min-width:0;margin:6px 0;padding:2px 0;border:0;align-items:stretch}\n      .queue-switches-label{grid-column:1;grid-row:1/span 3;display:flex;align-items:center;min-width:0;font-size:var(--exp-font-size-body,13px);font-weight:700;line-height:1.2;color:var(--theme-text,#efeff1)}\n      .queue-switches>.fl-switch{grid-column:2;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px;min-width:0;padding:5px 0!important;text-align:left!important}\n      .queue-switches>.fl-switch>span:first-child{display:block;flex:1 1 auto;width:auto!important;min-width:0!important;min-height:0!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important;line-height:1.25;text-align:left}\n      .queue-switches>.fl-switch>.toggleSwitch{flex:0 0 34px;margin-left:auto}\n      .appearance-separator{grid-column:1/-1;width:100%;border:0;border-top:1px solid var(--theme-line,#34343b);margin:3px 0 1px}\n\n      [data-exp-part="launcher"]:hover {\n        border-color:color-mix(in srgb,var(--theme-accent) 58%,transparent);\n        background:color-mix(in srgb,var(--theme-panel,#18181b) 96%,var(--theme-accent) 4%);\n        box-shadow:0 8px 24px #0007; transform:scale(1.015);\n      }\n      [data-exp-part="launcher"][aria-expanded="true"] {\n        border-color:color-mix(in srgb,var(--theme-accent) 72%,transparent);\n        background:var(--theme-panel,#18181b);\n        box-shadow:0 0 0 1px color-mix(in srgb,var(--theme-accent) 22%,transparent),0 8px 26px #0008;\n        transform:scale(1.01);\n      }\n      [data-exp-part="launcher"].is-dragging {\n        cursor:grabbing; transform:scale(1.03); box-shadow:0 10px 28px #0009;\n      }\n      [data-exp-part="launcher"].update-available::after {\n        content:"↑"; position:absolute; top:-4px; right:-4px; width:14px; height:14px; display:grid; place-items:center;\n        border:2px solid var(--theme-panel,#18181b); border-radius:4px; background:#f59e0b; color:#111114; font-size:var(--exp-font-size-small,11px); font-weight:950;\n        box-shadow:0 2px 6px #0007; z-index:4; pointer-events:none;\n      }\n      [data-exp-part="launcher"] .ring { position:absolute; top:50%; left:50%; width:44px; height:44px; pointer-events:none; transform:translate(-50%,-50%); }\n      [data-exp-part="launcher"] .track { fill:none; stroke:color-mix(in srgb,var(--theme-line,#34343b) 72%,transparent); stroke-width:2.5; }\n      [data-exp-part="launcher"] .fill { fill:none; stroke:var(--theme-accent,#9147ff); stroke-width:2.5; stroke-linecap:round; transition:.2s stroke; }\n      [data-exp-part="launcher"] .icon { position:absolute; top:50%; left:50%; width:40px; height:40px; pointer-events:none; z-index:1; transform:translate(-50%,-50%); }\n      [data-exp-part="dock"] {\n        position:fixed; right:12px; top:auto; bottom:auto;\n        display:none; width:min(var(--exp-menu-width,260px), calc(100vw - 24px)); max-width:calc(100vw - 24px);\n        height:max-content; min-height:0; max-height:none; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; flex:0 0 auto;\n        transition:.15s width;\n        padding:9px 9px 4px; background:var(--theme-bg); border:1px solid var(--theme-line); border-radius:14px; box-shadow:0 18px 50px #0008;\n      }\n      [data-exp-part="dock"].fl-rail-open { display:block; height:max-content; min-height:0; max-height:none; }\n      [data-exp-part="dock"]:focus { outline:none; }\n      [data-exp-part="dock"] :is(.fl-tool-body,.row,.group,.section,.fl-tool-title) { min-width:0; max-width:100%; overflow-wrap:anywhere; }\n      [data-exp-part="dock"] :is(input,select,textarea) { min-width:0; max-width:100%; }\n      [data-exp-part="dock"] :is(option,optgroup) { background:var(--theme-panel) !important; color:var(--theme-text) !important; }\n      .menu-head {\n        position:relative;\n        display:grid; grid-template-columns:minmax(0,1fr) auto;\n        align-items:start; gap:8px; width:100%;\n      }\n      .header-actions { display:flex; align-items:flex-start; gap:5px; position:static; }\n      [data-exp-part="close"] {\n        width:30px; height:30px; min-width:30px; padding:0;\n        border:1px solid #3a3a42; border-radius:8px; background:#151519; color:#b8b8c0;\n        cursor:pointer;\n      }\n      \n      .support-wrap { position:static; }\n      .support-button {\n        width:30px; height:30px; min-width:30px; padding:0;\n        border:1px solid var(--theme-line); border-radius:8px; background:var(--theme-panel); color:var(--theme-muted);\n        cursor:pointer;\n      }\n      .support-button { box-sizing:border-box; display:grid; place-items:center; }\n      .support-button svg { width:15px; height:15px; fill:currentColor; }\n      .support-button:hover,\n      .support-button:focus-visible {\n        border-color:var(--theme-accent); color:var(--theme-accent2); background:var(--theme-raised); outline:none;\n      }\n      .support-popover {\n        position:absolute; z-index:14; top:35px; right:0;\n        width:min(190px,100%); max-width:100%;\n        box-sizing:border-box; padding:8px 9px;\n        border:1px solid color-mix(in srgb,var(--theme-accent) 46%,var(--theme-line));\n        border-radius:9px; background:var(--theme-panel); color:var(--theme-text);\n        box-shadow:0 10px 28px #0009;\n      }\n      .support-popover[hidden] { display:none; }\n      .support-popover strong { display:block; margin-bottom:3px; font-size:var(--exp-font-size-small,11px); }\n      .support-popover span { display:block; color:var(--theme-muted); font-size:var(--exp-font-size-small,11px); line-height:1.35; }\n      .support-popover a {\n        display:flex; align-items:center; justify-content:center; min-height:26px; margin-top:7px; padding:0 9px;\n        border:1px solid color-mix(in srgb,var(--theme-accent) 58%,var(--theme-line));\n        border-radius:7px; background:color-mix(in srgb,var(--theme-panel) 76%,var(--theme-accent) 24%);\n        color:var(--theme-text); text-decoration:none; font-size:var(--exp-font-size-small,11px); font-weight:800;\n      }\n      .support-popover a:hover,\n      .support-popover a:focus-visible {\n        border-color:var(--theme-accent2); outline:none;\n        background:color-mix(in srgb,var(--theme-panel) 66%,var(--theme-accent) 34%);\n      }\n    \n      .header-brand {\n        display:grid; grid-template-columns:38px minmax(0,1fr);\n        align-items:center; gap:8px; min-width:0; width:100%;\n      }\n      .header-icon {\n        box-sizing:border-box; width:38px; height:38px; display:grid; place-items:center;\n        border:1px solid color-mix(in srgb,var(--theme-accent) 48%,var(--theme-line));\n        border-radius:9px; background:var(--theme-panel);\n        box-shadow:inset 0 0 0 1px color-mix(in srgb,#000 22%,transparent);\n      }\n      .header-icon .menu-icon { width:38px; height:38px; display:block; }\n      .header-copy { min-width:0; overflow:hidden; }\n      .header-title-row { display:flex; align-items:center; gap:6px; min-width:0; flex-wrap:wrap; }\n      [data-exp-part="title"] { margin:0; font-size:15px; font-weight:800; line-height:1.1; }\n      [data-exp-part="version"] {\n        min-height:18px; padding:1px 6px; border:1px solid #4a3b61; border-radius:5px;\n        background:#1b1721; color:#c9a7ff; cursor:pointer; font:800 var(--exp-font-size-small,11px)/1 ui-sans-serif,system-ui,sans-serif;\n        white-space:nowrap;\n      }\n      [data-exp-part="version"]:hover,\n      [data-exp-part="version"]:focus-visible {\n        border-color:#9147ff; background:#251d31; color:#fff; outline:none;\n      }\n      [data-exp-part="subtitle"] {\n        margin-top:2px; font-size:var(--exp-font-size-small,11px); line-height:1.2; color:#adadb8;\n        white-space:normal; overflow-wrap:anywhere;\n      }\n      [data-exp-part="close"] { font:18px/1 Arial,sans-serif; }\n      [data-exp-part="close"]:hover,\n      [data-exp-part="close"]:focus-visible { border-color:#9147ff; color:#fff; background:#211b2b; outline:none; }\n      .header-divider { height:1px; width:100%; margin:5px 0; background:linear-gradient(90deg,transparent,#9147ff88 50%,transparent); }\n      .update-notice {\n        position:fixed; display:block; width:100%; max-width:calc(100vw - 24px); margin:0; padding:10px;\n        box-sizing:border-box;\n        border:1px solid color-mix(in srgb,var(--theme-accent) 62%,var(--theme-line)); border-radius:10px;\n        background:\n          linear-gradient(\n            180deg,\n            color-mix(in srgb,var(--theme-panel) 88%,var(--theme-accent) 12%),\n            var(--theme-bg) 76%\n          );\n        color:var(--theme-text);\n        box-shadow:0 10px 28px #0008; z-index:12;\n      }\n      .update-notice[hidden] { display:none; }\n      .update-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding-right:22px; }\n      .update-heading { min-width:0; }\n      .update-kicker { margin-bottom:2px; color:var(--theme-accent2); font-size:var(--exp-font-size-small,11px); font-weight:900; letter-spacing:.08em; text-transform:uppercase; }\n      .update-title { font-size:var(--exp-font-size-body,13px); line-height:1.25; font-weight:850; color:var(--theme-text); }\n      .update-version {\n        flex:none; padding:2px 6px;\n        border:1px solid color-mix(in srgb,var(--theme-accent) 62%,var(--theme-line));\n        border-radius:5px;\n        background:color-mix(in srgb,var(--theme-panel) 82%,var(--theme-accent) 18%);\n        color:var(--theme-text);\n        font-size:var(--exp-font-size-small,11px); font-weight:800; white-space:nowrap;\n      }\n      .update-text { margin-top:6px; font-size:var(--exp-font-size-small,11px); line-height:1.45; color:var(--theme-muted); white-space:normal; overflow:visible; }\n      .update-list { margin:7px 0 0; padding:0 0 0 15px; color:var(--theme-text); font-size:var(--exp-font-size-small,11px); line-height:1.4; scrollbar-width:thin; }\n      .update-list li::marker { color:var(--theme-accent); }\n      .update-list li + li { margin-top:3px; }\n      .update-footer { display:flex; justify-content:flex-end; gap:6px; margin-top:8px; padding-top:7px; border-top:1px solid var(--theme-line); }\n      .update-action,\n      .update-release,\n      .update-dismiss,\n      .life-btn {\n        border:1px solid var(--theme-line); border-radius:7px;\n        background:var(--theme-bg); color:var(--theme-text); cursor:pointer;\n      }\n      .update-action,\n      .update-release { min-height:27px; padding:0 10px; font-size:var(--exp-font-size-small,11px); font-weight:800; }\n      .update-action,\n      .update-release { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }\n      /* The release control is a link in the shared notice; it reads as a button, not as link text. */\n      .exp-core-theme a.update-release { color:var(--theme-text); text-decoration:none; }\n      .update-action[hidden],\n      .update-release[hidden] { display:none; }\n      .update-action {\n        border-color:var(--theme-accent);\n        background:color-mix(in srgb,var(--theme-panel) 68%,var(--theme-accent) 32%);\n        color:var(--theme-text);\n      }\n      .update-release {\n        border-color:color-mix(in srgb,var(--theme-line) 78%,var(--theme-accent) 22%);\n        background:var(--theme-panel);\n        color:var(--theme-text);\n      }\n      .update-dismiss {\n        position:absolute; top:7px; right:7px; width:23px; height:23px; padding:0;\n        border-color:transparent; background:transparent; color:var(--theme-muted); font-family:Arial,sans-serif; font-size:15px; line-height:1;\n      }\n      .update-action:hover,\n      .update-action:focus-visible,\n      .update-release:hover,\n      .update-release:focus-visible,\n      .update-dismiss:hover,\n      .update-dismiss:focus-visible,\n      .life-btn:hover {\n        border-color:var(--theme-accent);\n        color:var(--theme-text);\n        outline:none;\n      }\n      .update-action:hover,\n      .update-action:focus-visible {\n        background:color-mix(in srgb,var(--theme-panel) 55%,var(--theme-accent) 45%);\n      }\n      .update-release:hover,\n      .update-release:focus-visible {\n        background:color-mix(in srgb,var(--theme-panel) 88%,var(--theme-accent) 12%);\n      }\n      .toast { margin-bottom:7px; padding:6px 8px; border:1px solid #34343b; border-radius:8px; background:#18181b; color:#efeff1; font-size:var(--exp-font-size-small,11px); box-shadow:0 8px 24px #0006; }\n      .toast[hidden] { display:none; }\n      .fl-tool-panel { position:relative; margin-top:5px; border:1px solid #27272d; background:#19191e; border-radius:9px; overflow:visible; }\n      .fl-tool-header { display:flex; justify-content:space-between; align-items:flex-start; height:auto; min-height:0; padding:7px 8px; cursor:pointer; border-radius:8px; }\n      .fl-tool-header:hover { background:#9147ff18; }\n      .fl-tool-header.last-opened { box-shadow:inset 3px 0 0 #b783ff; }\n      .fl-tool-title { min-width:0; flex:1; font-size:var(--exp-font-size-body,13px); font-weight:700; white-space:normal; overflow-wrap:anywhere; }\n      .fl-tool-chevron { background:none; border:0; color:#adadb8; cursor:pointer; }\n      .fl-tool-body { padding:0 10px 8px; }\n      .fl-tool-body:not(.fl-tool-hidden) { display:grid; height:auto; min-height:0; max-height:none; overflow:visible; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; column-gap:8px; }\n      .exp-core-theme .fl-tool-body:not(.fl-tool-hidden) { grid-template-columns:minmax(0,1fr); }\n      .exp-core-theme .fl-tool-body:not(.fl-tool-hidden) > * { grid-column:1/-1; }\n      .fl-tool-body > :is(.fl-switch,.mini-row,.life-btn) { min-width:0; }\n      .fl-tool-body > :is(.diag) { grid-column:1/-1; }\n      .fl-tool-hidden { display:none !important; }\n      .fl-switch,\n      .mini-row { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; height:auto; min-height:0; padding:6px 0; }\n      .fl-switch + .fl-switch,\n      .mini-row + .mini-row { border-top:1px solid #26262b; }\n      .fl-switch-text,\n      .mini-row > span {\n        min-width:0;\n        font-size:var(--exp-font-size-body,13px);\n        line-height:1.25;\n        white-space:normal;\n        word-break:normal;\n        overflow-wrap:break-word;\n        hyphens:none;\n      }\n      .toggleSwitch {\n        position:relative; box-sizing:border-box; flex:none; width:34px; height:20px;\n        border:1px solid color-mix(in srgb,var(--theme-line) 88%,var(--theme-muted) 12%);\n        border-radius:6px;\n        background:color-mix(in srgb,var(--theme-bg) 84%,var(--theme-panel) 16%);\n        box-shadow:inset 0 1px 0 rgba(255,255,255,.018);\n        cursor:pointer;\n        transition:.15s background,.15s border-color;\n      }\n      .toggleSwitch::after {\n        content:""; position:absolute; top:2px; left:2px; width:14px; height:14px;\n        box-sizing:border-box; border:0; border-radius:4px;\n        background:color-mix(in srgb,var(--theme-muted) 82%,var(--theme-text) 18%);\n        box-shadow:none;\n        transition:.15s transform,.15s background;\n      }\n      .toggleSwitch[aria-checked="true"] {\n        border-color:color-mix(in srgb,var(--theme-line) 52%,var(--theme-accent) 48%);\n        background:color-mix(in srgb,var(--theme-panel) 72%,var(--theme-accent) 28%);\n      }\n      .toggleSwitch[aria-checked="true"]::after {\n        transform:translateX(14px);\n        background:var(--theme-text);\n      }\n      .life-btn { width:100%; min-height:28px; margin-top:6px; font-size:var(--exp-font-size-body,13px); }\n      .life-btn.last-opened { box-shadow:inset 3px 0 0 #b783ff; }\n      .select-lite { min-width:0; max-width:72px; background:#111114; color:#efeff1; border:1px solid #34343b; border-radius:6px; padding:4px 6px; font-size:var(--exp-font-size-body,13px); }\n      .auth-required {\n        grid-column:1/-1;\n        display:flex;\n        align-items:center;\n        justify-content:space-between;\n        gap:8px;\n        margin-top:6px;\n        padding:7px 8px;\n        border:1px solid color-mix(in srgb,#f59e0b 46%,var(--theme-line));\n        border-radius:7px;\n        background:color-mix(in srgb,var(--theme-panel) 84%,#f59e0b 16%);\n        color:#ffe5a8;\n        font-size:var(--exp-font-size-small,11px);\n        font-weight:800;\n      }\n      .auth-required[hidden] { display:none !important; }\n      .auth-required .life-btn {\n        width:auto;\n        min-width:112px;\n        margin:0;\n        flex:0 0 auto;\n      }\n      .auth-advanced { margin-top:2px; border:1px solid var(--theme-line); border-radius:7px; background:var(--theme-inset); padding:6px 8px; }\n      .auth-advanced > summary { cursor:pointer; list-style:none; color:var(--theme-muted); font-size:var(--exp-font-size-body,13px); font-weight:600; user-select:none; }\n      .auth-advanced > summary::-webkit-details-marker { display:none; }\n      .auth-advanced[open] > summary { margin-bottom:6px; color:var(--theme-text); }\n      .auth-advanced-body { display:flex; flex-direction:column; gap:6px; }\n      .auth-hint { color:var(--theme-muted); font-size:var(--exp-font-size-small,11px); line-height:1.35; }\n      .auth-input { width:100%; min-height:30px; border:1px solid var(--theme-line); border-radius:6px; background:var(--theme-inset); color:var(--theme-text); padding:6px 8px; font-size:var(--exp-font-size-body,13px); }\n      .auth-input:focus { outline:2px solid var(--theme-focus); outline-offset:2px; border-color:var(--theme-focus); }\n      .theme-row { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:28px; padding:6px 0; font-size:var(--exp-font-size-body,13px); }\n      .fl-tool-panel { border-color:var(--theme-line); background:var(--theme-panel); }\n      .fl-tool-body { border-color:var(--theme-line); background:var(--theme-bg); color:var(--theme-text); }\n      .select-lite,\n      .life-btn { border-color:var(--theme-line); background:var(--theme-raised); color:var(--theme-text); }\n      .exp-core-theme a { color:var(--theme-link); }\n      .fl-tool-chevron,\n      [data-exp-part="subtitle"] { color:var(--theme-muted); }\n      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch { border:2px solid #fff; background:#050505; }\n      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch::after { top:0; left:0; border:1px solid #050505; background:#fff; }\n      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"] { background:#fff; border-color:#fff; }\n      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"]::after { background:#050505; border-color:#fff; transform:translateX(14px); }\n      @media (forced-colors: active) {\n        .toggleSwitch { forced-color-adjust:none; border:1px solid CanvasText; background:Canvas; }\n        .toggleSwitch::after { border-color:CanvasText; background:CanvasText; }\n        .toggleSwitch[aria-checked="true"] { border-color:Highlight; background:Highlight; }\n        .toggleSwitch[aria-checked="true"]::after { border-color:HighlightText; background:HighlightText; }\n      }\n      .exp-core-theme[data-ui-theme="warm"] [data-exp-part="dock"]:not([data-exp-menu-layout="lean"]) {\n        border:1px solid color-mix(in srgb,var(--theme-line) 84%,var(--theme-accent) 16%) !important;\n        background-image:\n          radial-gradient(120% 65% at 50% -18%,color-mix(in srgb,var(--theme-accent) 9%,transparent),transparent 72%),\n          linear-gradient(180deg,color-mix(in srgb,var(--theme-panel) 42%,var(--theme-bg) 58%),var(--theme-bg) 44%) !important;\n        background-clip:padding-box !important;\n        box-shadow:0 18px 50px #0009,inset 0 1px 0 #ffedcf12;\n      }\n      .exp-core-theme[data-ui-theme="warm"] .header-icon {\n        background:linear-gradient(155deg,color-mix(in srgb,var(--theme-accent) 13%,var(--theme-panel)),var(--theme-panel) 70%);\n        box-shadow:inset 0 1px 0 #ffedcf20,0 2px 9px #0005;\n      }\n      .exp-core-theme[data-ui-theme="warm"] [data-exp-part="version"] {\n        border-color:color-mix(in srgb,var(--theme-line) 66%,var(--theme-accent) 34%);\n        background:color-mix(in srgb,var(--theme-panel) 88%,var(--theme-accent) 12%);\n        color:var(--theme-accent2);\n      }\n      .exp-core-theme[data-ui-theme="warm"] [data-exp-part="close"] {\n        border-color:var(--theme-line);background:var(--theme-panel);color:var(--theme-muted);\n      }\n      .exp-core-theme[data-ui-theme="warm"] .header-divider {\n        background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--theme-accent) 55%,transparent) 50%,transparent);\n      }\n      .exp-core-theme[data-ui-theme="warm"] :is(.fl-tool-header,.life-btn):not(.last-opened) {\n        box-shadow:inset 0 1px 0 #ffedcf0a;\n      }\n      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"] {\n        background:#fff;\n        border-color:#fff;\n      }\n      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"]::after {\n        background:#050505;\n        border-color:#fff;\n      }\n      .campaign-manager-title { min-width:0; font-size:var(--exp-font-size-body,13px); font-weight:800; color:var(--theme-text); }\n      .campaign-manager-summary { flex:0 0 auto; font-size:var(--exp-font-size-small,11px); font-weight:700; color:var(--theme-muted); }\n      .campaign-manager-note { padding:6px 8px 3px; font-size:var(--exp-font-size-small,11px); line-height:1.35; color:var(--theme-muted); }\n      .diag { display:none; box-sizing:border-box;width:100%;min-width:0;height:160px;max-height:160px;overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere;box-shadow:inset 0 2px 6px #0006; margin-top:6px; padding:7px; border:1px solid #2b2b31; border-radius:7px; background:#101014; font:var(--exp-font-size-small,11px)/1.45 ui-monospace,SFMono-Regular,Consolas,monospace; color:#b8b8c0; white-space:pre-wrap; }\n      .diag.open { display:block; }\n      .has-tooltip { position:relative; }\n      .has-tooltip::after { content:attr(data-tip); position:absolute; left:0; top:calc(100% + 4px); width:min(190px, calc(100vw - 48px)); max-width:100%; padding:6px 8px; border:1px solid #3b3b44; border-radius:7px; background:#0e0e10; color:#efeff1; box-shadow:0 6px 18px #0007; box-sizing:border-box; font-size:var(--exp-font-size-small,11px); line-height:1.35; white-space:normal; overflow-wrap:anywhere; opacity:0; pointer-events:none; z-index:999; transform:translateY(-2px); transition:.12s opacity,.12s transform; }\n      .has-tooltip:hover::after,\n      .has-tooltip:focus-visible::after { opacity:1; transform:translateY(0); }\n      .reduce-motion *,\n      .reduce-motion *::before,\n      .reduce-motion *::after { animation:none !important; transition:none !important; }\n      @media (max-width:700px) {\n        .badge-row { width:100%; }\n      }\n    '},supportControlCss:function(){return"\n      .support-wrap { position:static; }\n      .support-button {\n        width:30px; height:30px; min-width:30px; padding:0;\n        border:1px solid var(--theme-line); border-radius:8px; background:var(--theme-panel); color:var(--theme-muted);\n        cursor:pointer;\n      }\n      .support-button { box-sizing:border-box; display:grid; place-items:center; }\n      .support-button svg { width:15px; height:15px; fill:currentColor; }\n      .support-button:hover,\n      .support-button:focus-visible {\n        border-color:var(--theme-accent); color:var(--theme-accent2); background:var(--theme-raised); outline:none;\n      }\n      .support-popover {\n        position:absolute; z-index:14; top:35px; right:0;\n        width:min(190px,100%); max-width:100%;\n        box-sizing:border-box; padding:8px 9px;\n        border:1px solid color-mix(in srgb,var(--theme-accent) 46%,var(--theme-line));\n        border-radius:9px; background:var(--theme-panel); color:var(--theme-text);\n        box-shadow:0 10px 28px #0009;\n      }\n      .support-popover[hidden] { display:none; }\n      .support-popover strong { display:block; margin-bottom:3px; font-size:var(--exp-font-size-small,11px); }\n      .support-popover span { display:block; color:var(--theme-muted); font-size:var(--exp-font-size-small,11px); line-height:1.35; }\n      .support-popover a {\n        display:flex; align-items:center; justify-content:center; min-height:26px; margin-top:7px; padding:0 9px;\n        border:1px solid color-mix(in srgb,var(--theme-accent) 58%,var(--theme-line));\n        border-radius:7px; background:color-mix(in srgb,var(--theme-panel) 76%,var(--theme-accent) 24%);\n        color:var(--theme-text); text-decoration:none; font-size:var(--exp-font-size-small,11px); font-weight:800;\n      }\n      .support-popover a:hover,\n      .support-popover a:focus-visible {\n        border-color:var(--theme-accent2); outline:none;\n        background:color-mix(in srgb,var(--theme-panel) 66%,var(--theme-accent) 34%);\n      }\n    "},protectLauncherHost:function(e){if(!(e=e?.getRootNode?.().host||e)||1!==e.nodeType)return()=>{};e.dataset.expOwned="1";const t=e.shadowRoot,n=":host{all:initial!important;position:fixed!important;top:0!important;left:0!important;right:auto!important;bottom:auto!important;display:block!important;width:0!important;height:0!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;overflow:visible!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:2147483647!important;isolation:isolate!important;transform:none!important;filter:none!important;clip:auto!important;clip-path:none!important;contain:none!important;content-visibility:visible!important;mix-blend-mode:normal!important}";let o=null,r=null,a=!1;const i=()=>{if(!a){a=!0;try{const a=document.documentElement;if(a&&e.parentNode!==a&&a.append(e),e.hidden&&(e.hidden=!1),e.removeAttribute("hidden"),e.removeAttribute("inert"),"true"===e.getAttribute("aria-hidden")&&e.removeAttribute("aria-hidden"),(()=>{if(t){try{const r=t.adoptedStyleSheets;if(o&&r?.includes?.(o))return;const a=(e.ownerDocument?.defaultView||window).CSSStyleSheet||("function"==typeof CSSStyleSheet?CSSStyleSheet:null);if("function"==typeof a&&a.prototype?.replaceSync&&r&&"function"==typeof r[Symbol.iterator])return o||(o=new a,o.replaceSync(n)),void([...r].includes(o)||(t.adoptedStyleSheets=[...r,o]))}catch{}if(r||(r=document.createElement("style"),r.dataset.expHostProtection="1",r.textContent=n),!r.isConnected)try{t.prepend(r)}catch{}}})(),"function"==typeof e.showPopover){"manual"!==e.getAttribute("popover")&&e.setAttribute("popover","manual");let t=!1;try{t=e.matches(":popover-open")}catch{}if(!t)try{e.showPopover()}catch{}}}catch{}a=!1}};i();const s=new MutationObserver(()=>queueMicrotask(i));s.observe(e,{attributes:!0,attributeFilter:["hidden","inert","aria-hidden","popover"]});const c=new MutationObserver(()=>{e.parentNode!==document.documentElement&&queueMicrotask(i)});c.observe(document.documentElement,{childList:!0});const l=setInterval(i,2e3),d=()=>queueMicrotask(i);return e.addEventListener("toggle",d),()=>{if(s.disconnect(),c.disconnect(),clearInterval(l),e.removeEventListener("toggle",d),o&&t?.adoptedStyleSheets)try{t.adoptedStyleSheets=[...t.adoptedStyleSheets].filter(e=>e!==o)}catch{}try{r?.remove()}catch{}}},compareVersions:function(e,t){const n=e=>{const[t,n]=String(e||"").trim().replace(/^v/i,"").split("+")[0].split(/-(.*)/s);return{core:t.split(".").slice(0,3).map(e=>parseInt(e,10)||0),pre:n?n.split("."):[]}},o=n(e),r=n(t);for(let e=0;e<3;e+=1){const t=o.core[e]||0,n=r.core[e]||0;if(t!==n)return t>n?1:-1}if(!o.pre.length||!r.pre.length)return o.pre.length===r.pre.length?0:o.pre.length?-1:1;for(let e=0;e<Math.max(o.pre.length,r.pre.length);e+=1){const t=o.pre[e],n=r.pre[e];if(void 0===t||void 0===n)return void 0===t?-1:1;if(t===n)continue;const a=/^\d+$/.test(t),i=/^\d+$/.test(n);return a&&i?Number(t)>Number(n)?1:-1:a!==i?a?-1:1:t>n?1:-1}return 0}})})(),n=(()=>{const e=["thread","dropper","ward"],t="exp-core-coordination-v1",n=[],o=[],r=new Map,a=(new Date).toISOString();let i=0,s=!1,c=!0;const l=e=>String(e).replace(/https?:\/\/[^\s"<>]+/gi,"[url]").replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,"[email]").replace(/\b(Bearer|OAuth)\s+\S+/gi,"$1 [redacted]").replace(/\b(token|password|secret|authorization|cookie)\s*[:=]\s*[^\s,;]+/gi,"$1=[redacted]").replace(/\b\d{3}-\d{7}-\d{7}\b/g,"[order-id]").replace(/\b[A-Za-z0-9_-]{40,}\b/g,"[opaque-id]").slice(0,2e3),d=new Set(["audio","beacon","css","embed","fetch","font","iframe","img","link","navigation","object","ping","script","track","video","xmlhttprequest","other"]),p=e=>{const t=String(e||"").trim().toLowerCase();return d.has(t)?t:"other"};function u(e,t=0,n=new WeakSet){if(t>8)return"[depth limit]";if("string"==typeof e)return l(e);if("bigint"==typeof e)return String(e);if("function"!=typeof e&&"symbol"!=typeof e){if(!e||"object"!=typeof e)return e;if(!(e instanceof Node||e===window)){if(n.has(e))return"[circular]";n.add(e);try{if(e instanceof Error)return{name:l(e.name),message:l(e.message),stack:l(e.stack||"")};if(Array.isArray(e))return e.slice(0,100).map(e=>u(e,t+1,n));const o={};for(const[r,a]of Object.entries(Object.getOwnPropertyDescriptors(e)).slice(0,150)){if(/token|cookie|authorization|password|secret|pageText|innerHTML|outerHTML|formValue|matchText|__proto__|constructor|prototype/i.test(r))continue;if(!("value"in a))continue;const e=u(a.value,t+1,n),i=l(r);void 0!==e&&i&&(o[i]=e)}return o}catch{return"[unavailable]"}finally{n.delete(e)}}}}function m(e,t,o){if(!s&&c){s=!0;try{n.push({at:(new Date).toISOString(),level:e,kind:t,values:u(o.slice(0,10))}),n.length>100&&(n.shift(),i+=1)}catch{}finally{s=!1}}}for(const e of["debug","log","info","warn","error"])try{const t=console[e];if("function"!=typeof t)continue;const n=function(...n){return m(e,"console",n),Reflect.apply(t,this,n)};console[e]=n,console[e]===n&&o.push({level:e,original:t,wrapped:n})}catch{}function h(e){const t=e?.tagName||"unknown",n=e?.getRootNode?.(),o=n?.host||null,r=o?.dataset?.productId||o?.dataset?.expDiagnosticsProduct||null,a=Boolean(r||"1"===o?.dataset?.expOwned||"1"===e?.dataset?.expOwned);let i=null;try{const t=e?.currentSrc||e?.src||e?.href||"";i=t?new URL(t,location.href).hostname:null}catch{}return{element:t,owner:a?r||"extrapotions":"page",assetHost:i}}const f=e=>m("error",e.target===window?"runtime-error":"resource-error",e.target===window?[e.error||e.message,{line:e.lineno,column:e.colno}]:[h(e.target)]),g=e=>m("error","unhandled-rejection",[e.reason]);function b(n,o,a){if(n=String(n).toLowerCase(),!e.includes(n))return null;let i=r.get(n);return i||(i=document.createElement("meta"),i.dataset.expOwned="1",i.dataset.expDiagnosticsProduct=n,i.dataset.expProductVersion=String(o||"unknown").slice(0,40),i.dataset.expCoordinationProtocol=t,i.dataset.expDiagnosticsInstance=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`,r.set(n,i)),i.isConnected||(document.head||document.documentElement)?.append(i),a&&(a.dataset.expDiagnosticsInstance=i.dataset.expDiagnosticsInstance),i}function x(){const n=[...document.querySelectorAll("meta[data-exp-diagnostics-product]")],o=[...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')],r=[],a=e.map(e=>{const a=n.filter(t=>t.dataset.expDiagnosticsProduct===e),i=o.filter(t=>t.dataset.productId===e),s=[...new Set(a.map(e=>l(e.dataset.expProductVersion||"unknown")))],c=[...new Set(a.map(e=>l(e.dataset.expCoordinationProtocol||"unknown")))];return(a.length>1||i.length>1)&&r.push({type:"duplicate-product",products:[e],instances:Math.max(a.length,i.length)}),c.some(e=>e!==t&&"unknown"!==e)&&r.push({type:"protocol-mismatch",products:[e],protocols:c}),{id:e,status:a.length||i.length?"observed":"not-observed",versions:s,protocols:c,instances:Math.max(a.length,i.length),launchers:i.length}}),i=o.map(e=>{const t=e.shadowRoot?.querySelector('[data-exp-part="launcher"]');return t&&t.getClientRects().length&&"hidden"!==getComputedStyle(t).visibility?{id:e.dataset.productId,box:t.getBoundingClientRect()}:null}).filter(t=>t&&e.includes(t.id));for(let e=0;e<i.length;e++)for(let t=e+1;t<i.length;t++){const n=i[e],o=i[t];Math.min(n.box.right,o.box.right)-Math.max(n.box.left,o.box.left)>2&&Math.min(n.box.bottom,o.box.bottom)-Math.max(n.box.top,o.box.top)>2&&r.push({type:"launcher-overlap",products:[n.id,o.id]})}return{scope:"current-page",installationInventory:"unavailable",products:a,conflicts:r,status:r.length?"conflicts-detected":"no-conflicts-observed",limitations:["Disabled products and products outside their match rules cannot be enumerated.","Only reported registrations, protocol mismatches, duplicate instances and observable launcher overlap are checked."]}}function y({limit:e=25,budget:t=6e3}={}){const n=document.createElement("canvas");n.width=n.height=1;const o=n.getContext("2d",{willReadFrequently:!0}),r=e=>(o.clearRect(0,0,1,1),o.fillStyle="#000",o.fillStyle=e,o.fillRect(0,0,1,1),[...o.getImageData(0,0,1,1).data].map(e=>e/255)),a=e=>e<=.04045?e/12.92:((e+.055)/1.055)**2.4,i=e=>.2126*a(e[0])+.7152*a(e[1])+.0722*a(e[2]),s=e=>e.parentElement||e.getRootNode?.().host||null,c=e=>"rgb("+e.slice(0,3).map(e=>Math.round(255*e)).join(", ")+")",l=e=>({tag:e.tagName.toLowerCase(),id:e.id?String(e.id).slice(0,40):"",cls:String(e.className?.baseVal??e.className??"").slice(0,80),host:e.getRootNode?.().host?.tagName.toLowerCase()||""}),d=e=>{const t=[];for(let n=e;n;n=s(n)){const e=r(getComputedStyle(n).backgroundColor);if(e[3]>0&&t.push(e),e[3]>=.99)break}return t.reduceRight((e,t)=>e.map((e,n)=>t[n]*t[3]+e*(1-t[3])),[1,1,1])},p=[],u=e=>{for(const n of e.querySelectorAll("*")){if(p.length>=t)return;n.closest('[data-exp-owned="1"]')||n.id?.startsWith("exp-")||(p.push(n),n.shadowRoot&&u(n.shadowRoot))}};u(document);const m=[];for(const e of p){const t=[...e.childNodes].reduce((e,t)=>e+(3===t.nodeType?t.textContent.trim().length:0),0);if(!t)continue;const n=e.getBoundingClientRect();if(!n.width||!n.height||n.bottom<0||n.top>2*innerHeight)continue;const o=getComputedStyle(e),a=r(o.color),s=d(e),p=i(a.slice(0,3).map((e,t)=>e*a[3]+s[t]*(1-a[3]))),u=i(s);m.push({ratio:Math.round((Math.max(p,u)+.05)/(Math.min(p,u)+.05)*100)/100,...l(e),textLength:t,color:o.color,background:c(s),opacity:o.opacity,..."none"!==o.filter?{filter:o.filter}:{}})}m.sort((e,t)=>e.ratio-t.ratio);const h=e=>{const t=getComputedStyle(e);return{...l(e),background:t.backgroundColor,opacity:t.opacity,position:t.position,..."none"!==t.filter?{filter:t.filter}:{},...t.backdropFilter&&"none"!==t.backdropFilter?{backdropFilter:t.backdropFilter}:{},..."normal"!==t.mixBlendMode?{blend:t.mixBlendMode}:{}}},f=[[.5,.4],[.1,.4],[.5,.85]].map(([e,t])=>{const n=Math.round(innerWidth*e),o=Math.round(innerHeight*t),r=document.elementsFromPoint(n,o).filter(e=>!e.closest('[data-exp-owned="1"]')).slice(0,6).map(h);let a=document,i=null;for(let e=0;e<20;e++){const e=a.elementFromPoint(n,o);if(!e||e===i)break;if(i=e,!e.shadowRoot)break;a=e.shadowRoot}const c=[];for(let e=i;e&&c.length<10;e=s(e))c.push(h(e));return{x:n,y:o,stack:r,chain:c}}),g=[];for(const e of p){if(g.length>=8)break;const t=getComputedStyle(e);if("fixed"!==t.position&&"absolute"!==t.position&&"sticky"!==t.position)continue;const n=e.getBoundingClientRect(),o=Math.max(0,Math.min(n.right,innerWidth)-Math.max(n.left,0))*Math.max(0,Math.min(n.bottom,innerHeight)-Math.max(n.top,0));o<innerWidth*innerHeight*.5||(r(t.backgroundColor)[3]>0||"none"!==t.filter||t.backdropFilter&&"none"!==t.backdropFilter||"normal"!==t.mixBlendMode)&&g.push({...h(e),coverage:Math.round(o/(innerWidth*innerHeight)*100)/100,pointerEvents:t.pointerEvents,zIndex:t.zIndex})}return{scanned:p.length,truncated:p.length>=t,viewport:{width:innerWidth,height:innerHeight},colorScheme:getComputedStyle(document.documentElement).colorScheme,worst:m.slice(0,e),overlays:g,points:f}}addEventListener("error",f,!0),addEventListener("unhandledrejection",g),addEventListener("DOMContentLoaded",()=>{for(const e of r.values())e.isConnected||(document.head||document.documentElement)?.append(e)},{once:!0});const v=new WeakMap;function w({show:e,copy:t,output:n,getReport:o,notify:r=()=>{},onShow:a=()=>{},onCopy:i=()=>{}}){let s,c=0;v.set(n,o),v.set(t,o),n.hidden=!0,n.setAttribute("role","region"),n.setAttribute("aria-label","Page, technical, console, and plugin diagnostics"),n.tabIndex=0,e.setAttribute("aria-expanded","false");const l=(e,t,n)=>{e.textContent=t,e.setAttribute("aria-label",n)};l(e,"Show","Show Diagnostics"),l(t,"Copy","Copy Diagnostics");const d=async()=>{const t=n.hidden,i=++c;if(n.hidden=!t,n.classList.toggle("open",t),t?l(e,"Hide","Hide Diagnostics"):l(e,"Show","Show Diagnostics"),e.setAttribute("aria-expanded",String(t)),e.classList.toggle("last-opened",t),t)try{const e=await o();i===c&&(n.textContent=JSON.stringify(e,null,2))}catch{i===c&&(n.textContent="Diagnostics unavailable."),r("Could not generate diagnostics.")}a(t)},p=async()=>{t.disabled=!0,clearTimeout(s);try{await navigator.clipboard.writeText(JSON.stringify(await o(),null,2)),l(t,"Copied","Diagnostics copied"),i()}catch{l(t,"Failed","Copy failed"),r("Could not copy diagnostics. Use Show.")}finally{t.disabled=!1,s=setTimeout(()=>{l(t,"Copy","Copy Diagnostics")},1600)}};return e.addEventListener("click",d),t.addEventListener("click",p),()=>{++c,clearTimeout(s),e.removeEventListener("click",d),t.removeEventListener("click",p)}}return Object.freeze({createReport:function(e,t={},r={}){const{host:s,shadow:c,...d}=t,m=c||s?.shadowRoot,h=String(e||"ExtraPotions").toLowerCase(),f=b(h,t.product?.version||t.version,s),g=u(d),v=e=>document.querySelectorAll(e).length,w=performance.getEntriesByType("navigation")[0],S=performance.getEntriesByType("resource"),k={};for(const e of S){const t=k[p(e.initiatorType)]||={count:0,durationMs:0,transferBytes:0};t.count++,t.durationMs+=Math.round(e.duration),t.transferBytes+=e.transferSize||0}const E={origin:location.origin,protocol:location.protocol,readyState:document.readyState,contentType:document.contentType,characterSet:document.characterSet,compatibilityMode:document.compatMode,language:document.documentElement?.lang||null,direction:document.documentElement?.dir||"auto",structure:{elements:v("*"),headings:v("h1,h2,h3,h4,h5,h6"),links:v("a[href]"),forms:v("form"),inputs:v("input,select,textarea"),buttons:v('button,[role="button"]'),images:v("img"),videos:v("video"),audio:v("audio"),frames:v("iframe"),scripts:v("script"),stylesheets:document.styleSheets.length},layout:{documentWidth:document.documentElement?.scrollWidth||0,documentHeight:document.documentElement?.scrollHeight||0,scrollX,scrollY,horizontalOverflow:(document.documentElement?.scrollWidth||0)>innerWidth},preferences:{reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,darkColorScheme:matchMedia("(prefers-color-scheme: dark)").matches,forcedColors:matchMedia("(forced-colors: active)").matches},performance:{navigation:w?{type:w.type,durationMs:Math.round(w.duration),responseMs:Math.round(w.responseEnd),domInteractiveMs:Math.round(w.domInteractive),domContentLoadedMs:Math.round(w.domContentLoadedEventEnd),loadMs:Math.round(w.loadEventEnd),redirectCount:w.redirectCount}:null,resources:{count:S.length,byType:k},paint:performance.getEntriesByType("paint").map(e=>({name:e.name,startMs:Math.round(e.startTime)}))},privacy:{pageText:"excluded",formValues:"excluded",urlPathsAndQueries:"excluded",resourceUrls:"excluded",cookiesAndStorage:"excluded; sanitized plugin state supplied separately"}},A={hostname:location.hostname,topLevelContext:window.top===window.self,visibility:document.visibilityState,online:navigator.onLine,language:navigator.language,userAgent:navigator.userAgent,viewport:{width:innerWidth,height:innerHeight,pixelRatio:devicePixelRatio}},C=e=>{const t=e.getBoundingClientRect();return{width:t.width,height:t.height,x:t.x,y:t.y,visible:!!e.getClientRects().length&&"hidden"!==getComputedStyle(e).visibility}},O=e=>m?.querySelector(e)||null,P=O('[data-exp-part="progress-card"]'),z=O('[data-exp-part="launcher"]'),M=O('[data-exp-part="launcher-row"]'),$=O('[data-exp-part="dock"]'),R=(I="[data-exp-update-notice],.update-notice,.changelog",[...m?.querySelectorAll(I)||[]].find(e=>!e.hidden&&e.getClientRects().length)||O(I));var I;const L={progressCardRect:P?C(P):null,launcherRect:z?C(z):null,launcherRowRect:M?C(M):null,menuRect:$?C($):null,noticeRect:R?C(R):null},T={mounted:!!s?.isConnected,menuSizing:"viewport-clamped",uiGeometry:L,progressPanelWidth:P?Math.round(P.getBoundingClientRect().width):null,launcherRowWidth:M?Math.round(M.getBoundingClientRect().width):null,menuWidth:$?Math.round($.getBoundingClientRect().width):null,noticeWidth:R&&!R.hidden?Math.round(R.getBoundingClientRect().width):null,surfaces:[...m?.querySelectorAll('[data-exp-part="dock"]')||[]].map(C),categories:[...m?.querySelectorAll(".route,.nav-item,.fl-tool-header")||[]].map(e=>({name:l(e.textContent.trim()),expanded:e.getAttribute("aria-expanded")})),swatches:[...m?.querySelectorAll(".exp-theme-swatch")||[]].map(e=>({name:e.getAttribute("aria-label"),selected:e.getAttribute("aria-pressed"),...C(e)}))};let N=null;try{"object"==typeof GM_info&&(N={name:GM_info.scriptHandler||null,version:GM_info.version||null,injectInto:GM_info.injectInto||null})}catch{}return{...g,report:`${e} Diagnostics`,schemaVersion:3,generatedAt:(new Date).toISOString(),page:E,technical:{manager:N,core:u(r),capabilities:{mutationObserver:"function"==typeof MutationObserver,constructedStylesheets:"function"==typeof CSSStyleSheet&&"replaceSync"in CSSStyleSheet.prototype,clipboard:!!navigator.clipboard,trustedTypes:!!globalThis.trustedTypes}},console:{startedAt:a,scope:"accessible-userscript-realm-and-window-events",limit:100,omitted:i,hooks:o.map(e=>({level:e.level,installed:console[e.level]===e.wrapped})),entries:u(n),limitations:["No DevTools history, browser-internal logs, or inaccessible isolated-world console messages.","Messages are redacted and bounded; attribution to another script is not inferred."]},plugin:{id:h,version:g.product?.version||g.version||f?.dataset.expProductVersion||null,stateLocation:"top-level",compatibility:x()},environment:A,ui:T,core:g.core||u(r),readability:g.readability||(()=>{try{return y()}catch(e){return{error:String(e?.message||e)}}})()}},readabilityScan:y,registerProduct:b,compatibility:x,bindControls:w,createControls:function(e,t){const n=document.createElement("div");n.className="diagnostics-controls";const o=document.createElement("div");o.className="action-pair";const r=document.createElement("button"),a=document.createElement("button"),i=document.createElement("pre");for(const e of[r,a])e.type="button",e.className="life-btn action";return i.className="diag",w({show:r,copy:a,output:i,getReport:e,notify:t}),o.append(r,a),n.append(o,i),n},reportSource:function(e){if(!e)return null;if(v.has(e))return v.get(e);for(const t of e.querySelectorAll?.("*")||[])if(v.has(t))return v.get(t);return null},dispose:function(){c=!1;for(const{level:e,original:t,wrapped:n}of o)console[e]===n&&(console[e]=t);removeEventListener("error",f,!0),removeEventListener("unhandledrejection",g);for(const e of r.values())e.remove()}})})();function o(e){const t=e.version,n="exp-core-coordination-v1",o=new Set(["lifecycle","settings","diagnostics","dom-scheduler","navigation","launcher","ui"]),r=new Map,a=new Set,i=[],s={batches:0,roots:0,startedAt:Date.now()};let c;const l=new Set;let d,p;function u(e,t){const n=String(e).split(/[.-]/).slice(0,3).map(e=>Number(e)||0),o=String(t).split(/[.-]/).slice(0,3).map(e=>Number(e)||0);for(let e=0;e<3;e+=1)if(n[e]!==o[e])return n[e]>o[e]?1:-1;return 0}const m=(e,t="core")=>{const n=String(e&&e.message||e||"Unknown error").replace(/https?:\/\/\S+/g,"[url]").slice(0,180);i.push({source:t,code:e&&e.code||"UNEXPECTED",message:n,at:Date.now()}),i.length>12&&i.shift()};function h(){if(!document.documentElement)return null;c=document.querySelector('[data-exp-core-coordinator="1"]'),c||(c=document.createElement("meta"),c.dataset.expCoreCoordinator="1",c.dataset.protocol=n,c.dataset.protocolVersion="1",document.documentElement.append(c));const e=c.dataset.activeCoreVersion;return(!e||u(t,e)>0)&&(c.dataset.activeCoreVersion=t),c}function f(e,o={}){if(!h())return;const r={protocol:n,protocolVersion:1,coreVersion:t,type:e,...o};document.dispatchEvent(new CustomEvent("exp-core:coordination",{detail:r}))}function g(e,t){const n=h();if(!n)return;const o=`product${e.id.replace(/[^a-z0-9]/gi,"")}`;n.dataset[o]=JSON.stringify({id:e.id,version:e.version,state:t,capabilities:e.capabilities}),f("product-state",{productId:e.id,productVersion:e.version,state:t})}function b(){try{if("undefined"!=typeof unsafeWindow&&unsafeWindow?.document)return unsafeWindow}catch{}return window}function x(e){return Boolean(e&&11===e.nodeType&&e.host)}const y=".exp-owned-sheet-marker{}",v=e=>{const t=String(e||"");return t.startsWith(y)?t:y+t};function w(){return`expink${Math.random().toString(36).slice(2,10)}`}function S(e,t){return`${e=v(e)}\n[data-${t}]{color:rgb(1, 2, 3)!important}`}function k(e){try{return Boolean(e&&(e.isConnected||e.host?.isConnected))}catch{return!1}}function E(e,t){if(!t||!k(t))return!1;const n=document.createElement("span");n.setAttribute(`data-${e}`,""),t.append(n);let o=!1;try{o="rgb(1, 2, 3)"===getComputedStyle(n).color}catch{}try{n.remove()}catch{n.parentNode?.removeChild(n)}return o}function A(e,t,n){const o=v(t);try{return void e.replaceSync(o)}catch{}n.Function("sheet","css","sheet.replaceSync(css)")(e,o)}function C(e,t){try{return void(e.adoptedStyleSheets=t)}catch{}const n=b(),o=x(e)?(n.ShadowRoot||ShadowRoot).prototype:(n.Document||Document).prototype,r=Object.getOwnPropertyDescriptor(o,"adoptedStyleSheets");if(!r?.set)throw new Error("adoptedStyleSheets unavailable");r.set.call(e,t)}const O=new Map;let P=null;function z(e,t,n){const o=[...e],r=o.lastIndexOf(t);return r>=0&&(n?o[r]=n:o.splice(r,1)),o}function M(){return{core:{version:t,protocol:n,capabilities:[...o]},products:[...r.values()].map(({manifest:e,state:t})=>({id:e.id,version:e.version,state:t})),metrics:{...s,uptimeMs:Date.now()-s.startedAt},errors:i.map(({source:e,code:t,message:n})=>({source:e,code:t,message:n}))}}return addEventListener("pagehide",e=>{if(!e.persisted)for(const e of[...a])try{e()}catch{}}),Object.freeze({VERSION:t,PROTOCOL:n,register:function(t,n){if(function(e){if(!e||!/^[a-z][a-z0-9-]+$/.test(e.id||""))throw Object.assign(new Error("Invalid product ID"),{code:"MANIFEST_ID"});if(!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(e.version||""))throw Object.assign(new Error("Invalid product version"),{code:"MANIFEST_VERSION"});if(!Array.isArray(e.capabilities))throw Object.assign(new Error("Capabilities must be an array"),{code:"MANIFEST_CAPABILITIES"});const t=e.capabilities.filter(e=>!o.has(e));if(t.length)throw Object.assign(new Error(`Missing Core capability: ${t.join(", ")}`),{code:"CAPABILITY_MISSING"})}(t),r.has(t.id))return r.get(t.id).public;const i={manifest:Object.freeze({...t}),hooks:n,state:"registered",queue:Promise.resolve(),desiredEnabled:!1},s=(n,o,r)=>(i.queue=i.queue.catch(()=>{}).then(async()=>{if(n.includes(i.state))try{if("enabled"===o&&e.suiteSitePaused?.())return i.state="disabled",void g(i.manifest,"disabled");await(r?.()),i.state=o,g(i.manifest,o)}catch(e){throw i.state="failed",m(e,t.id),g(i.manifest,"failed"),e}}),i.queue);return i.public=Object.freeze({manifest:i.manifest,get state(){return i.state},initialize:()=>s(["registered","failed"],"initialized",n.initialize),enable:()=>(i.desiredEnabled=!0,e.suiteSitePaused?.()?s(["initialized"],"disabled"):s(["initialized","disabled"],"enabled",n.enable)),disable:()=>(i.desiredEnabled=!1,s(["enabled"],"disabled",n.disable)),cleanup:()=>s(["registered","initialized","enabled","disabled","failed"],"cleaned",n.cleanup)}),r.set(t.id,i),p||"function"!=typeof e.onSuiteEvent||(p=e.onSuiteEvent(t=>{if("suite.site-control"===t.type&&t.detail?.hostname===String(location.hostname||"local-document").toLowerCase())for(const t of r.values())t.queue=t.queue.catch(()=>{}).then(async()=>{const n=e.suiteSitePaused?.();try{n&&"enabled"===t.state?(await(t.hooks.disable?.()),t.state="disabled",g(t.manifest,"disabled")):!n&&t.desiredEnabled&&"disabled"===t.state&&(await(t.hooks.enable?.()),t.state="enabled",g(t.manifest,"enabled"))}catch(e){t.state="failed",m(e,t.manifest.id),g(t.manifest,"failed")}})},{type:"suite.site-control"}),a.add(()=>{p?.(),p=null})),g(i.manifest,"registered"),i.public},createScheduler:function(t,n={}){let o,r,a=0,i=!1;const c=new Set,l=()=>{if(a=0,!i||!c.size)return;const e=[...c];c.clear(),s.batches+=1,s.roots+=e.length;try{t(e)}catch(e){m(e,n.source||"scheduler")}},d=e=>{if(!i||!e||e.closest?.('[data-exp-owned="1"]'))return!1;const t=e.nodeType===Node.TEXT_NODE?e.parentElement:e;return!!t&&(c.add(t),!0)},p=e=>{d(e)&&(a||(a=requestAnimationFrame(l)))};return Object.freeze({start(){if(!i){if(i=!0,n.attributes||"function"!=typeof e.observePageBatch)n.attributes||"function"!=typeof e.observePage?(o=new MutationObserver(e=>{for(const t of e){const e=t.target?.nodeType===Node.TEXT_NODE?t.target.parentElement:t.target;if(e&&!e.closest?.('[data-exp-owned="1"]')){if("childList"===t.type){const e=[...t.addedNodes,...t.removedNodes];if(e.length&&e.every(e=>1===e.nodeType&&(e.matches?.('[data-exp-owned="1"]')||e.closest?.('[data-exp-owned="1"]'))))continue}p(e)}}}),o.observe(document.documentElement,{childList:!0,subtree:!0,attributes:Boolean(n.attributes),characterData:Boolean(n.characterData),attributeFilter:n.attributeFilter})):r=e.observePage((e,t)=>{const o=Array.isArray(e?.types)?e.types:[];!n.characterData&&o.length&&o.every(e=>"characterData"===e)||p(t)},{productId:n.source||"scheduler"});else{const t=n.source||"scheduler",o=n.phase||e.suiteContract?.(t)?.presentationPhases?.[0]||"observe";r=e.observePageBatch((e,t,o)=>{for(let e=0;e<t.length;e+=1){const r=Array.isArray(o?.[e]?.types)?o[e].types:[];!n.characterData&&r.length&&r.every(e=>"characterData"===e)||d(t[e])}c.size&&(a&&(cancelAnimationFrame(a),a=0),l())},{productId:t,phase:o})}p(document.documentElement)}},stop(){i=!1,r?.(),r=null,o?.disconnect(),o=null,c.clear(),a&&cancelAnimationFrame(a),a=0},schedule:p,flush:l})},onNavigation:function(t){if("function"!=typeof t)throw new TypeError("Navigation callback must be a function");if("function"==typeof e.observeNavigation){let n=!1;const o=e.observeNavigation(e=>t({href:e.href,kind:e.kind,epoch:e.epoch}),{owner:"lifecycle"}),r=()=>{n||(n=!0,o(),a.delete(r))};return a.add(r),r}let n=location.href;const o=({href:e})=>{e!==n&&(n=e,t({href:e}))};if(!d){const e={},t={},n=()=>{const e=location.href;for(const t of[...l])t({href:e})};for(const o of["pushState","replaceState"]){const r=history[o];e[o]=r;const a=function(...e){const t=Reflect.apply(r,this,e);return n(),t};t[o]=a,history[o]=a}addEventListener("popstate",n),addEventListener("hashchange",n),globalThis.navigation?.addEventListener("currententrychange",n),d=()=>{for(const n of Object.keys(t))history[n]===t[n]&&(history[n]=e[n]);removeEventListener("popstate",n),removeEventListener("hashchange",n),globalThis.navigation?.removeEventListener("currententrychange",n),d=null}}l.add(o);let r=!1;const i=()=>{r||(r=!0,l.delete(o),a.delete(i),l.size||d?.())};return a.add(i),i},registerLauncher:function(t,n){const o=e.registerLauncher(t,n);return a.add(o),o},announce:f,negotiate:function(e,o=n){if(o!==n||!/^\d+\.\d+\.\d+/.test(e||""))return{compatible:!1,selection:"isolated",reason:"PROTOCOL_INCOMPATIBLE"};const r=u(t,e);return{compatible:!0,selection:r<0?"peer-newer":r>0?"local-newer":"equal",reason:"COMPATIBLE"}},safeError:m,diagnosticSnapshot:M,diagnostics:M,focusMenuSurface:function(e){return e instanceof HTMLElement&&(e.hasAttribute("tabindex")||e.setAttribute("tabindex","-1"),e.style.outline="none",e.focus({preventScroll:!0}),!0)},injectStyle:function(e,t,n={}){const o=String(t||"");if(x(e))return function(e,t,n){const o=e=>m(Object.assign(e||new Error("Style injection failed"),{code:"STYLE_INJECTION"}),"core.style");try{const r=function(e,t){const n=b(),o=n.CSSStyleSheet||("function"==typeof CSSStyleSheet?CSSStyleSheet:null);if("function"!=typeof o||!o.prototype.replaceSync)return null;const r=e.adoptedStyleSheets;if(!r||"function"!=typeof r[Symbol.iterator])return null;if(!1===P)throw new Error("adoptedStyleSheets did not paint");let a=O.get(t);if(!a){const e=new o;A(e,t,n),a={sheet:e,users:0}}let i=a.sheet;const s=r.length;if(C(e,[...r,i]),e.adoptedStyleSheets.length!==s+1){try{C(e,z(e.adoptedStyleSheets,i))}catch{}throw new Error("adoptedStyleSheets ignored")}if(null===P&&k(e)){let t=!1;try{t=function(e,t,n){const o=w(),r=new t;A(r,S("",o),n),C(e,[...e.adoptedStyleSheets,r]);try{return E(o,e)}finally{try{C(e,z(e.adoptedStyleSheets,r))}catch{}}}(e,o,n)}catch{}if(P=t,!t){try{C(e,z(e.adoptedStyleSheets,i))}catch{}throw new Error("adoptedStyleSheets did not paint")}}a.users+=1,O.set(t,a);let c=!0;const l=()=>{c&&(c=!1,a.users-=1,a.users<=0&&O.get(t)===a&&O.delete(t))};return{write(t){if(!c)return void A(i,t,n);const r=new o;A(r,t,n);const a=[...e.adoptedStyleSheets];C(e,a.includes(i)?z(a,i,r):[...a,r]),l(),i=r},detach(){try{C(e,z(e.adoptedStyleSheets,i))}catch{}l()}}}(e,t);if(r){const a=document.createElement("style");let i=t;Object.defineProperty(a,"textContent",{configurable:!0,enumerable:!0,get:()=>i,set(e){i=String(e||"");try{r.write(i)}catch(e){o(e)}}}),a.remove=()=>{try{r.detach()}catch{}a.parentNode&&a.parentNode.removeChild(a)};try{e.append(a)}catch{}return(e=>{e.dataset.expOwned="1";for(const[t,o]of Object.entries(n||{}))e.dataset[t]=String(o);return e})(a)}}catch(e){o(e)}return function(e,t,n){const o=document.createElement("style");try{o.textContent=v(t)}catch(e){m(e,"core.style")}o.dataset.expOwned="1";for(const[e,t]of Object.entries(n||{}))o.dataset[e]=String(t);return e.append(o),o}(e,t,n)}(e,o,n);const r=b().document||document,a=r.documentElement||r.head||r.body,i=r,s=r.body||r.documentElement,c=e=>{e.dataset.expOwned="1";for(const[t,o]of Object.entries(n||{}))e.dataset[t]=String(o);return e},l=e=>m(Object.assign(e||new Error("Style injection failed"),{code:"STYLE_INJECTION"}),"core.style"),d=(e,t)=>{const n=document.createElement("style");let r=o;return Object.defineProperty(n,"textContent",{configurable:!0,enumerable:!0,get:()=>r,set(t){r=String(t||"");try{e(r)}catch(e){l(e)}}}),n.remove=()=>{try{t()}catch{}n.parentNode&&n.parentNode.removeChild(n)},a.append(n),c(n)};try{if("function"==typeof GM_addElement){const e=w();let t=GM_addElement(a,"style",{textContent:S(o,e)});if(t&&E(e,s)){try{t.textContent=v(o)}catch{}return d(e=>{try{t.textContent=v(e)}catch{const n=GM_addElement(a,"style",{textContent:v(e)});try{t.remove()}catch{}t=n}},()=>{try{t.remove()}catch{}})}try{t?.remove()}catch{}}}catch(e){l(e)}try{if("function"==typeof GM_addStyle){const e=w();let t=GM_addStyle(S(o,e));if(t&&E(e,s)){try{t.textContent=v(o)}catch{}return d(e=>{try{t.textContent=v(e)}catch{t=GM_addStyle(v(e))}},()=>{try{t.remove()}catch{}})}try{t?.remove()}catch{}}}catch(e){l(e)}try{const e=function(e,t,n){const o=b(),r=o.CSSStyleSheet||("function"==typeof CSSStyleSheet?CSSStyleSheet:null);if("function"!=typeof r||!r.prototype.replaceSync)return null;const a=e.adoptedStyleSheets;if(!a||"function"!=typeof a[Symbol.iterator])return null;const i=new r,s=w();A(i,S(t,s),o);const c=a.length;C(e,[...a,i]);const l=n||e.documentElement||e;if(e.adoptedStyleSheets.length!==c+1){try{C(e,[...e.adoptedStyleSheets].filter(e=>e!==i))}catch{}throw new Error("adoptedStyleSheets ignored")}const d=k(l)?E(s,l):!1!==function(e){try{return e.cssRules.length>0}catch{return null}}(i);if(!d){try{C(e,[...e.adoptedStyleSheets].filter(e=>e!==i))}catch{}throw new Error("adoptedStyleSheets did not paint")}return A(i,t,o),{sheet:i,write:e=>A(i,e,o),detach(){try{C(e,[...e.adoptedStyleSheets].filter(e=>e!==i))}catch{}}}}(i,o,s);if(e)return d(t=>e.write(t),()=>e.detach())}catch(e){l(e)}const p=document.createElement("style");try{p.textContent=v(o)}catch(e){l(e)}return a.append(p),c(p)},registerFloatingNotice:e.registerFloatingNotice,layoutFloatingNotices:e.layoutFloatingNotices,claimNotice:e.claimNotice,consumeVersionChange:e.consumeVersionChange})}const r=(()=>{const e={thread:"exp-thread-root",dropper:"tdh-root",ward:"exp-ward-root"};function t(){const t=[],n=[],o=new Set;for(const[r,a]of Object.entries(e)){const e=[...document.querySelectorAll("[data-exp-diagnostics-product]")].filter(e=>e.dataset.expDiagnosticsProduct===r);if(!e.length)continue;const i=[...new Set(e.map(e=>e.dataset.expProductVersion||"unknown"))],s=document.getElementById(a),c=s?.dataset.coreVersion||null;c&&o.add(c),t.push({id:r,versions:i,core:c,instances:e.length}),e.length>1&&n.push(`More than one ${r.toUpperCase()} instance is active.`)}return o.size>1&&n.push("Different core versions are active. Update the products and reload this page."),{products:t,warnings:n}}const o=(e,t)=>{const n=document.createElement("button");return n.type="button",n.className="life-btn action",n.textContent=e,n.addEventListener("click",t),n};function r(e){const t=document.createElement("details");t.className="exp-tools-card",t.style.cssText="border:1px solid var(--theme-line,var(--line,#777));border-radius:7px;padding:7px;margin-top:8px";const n=document.createElement("summary");return n.textContent=e,t.append(n),t}const a=Object.freeze({dropper:"Dropper",ward:"WARD",thread:"THREAD"}),i=(e,t=200)=>String(e||"").replace(/https?:\/\/\S+/gi,"[link]").replace(/\S+@\S+/g,"[address]").replace(/\s+/g," ").trim().slice(0,t);function s(e={},{settings:t,activity:n=[]}={}){const o=[],r=(e,t)=>{t&&o.push(`- ${e}: ${t}`)},s=e.plugin?.id;r("Product",[a[s]||s,e.plugin?.version].filter(Boolean).join(" ")+(e.technical?.core?.version?" · Core "+e.technical.core.version:"")),r("Other products on page",(e.plugin?.compatibility?.products||[]).filter(e=>e.id!==s&&"observed"===e.status).map(e=>(a[e.id]||e.id)+" "+(e.versions||[]).join("/")).join(", "));const c=e.technical?.manager;r("Userscript manager",c?.name?i(c.name+" "+(c.version||""),60):"");const l=e.environment||{};r("Browser",l.userAgent?function(e=""){const t=t=>(e.match(t)||[])[1];return(t(/Edg\/(\d+)/)?"Edge "+t(/Edg\/(\d+)/):t(/OPR\/(\d+)/)?"Opera "+t(/OPR\/(\d+)/):t(/Firefox\/(\d+)/)?"Firefox "+t(/Firefox\/(\d+)/):t(/Chrome\/(\d+)/)?"Chrome "+t(/Chrome\/(\d+)/):t(/Version\/(\d+)[^ ]* Safari/)?"Safari "+t(/Version\/(\d+)[^ ]* Safari/):"Unknown browser")+" · "+(/Windows/.test(e)?"Windows":/Android/.test(e)?"Android":/iPhone|iPad/.test(e)?"iOS":/Mac OS X/.test(e)?"macOS":/CrOS/.test(e)?"ChromeOS":/Linux/.test(e)?"Linux":"Unknown OS")}(l.userAgent):""),r("Site",i(l.hostname,100)),l.viewport&&r("Viewport",`${l.viewport.width}×${l.viewport.height} @${l.viewport.pixelRatio}x`),t?.current&&t?.defaults&&r("Settings changed from defaults",Object.keys(t.current).filter(e=>JSON.stringify(t.current[e])!==JSON.stringify(t.defaults[e])).slice(0,25).map(e=>`${e}: ${i(JSON.stringify(t.current[e]),60)}`).join(", ")||"none");const d=[...(e.core?.errors||[]).map(e=>[e.source,e.code,e.message].filter(Boolean).join(" ")),...(e.console?.entries||[]).filter(e=>/error|warn/.test(e.level)).map(e=>e.message||e.text||"")].filter(Boolean).slice(-5);d.length&&o.push("- Recent errors:",...d.map(e=>"  - "+i(e,200)));const p=n.map(e=>i(e,120)).filter(Boolean).slice(-5);return p.length&&o.push("- Recent activity:",...p.map(e=>"  - "+e)),o.join("\n")}function c(e,t,{health:n,diagnostics:o,copied:r=!1,summary:s=""}={}){if(!Object.hasOwn(a,e))throw new Error("Unknown product");const l=a[e],d=/^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/.test(String(t))?String(t):"unknown",p=n&&i(n.label)?`\nStatus: ${i(n.label)}${i(n.reason)?" - "+i(n.reason):""}\n`:"",u=`Product: ${l} v${d}\n${p}\nWhat happened?\n\nSteps to reproduce\n1. \n\nExpected behavior\n\nActual behavior\n\n`+(s?`Summary (review and remove anything private before submitting)\n${s}\n\n`:"Browser and userscript manager\n\n"),m=e=>"https://github.com/ExtraPotions/"+l+"/issues/new?title="+encodeURIComponent("["+l+" "+d+"] Issue")+"&body="+encodeURIComponent(e);if(o&&"object"==typeof o){const a="Full diagnostics\n";for(const e of[JSON.stringify(o,null,2),JSON.stringify(o)]){const t=m(u+a+"```json\n"+e+"\n```\n");if(t.length<=8e3)return t}const i=m(u+a+(r?"The full diagnostics were copied to your clipboard when you selected Report a Problem. Paste them here if asked.\n":"Select Copy diagnostics and paste the full diagnostics here if asked.\n"));return i.length<=8e3||s.length<=1500?i:c(e,t,{health:n,diagnostics:o,copied:r,summary:s.slice(0,1500)})}return m(u+"Diagnostics (optional)\nSelect Copy diagnostics, paste them here, and remove anything private.\n")}const l=new Map,d=new Set;return Object.freeze({issueSummary:s,productIssueUrl:c,productDataResetting:e=>d.has(e),clearProductData:function(e,{legacyKeys:t=[]}={}){if(!Object.hasOwn(a,e))throw new Error("Unknown product");d.add(e);try{const n=n=>n.startsWith(`exp:v3:${e}:`)||t.some(e=>n===e||n.startsWith(e+":account:")),o=new Set([`exp:v3:${e}:settings`,`exp:v3:${e}:update-cache`,`exp:v3:${e}:installed-version`,`exp:v3:${e}:last-version-v2`,...t]);for(const t of["localStorage","sessionStorage"]){let r;try{r=globalThis[t]}catch{throw new Error("Could not access product storage.")}if(r){for(let e=0;e<r.length;e++){const t=r.key(e);t&&n(t)&&o.add(t)}for(const t of o)try{r.removeItem(t)}catch{throw new Error("Could not clear "+e+" data. Check browser storage permissions.")}}}try{if("function"==typeof GM_listValues)for(const e of GM_listValues())n(e)&&o.add(e)}catch{throw new Error("Could not list product storage.")}for(const e of o)"function"==typeof GM_deleteValue?GM_deleteValue(e):"function"==typeof GM_setValue&&GM_setValue(e,void 0);return l.delete(e),[...o]}catch(t){throw d.delete(e),t}},groupTimelineEntries:function(e,t=e=>e.reason){const n=[];for(const o of e||[]){const e=t(o),r=n.at(-1);r&&r.key===e?(r.count++,r.at=Math.max(r.at,Number(o.at)||0)):n.push({...o,key:e,count:1,at:Number(o.at)||0})}return n},createProductTimeline:function(e,t,n=()=>{},{layout:o="classic",showActivity:r=!0}={}){if(!Object.hasOwn(a,e))throw new Error("Unknown product");const i=document.createElement("div");i.dataset.expProductTimeline="1";let s=!1;const c=g.createHealthControls(async function(){const n=await t();if(!s&&r){const t=l.get(e)||[],o=String(n?.state||"waiting").slice(0,30),r=String(n?.reason||"Status unavailable.").replace(/https?:\/\/\S+/gi,"[page]").slice(0,500),a=t.at(-1);a&&a.state===o&&a.reason===r||(t.push({at:Date.now(),state:o,reason:r}),t.length>30&&t.shift(),l.set(e,t)),function(){i.replaceChildren();for(const t of(l.get(e)||[]).slice().reverse()){const e=document.createElement("p");e.textContent=new Date(t.at).toLocaleTimeString()+" · "+t.state+" · "+t.reason,e.style.cssText="margin:6px 0;overflow-wrap:anywhere",i.append(e)}}()}return n},n);if("grouped"===o){if(!r){const e=g.createDisclosure("Status",c.element);return e.open=!0,e.addEventListener("toggle",()=>{e.open&&c.refresh()}),{element:e,dispose(){s=!0,c.dispose()},refresh:c.refresh}}const e=document.createElement("div");e.dataset.expProductActivity="1";const t=g.createDisclosure("Recent Activity",e,i);t.dataset.expSystemActivity="1";const n=g.createDisclosure("Status",c.element,t);return n.open=!0,n.addEventListener("toggle",()=>{n.open&&c.refresh()}),t.addEventListener("toggle",()=>{t.open&&c.refresh()}),{element:n,activity:e,log:t,dispose(){s=!0,c.dispose()},refresh:c.refresh}}const d=g.createDisclosure("dropper"===e?"Dropper Status":"Product Timeline",c.element,i);return d.addEventListener("toggle",()=>{d.open&&c.refresh()}),{element:d,dispose(){s=!0,c.dispose()},refresh:c.refresh}},createProductSystem:function({id:e,version:t,timeline:r,diagnostics:i,preferences:l,onReset:d,notify:u=()=>{},layout:m="grouped",issueSettings:h}){if(!Object.hasOwn(a,e))throw new Error("Unknown product");if("grouped"===m)return function({id:e,version:t,timeline:r,diagnostics:i,preferences:l,onReset:d,notify:u,issueSettings:m}){const h=a[e],f=document.createElement("div");f.dataset.expProductSystem=e,f.dataset.expSystemLayout="grouped",f.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0;max-width:100%;overflow-wrap:anywhere";const g=e=>(e.style.cssText+=";width:100%;min-width:0;white-space:normal;border-radius:7px",e),b=i.querySelector?.(".action-pair"),x=b?[...b.querySelectorAll(":scope > button")]:[],y=x.find(e=>/^Copy/.test(e.textContent)),v=x.find(e=>/^(Show|Hide)/.test(e.textContent));if(y&&v){if(b.insertBefore(v,y),!b.querySelector(":scope > [data-exp-diagnostics-label]")){const e=document.createElement("span");e.dataset.expDiagnosticsLabel="1",e.textContent="Diagnostics",b.prepend(e)}b.style.cssText="display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px",p.setMenuHelp(y,"Copy a fresh diagnostic snapshot for troubleshooting. Review it for private data before sharing.")}const w=i.querySelector?.("pre");w&&(w.style.cssText+=";max-height:240px;overflow:auto");const S=()=>({label:r.querySelector?.("[data-exp-health-state]")?.textContent||"",reason:r.querySelector?.("[data-exp-health-reason]")?.textContent||""}),k=g(o("Report a Problem",async()=>{if(k.disabled)return;k.disabled=!0;let o=null,a=!1;try{const e="object"==typeof n?n.reportSource?.(i):null;e&&(o=await e())}catch{}if(o)try{await navigator.clipboard.writeText(JSON.stringify(o,null,2)),a=!0}catch{}let l="";if(o)try{let e=null;try{e=m?.()||null}catch{}const t=S().reason.trim();l=s(o,{settings:e,activity:[...r.querySelectorAll?.("p")||[]].map(e=>e.textContent.trim()).filter(e=>e&&e!==t).slice(-5)})}catch{}try{const n=document.createElement("a");n.href=c(e,t,{health:S(),diagnostics:o,copied:a,summary:l}),n.target="_blank",n.rel="noopener noreferrer",n.click()}finally{k.disabled=!1}}));k.dataset.expSystemReport="1",p.setMenuHelp(k,"Attaches fresh diagnostics to a GitHub issue. GitHub issues are public; remove private data before submitting.");const E=document.createElement("section");E.setAttribute("aria-label","Diagnostics and Support"),E.append(i,k);const A=(()=>{const e=document.createElement("p");return e.textContent="",e.style.cssText="margin:6px 0;font-size:var(--exp-font-size-small,11px);line-height:1.4",e})();A.setAttribute("role","status"),A.setAttribute("aria-live","polite");let C=0,O=0;const P=g(o("Reset All Settings",async()=>{if(!P.disabled){if(Date.now()>=C)return C=Date.now()+4e3,P.textContent="Tap Again to Reset",P.dataset.expResetArmed="1",A.textContent=`Tap again within 4 seconds to permanently reset ${h}.`,clearTimeout(O),void(O=setTimeout(z,4e3));z(),P.disabled=!0;try{await d(),u(h+" reset complete.")}catch{u("Reset did not complete. Check storage permissions and try again.")}finally{P.disabled=!1}}}));function z(){clearTimeout(O),C=0,P.textContent="Reset All Settings",delete P.dataset.expResetArmed,A.textContent=""}P.dataset.expDestructive="1",P.style.cssText+=";font-weight:600",p.setMenuHelp(P,`Clears ${h} settings and stored data on this browser. This cannot be undone. Tap twice within 4 seconds to confirm.`);const M=document.createElement("section");M.setAttribute("aria-label","Reset Settings"),M.style.cssText="margin-block-start:12px;padding-block-start:8px",M.append(P,A),P.addEventListener("blur",z);for(const[e,t]of[["status",r],["support",E],["preferences",l],["reset",M]]){if(!t)continue;t.dataset.expSystemItem=e,t.style.minWidth="0",t.style.maxWidth="100%";const n="DETAILS"===t.tagName?t.querySelector(":scope > summary"):null;n&&(n.style.cssText+=";min-height:28px;padding:4px 0;box-sizing:border-box;cursor:pointer"),f.append(t)}return f}({id:e,version:t,timeline:r,diagnostics:i,preferences:l,onReset:d,notify:u,issueSettings:h});const f=document.createElement("div");f.dataset.expProductSystem=e,f.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0;max-width:100%;overflow-wrap:anywhere";const g=o("Create GitHub Issue",()=>{const n=document.createElement("a");n.href=c(e,t),n.target="_blank",n.rel="noopener noreferrer",n.click()});g.style.cssText="width:100%;min-width:0;white-space:normal;border-radius:7px";const b=o("Reset All Settings",async()=>{if(confirm(`Reset all ${a[e]} settings and stored product data?`)&&confirm(`Confirm permanent reset of ${a[e]} data. This cannot be undone.`)){b.disabled=!0;try{await d(),u(a[e]+" reset complete.")}catch{u("Reset did not complete. Check storage permissions and try again.")}finally{b.disabled=!1}}});b.style.cssText="width:100%;min-width:0;white-space:normal;border:1px solid #ff2438;border-radius:7px;background:#e11428;color:#fff;font-weight:700";for(const[e,t]of[["timeline",r],["diagnostics",i],["issue",g],["preferences",l],["reset",b]]){t.dataset.expSystemItem=e,t.style.minWidth="0",t.style.maxWidth="100%";const n="DETAILS"===t.tagName?t.querySelector(":scope > summary"):null;n&&(n.style.cssText+=";min-height:28px;padding:4px 0;box-sizing:border-box;cursor:pointer"),f.append(t)}return f},placeDonationPanel:function(e,t){t.closest(".menu-head,header")?.after(e),e.style.cssText="position:static!important;width:100%!important;max-width:100%!important;margin:7px 0;box-shadow:none"},createBitcoinDonation:function(){const e="bc1qg4xq63mwu63qc5dnqugk3qtxvulv5p3frjayna8ey8tu8ey4wpxsg92hv3",t=document.createElement("details");t.className="exp-bitcoin-donation",t.style.cssText="margin-top:7px;min-width:0";const n=document.createElement("summary");n.textContent="₿ Bitcoin",n.style.cssText="cursor:pointer;font-weight:700;padding:6px;border:1px solid var(--theme-line);border-radius:7px";const r=document.createElement("code");r.textContent=e,r.setAttribute("aria-label","Bitcoin Donation Address"),r.style.cssText="display:block;overflow-wrap:anywhere;word-break:break-all;user-select:all;margin:7px 0;font-size:var(--exp-font-size-body,13px);line-height:1.4";const a=document.createElement("p");a.setAttribute("role","status"),a.style.cssText="margin:5px 0 0;font-size:var(--exp-font-size-small,11px)";const i=o("Copy Bitcoin Address",async()=>{try{await navigator.clipboard.writeText(e),a.textContent="Bitcoin address copied."}catch{a.textContent="Select and copy the address above."}});i.style.cssText="width:100%;min-width:0;white-space:normal;border-radius:7px";const s=document.createElement("a");return s.href="bitcoin:"+e,s.textContent="Open Bitcoin Wallet",t.append(n,r,i,s,a),t},compatibilitySnapshot:t,createCompatibilityControls:function(){const e=r("Product Compatibility"),n=document.createElement("div");function a(){n.replaceChildren();const e=t();for(const t of e.products){const e=document.createElement("p");e.textContent=`${t.id.toUpperCase()} ${t.versions.join(", ")} · ${t.core?"core "+t.core:"native product UI"}`,n.append(e)}const o=document.createElement("p");o.textContent=e.warnings.join(" ")||"No mixed core versions or duplicate instances detected on this page.",n.append(o);const r=document.createElement("small");r.textContent="Only products running on this page are visible. This is not an online update check.",n.append(r)}return n.setAttribute("aria-live","polite"),e.addEventListener("toggle",()=>{e.open&&a()}),e.append(n,o("Refresh Compatibility",a)),e},createSuiteSiteControls:function(){const e=r("Site Control"),t=document.createElement("div");t.setAttribute("aria-live","polite");const n=document.createElement("button");n.type="button",n.className="switch",n.setAttribute("role","switch"),n.setAttribute("aria-label","Pause all ExtraPotions products on this site"),n.append(document.createElement("span"));const a=document.createElement("div");a.className="row";const i=document.createElement("div");i.className="copy";const s=document.createElement("strong");s.textContent="Pause All on This Site";const c=document.createElement("small");function l(){const e=g,o=Boolean(e.suiteSitePaused());n.setAttribute("aria-checked",String(o)),t.replaceChildren();const r=document.createElement("p");r.textContent=!1===e.suiteSitePausePersisted?.()?o?"Paused for this page. Storage is unavailable.":"Active for this page. Storage is unavailable.":o?"ExtraPotions page features are paused on this site.":"ExtraPotions page features are active on this site.",t.append(r);for(const n of e.suiteSnapshot().products){const r=document.createElement("p"),a=e.latestSuiteState(n.id)?.state;r.textContent=`${n.id.toUpperCase()} · ${o?"Site Paused":a?.status||(!1===a?.active?"Inactive":"Active")}`,t.append(r)}}c.className="help",c.textContent="Stops page changes from every active ExtraPotions product while keeping launchers and System recovery menus available.",i.append(s,c),a.append(i,n),n.addEventListener("click",()=>{const e=g;e.setSuiteSitePaused(!e.suiteSitePaused()),l()});const d=document.createElement("select");d.setAttribute("aria-label","Temporary Suite Pause Duration");for(const[e,t]of[["15","15 minutes"],["60","1 hour"],["240","4 hours"]]){const n=document.createElement("option");n.value=e,n.textContent=t,d.append(n)}const p=o("Pause Temporarily",()=>{g.setSuiteSitePaused(!0,location.hostname,Number(d.value)),l()});return e.addEventListener("toggle",()=>{e.open&&l()}),e.append(a,d,p,t),l(),e}})})(),a=(()=>{const e=(e,t)=>{try{localStorage.setItem(e,t)}catch{}},t=Object.freeze({appearance:"Look",protection:"Protect"}),n=e=>!e.body.hidden&&!e.body.classList.contains("fl-tool-hidden");return Object.freeze({mount:function({panel:o,id:r,entries:a}){const i=o.ownerDocument,s=i.defaultView,c="exp:suite:menu-tab:"+r;let l=!1,d=!1,p=!1,u=!1;const m=i.createElement("div");m.className="exp-menu-content";const h=[];for(const e of a){const n=e.header.querySelector(".fl-tool-title"),o=t[e.label.toLowerCase()];n&&o&&(h.push([n,n.textContent]),n.textContent=o)}function f(e){a[e]&&!n(a[e])&&a[e].header.click()}function g(){if(l)return;!function(){if(m.parentNode)return;const e=a[0].section.parentElement;e&&(e.insertBefore(m,a[0].section),m.append(...a.map(e=>e.section)))}();const e=!o.hidden&&o.getClientRects().length>0;if(e&&(!p||u)&&!a.some(n)){const e=a.findIndex(e=>e.key===(e=>{try{return localStorage.getItem(e)}catch{return null}})(c));f(e>=0?e:0)}p=e,u=!1}const b=t=>{const o=a.find(e=>e.header.contains(t.target));o&&!n(o)&&e(c,o.key)},x=e=>e.parentElement?.closest("details,.fl-tool-body,.route-body"),y=new s.MutationObserver(e=>{const t=new Set;for(const n of e.reverse()){const e=n.target;if("DETAILS"!==e.tagName||null!==n.oldValue||!e.open||t.has(e))continue;const o=x(e);if(o){t.add(e);for(const n of o.querySelectorAll("details[open]"))n!==e&&x(n)===o&&(n.open=!1,t.add(n))}}});o.addEventListener("click",b,!0),y.observe(o,{subtree:!0,attributes:!0,attributeOldValue:!0,attributeFilter:["open"]});const v=new s.MutationObserver(e=>{e.some(e=>"hidden"===e.attributeName?null!==e.oldValue:"class"===e.attributeName&&e.oldValue!==o.getAttribute("class"))&&(u=!0),d||l||(d=!0,queueMicrotask(()=>{d=!1,g()}))});v.observe(o,{attributes:!0,attributeOldValue:!0,attributeFilter:["hidden","class","style"]});const w=new s.ResizeObserver(g);return w.observe(o),g(),{update:g,select(t){const n=a.findIndex(e=>e.key===t);n>=0&&(e(c,t),f(n))},destroy(){l=!0,v.disconnect(),w.disconnect(),o.removeEventListener("click",b,!0),y.disconnect();for(const e of a)m.before(e.section);m.remove();for(const[e,t]of h)e.textContent=t}}}})})(),i=(()=>{const e=Object.freeze(["main","appearance","advanced","system"]),t=Object.freeze({main:Object.freeze({id:"main",label:"Main",order:0}),appearance:Object.freeze({id:"appearance",label:"Appearance",order:1}),advanced:Object.freeze({id:"advanced",label:"Advanced",order:2}),system:Object.freeze({id:"system",label:"System",order:3})}),n={thread:{main:["feed","read"],appearance:["look"],advanced:["filters","people"],system:["system"]},dropper:{main:["drops","streams","campaigns","settings"],appearance:["appearance"],advanced:["advanced"],system:["system"]},ward:{main:["protection","amazon","tools"],appearance:["appearance"],advanced:["advanced","patterns","advanced-amazon"],system:["system"]}},o=Object.freeze({appearance:Object.freeze(["appearance","readability","style","highlight-style","look","theme","themes"]),advanced:Object.freeze(["advanced","effects","integrations","profiles","sites","language","patterns","routing","playback"]),system:Object.freeze(["system","settings","diagnostics","maintenance","recovery"])}),r=e=>String(e||"").toLowerCase().replace(/&/g," and ").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""),i=Object.freeze(e.map(e=>t[e]));function s(t,a={},i=0){const s=r(t),c=r(a.key||a.id||a.route),l=r(a.label||a.name||a.title),d=new Set([c,l].filter(Boolean)),p=n[s]||{};for(const t of e)if((p[t]||[]).some(e=>d.has(r(e))))return t;for(const e of["system","appearance","advanced"])if(o[e].some(e=>d.has(r(e))))return e;return"main"}function c(n,o=[]){const r=new Map(e.map(e=>[e,{...t[e],sections:[]}]));return o.forEach((e,t)=>{const o=s(n,e,t);r.get(o).sections.push(e)}),e.map(e=>r.get(e)).filter(e=>e.sections.length)}function l(e){if(e?.querySelectorAll)for(const t of e.querySelectorAll("details[data-exp-menu-submenu]"))"1"!==t.dataset.expMenuInitialized&&(t.open=!1,t.dataset.expMenuInitialized="1")}let d=0;const p=(e,t)=>{const n=e.createElementNS("http://www.w3.org/2000/svg","svg");n.setAttribute("viewBox","0 0 16 16"),n.setAttribute("aria-hidden","true"),n.setAttribute("focusable","false");const o=e.createElementNS("http://www.w3.org/2000/svg","path");return o.setAttribute("d",t?"M10 3 5 8l5 5":"m6 3 5 5-5 5"),o.setAttribute("fill","none"),o.setAttribute("stroke","currentColor"),o.setAttribute("stroke-width","1.8"),o.setAttribute("stroke-linecap","round"),o.setAttribute("stroke-linejoin","round"),n.append(o),n},u=Object.freeze({"highlight-style":"Style","menu-preferences":"Menu","settings-transfer":"Transfer","effects-and-integrations":"Effects","profiles-and-sites":"Profiles","page-tools":"Page","retailer-modules":"Retailers","protection-review":"Review","page-activity":"Activity"});function m(e){if("DETAILS"!==e.tagName||e.matches(".eligibility-chip,[data-shift-appearance-explanation]"))return null;const t=e.querySelector(":scope>summary,:scope>h3,:scope>h2"),n=(t?.querySelector(".campaign-manager-title")||t)?.textContent.trim();return n?u[r(n)]||n:null}return Object.freeze({categories:i,categoryFor:s,describe:c,createDisclosure:function({document:e,label:n,category:o="advanced",key:a="",contents:i=[],className:s="exp-system-card"}={}){if(!e?.createElement)throw new Error("Menu disclosure requires a document");const c=e.createElement("details");c.className=s,c.dataset.expMenuSubmenu="1",c.dataset.expMenuCategory=t[o]?o:"advanced",a&&(c.dataset.expMenuKey=r(a)),c.open=!1,c.dataset.expMenuInitialized="1";const l=e.createElement("summary");return l.textContent=String(n||t[o]?.label||"Advanced"),c.append(l,...i),c},collapseSubmenus:l,mount:function({panel:t,id:n,onChange:o=()=>{}}){const r=t.ownerDocument,i=r.defaultView;l(t);const d=[...t.querySelectorAll(":scope .fl-tool-panel")].filter(e=>e.parentElement===t||null===e.parentElement?.closest(".fl-tool-panel")).map(e=>{const t=e.querySelector(":scope>.fl-tool-header"),n=e.querySelector(":scope>.fl-tool-body");if(!t||!n)return null;const o=(t.querySelector(".fl-tool-title")||t).textContent.replace(/[▸▾›]/g,"").trim();return{section:e,header:t,body:n,label:o,key:t.dataset.route||t.dataset.section||t.dataset.panel||n.id}}).filter(e=>e?.key),p={update(){},destroy(){}},u={update(){l(t),p.update()},select(){},describe:()=>[],destroy(){p.destroy()}};if(d.length<2)return u;const m=d[0].section.parentElement;if(d.some(e=>e.section.parentElement!==m))return u;d.forEach((e,t)=>{e.category=s(n,e,t),e.section.dataset.expMenuCategory=e.category});const h=r.createElement("style");h.textContent="\n    [data-exp-menu-submenu]{box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere}\n    [data-exp-menu-submenu]>summary{cursor:pointer}\n  ";const f=t.getRootNode();(f instanceof i.ShadowRoot?f:r.head||r.documentElement).append(h);const g=t.matches('[data-exp-menu-layout="lean"]'),b=t=>g?"system"===t.category?3:/^(look|appearance)$/i.test(t.label)?2:0:e.indexOf(t.category),x=[...d].sort((e,t)=>b(e)-b(t));!function(){const e=d.filter(e=>e.section.parentElement===m),t=x.filter(t=>e.includes(t)),n=[...m.children].filter(e=>t.some(t=>t.section===e)),r=n.length?n.at(-1).nextSibling:null;for(const e of t)m.insertBefore(e.section,r);o()}();const y=a.mount({panel:t,id:n,entries:x});return{update(){l(t),p.update(),y.update()},select:e=>y.select(e),describe:()=>c(n,d.map(({key:e,label:t,category:n})=>({key:e,label:t,category:n}))),destroy(){y.destroy(),p.destroy(),h.remove(),d.forEach(e=>{delete e.section.dataset.expMenuCategory})}}},mountTabs:function({panel:e,id:t,onChange:n=()=>{}}){if(e.matches('[data-exp-menu-layout="lean"]'))return{update(){},destroy(){}};const o=e.ownerDocument,a=o.defaultView,i=o.createElement("style");i.textContent='\n    [data-exp-submenu-tabs]{min-width:0;grid-column:1/-1}\n    .exp-submenu-home,.exp-submenu-detail{min-width:0;max-width:100%}\n    .exp-submenu-home[hidden],.exp-submenu-detail[hidden]{display:none!important}\n    .exp-submenu-nav{display:grid;min-width:0}\n    .exp-submenu-home>.exp-submenu-tabpanel+.exp-submenu-nav{margin-top:8px;border-top:1px solid var(--theme-line)}\n    .exp-submenu-row{display:grid;grid-template-columns:minmax(0,1fr) 14px;align-items:center;gap:10px;width:100%;min-width:0;min-height:40px;margin:0!important;padding:8px 2px!important;text-align:left;font:600 var(--exp-font-size-body,13px)/1.4 "Segoe UI",system-ui,sans-serif!important;color:var(--theme-text);background:transparent!important;border:0!important;border-top:1px solid var(--theme-line)!important;border-radius:0!important;box-shadow:none!important;cursor:pointer;overflow-wrap:anywhere}\n    .exp-submenu-nav>.exp-submenu-row:first-child{border-top:0!important}\n    .exp-submenu-row:hover>span{color:var(--theme-accent)}\n    .exp-submenu-row>svg,.exp-submenu-back>svg{width:14px;height:14px;color:var(--theme-muted);flex:none}\n    .exp-submenu-back{display:flex;align-items:center;gap:6px;min-height:36px;margin:0!important;padding:4px 4px 4px 0!important;font:600 var(--exp-font-size-body,13px)/1.4 "Segoe UI",system-ui,sans-serif!important;color:var(--theme-muted);background:transparent!important;border:0!important;box-shadow:none!important;cursor:pointer}\n    .exp-submenu-back:hover{color:var(--theme-text)}\n    .exp-submenu-title{margin:2px 0 8px;font:700 14px/1.35 "Segoe UI",system-ui,sans-serif;color:var(--theme-text);overflow-wrap:anywhere}\n    .exp-submenu-row:focus-visible,.exp-submenu-back:focus-visible{outline:2px solid var(--theme-accent2,var(--theme-accent));outline-offset:2px}\n    .exp-submenu-tabpanel{min-width:0;max-width:100%}\n    .exp-submenu-tabpanel[hidden]{display:none!important}\n    .exp-submenu-tabpanel>[data-exp-tab-item]{margin-top:0!important}\n    .exp-submenu-tabpanel>details[data-exp-tab-item]{border:0!important;padding:0!important;background:transparent!important}\n    .exp-submenu-tabpanel>details[data-exp-tab-item]>summary{display:none!important}\n    @media(pointer:coarse){.exp-submenu-row,.exp-submenu-back{min-height:44px}}\n  ';const s=e.getRootNode();(s instanceof a.ShadowRoot?s:o.head||o.documentElement).append(i);const c=new Map,l=new Map;let u=!1,h=!1;function f(e,i){const{home:s,rows:u}=function(e){const n=new Map,o=[],a=(e,t)=>{n.has(e)||n.set(e,[]),n.get(e).push(t)},i="dropper"===t&&"tdh-streams-body"===e.id,s="dropper"===t&&"tdh-drops-body"===e.id,c="ward"===t&&"exp-ward-view-tools"===e.id;for(const n of[...e.children]){if(n.matches("style,script,[data-exp-submenu-tabs],.badge-only-progress-slot"))continue;if(s&&"tdh-open-campaigns"===n.id){o.push(n);continue}let e=m(n);if(!e||"dropper"!==t&&n.matches('[data-exp-system-item="status"]'))o.push(n);else{if(i){const t=r(n.querySelector(":scope>summary")?.textContent);e="playback-options"===t?"Playback":"notifications"===t?"Alerts":"tdh-routing-history-panel"===n.id||["routing-and-backup","interruption-rules","why-did-it-switch"].includes(t)?"Routing":e}else s?e="tdh-open-campaigns"===n.id?"Campaigns":"tdh-claim-history-panel"===n.id?"History":e:c&&(e=e.startsWith("Advanced ")?"Patterns":["Page","Transfer"].includes(e)?"Tools":e);a(e,n)}}return{home:o,rows:[...new Set([...i?["Stream Health","Playback","Routing","Alerts"]:s?["Campaigns","History"]:c?["Seller Clarity","Coverage","Retailers","Patterns","Tools"]:["Page"],...n.keys()])].filter(e=>n.has(e)).map(e=>({label:e,nodes:n.get(e)}))}}(e);if(!u.length||u.length+(s.length?1:0)<2)return!1;const h=[...e.childNodes],f=o.createElement("div");f.dataset.expSubmenuTabs="1";const g=o.createElement("div");g.className="exp-submenu-home";const b=o.createElement("div");b.className="exp-submenu-nav";const x=o.createElement("div");x.className="exp-submenu-detail";const y=o.createElement("button");y.type="button",y.className="exp-submenu-back",y.append(p(o,!0),"Back");const v=o.createElement("div");v.className="exp-submenu-title",v.setAttribute("role","heading"),v.setAttribute("aria-level","3"),x.append(y,v);const w=e=>{const t=o.createElement("div");return t.id="exp-submenu-panel-"+ ++d,t.className="exp-submenu-tabpanel",t.setAttribute("role","region"),t.setAttribute("aria-label",e+" settings"),t},S=w("Overview"),k=[],E=[],A=new Map;for(const e of s)m(e)&&(e.dataset.expTabItem="1",A.set(e,e.open)),S.append(e);y.setAttribute("aria-controls",S.id),g.append(...s.length?[S,b]:[b]);for(const{label:e,nodes:t}of u){const n=w(e),r=o.createElement("button"),a=o.createElement("span");r.type="button",r.className="exp-submenu-row",r.setAttribute("aria-controls",n.id),r.setAttribute("aria-expanded","false"),a.textContent=e,r.append(a,p(o,!1));for(const e of t)e.dataset.expTabItem="1",A.set(e,e.open),n.append(e);n.hidden=!0,k.push(r),E.push(n),b.append(r),x.append(n)}f.append(g,x);let C=-1;function O(e,t=null){C=e,l.set(i,e<0?null:u[e].label),g.hidden=e>=0,x.hidden=e<0,E.forEach((t,n)=>{t.hidden=n!==e,k[n].setAttribute("aria-expanded",String(n===e))}),v.textContent=e<0?"":u[e].label,P(),t?.focus(),n()}function P(){const t=e.getClientRects().length>0&&!e.closest("[hidden],.fl-tool-hidden")&&"hidden"!==a.getComputedStyle(e).visibility;[S,...E].forEach(e=>{const n=e===S?!g.hidden:!e.hidden;for(const o of e.children)if(A.has(o)){const e=t&&n;o.open!==e&&(o.open=e)}})}function z(){O(-1,k[C])}function M(e){const t=e.target.closest("button");if(t===y)return void(C>=0&&z());const n=k.indexOf(t);n>=0&&O(n,y)}function $(e){"Escape"!==e.key||C<0||e.defaultPrevented||e.target.closest?.("select")||(e.preventDefault(),e.stopPropagation(),z())}f.addEventListener("click",M),f.addEventListener("keydown",$);const R=e.querySelector(":scope>.badge-only-progress-slot");return e.replaceChildren(...R?[R,f]:[f]),O(u.findIndex(e=>e.label===l.get(i))),c.set(e,{root:f,syncOpen:P,destroy(t){f.removeEventListener("click",M),f.removeEventListener("keydown",$);for(const e of A.keys())delete e.dataset.expTabItem;if(t){for(const[e,t]of A)e.open=t;e.replaceChildren(...h)}}}),!0}function g(){if(!u){for(const[t,n]of c)e.contains(t)&&n.root.parentElement===t||(n.destroy(!1),c.delete(t));for(const t of e.querySelectorAll(".fl-tool-body,.route-body,[data-exp-product-system]")){if(t.querySelector(":scope>[data-exp-product-system]")||c.has(t))continue;const e=t.id||t.dataset.expProductSystem||t.closest("section")?.querySelector(".fl-tool-title")?.textContent||"submenu";f(t,e)}for(const e of c.values())e.syncOpen()}}const b=new a.MutationObserver(()=>{h||u||(h=!0,queueMicrotask(()=>{h=!1,g()}))});return g(),b.observe(e,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["hidden","class","aria-expanded"]}),{update:g,destroy(){u=!0,b.disconnect();for(const[e,t]of c)t.destroy(t.root.parentElement===e);c.clear(),l.clear(),i.remove()}}}})})(),s=(()=>{const e=Object.freeze({working:"Working",waiting:"Waiting",paused:"Paused",attention:"Needs Attention"});function t(t){const n=t&&Object.hasOwn(e,t.state),o=n?t.state:"waiting",r=Number(t?.checkedAt);return{state:o,label:e[o],reason:n&&"string"==typeof t.reason?t.reason.slice(0,500):"Status information is not available yet.",checkedAt:Number.isFinite(r)&&r>0?r:null,action:n&&"string"==typeof t.action?.label&&"function"==typeof t.action.run?{label:t.action.label.slice(0,80),run:t.action.run}:null}}return Object.freeze({normalizeHealth:t,createHealthControls:function(e,n=()=>{}){const o=document.createElement("section");o.className="exp-health",o.dataset.expHealth="1",o.style.cssText="margin:0 0 10px;padding:8px;border:1px solid var(--theme-line);border-radius:7px;background:var(--theme-inset);min-width:0;overflow-wrap:anywhere";const r=document.createElement("strong"),a=document.createElement("p"),i=document.createElement("small"),s=document.createElement("button");r.dataset.expHealthState="1",a.dataset.expHealthReason="1",a.style.cssText="margin:5px 0;line-height:1.4",i.style.cssText="display:block;margin-bottom:4px",s.type="button",s.className="life-btn action",s.hidden=!0,o.append(r,a,s);let c=0,l=!1,d=!1,p=null;function u(e){p=t(e),r.textContent=p.label,a.textContent=p.reason,a.hidden="working"===p.state,o.dataset.state=p.state,s.textContent=p.action?.label||"",s.hidden=!p.action,s.disabled=d}async function m(){if(l)return;const t=++c;try{const n=await e();l||t!==c||u(n)}catch{l||t!==c||u(null)}}const h=async()=>{if(l||d||!p?.action)return;const e=p.action.run;d=!0,s.disabled=!0;try{await e()}catch{l||n("The recovery action did not complete. Open diagnostics for details.")}finally{d=!1,l||(s.disabled=!1,await m())}};return o.refreshHealth=m,r.setAttribute("role","status"),s.addEventListener("click",h),u(null),m(),{element:o,refresh:m,dispose(){l=!0,++c,s.removeEventListener("click",h)}}}})})(),c=Object.freeze({createRecoveryGuard:function({limit:e=3,windowMs:t=12e4,now:n=Date.now}={}){const o=new Map;let r=!1;const a=(e,t)=>{let n=o.get(t);n||(n=new Map,o.set(t,n));let r=n.get(e);return r||(r={times:[],suspended:!1,retryPending:!1,lastFailureAt:null},n.set(e,r)),r},i=e=>({suspended:e.suspended,consecutiveFailures:e.times.length,retryPending:e.retryPending,lastFailureAt:e.lastFailureAt});function s(o,r){const s=a(o,r),c=n();return s.times=s.times.filter(e=>c-e<=t),s.times.push(c),s.times=s.times.slice(-e),s.lastFailureAt=c,s.times.length>=e&&(s.suspended=!0),i(s)}function c(e,t){const n=a(e,t);return n.times=[],n.suspended=!1,i(n)}return Object.freeze({failed:s,succeeded:c,snapshot:(e,t)=>i(a(e,t)),retry:async function(e,t,n){if(r||"function"!=typeof n)return!1;const i=a(e,t);if(i.retryPending)return!1;i.retryPending=!0;const l=()=>!r&&o.get(t)?.get(e)===i;try{const o=await n();return!(!l()||!1===o||(c(e,t),0))}catch(n){throw l()&&s(e,t),n}finally{i.retryPending=!1}},clearContext:e=>o.delete(e),dispose(){r=!0,o.clear()}})}}),l=(()=>{const e=':host :is(#tdh-tools-dock,[data-exp-menu-layout="lean"])[data-exp-menu-layout="lean"]',t=e+" .exp-menu-content",n=`\n    ${e}{box-sizing:border-box!important;padding:0!important;border:1px solid color-mix(in srgb,var(--theme-text) 18%,transparent)!important;border-radius:12px!important;background:var(--theme-bg)!important;background-image:none!important;box-shadow:0 16px 40px #0004!important;color:var(--theme-text)!important;font:400 13px/1.4 "Segoe UI",system-ui,sans-serif!important;text-align:start!important;letter-spacing:0!important;transition:none!important;overflow:hidden!important;max-height:calc(100dvh - 16px)!important;height:auto!important;flex-direction:column!important}\n    ${e}.fl-rail-open:not([hidden]){display:flex!important}\n    ${e} *{box-sizing:border-box}\n    ${e} .menu-head{display:flex!important;align-items:center!important;gap:4px!important;width:100%!important;min-height:48px!important;margin:0!important;padding:2px 4px 2px 10px!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--theme-text) 8%,transparent)!important;background:color-mix(in srgb,var(--theme-panel) 60%,var(--theme-bg))!important;flex:none!important}\n    ${e} .header-brand{display:flex!important;align-items:center!important;gap:7px!important;flex:1!important;min-width:0!important}\n    ${e} .header-icon{flex:0 0 24px!important;width:24px!important;height:26px!important;border:0!important;background:transparent!important;overflow:hidden!important}\n    ${e} .header-icon .menu-icon{width:24px!important;height:26px!important;object-fit:contain!important}\n    ${e} .header-copy{min-width:0!important;overflow:visible!important}\n    ${e} .header-title-row{display:flex!important;align-items:center!important;gap:0!important;flex-wrap:wrap!important}\n    ${e} :is(.header-title-row h2,[data-exp-part=title],#tdh-rail-title){margin:0!important;font-size:14px!important;font-weight:600!important;line-height:1.2!important}\n    ${e} :is([data-exp-part=subtitle],#tdh-rail-subtitle,.header-divider,.exp-menu-tagline){display:none!important}\n    ${e} .header-actions{display:flex!important;align-items:center!important;gap:0!important;flex:none!important}\n    ${e} :is(.support-button,[data-exp-part=close],[data-exp-part=version],#tdh-header-version,#tdh-rail-close){display:grid!important;place-items:center!important;flex:none!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;margin:0 1px!important;padding:0!important;border:0!important;border-radius:6px!important;background:transparent!important;color:var(--theme-muted)!important;box-shadow:none!important}\n    ${e} :is(.support-button,[data-exp-part=close],[data-exp-part=version],#tdh-header-version,#tdh-rail-close):hover{background:color-mix(in srgb,var(--theme-text) 9%,transparent)!important;color:var(--theme-text)!important}\n    @media(pointer:coarse){${e} :is(.support-button,[data-exp-part=close],[data-exp-part=version],#tdh-header-version,#tdh-rail-close){width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}}\n    ${e} :is([data-exp-part=version],#tdh-header-version){position:relative!important;display:block!important;font-size:13px!important;line-height:1.4!important}\n    ${e} .exp-changelog-icon{display:block;position:absolute;inset:0;margin:auto;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7}\n    ${e} [data-exp-part=status]{font-size:12px!important;margin-top:2px!important}\n    ${e}>nav{padding:0!important;margin:0!important}\n    ${e} .exp-section-icon{display:block!important;width:15px!important;height:15px!important;flex:none!important;transform:none!important;background:none!important;color:var(--theme-accent)!important}\n    ${e} .exp-section-icon svg{display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7}\n    ${t}{display:flex!important;flex-direction:column!important;gap:6px!important;padding:8px!important;min-width:0!important;min-height:0!important;max-height:calc(100dvh - 72px)!important;overflow:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--theme-text) 25%,transparent) transparent;background:var(--theme-bg)!important}\n    /* Filing cabinet: each section is a drawer; its header is the drawer front with a finger pull on the right. */\n    ${t} .fl-tool-panel{flex:none!important;margin:0!important;padding:0!important;border:1px solid color-mix(in srgb,var(--theme-line) 40%,transparent)!important;border-radius:8px!important;background:var(--theme-panel)!important;box-shadow:none!important;overflow:clip!important;min-width:0!important}\n    ${t} .fl-tool-panel>.fl-tool-header{position:relative!important;display:flex!important;align-items:center!important;gap:8px!important;width:100%!important;min-height:38px!important;margin:0!important;padding:8px 46px 8px 10px!important;border:0!important;border-radius:0!important;background:var(--theme-panel)!important;color:var(--theme-text)!important;font:600 13px/1.3 "Segoe UI",system-ui,sans-serif!important;text-align:start!important;box-shadow:none!important;cursor:pointer}\n    ${t} .fl-tool-panel>.fl-tool-header::after{content:'';position:absolute;right:9px;top:50%;width:28px;height:14px;transform:translateY(-50%);border-radius:7px 7px 4px 4px;background:var(--theme-inset);box-shadow:inset 0 2px 3px #0004}\n    ${t} .fl-tool-panel>.fl-tool-header :is(.fl-tool-chevron,.chevron){display:none!important}\n    /* Where the header is not itself a button (Dropper), its chevron button stays the keyboard control, stretched invisibly across the front. */\n    ${t} .fl-tool-panel>.fl-tool-header:not(button)>button.fl-tool-chevron{display:block!important;position:absolute!important;inset:0!important;z-index:1!important;width:auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;font-size:0!important;box-shadow:none!important;cursor:pointer}\n    ${t} .fl-tool-panel>.fl-tool-header:not(button)>button.fl-tool-chevron:focus-visible{outline:2px solid var(--theme-focus,var(--theme-accent))!important;outline-offset:-2px!important}\n    ${t} .fl-tool-panel>.fl-tool-header .fl-tool-title{flex:1;min-width:0;font:inherit!important;color:inherit!important}\n    ${t} .fl-tool-panel>.fl-tool-header[aria-expanded=true]{position:sticky!important;top:-8px;z-index:2;color:var(--theme-accent)!important;border-bottom:1px solid color-mix(in srgb,var(--theme-line) 30%,transparent)!important;box-shadow:0 2px 4px -2px #0004!important}\n    ${t} .fl-tool-panel>.fl-tool-header[aria-expanded=true]::after{background:color-mix(in srgb,var(--theme-accent) 22%,var(--theme-inset))}\n    ${t} :is(.route-body,.fl-tool-body){margin:0!important;padding:7px!important;border:0!important;border-radius:0!important;min-width:0!important;background:var(--theme-inset)!important;box-shadow:inset 0 4px 6px -3px #0003!important}\n    ${t} :is(.route-body,.fl-tool-body):is([hidden],.fl-tool-hidden){display:none!important}\n    ${t} :is(.exp-settings-group,.section,.group){min-width:0!important;border:0!important;border-radius:7px!important;margin:0 0 6px!important;padding:0!important;background:var(--theme-panel)!important;box-shadow:none!important;overflow:hidden}\n    ${t} :is(.route-body,.fl-tool-body)>:last-child{margin-bottom:0!important}\n    /* An inner group is a smaller drawer inside the open one. */\n    ${t} details{min-width:0!important;margin:0 0 6px!important;padding:0!important;border:1px solid color-mix(in srgb,var(--theme-line) 40%,transparent)!important;border-radius:7px!important;background:var(--theme-panel)!important;box-shadow:none!important;overflow:clip}\n    ${t} details[open]>:not(summary){margin-inline:7px}\n    ${t} details[open]>:not(summary):first-of-type{margin-top:7px}\n    ${t} details[open]{padding-bottom:7px!important;background:color-mix(in srgb,var(--theme-inset) 60%,var(--theme-panel))!important}\n    ${t} :is(.row,.mini-row,.fl-switch,.setting-row){display:flex!important;align-items:center!important;min-width:0!important;min-height:26px!important;gap:4px!important;padding:2px 8px!important;margin:0!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--theme-text) 8%,transparent)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;font-size:13px!important;line-height:1.4!important}\n    ${t} :is(.row,.mini-row,.fl-switch,.setting-row):last-child{border-bottom:0!important}\n    ${t} :is(.copy,.row-copy,.fl-switch-text,.setting-row>span,.mini-row>span){flex:1;min-width:0!important}\n    ${t} :is(.label,.setting-label,.fl-switch-text,.copy>strong,.row-copy>strong,.mini-row>span,.row>span){font-size:13px!important;line-height:1.4!important;font-weight:400!important;white-space:normal!important;overflow-wrap:break-word!important}\n    ${t} :is(.copy>.help,.row-copy>small,.row-help,.setting-help){display:none!important}\n    ${t} :is(.row,.mini-row,.setting-row):has(>.exp-native-popup),${t} :is(.row,.mini-row,.setting-row):has(>input:not([type=range])){display:grid!important;grid-template-columns:minmax(0,1fr) fit-content(58%)!important;gap:4px!important}\n    ${t} :is(button,input,select,textarea){font-family:inherit!important;font-size:13px!important;line-height:1.4!important;max-width:100%!important;min-width:0!important;color:var(--theme-text)!important;box-shadow:none!important}\n    ${t} button:not([role=switch]),${t} :is(input:not([type=range]),textarea){min-height:26px!important;height:auto!important;margin:0!important;padding:2px 8px!important;border:1px solid color-mix(in srgb,var(--theme-text) 23%,transparent)!important;border-radius:6px!important;background:color-mix(in srgb,var(--theme-text) 7%,var(--theme-panel))!important;font-weight:400!important;white-space:normal!important;text-align:center!important}\n    ${t} :is(input:not([type=range]),textarea){width:100%!important;text-align:start!important}\n    ${t} button[role=switch]{position:relative!important;flex:0 0 34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:24px!important;min-height:24px!important;max-height:24px!important;padding:0!important;border:0!important;border-radius:4px!important;background:transparent!important;box-shadow:none!important}\n    ${t} button[role=switch]::before{content:'';position:absolute;inset:4px 1px;border:0!important;border-radius:4px!important;background:color-mix(in srgb,var(--theme-text) 18%,var(--theme-panel))!important}\n    ${t} button[role=switch]::after{content:'';position:absolute!important;top:6px!important;left:3px!important;width:12px!important;height:12px!important;border:0!important;border-radius:2px!important;background:var(--theme-text)!important;transform:none!important}\n    ${t} button[role=switch][aria-checked=true]::before{background:var(--theme-accent2)!important}\n    ${t} button[role=switch][aria-checked=true]::after{left:19px!important;background:var(--theme-bg)!important}\n    ${t} button[role=switch]>span{display:none!important}\n    ${t} .mini-row:has(#tdh-switch-policy){grid-template-columns:minmax(0,1fr) fit-content(70%)!important}\n    ${t} .exp-native-popup{position:relative!important;display:block!important;min-width:0!important;width:100%!important;max-width:100%!important;border-radius:6px!important;flex:none!important}\n    ${t} .exp-native-popup>select{position:absolute!important;inset:0!important;opacity:0!important;width:100%!important;height:100%!important;min-height:0!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;z-index:1;cursor:pointer}\n    ${t} .exp-select-face{position:relative;display:block;align-content:center;min-height:26px;width:auto;padding:2px 22px 2px 4px;font-size:13px!important;line-height:1.4!important;white-space:normal!important;overflow-wrap:anywhere!important;color:var(--theme-text)!important;pointer-events:none}\n    ${t} .exp-select-face::after{content:'';position:absolute;right:6px;top:calc(50% - 5px);width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg)}\n    ${t} .exp-native-popup:focus-within{outline:2px solid var(--theme-focus,var(--theme-accent2));outline-offset:1px}\n    ${t} .exp-native-popup:has(select:disabled){opacity:.45}\n    ${t} option{background:var(--theme-panel)!important;color:var(--theme-text)!important}\n    ${t} details>summary{position:relative!important;display:flex!important;align-items:center!important;gap:4px!important;min-height:32px!important;padding:6px 40px 6px 9px!important;margin:0!important;font-size:12.5px!important;line-height:1.4!important;font-weight:600!important;list-style:none!important;background:var(--theme-panel)!important;color:var(--theme-text)!important;cursor:pointer}\n    ${t} details>summary::-webkit-details-marker{display:none}\n    ${t} details>summary::before{display:none!important}\n    ${t} details>summary::after{content:'';position:absolute;right:8px;top:50%;width:22px;height:11px;transform:translateY(-50%);border-radius:6px 6px 3px 3px;background:var(--theme-inset);box-shadow:inset 0 2px 3px #0004}\n    ${t} details[open]>summary{color:var(--theme-accent)!important;border-bottom:1px solid color-mix(in srgb,var(--theme-line) 30%,transparent)!important}\n    ${t} details[open]>summary::after{background:color-mix(in srgb,var(--theme-accent) 22%,var(--theme-inset))}\n    ${t} details>summary:has(>.campaign-manager-title),${t} details>summary:has(>#tdh-eligibility-summary){display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;column-gap:4px!important;row-gap:0!important;align-items:center!important}\n    ${t} details>summary>:is(.campaign-manager-title,#tdh-eligibility-summary){grid-column:1!important;grid-row:1!important}\n    ${t} details>summary>:is(.campaign-manager-summary,.eligibility-checklist-count,.unclaimed-badge){grid-column:1!important;justify-self:start!important;text-align:left!important}\n    ${t} details>summary:is(:has(>.campaign-manager-title),:has(>#tdh-eligibility-summary))::after{grid-column:2!important;grid-row:1/span 3!important;align-self:center!important;margin-left:0!important}\n    ${t} details .exp-settings-group{margin:0!important;background:transparent!important}\n    ${t} :is(.actions,.button-grid,.action-pair,.settings-transfer,.rc-menu-actions,.profile-actions){display:flex!important;gap:4px!important;flex-wrap:wrap!important;padding:4px 8px!important;margin:0!important}\n    ${t} :is(.actions,.button-grid,.action-pair)>*{flex:1;min-width:0}\n    ${t} :is(h2,h3){font-size:13px!important;line-height:1.4!important;margin:0!important;padding:8px 8px 2px!important;color:var(--theme-text)!important}\n    ${t} :is(p,.empty,.note){font-size:13px!important;line-height:1.5!important;white-space:normal!important;overflow-wrap:anywhere!important;margin:6px 0!important;padding-inline:8px!important;color:var(--theme-text)!important}\n    ${t} :is(form,.identity,.exp-health){padding:8px!important;gap:4px!important}\n    ${t} form label:has(>.exp-native-popup){display:grid!important;grid-template-columns:minmax(0,1fr) fit-content(58%)!important;gap:4px!important;align-items:center!important}\n    ${t} :is(.row,.mini-row,.setting-row):has(>input[type=number]){grid-template-columns:minmax(0,1fr) 64px!important}\n    ${t} :is(.row,.mini-row,.setting-row):has(>input:not([type=number],[type=range],[type=time],[type=color],[hidden])){grid-template-columns:minmax(0,1fr)!important}\n    ${t} .action-stack{flex-direction:column!important;align-items:stretch!important}\n    ${t} .action-stack>*{width:100%!important}\n    ${t} .exp-native-popup:has(select[data-exp-full-width]){width:100%!important}\n    ${t} .queue-switches{display:block!important}\n    ${t} [data-exp-system-item=support] .action-pair{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;align-items:center!important;gap:4px!important;padding:4px 0 4px 8px!important}\n    ${t} [data-exp-system-item=support] .action-pair>button{flex:none!important;padding:2px 10px!important;overflow-wrap:normal!important;word-break:normal!important}\n    ${t} [data-exp-system-report]{display:block!important;width:100%!important;text-align:center!important;justify-content:center!important}\n    ${t} [data-exp-system-item=preferences]{margin-top:8px!important}\n    ${t} [data-exp-system-item=reset]{margin-top:12px!important;padding-top:0!important}\n    ${t} [data-exp-system-item=reset]>button{display:block!important;width:100%!important;min-height:32px!important;padding:4px 8px!important;background:transparent!important;color:color-mix(in srgb,#d0222d 60%,var(--theme-text))!important;border:1px solid color-mix(in srgb,#d0222d 50%,transparent)!important}\n    ${t} [data-exp-system-item=reset]>button[data-exp-reset-armed]{background:#b4232a!important;color:#fff!important;border-color:#971b21!important}\n    ${t} [data-exp-diagnostics-label]{flex:none!important;font-size:13px!important;line-height:1.4!important;color:var(--theme-text)!important}\n    ${t} [data-exp-system-item=reset]>p:empty{display:none!important}\n    ${t} .setting-row:has(>input[aria-label="Content width (px)"]),${t} .setting-row:has(select[aria-label=Names]){grid-template-columns:minmax(0,1fr) 56px!important}\n    ${e} :is(button,input,select,textarea,summary):focus-visible{outline:2px solid var(--theme-focus,var(--theme-accent2))!important;outline-offset:2px!important}\n    ${e} ::selection{background:var(--theme-accent)!important;color:var(--theme-text)!important}\n    .exp-floating-update,.update-notice[data-placement="menu"]{max-height:calc(100dvh - 16px)!important;overflow:auto;overscroll-behavior:contain;background:var(--exp-notice-top,var(--theme-bg))!important;background-image:none!important;border-color:var(--exp-notice-border,var(--theme-muted))!important;border-radius:7px!important;box-shadow:0 4px 10px #0003!important;font-size:12px!important}\n    .update-notice :is(.update-text,.update-list){overflow-wrap:anywhere;line-height:1.5}\n    ${t} .row:has([data-exp-adapter-health=healthy]){display:none!important}\n    ${e} [hidden]{display:none!important}\n    @media(forced-colors:active){${e} :is(button,input,select,textarea,summary){forced-color-adjust:auto!important;border-color:ButtonText!important}${t} button[role=switch]::before{background:ButtonFace!important;border:1px solid ButtonText!important}${t} button[role=switch][aria-checked=true]::before{background:Highlight!important}${t} button[role=switch]::after{background:ButtonText!important}${t} [data-exp-system-item=reset]>button{background:ButtonFace!important;color:ButtonText!important}}\n  `,o={gift:"M3 7h14v4H3Zm2 4v7h10v-7M10 7v11M10 7C4 7 4 1 7 2c3 0 3 5 3 5Zm0 0c6 0 6-6 3-5-3 0-3 5-3 5Z",sliders:"M3 5h14M3 10h14M3 15h14M7 3v4m6 1v4m-8 1v4",system:"M10 4.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Zm0 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0-6v2.5m0 11V18M2 10h2.5m11 0H18M4.34 4.34l1.77 1.77m7.78 7.78 1.77 1.77m0-11.32-1.77 1.77m-7.78 7.78-1.77 1.77",brush:"m4 15 9-11 3 3-9 10H3v-3",shield:"M10 2 3 5v5c0 4 7 8 7 8s7-4 7-8V5Z",bag:"M4 6h12v12H4ZM7 6V4a3 3 0 0 1 6 0v2",sparkle:"m10 2 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z",feed:"M3 3h14v14H3ZM6 6h8M6 10h8m-8 4h5",read:"M3 3h6l1 2 1-2h6v14h-6l-1 1-1-1H3Zm7 2v13",filter:"M3 4h14l-5 6v7l-4-2v-5Z",screen:"M2 4h16v10H2Zm5 13h6m-3-3v3",globe:"M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16ZM2 10h16M10 2c3 3 3 13 0 16M10 2c-3 3-3 13 0 16",people:"M7 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5 8v-3a5 5 0 0 1 10 0v3m1-9a3 3 0 0 0 0-6m1 9a4 4 0 0 1 4 4v2"},r={campaigns:"gift",drops:"gift",settings:"sliders",advanced:"sliders",look:"brush",appearance:"brush",system:"system",protect:"shield",protection:"shield",amazon:"bag",walmart:"bag",ebay:"bag",etsy:"bag",target:"bag","best buy":"bag",retailer:"bag",highlights:"sparkle",feed:"feed",read:"read",filters:"filter",people:"people",streams:"screen","current site":"globe",site:"globe"};return Object.freeze({css:n,mount:function({panel:e}){const t=e.ownerDocument,n=t.defaultView,a=new Map,i=new Set,s=new Set,c=[],l=e=>{const t=a.get(e)?.face;if(t){const n=e.selectedOptions[0]?.textContent||"",o={automatic:"Auto","follow system":"System","inherit global":"Global","original text":"Original","announce on focus":"On Focus","follow campaign order":"Campaign Order","keep an earning stream":"Keep Earning","manual stream protected":"Manual Hold"}[n.toLowerCase()]||n;t.textContent!==o&&(t.textContent=o)}};function d(){const n=e.querySelector("[data-exp-part=version],#tdh-header-version"),d=e.querySelector(".header-actions");if(n&&!/changelog/i.test(n.getAttribute("aria-label")||"")){const t=e.querySelector("[data-exp-part=title],#tdh-rail-title")?.textContent.trim()||"";n.setAttribute("aria-label",("View "+t+" "+n.textContent.trim()+" Changelog").trim())}if(n&&d&&!d.contains(n)&&(c.push([n,n.parentNode,n.nextSibling]),d.prepend(n)),n&&d&&d.firstElementChild!==n&&d.prepend(n),n)for(const e of[...n.childNodes])if(3===e.nodeType&&e.textContent.trim()){const n=t.createElement("span");n.hidden=!0,n.dataset.expVersionLabel="1",e.before(n),n.append(e)}if(n&&!n.querySelector(".exp-changelog-icon")){const e=t.createElementNS("http://www.w3.org/2000/svg","svg"),o=t.createElementNS("http://www.w3.org/2000/svg","path");e.classList.add("exp-changelog-icon"),e.setAttribute("viewBox","0 0 20 20"),e.setAttribute("aria-hidden","true"),o.setAttribute("d","M4 3h12v14H4ZM7 7h6m-6 3h6m-6 3h4"),e.append(o),n.prepend(e)}for(const n of e.querySelectorAll(".exp-menu-content>.fl-tool-panel>.fl-tool-header")){if(n.querySelector("[data-exp-layout-icon]"))continue;const e=r[(n.querySelector(".fl-tool-title")||n).textContent.trim().toLowerCase()]||"system";let a=n.querySelector(".exp-section-icon");a||(a=t.createElement("span"),s.add(a));const i=t.createElementNS("http://www.w3.org/2000/svg","svg"),c=t.createElementNS("http://www.w3.org/2000/svg","path");a.className="exp-section-icon",a.setAttribute("aria-hidden","true"),a.dataset.expLayoutIcon="1",i.setAttribute("viewBox","0 0 20 20"),c.setAttribute("d",o[e]),c.setAttribute("stroke-linecap","round"),c.setAttribute("stroke-linejoin","round"),i.append(c),a.replaceChildren(i),n.contains(a)||n.prepend(a)}const p=e.querySelector(".exp-menu-content");if(!p)return;for(const e of p.querySelectorAll("select")){if(!a.has(e)){const n=e.getRootNode().activeElement===e,o=t.createElement("span"),r=t.createElement("span");o.className="exp-native-popup",r.className="exp-select-face",r.setAttribute("aria-hidden","true"),e.before(o),o.append(e,r),a.set(e,{wrap:o,face:r}),n&&e.focus({preventScroll:!0})}l(e)}for(const[t]of a)e.contains(t)||a.delete(t);const u=".row,.mini-row,.fl-switch,.setting-row",m=new Set([...p.querySelectorAll(u)].map(e=>e.parentElement));for(const n of m){if(n.classList.contains("exp-settings-group"))continue;let o=null;for(const r of[...n.children])if(r.matches(u)){const n=e.getRootNode().activeElement;o||(o=t.createElement("div"),o.className="exp-settings-group",r.before(o),i.add(o)),o.append(r),n&&r.contains(n)&&n.focus({preventScroll:!0})}else o=null}for(const t of i)e.contains(t)||i.delete(t)}const p=e=>{"SELECT"===e.target.tagName&&l(e.target)};e.addEventListener("change",p),e.addEventListener("input",p),d();const u=new n.MutationObserver(d);return u.observe(e,{childList:!0,subtree:!0,characterData:!0,attributes:!0,attributeFilter:["disabled","selected"]}),()=>{u.disconnect(),s.forEach(e=>e.remove()),e.removeEventListener("change",p),e.removeEventListener("input",p);for(const[e,{wrap:t}]of a)t.contains(e)&&t.replaceWith(e);for(const e of i)e.replaceWith(...e.childNodes);for(const[e,t,n]of c)t.isConnected&&t.insertBefore(e,n?.parentNode===t?n:null)}}})})(),d=(()=>{const e=Object.freeze({id:"extrapotions-menu",version:1,layout:"sidebar",systemLayout:"grouped",supportNavigation:"system",resetNavigation:"system",donations:"header-heart"}),t=Object.freeze({campaigns:"gift",settings:"sliders",drops:"gift",streams:"screen",appearance:"brush",advanced:"sliders",system:"system",highlights:"sparkle",protection:"shield",amazon:"bag"}),n=l.css,o=new Map,r=new Map;return Object.freeze({mount:function({shadow:a,panel:i}){const c=i.ownerDocument,d=a.host,p=d?.dataset.productId||d?.id.replace(/^(exp-)|(\-root)$/g,"").replace(/^tdh$/,"dropper"),u=new Map;i.dataset.expMenuLayout="lean",i.dataset.expMenuTemplate=e.id+"-v"+e.version;const m=["--exp-menu-hover","background-image"];for(const e of m)u.set(e,[i.style.getPropertyValue(e),i.style.getPropertyPriority(e)]);!function(){for(const[e,[t,n]]of u)t?i.style.setProperty(e,t,n):i.style.removeProperty(e);i.style.setProperty("background-image","none","important"),i.style.setProperty("--exp-menu-hover","color-mix(in srgb,var(--theme-accent) 12%,var(--theme-panel))")}();const h=c.createElement("style");h.dataset.expLeanMenu="1",h.textContent=n,a.append(h);const f=l.mount({panel:i}),g=c.createElement("div");g.dataset.expPart="status",g.setAttribute("role","status");const b=c.createElement("span");b.className="exp-status-dot";const x=c.createElement("span");x.className="exp-status-text",g.append(b,x);let y=0,v=0;async function w(){const e=o.get(p);if(!e)return delete i.dataset.expMenuStatus,void g.remove();const t=i.querySelector(".header-copy");if(!t)return delete i.dataset.expMenuStatus,void g.remove();t.contains(g)||t.append(g),"1"!==i.dataset.expMenuStatus&&(i.dataset.expMenuStatus="1");const n=++y;let r=null;try{r=await e()}catch{}if(n!==y)return;const a=s.normalizeHealth(r);g.hidden="working"===a.state||"dropper"===p&&"waiting"===a.state,g.setAttribute("aria-description",a.reason),b.dataset.state!==a.state&&(b.dataset.state=a.state),x.textContent!==a.label&&(x.textContent=a.label)}r.has(p)||r.set(p,new Set),r.get(p).add(w);const S=()=>!i.hidden&&i.getClientRects().length>0;let k=S();function E(e=!1){const t=S();(t!==k||t&&e)&&(k=t,clearInterval(v),v=0,t&&(w(),v=setInterval(w,1e4)))}const A=new MutationObserver(e=>E(e.some(e=>"hidden"===e.attributeName&&null!==e.oldValue)));A.observe(i,{attributes:!0,attributeOldValue:!0,attributeFilter:["hidden","class","style"]});const C=new ResizeObserver(()=>E());C.observe(i),w(),k&&(v=setInterval(w,1e4));const O=new Set;function P(){for(const e of i.querySelectorAll(".fl-tool-header")){if(e.querySelector(".exp-section-icon"))continue;const n=e.querySelector(".fl-tool-title");if(!n)continue;const o=t[n.textContent.trim().toLowerCase()];if(!o)continue;const r=c.createElement("span");r.className="exp-section-icon",r.setAttribute("aria-hidden","true"),r.dataset.icon=o,e.prepend(r),O.add(r)}}P();const z=new MutationObserver(P);return z.observe(i,{childList:!0,subtree:!0}),()=>{f(),A.disconnect(),C.disconnect(),clearInterval(v),r.get(p)?.delete(w),g.remove(),delete i.dataset.expMenuStatus,z.disconnect(),O.forEach(e=>e.remove()),h.remove();for(const[e,[t,n]]of u)t?i.style.setProperty(e,t,n):i.style.removeProperty(e);delete i.dataset.expMenuLayout,delete i.dataset.expMenuTemplate}},setMenuStatus:function(e,t){if("function"!=typeof t)throw new TypeError("Menu status needs a health function");o.set(String(e).toLowerCase(),t);for(const t of r.get(String(e).toLowerCase())||[])t()},template:e})})(),p=(()=>{let e=0;return Object.freeze({setMenuHelp:function(e,t){return e&&String(t||"").trim()?(e.dataset.expHelp=String(t).trim(),e.setAttribute("aria-description",e.dataset.expHelp),e.closest("label")||e.matches("button,input,select,a[href],summary")||(e.tabIndex=0,e.setAttribute("role","button")),e):e},mount:function({shadow:t,panel:n}){const o=n.ownerDocument,r=o.defaultView,a=o.createElement("div");a.id="exp-menu-help-"+ ++e,a.className="exp-menu-help",a.role="tooltip",a.hidden=!0;const i=o.createElement("style");i.dataset.expMenuHelp="1",i.textContent='.exp-menu-help{position:fixed;z-index:2147483647;box-sizing:border-box;max-width:260px;padding:8px 10px;border:1px solid var(--theme-line,#938f99);border-radius:7px;background:var(--theme-panel,#211f26);color:var(--theme-text,#e6e0e9);font:400 12px/1.5 "Segoe UI",system-ui,sans-serif;overflow:auto;overflow-wrap:anywhere;pointer-events:none}.exp-menu-help[hidden]{display:none!important}.exp-menu-help[data-scrollable=true]{pointer-events:auto}.has-tooltip::after{display:none!important}',t.append(i,a);let s=null,c=0,l=0,d={x:-1,y:-1};const p=()=>{if(a.hidden)return!1;const e=a.getBoundingClientRect();return d.x>=e.left&&d.x<=e.right&&d.y>=e.top&&d.y<=e.bottom};function u(){clearTimeout(c),s?.getAttribute("aria-describedby")===a.id&&s.removeAttribute("aria-describedby"),s=null,a.hidden=!0}function m(e){if(!e?.isConnected)return u();const t=e.dataset.expHelp||e.dataset.tip;if(!t)return;const o=e.closest('[data-exp-part="dock"],[data-exp-part="progress-card"]')||n,i=o.getBoundingClientRect(),l=Math.max(8,i.left+6),d=Math.min(r.innerWidth-8,i.right-6),p=Math.max(8,i.top+6),m=Math.min(r.innerHeight-8,i.bottom-6);if(d<=l||m<=p)return u();clearTimeout(c),s&&s!==e&&s.removeAttribute("aria-describedby"),s=e,s.setAttribute("aria-describedby",a.id);const h=r.getComputedStyle(o);for(const e of["panel","line","text"])a.style.setProperty("--theme-"+e,h.getPropertyValue("--theme-"+e));a.textContent=t,a.style.width="max-content",a.style.maxWidth=d-l+"px",a.style.maxHeight=m-p+"px",a.hidden=!1;const f=e.getBoundingClientRect(),g=a.getBoundingClientRect();a.style.left=Math.max(l,Math.min(f.left,d-g.width))+"px",a.style.top=Math.max(p,Math.min(f.bottom+g.height+6<=m?f.bottom+6:f.top-g.height-6,m-g.height))+"px",a.dataset.scrollable=String(a.scrollHeight>a.clientHeight)}const h=e=>e?.closest?.("[data-exp-help],[data-tip]"),f=()=>{clearTimeout(c),c=setTimeout(()=>{t.activeElement===s||p()||u()},150)},g=e=>{d={x:e.clientX,y:e.clientY};const t=h(e.target);!t||"touch"===e.pointerType||p()&&t!==s||m(t)},b=e=>{d={x:e.clientX,y:e.clientY},!s||p()||s.contains(e.target)||f()},x=e=>{h(e.target)&&f()},y=e=>{const t=h(e.target);t?m(t):u()},v=e=>{const t=h(e.target);t?(m(t),t.matches("[role=button]:not(button)")&&e.preventDefault()):a.contains(e.target)||u()},w=e=>{if("Escape"===e.key&&!a.hidden)return u(),e.preventDefault(),void e.stopImmediatePropagation();const t=h(e.target);t?.matches("[role=button]:not(button)")&&["Enter"," "].includes(e.key)&&(e.preventDefault(),m(t))},S=e=>{!s||e?.target instanceof r.Node&&a.contains(e.target)||m(s)},k=new ResizeObserver(()=>{cancelAnimationFrame(l),l=requestAnimationFrame(()=>S())});k.observe(n);for(const[e,n,o]of[["pointerover",g],["pointermove",b],["pointerout",x],["focusin",y],["click",v],["keydown",w,!0],["scroll",S,!0]])t.addEventListener(e,n,o);return r.addEventListener("resize",S),r.addEventListener("scroll",S,!0),()=>{u(),k.disconnect(),cancelAnimationFrame(l);for(const[e,n,o]of[["pointerover",g],["pointermove",b],["pointerout",x],["focusin",y],["click",v],["keydown",w,!0],["scroll",S,!0]])t.removeEventListener(e,n,o);r.removeEventListener("resize",S),r.removeEventListener("scroll",S,!0),a.remove(),i.remove()}}})})(),u=Object.freeze({mount:function({shadow:e,panel:t}){t.dataset.expMenuTypography="1";const n=document.createElement("style");n.dataset.expMenuTypography="1",n.textContent='\n    [data-exp-menu-typography]{font:400 var(--exp-font-size-body,14px)/1.45 "Segoe UI",system-ui,sans-serif!important;text-align:start;letter-spacing:normal}\n    [data-exp-menu-typography] :is(button,input,select,textarea){font-family:inherit!important;letter-spacing:normal}\n    [data-exp-menu-typography] :is(.row,.mini-row,.fl-switch,.setting-row){gap:12px!important;padding-block:8px!important;align-items:center!important;font-size:var(--exp-font-size-body,14px);line-height:1.4}\n    [data-exp-menu-typography] :is(.label,.setting-label,.fl-switch-text,.copy>strong,.row-copy>strong,.mini-row>span){font-size:var(--exp-font-size-body,14px)!important;font-weight:500!important;line-height:1.4!important;letter-spacing:normal;min-width:0}\n    [data-exp-menu-typography] :is(.copy>.help,.row-copy>small,.help,.row-help,.note,.empty,.meta){font-size:var(--exp-font-size-small,12px)!important;font-weight:400!important;line-height:1.5!important}\n    [data-exp-menu-typography] :is(.copy>.help,.row-copy>small,.row-help){display:block;margin-top:4px}\n    [data-exp-menu-typography] :is(.row,.mini-row,.setting-row):has(>select){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(104px,.95fr)!important;column-gap:12px!important}\n    [data-exp-menu-typography] :is(.row,.mini-row,.setting-row)>select{width:100%!important;max-width:100%!important;min-width:0!important;justify-self:end}\n    [data-exp-menu-typography] select{box-sizing:border-box;min-height:32px!important;padding:5px 8px!important;font-size:var(--exp-font-size-body,14px)!important;line-height:1.4!important;font-weight:400}\n    [data-exp-menu-typography] :is(input:not([type=range]):not([type=color]),textarea){font-size:var(--exp-font-size-body,14px)!important;line-height:1.45;min-height:32px}\n    [data-exp-menu-typography] .fl-tool-header{align-items:center!important;padding:9px 10px!important;gap:10px}\n    [data-exp-menu-typography] .fl-tool-title{font-size:var(--exp-font-size-body,14px)!important;font-weight:600!important;line-height:1.4!important}\n    [data-exp-menu-typography] .fl-tool-chevron{flex:none;display:grid;place-items:center;align-self:center;padding:0;width:14px;line-height:1.4}\n    [data-exp-menu-typography] .fl-tool-body{padding-inline:10px!important;padding-bottom:10px!important}\n    [data-exp-menu-typography] :is(.group>h3,.section>h3,.section>h2,.stream-subsection-label){margin:12px 0 4px!important;font-size:var(--exp-font-size-small,12px)!important;font-weight:600!important;line-height:1.5!important;letter-spacing:normal!important;text-transform:none!important}\n    [data-exp-menu-typography] :is(.group,.section):first-child>h3{margin-top:6px!important}\n    [data-exp-menu-typography] :is(.fl-tool-body,.route-body) :is(.life-btn,.action,.secondary,.primary,.compact){min-height:32px!important;padding:6px 8px!important;font-size:var(--exp-font-size-body,14px)!important;font-weight:500!important;line-height:1.4!important;text-align:center}\n    [data-exp-menu-typography] :is(.button-grid,.actions,.profile-actions,.menu-footer,.diagnostics-controls>div,.rules-transfer){gap:8px!important;align-items:stretch}\n    [data-exp-menu-typography] :is(.button-grid,.actions,.profile-actions,.diagnostics-controls)>:is(button,a),[data-exp-menu-typography] .diagnostics-controls>div>button{margin-top:0!important}\n    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])>summary{display:flex;align-items:center;gap:8px;padding-block:7px;list-style:none;font-size:var(--exp-font-size-body,14px)!important;font-weight:500!important;line-height:1.4!important}\n    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])>summary::-webkit-details-marker{display:none}\n    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])>summary::before{content:"▸";flex:0 0 10px;text-align:center}\n    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])[open]>summary::before{content:"▾"}\n    [data-exp-menu-typography] :is(.header-title-row h2,[data-exp-part="title"],#tdh-rail-title){font-size:calc(var(--exp-font-size-body,14px) + 2px)!important;font-weight:700!important;line-height:1.25!important}\n    [data-exp-menu-typography] :is([data-exp-part="subtitle"],#tdh-rail-subtitle){font-size:var(--exp-font-size-small,12px)!important;line-height:1.4!important}\n    [data-exp-menu-typography] :is([data-exp-part="version"],#tdh-header-version){font-weight:600!important;line-height:1.2!important;font-variant-numeric:tabular-nums}\n    [data-exp-menu-typography] :is(output,.status-value,.step-value,.status-check-value){font-variant-numeric:tabular-nums}\n  ',e.append(n);const o=d.mount({shadow:e,panel:t}),r=p.mount({shadow:e,panel:t});return()=>{r(),o(),n.remove(),delete t.dataset.expMenuTypography}}}),m=(()=>{const e="exp:suite:menu-size",t="exp-core:menu-size",n=Object.freeze({standard:{body:14,small:12,width:324,cardWidth:272,padding:8,row:7,control:32},compact:{body:14,small:12,width:304,cardWidth:252,padding:7,row:6,control:30},mini:{body:14,small:12,width:280,cardWidth:232,padding:6,row:4,control:28}});let o="compact";const r=e=>Object.hasOwn(n,e)?e:"compact";function a(){try{const t=localStorage.getItem(e);o=r(t)}catch{}return o}function i(n){o=r(n);try{localStorage.setItem(e,o)}catch{}return document.dispatchEvent(new CustomEvent(t,{detail:o})),o}return Object.freeze({menuSizePreference:a,setMenuSizePreference:i,bindMenuSize:function({host:i,shadow:s,panel:c,onLayout:l=()=>{}}){const d=u.mount({shadow:s,panel:c});function p(e){o=r(e);const t=n[o];i.dataset.expMenuSize=o;for(const e of["padding","row","control"])i.style.setProperty("--exp-menu-"+e,t[e]+"px");i.style.setProperty("--exp-font-size-body",t.body+"px"),i.style.setProperty("--exp-font-size-small",t.small+"px"),i.style.setProperty("--exp-menu-width",t.width+"px");for(const e of s.querySelectorAll("[data-exp-menu-size-select]"))e.value=o,e.dispatchEvent(new Event("input",{bubbles:!0}));l()}const m=e=>p(e.detail),h=t=>{t.key!==e&&null!==t.key||p(a())};return document.addEventListener(t,m),addEventListener("storage",h),p(a()),()=>{document.removeEventListener(t,m),removeEventListener("storage",h),d()}},createMenuSizeControls:function(){const e=document.createElement("label");e.className="row exp-menu-size";const t=document.createElement("span");t.className="copy";const n=document.createElement("strong");n.textContent="Menu Size",t.append(n);const o=document.createElement("select");o.setAttribute("aria-label","Menu Size"),o.dataset.expMenuSizeSelect="1";for(const[e,t]of[["standard","Standard"],["compact","Compact"],["mini","Mini"]]){const n=document.createElement("option");n.value=e,n.textContent=t,o.append(n)}return o.value=a(),o.addEventListener("change",()=>i(o.value)),e.append(t,o),e},menuSizeTokens:()=>n[a()]})})(),h=(()=>{const{THEME_MODES:e,normalizeThemeMode:n,resolveTheme:o}=t,r=Object.freeze(e.map(e=>Object.freeze({id:e,name:e[0].toUpperCase()+e.slice(1)})));function a({value:e="system",onChange:t,label:o="Menu Theme"}){const a=document.createElement("label");a.className="row exp-site-colors";const i=document.createElement("span");i.className="copy";const s=document.createElement("strong");s.textContent=o,i.append(s);const c=document.createElement("select");c.setAttribute("aria-label",o),c.dataset.expThemeMode="1","Site Theme"===o&&(c.dataset.expSiteColorsSelect="1");for(const{id:e,name:t}of r){const n=document.createElement("option");n.value=e,n.textContent=t,c.append(n)}return c.value=n(e),c.addEventListener("change",()=>t?.(c.value)),a.append(i,c),a}return Object.freeze({sitePalettes:r,sitePalette:e=>o(e),createSiteColors:function({product:e,css:t,inject:r}){const a="data-exp-site-colors",i=`html[${a}="${e}"]`,s="exp-site-colors-"+e;let c="system",l=!1,d=null,p=null;function u(){if(!l)return;const n=o(c),d=t(n,i);p?.isConnected||(p?.remove(),p=document.getElementById(s)||(r?r(d,{expSiteColors:e}):document.createElement("style")),p.id=s,p.dataset.expOwned="1",p.dataset.expSiteColors=e,p.isConnected||(document.head||document.documentElement).append(p)),p.textContent!==d&&(p.textContent=d),document.documentElement.getAttribute(a)!==e&&document.documentElement.setAttribute(a,e),document.documentElement.dataset.expSitePalette="slate-blue-"+n.mode}return Object.freeze({apply:function(e){c=n(e),l=!0,d??=function(e){const t=matchMedia("(prefers-color-scheme: dark)");return t.addEventListener("change",e),()=>t.removeEventListener("change",e)}(()=>{"system"===c&&u()}),u()},clear:function(){l=!1,d?.(),d=null,p?.remove(),document.getElementById(s)?.remove(),p=null,document.documentElement.getAttribute(a)===e&&(document.documentElement.removeAttribute(a),delete document.documentElement.dataset.expSitePalette)},refresh:u,palette:()=>l?o(c):null})},createSiteColorControl:e=>a({...e,label:"Site Theme"}),createThemeModeControl:a,normalizeThemeMode:n,resolveTheme:o})})(),f=(()=>{const e=Object.freeze(["dropper","ward","thread"]),t=Object.freeze(["dropper","ward","thread"]),n=e=>String(e?.dataset?.productId||""),o=t=>{const n=e.indexOf(t);return n<0?e.length:n};function r(e=[]){return[...new Set([...e].map(n).filter(Boolean))].sort((e,t)=>o(e)-o(t)||e.localeCompare(t))}return Object.freeze({PROTOCOL:"3",SUITE_ORDER:e,SITE_PRODUCTS:t,isSiteProduct:function(e){return t.includes(String(e||""))},flyoutOrder:r,flyoutActive:function(e=[]){const t=[...e];return t.length>=2&&t.every(e=>"3"===e?.dataset?.expFlyout)},tabsReady:function(e=[]){const t=[...e];return t.length>=1&&t.every(e=>"3"===e?.dataset?.expFlyout)},leadProduct:function(e=[]){const t=[...e];return r(t.filter(e=>"1"===e?.dataset?.expSiteProduct))[0]||r(t)[0]||""}})})(),g=(()=>{const e="3.18.0",a=e,l="https://ko-fi.com/expdare",u="exp-core-coordination-v1",g="exp:v3:launcher-order",b="exp:v3:launcher-grid-delta",x=(y={thread:{role:"product",priority:0,launcherPriority:90,themePriority:0,capabilities:["reddit.reading","reddit.local-context","reddit.local-filtering"],presentationPhases:["visibility","annotate"],state:{type:"thread.state-changed",fields:{active:"boolean",loaded:"count"}},menuSections:{main:["feed","read"],appearance:["look"],advanced:["filters","people"],system:["system"]},repository:"THREAD",rootId:"exp-thread-root"},dropper:{role:"flagship",priority:4,launcherPriority:110,themePriority:4,capabilities:["twitch.drops","twitch.campaigns","twitch.progress","twitch.claims","twitch.stream-management"],presentationPhases:[],state:{type:"dropper.state-changed",fields:{activeReward:"boolean",progressPercent:"percent-nullable",routingState:"token"}},menuSections:{main:["drops","streams","campaigns","settings"],appearance:["appearance"],advanced:["advanced"],system:["system"]},repository:"Dropper",rootId:"tdh-root"},ward:{role:"product",priority:2,launcherPriority:60,themePriority:1,capabilities:["retail.classification","retail.cleanup","retail.coupons"],presentationPhases:["classify","visibility"],state:{type:"ward.state-changed",fields:{active:"boolean",pageType:"token",interventions:"count",hide:"count",dim:"count",collapse:"count",annotate:"count"}},menuSections:{main:["protection","amazon","tools"],appearance:["appearance"],advanced:["advanced","patterns","advanced-amazon"],system:["system"]},repository:"WARD",rootId:"exp-ward-root"}},Object.freeze(Object.fromEntries(Object.entries(y||{}).map(([e,t])=>[e,Object.freeze({role:String(t?.role||"product"),repository:String(t?.repository||""),rootId:String(t?.rootId||""),priority:Number(t?.priority||0),launcherPriority:Number(t?.launcherPriority||0),themePriority:Number(t?.themePriority||0),capabilities:Object.freeze([...t?.capabilities||[]]),presentationPhases:Object.freeze([...t?.presentationPhases||[]]),menuSections:Object.freeze(Object.fromEntries(Object.entries(t?.menuSections||{}).map(([e,t])=>[e,Object.freeze([...t||[]])]))),state:t?.state?Object.freeze({type:String(t.state.type||""),fields:Object.freeze({...t.state.fields||{}})}):null})]))));var y;const v=Object.freeze(Object.fromEntries(Object.entries(x).map(([e,t])=>[e,t.priority]))),w=Object.freeze(Object.fromEntries(Object.entries(x).map(([e,t])=>[e,t.launcherPriority]))),S=Object.freeze(Object.fromEntries(Object.entries(x).map(([e,t])=>[e,t.themePriority]))),k="exp-core:suite";let E;const A="shared-dom-advisory",C="exp-core:page-batch",O="exp-core:navigation",P="exp-core:navigation-control",z="exp-core:page-phase",M="exp-core:page-phase-end",$="exp-core:presentation-state",R=Object.freeze({observe:10,classify:20,visibility:30,theme:40,annotate:50,ui:60}),I=Object.freeze(["classification","visibility","surface","annotation"]),L=new Map,T=new WeakMap,N=new WeakMap,j=new WeakMap,D=new WeakMap;let q=0;const B=["bg","panel","line","text","muted","accent","accent2","raised","inset","link","focus","onAccent"],_=e=>/^#[0-9a-f]{6}$/i.test(e||"")?e:"#000000",V=e=>[1,3,5].map(t=>parseInt(_(e).slice(t,t+2),16)),U=(e,t,n)=>"#"+V(e).map((e,o)=>Math.round(e+(V(t)[o]-e)*n).toString(16).padStart(2,"0")).join(""),W=e=>{const t=V(e).map(e=>{const t=e/255;return t<=.04045?t/12.92:((t+.055)/1.055)**2.4});return.2126*t[0]+.7152*t[1]+.0722*t[2]},H=(e,t)=>{const[n,o]=[W(e),W(t)].sort((e,t)=>t-e);return(n+.05)/(o+.05)};function F(e,t,n){if(H(e,t)>=4.5)return e;for(let n=.15;n<=1;n+=.05){const o=U(e,"#ffffff",n);if(H(o,t)>=4.5)return o;const r=U(e,"#000000",n);if(H(r,t)>=4.5)return r}return n}function G(e={}){const t=_(e.panel),n=_(e.bg),o=[_(e.text),n,"#ffffff","#000000"].sort((t,n)=>H(n,e.accent)-H(t,e.accent))[0];return{...e,raised:"#000000"!==_(e.raised)||"#000000"===e.raised?e.raised:U(t,e.text,.08),inset:"#000000"!==_(e.inset)||"#000000"===e.inset?e.inset:U(n,"#000000",.18),link:e.link&&H(e.link,t)>=4.5?e.link:F(e.accent2,t,e.text),focus:e.focus&&H(e.focus,t)>=3?e.focus:F(e.accent2,t,e.text),onAccent:e.onAccent&&H(e.onAccent,e.accent)>=4.5?e.onAccent:o}}function J(e,t){const n=e=>e.querySelector(":scope > summary")?.textContent.trim(),o=new Set([...e.querySelectorAll("details[open]")].map(n));e.replaceChildren(t);for(const t of e.querySelectorAll("details"))o.has(n(t))&&(t.open=!0)}function K(){return m.menuSizeTokens().width}const Y=t.css(),Z=':is(.toggleSwitch,.switch,[role="switch"])',X="var(--theme-panel,var(--panel,var(--surface,#18181d)))",Q="var(--theme-line,var(--line,var(--border,#41434d)))",ee="var(--theme-muted,var(--muted,#9aa0a6))",te="var(--theme-text,var(--text,#f4f4f6))",ne="var(--theme-accent,var(--accent,var(--teal,#8b5cf6)))",oe=`${Z}{position:relative!important;box-sizing:border-box!important;flex:none!important;width:34px!important;height:20px!important;min-width:34px!important;min-height:20px!important;padding:0!important;border:1px solid color-mix(in srgb,${Q} 88%,${ee} 12%)!important;border-radius:6px!important;background:color-mix(in srgb,var(--theme-bg,var(--bg,#111114)) 84%,${X} 16%)!important;background-image:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important;cursor:pointer!important}${Z}:not(:has(> span))::after{content:""!important;position:absolute!important;top:2px!important;left:2px!important;width:14px!important;height:14px!important;box-sizing:border-box!important;border:0!important;border-radius:4px!important;background:color-mix(in srgb,${ee} 82%,${te} 18%)!important;box-shadow:none!important}${Z}>span{display:block!important;position:absolute!important;top:2px!important;left:2px!important;width:14px!important;height:14px!important;box-sizing:border-box!important;border:0!important;border-radius:4px!important;background:color-mix(in srgb,${ee} 82%,${te} 18%)!important;box-shadow:none!important}${Z}[aria-checked="true"]{border-color:color-mix(in srgb,${Q} 52%,${ne} 48%)!important;background:color-mix(in srgb,${X} 72%,${ne} 28%)!important;background-image:none!important}${Z}[aria-checked="true"]:not(:has(> span))::after{transform:translateX(14px)!important;background:${te}!important}${Z}[aria-checked="true"]>span{transform:translateX(14px)!important;background:${te}!important}:host([data-ui-theme="pride"]) ${Z}[aria-checked="true"],.exp-core-theme[data-ui-theme="pride"] ${Z}[aria-checked="true"],:host([data-theme-skin="gradient"]) ${Z}[aria-checked="true"],.exp-core-theme[data-theme-skin="gradient"]:not([data-ui-theme="contrast"]) ${Z}[aria-checked="true"]{background-image:none!important;border-color:color-mix(in srgb,${Q} 52%,${ne} 48%)!important;background:color-mix(in srgb,${X} 72%,${ne} 28%)!important}:host([data-ui-theme="contrast"]) ${Z},:host([data-ui-theme="obsidian"]) ${Z},.exp-core-theme[data-ui-theme="contrast"] ${Z},.exp-core-theme[data-ui-theme="obsidian"] ${Z}{border:2px solid #fff!important;background:#050505!important;background-image:none!important}:host([data-ui-theme="contrast"]) ${Z}:not(:has(> span))::after,:host([data-ui-theme="obsidian"]) ${Z}:not(:has(> span))::after,.exp-core-theme[data-ui-theme="contrast"] ${Z}:not(:has(> span))::after,.exp-core-theme[data-ui-theme="obsidian"] ${Z}:not(:has(> span))::after{top:0!important;left:0!important;border:1px solid #050505!important;background:#fff!important}:host([data-ui-theme="contrast"]) ${Z}>span,:host([data-ui-theme="obsidian"]) ${Z}>span,.exp-core-theme[data-ui-theme="contrast"] ${Z}>span,.exp-core-theme[data-ui-theme="obsidian"] ${Z}>span{top:0!important;left:0!important;border:1px solid #050505!important;background:#fff!important}:host([data-ui-theme="contrast"]) ${Z}[aria-checked="true"],:host([data-ui-theme="obsidian"]) ${Z}[aria-checked="true"],.exp-core-theme[data-ui-theme="contrast"] ${Z}[aria-checked="true"],.exp-core-theme[data-ui-theme="obsidian"] ${Z}[aria-checked="true"]{background:#fff!important;border-color:#fff!important;background-image:none!important}:host([data-ui-theme="contrast"]) ${Z}[aria-checked="true"]:not(:has(> span))::after,:host([data-ui-theme="obsidian"]) ${Z}[aria-checked="true"]:not(:has(> span))::after,.exp-core-theme[data-ui-theme="contrast"] ${Z}[aria-checked="true"]:not(:has(> span))::after,.exp-core-theme[data-ui-theme="obsidian"] ${Z}[aria-checked="true"]:not(:has(> span))::after{background:#050505!important;border-color:#fff!important;transform:translateX(14px)!important}:host([data-ui-theme="contrast"]) ${Z}[aria-checked="true"]>span,:host([data-ui-theme="obsidian"]) ${Z}[aria-checked="true"]>span,.exp-core-theme[data-ui-theme="contrast"] ${Z}[aria-checked="true"]>span,.exp-core-theme[data-ui-theme="obsidian"] ${Z}[aria-checked="true"]>span{background:#050505!important;border-color:#fff!important;transform:translateX(14px)!important}@media (forced-colors: active){${Z}{forced-color-adjust:none;border:1px solid CanvasText!important;background:Canvas!important;background-image:none!important}${Z}:not(:has(> span))::after{border-color:CanvasText!important;background:CanvasText!important}${Z}>span{border-color:CanvasText!important;background:CanvasText!important}${Z}[aria-checked="true"]{border-color:Highlight!important;background:Highlight!important;background-image:none!important}${Z}[aria-checked="true"]:not(:has(> span))::after{border-color:HighlightText!important;background:HighlightText!important}${Z}[aria-checked="true"]>span{border-color:HighlightText!important;background:HighlightText!important}}`,re=(e,t)=>{try{return JSON.parse(localStorage.getItem(e))??t}catch{return t}},ae=(e,t)=>{try{localStorage.setItem(e,JSON.stringify(t))}catch{}},ie=(e,t)=>document.dispatchEvent(new CustomEvent("exp-core:coordination",{detail:{protocol:u,type:e,productId:t}}));function se(e=[]){return Array.isArray(e)?[...new Set(e.map(e=>String(e||"").trim().toLowerCase()).filter(e=>/^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(e)))]:[]}function ce(e){const t=String(e||"").toLowerCase(),n=x[t];return n?Object.freeze({id:t,role:n.role||"product",repository:n.repository||"",rootId:n.rootId||"",priority:Number(n.priority||v[t]||0),launcherPriority:Number(n.launcherPriority||w[t]||0),themePriority:Number(n.themePriority||S[t]||0),capabilities:Object.freeze(se(n.capabilities)),presentationPhases:Object.freeze(Oe(n.presentationPhases||[])),menuSections:Object.freeze(Object.fromEntries(Object.entries(n.menuSections||{}).map(([e,t])=>[e,Object.freeze([...t])]))),state:n.state?Object.freeze({type:n.state.type,fields:Object.freeze({...n.state.fields})}):null}):null}function le(e){const t=String(e||"").toLowerCase();return/^[a-z][a-z0-9-]+$/.test(t)&&[...document.querySelectorAll("[data-exp-suite-product]")].find(e=>e.dataset.expSuiteProduct===t)||null}function de(t={}){const n=String(t.id||t.productId||"").toLowerCase(),o=String(t.version||t.productVersion||"unknown");if(!/^[a-z][a-z0-9-]+$/.test(n))throw new Error("Invalid suite product ID");const r=ce(n),a=se(r?r.capabilities:t.capabilities),i=Number(r?.priority??t.priority??0),s=String(r?.role??t.role??"product");let c=le(n);const l=c?JSON.stringify({version:c.dataset.expSuiteVersion||"",coreVersion:c.dataset.expSuiteCoreVersion||"",role:c.dataset.expSuiteRole||"",priority:c.dataset.expSuitePriority||"",capabilities:c.dataset.expSuiteCapabilities||"[]"}):null;return c||(c=document.createElement("meta"),c.dataset.expSuiteProduct=n,(document.documentElement||document.head||document.body)?.append(c)),c.dataset.expSuiteVersion=o,c.dataset.expSuiteCoreVersion=e,c.dataset.expSuiteRole=s,c.dataset.expSuitePriority=String(Number.isFinite(i)?i:0),c.dataset.expSuiteCapabilities=JSON.stringify(a),l!==JSON.stringify({version:c.dataset.expSuiteVersion,coreVersion:c.dataset.expSuiteCoreVersion,role:c.dataset.expSuiteRole,priority:c.dataset.expSuitePriority,capabilities:c.dataset.expSuiteCapabilities})&&fe(n,"product.registered",{capabilities:a,role:s,version:o}),Object.freeze({id:n,update:(e={})=>de({id:n,version:o,role:s,priority:i,capabilities:a,...e}),dispose(){const e=le(n);e===c&&e.remove(),fe(n,"product.unregistered",{})}})}function pe(){const t=[...document.querySelectorAll("[data-exp-suite-product]")].map(e=>{let t=[];try{t=se(JSON.parse(e.dataset.expSuiteCapabilities||"[]"))}catch{}return Object.freeze({id:e.dataset.expSuiteProduct,version:e.dataset.expSuiteVersion||"unknown",coreVersion:e.dataset.expSuiteCoreVersion||"unknown",role:e.dataset.expSuiteRole||"product",priority:Number(e.dataset.expSuitePriority||0),capabilities:Object.freeze(t)})}).filter(e=>e.id).sort((e,t)=>t.priority-e.priority||e.id.localeCompare(t.id));return Object.freeze({protocol:"exp-suite-interoperability-v1",coreVersion:e,trust:A,products:Object.freeze(t)})}function ue(e){const t=String(e||"").trim().toLowerCase();return Object.freeze(pe().products.filter(e=>e.capabilities.includes(t)))}function me(){return document.querySelector("meta[data-exp-navigation-observer]")}function he(){const e=me();return Object.freeze({active:Boolean(e),owner:e?.dataset.expNavigationObserver||null,protocol:e?.dataset.expNavigationProtocol||null,epoch:Number(e?.dataset.expNavigationEpoch||0),subscribers:Number(e?.dataset.expNavigationSubscribers||0)})}function fe(t,n,o={}){const r=String(t||"core").toLowerCase(),a=String(n||"").trim().toLowerCase();if(!/^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(a))throw new Error("Invalid suite event type");let i={};try{i=JSON.parse(JSON.stringify(o||{}))}catch{}const s=JSON.stringify({protocol:"exp-suite-interoperability-v1",coreVersion:e,trust:A,source:r,type:a,detail:i,at:Date.now()});document.dispatchEvent(new CustomEvent(k,{detail:s}))}function ge(e=location.hostname){return`exp:v3:suite-site-pause:${String(e||"local-document").trim().toLowerCase()}`}function be(e=location.hostname){return[...document.querySelectorAll("meta[data-exp-suite-pause-fallback]")].find(t=>t.dataset.expSuitePauseFallback===ge(e))}function xe(e=location.hostname){const t=be(e);if(t)return Number(t.dataset.until)||0;try{return Number(localStorage.getItem(ge(e)))||0}catch{return 0}}function ye(e=location.hostname){const t=xe(e);return 1===t||t>Date.now()}function ve(e,t=location.hostname,n=0){const o=String(t||"local-document").trim().toLowerCase(),r=Boolean(e),a=r?Number(n)>0?Date.now()+6e4*Math.min(1440,Number(n)):1:0,i=be(o)||document.createElement("meta");i.dataset.expOwned="1",i.dataset.expSuitePauseFallback=ge(o),i.dataset.until=String(a),i.isConnected||(document.head||document.documentElement).append(i);try{r?localStorage.setItem(ge(o),String(a)):localStorage.removeItem(ge(o)),(Number(localStorage.getItem(ge(o)))||0)===a&&i.remove()}catch{}return fe("core","suite.site-control",{hostname:o,paused:r}),we(),r}function we(){clearTimeout(E);const e=xe();e>1&&(E=setTimeout(()=>{xe()===e?ve(!1):we()},Math.max(0,e-Date.now())))}function Se(e){return Array.isArray(e)?e.map(Se):e&&"object"==typeof e?Object.fromEntries(Object.keys(e).sort().map(t=>[t,Se(e[t])])):e}function ke(e){if(!(e instanceof Element))return null;let t={};try{t=JSON.parse(e.dataset.expSuiteStatePayload||"{}")}catch{}return Object.freeze({productId:e.dataset.expSuiteStateProduct||"",type:e.dataset.expSuiteStateType||"",coreVersion:e.dataset.expSuiteStateCoreVersion||"unknown",trust:e.dataset.expSuiteStateTrust||A,at:Number(e.dataset.expSuiteStateAt||0),state:Object.freeze(Se(t&&"object"==typeof t?t:{}))})}function Ee(e=""){const t=String(e||"").toLowerCase();return Object.freeze([...document.querySelectorAll("meta[data-exp-suite-state-product][data-exp-suite-state-type]")].filter(e=>!t||e.dataset.expSuiteStateProduct===t).map(ke).filter(Boolean).sort((e,t)=>e.productId.localeCompare(t.productId)||e.type.localeCompare(t.type)))}function Ae(e,t=""){const n=String(e||"").toLowerCase(),o=String(t||"").trim().toLowerCase();return Ee(n).filter(e=>!o||e.type===o).sort((e,t)=>t.at-e.at)[0]||null}function Ce(e,t={}){if("function"!=typeof e)throw new TypeError("Suite event callback must be a function");const n=t.type?String(t.type).toLowerCase():null,o=t=>{let o;try{o="string"==typeof t.detail?JSON.parse(t.detail):t.detail}catch{return}o&&"exp-suite-interoperability-v1"===o.protocol&&(n&&o.type!==n||e(o))};return document.addEventListener(k,o),()=>document.removeEventListener(k,o)}function Oe(e=[]){const t=Array.isArray(e)?e:[e];return[...new Set(t.map(e=>String(e||"").trim().toLowerCase()).filter(e=>R[e]))].sort((e,t)=>R[e]-R[t])}function Pe(e){const t=String(e||"").toLowerCase();return/^[a-z][a-z0-9-]+$/.test(t)&&[...document.querySelectorAll("[data-exp-presentation-provider]")].find(e=>e.dataset.expPresentationProvider===t)||null}function ze(e={}){const t=String(e.id||e.productId||"").toLowerCase();if(!/^[a-z][a-z0-9-]+$/.test(t))throw new Error("Invalid presentation product ID");const n=ce(t);if(n&&!n.presentationPhases.length)throw new Error("Presentation provider is not declared for this suite product");const o=Oe(n?n.presentationPhases:e.phases||e.phase);if(!o.length)throw new Error("Presentation provider requires at least one valid phase");let r=Pe(t);const a=r?JSON.stringify({phases:r.dataset.expPresentationPhases||"[]",priority:r.dataset.expPresentationPriority||""}):null;return r||(r=document.createElement("meta"),r.dataset.expPresentationProvider=t,(document.documentElement||document.head||document.body)?.append(r)),r.dataset.expPresentationPhases=JSON.stringify(o),r.dataset.expPresentationPriority=String(Number(n?.priority??e.priority??0)||0),a!==JSON.stringify({phases:r.dataset.expPresentationPhases,priority:r.dataset.expPresentationPriority})&&fe(t,"presentation.provider-registered",{phases:o}),Object.freeze({id:t,phases:Object.freeze([...o]),dispose(){const e=Pe(t);e===r&&e.remove(),fe(t,"presentation.provider-unregistered",{})}})}function Me(){return Object.freeze([...document.querySelectorAll("[data-exp-presentation-provider]")].map(e=>{let t=[];try{t=Oe(JSON.parse(e.dataset.expPresentationPhases||"[]"))}catch{}return Object.freeze({id:e.dataset.expPresentationProvider,phases:Object.freeze(t),priority:Number(e.dataset.expPresentationPriority||0)})}).filter(e=>e.id).sort((e,t)=>Math.min(...e.phases.map(e=>R[e]))-Math.min(...t.phases.map(e=>R[e]))||t.priority-e.priority||e.id.localeCompare(t.id)))}function $e(){const e=pe(),t=Me(),n=new Map(t.map(e=>[e.id,e])),o=[],r=(e=[],t=[])=>e.length===t.length&&e.every((e,n)=>e===t[n]),a=e.products.map(e=>{const t=ce(e.id);if(!t)return o.push({type:"unknown-suite-product",products:[e.id]}),Object.freeze({id:e.id,status:"unknown-product"});const a=[...t.capabilities].sort(),i=[...e.capabilities].sort(),s=n.get(e.id)||null,c=[...t.presentationPhases],l=s?[...s.phases]:[];e.role!==t.role&&o.push({type:"suite-role-mismatch",products:[e.id],expected:t.role,actual:e.role}),e.priority!==t.priority&&o.push({type:"suite-priority-mismatch",products:[e.id],expected:t.priority,actual:e.priority}),r(i,a)||o.push({type:"suite-capability-mismatch",products:[e.id],expected:a,actual:i}),c.length&&!s&&o.push({type:"missing-presentation-provider",products:[e.id],expected:c}),!c.length&&s&&o.push({type:"unexpected-presentation-provider",products:[e.id],actual:l}),s&&!r(l,c)&&o.push({type:"presentation-phase-mismatch",products:[e.id],expected:c,actual:l});const d=Ae(e.id);return Object.freeze({id:e.id,status:o.some(t=>t.products?.includes(e.id))?"conflict":"healthy",coreVersion:e.coreVersion,capabilities:Object.freeze(i),presentationPhases:Object.freeze(l),stateType:d?.type||null,stateAt:d?.at||0,stateAgeMs:d?.at?Math.max(0,Date.now()-d.at):null,state:d?.state||null})}),i=[...new Set([...document.querySelectorAll("meta[data-exp-diagnostics-product]")].map(e=>e.dataset.expCoreVersion).filter(Boolean))].sort();i.length>1&&o.push({type:"mixed-core-versions",coreVersions:i});const s=document.querySelectorAll("meta[data-exp-page-observer]").length;return s>1&&o.push({type:"duplicate-page-observer",instances:s}),Object.freeze({status:o.length?"conflicts-detected":"healthy",coreVersions:Object.freeze(i),observerCount:s,products:Object.freeze(a),conflicts:Object.freeze(o.map(e=>Object.freeze({...e})))})}function Re(e){if(!(e instanceof Element))return Object.freeze({});try{const t=JSON.parse(e.getAttribute("data-exp-presentation-state")||"{}");return!t||"object"!=typeof t||Array.isArray(t)?Object.freeze({}):Object.freeze(Object.fromEntries(Object.entries(t).map(([e,t])=>[e,Object.freeze({...t&&"object"==typeof t&&!Array.isArray(t)?t:{}})])))}catch{return Object.freeze({})}}function Ie(e,t,n={}){if(!(e instanceof Element))throw new TypeError("Presentation target must be an Element");const o=String(t||"").toLowerCase();if(!/^[a-z][a-z0-9-]+$/.test(o))throw new Error("Invalid presentation product ID");const r=e.getAttribute("data-exp-presentation-state")||"",a=JSON.parse(JSON.stringify(Re(e))),i={...a[o]||{}};for(const[e,t]of Object.entries(n||{}))if(I.includes(e))if(null==t||""===t)delete i[e];else{const n=String(t).trim().toLowerCase();if(!/^[a-z0-9][a-z0-9._:-]{0,79}$/.test(n))throw new Error("Invalid presentation state value");i[e]=n}Object.keys(i).length?a[o]=i:delete a[o];const s=Object.keys(a).length?JSON.stringify(a):"";if(s===r)return Re(e);s?e.setAttribute("data-exp-presentation-state",s):e.removeAttribute("data-exp-presentation-state");const c=Ne()?.dataset.expPageObserverPhase||null,l=JSON.stringify({protocol:"exp-presentation-state-v1",source:o,channels:Object.keys(i),phase:c,at:Date.now()});return e.dispatchEvent(new CustomEvent($,{bubbles:!0,composed:!0,detail:l})),fe(o,"presentation.state-changed",{channels:Object.keys(i),phase:c}),Re(e)}function Le(e){const t=[];let n=e instanceof Element?e:e?.parentElement;for(;n instanceof Element&&(n=n.closest(Te),n);){const e=Re(n);Object.keys(e).length&&t.push(Object.freeze({node:n,state:e})),n=n.parentElement}return Object.freeze(t)}addEventListener("storage",e=>{e.key===ge()&&(be()?.remove(),fe("core","suite.site-control",{hostname:String(location.hostname||"local-document").toLowerCase(),paused:ye()}),we())}),we();const Te="[data-exp-presentation-state]";function Ne(){return document.querySelector("meta[data-exp-page-observer]")}function je(e="core",t={}){let n=Ne();if(n)return Object.freeze({leader:!1,owner:n.dataset.expPageObserver||"unknown"});n=document.createElement("meta"),n.dataset.expPageObserver=String(e||"core").toLowerCase(),n.dataset.expPageObserverProtocol="exp-page-observer-v1",n.dataset.expPageObserverEpoch="0",(document.documentElement||document.head||document.body)?.append(n);const o=Math.max(16,Math.min(500,Number(t.delayMs||60)||60));let r=0,a=0;const i=new Map,s=(e,t)=>{if(!(e instanceof Element))return;if(e.closest?.('[data-exp-owned="1"]'))return;const n=i.get(e)||{types:new Set,added:0,removed:0};n.types.add(t.type),n.added+=t.addedNodes?.length||0,n.removed+=t.removedNodes?.length||0,i.set(e,n)},c=()=>{r=0;const e=performance.now();for(;i.size;){const t=[];for(const e of i)if(i.delete(e[0]),e[0].isConnected&&t.push(e),t.length>=32)break;if(t.length&&l(t),i.size&&performance.now()-e>=8)return void(r=setTimeout(c,0))}},l=e=>{a+=1,n.dataset.expPageObserverEpoch=String(a);const t=e.map(([t,o],r)=>[t,JSON.stringify({protocol:"exp-page-observer-v1",owner:n.dataset.expPageObserver,epoch:a,rootIndex:r,rootCount:e.length,types:[...o.types].sort(),added:o.added,removed:o.removed,href:location.href,at:Date.now()})]);t.forEach(([e,t])=>{e.dispatchEvent(new CustomEvent(C,{bubbles:!0,composed:!0,detail:t}))});for(const o of Object.keys(R).sort((e,t)=>R[e]-R[t])){n.dataset.expPageObserverPhase=o;for(const[e,n]of t)e.dispatchEvent(new CustomEvent(`${z}:${o}`,{bubbles:!0,composed:!0,detail:n}));document.dispatchEvent(new CustomEvent(`${M}:${o}`,{detail:JSON.stringify({protocol:"exp-page-observer-v1",owner:n.dataset.expPageObserver,epoch:a,phase:o,rootCount:e.length,href:location.href,at:Date.now()})})),delete n.dataset.expPageObserverPhase}};return new MutationObserver(e=>{for(const t of e){const e=t.target?.nodeType===Node.TEXT_NODE?t.target.parentElement:t.target;s(e,t)}!r&&i.size&&(r=setTimeout(c,o))}).observe(document.documentElement,{childList:!0,subtree:!0,characterData:!0}),Object.freeze({leader:!0,owner:n.dataset.expPageObserver})}function De(){const e=Ne();return Object.freeze({active:Boolean(e),owner:e?.dataset.expPageObserver||null,protocol:e?.dataset.expPageObserverProtocol||null,epoch:Number(e?.dataset.expPageObserverEpoch||0),phase:e?.dataset.expPageObserverPhase||null})}function qe(e,t){if(!e||!t)return;const n=Object.fromEntries([...B,"id","skin","skinVertical","skinMode"].map(e=>[e,t[e]])),o=JSON.stringify(n);e.dataset.expMenuPalette!==o&&(e.dataset.expMenuPalette=o,ie("menu-theme",e.dataset.productId))}const Be=".exp-owned-sheet-marker{}";function _e(e,t,n={}){const o=document.createElement("style");let r;Object.assign(o.dataset,n),o.dataset.expOwned="1",o.type="text/plain",o.textContent=t;try{if(r=new CSSStyleSheet,r.replaceSync(Be+t),e.adoptedStyleSheets=[...e.adoptedStyleSheets,r],!e.adoptedStyleSheets.includes(r))throw new Error("Style adoption ignored")}catch{if(r)try{e.adoptedStyleSheets=[...e.adoptedStyleSheets].filter(e=>e!==r)}catch{}r=void 0,o.type="text/css"}e.append(o);const a=r?new MutationObserver(()=>{try{r.replaceSync(Be+o.textContent)}catch{}}):null;return a?.observe(o,{childList:!0,characterData:!0,subtree:!0}),o.dispose=()=>{a?.disconnect(),r&&(e.adoptedStyleSheets=[...e.adoptedStyleSheets].filter(e=>e!==r)),o.remove()},o.expSheet=r,o}function Ve(e){if(e instanceof ShadowRoot)return e;if(e instanceof Element){if(e.shadowRoot instanceof ShadowRoot)return e.shadowRoot;const t=e.getRootNode?.();if(t instanceof ShadowRoot)return t}return null}function Ue(e){const t=Ve(e);return!!t&&(t.querySelector("style[data-exp-matte-toggle-chrome]")||_e(t,oe,{expMatteToggleChrome:"1"}),!0)}function We(e){return e instanceof ShadowRoot&&(e.host.dataset.expContentDrivenMenu="1",e.querySelector("style[data-exp-content-driven-menu]")||_e(e,'.fl-tool-body .action.warn{border-color:#cb6868!important;background:#402020!important;color:#ffd7d7!important}.fl-tool-body .action.warn:hover{background:#582828!important;color:#fff!important}:host([data-exp-content-driven-menu="1"]) :is(.panel,#mb-dock,[data-exp-part="dock"]){height:auto!important;min-height:0!important}:host([data-exp-content-driven-menu="1"]) :is(.fl-tool-body,.panel-body,.route-body){height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}:host([data-exp-content-driven-menu="1"]) :is(.fl-tool-header,.panel-head,.route,.nav-item,.group>summary){height:auto!important;min-height:0!important;white-space:normal!important}:host([data-exp-content-driven-menu="1"]) :is(.fl-tool-title,.label,.setting-label,.setting-value,.copy strong,.copy .label){overflow:visible!important;text-overflow:clip!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important}:host([data-exp-content-driven-menu="1"]) :is(.row,.mini-row,.setting-row){height:auto!important;min-height:0!important;align-items:center!important}:host([data-exp-content-driven-menu="1"]) :is(.group,.section,.panel-body:not(.hidden)){grid-template-columns:minmax(0,1fr)!important}:host([data-exp-content-driven-menu="1"]) :is(.group,.section,.panel-body:not(.hidden))>*{grid-column:1/-1!important}.fl-tool-body .row:has(>select){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)!important;min-width:0!important}.fl-tool-body .row>select{width:100%!important;min-width:0!important;max-width:100%!important}',{expContentDrivenMenu:"1"}),Ue(e),!0)}function He(){const e=re(g,[]),t=[...document.querySelectorAll('[data-exp-product-launcher="1"]')].sort((t,n)=>{const o=Array.isArray(e)?e.indexOf(t.dataset.productId):-1,r=Array.isArray(e)?e.indexOf(n.dataset.productId):-1;if(o!==r)return o<0?1:r<0?-1:o-r;const a=Number(t.dataset.launcherPriority||0);return Number(n.dataset.launcherPriority||0)-a||t.dataset.productId.localeCompare(n.dataset.productId)}),n=vt().tabs,o=n?bt:56,r=n||t.some(e=>Number(e.dataset.launcherReservedRows)>0);t.forEach((e,t)=>((e,t,n=1)=>{const r=Math.floor(t/3),a=t%3;Object.assign(e.dataset,{launcherSlot:String(t),launcherRow:String(r),launcherColumn:String(a),launcherSpan:String(n)}),e.style.setProperty("--exp-launcher-x",56*a+"px"),e.style.setProperty("--exp-launcher-y",r*o+"px"),e.style.setProperty("--exp-launcher-offset",r*o+"px")})(e,r?3*t:t));const a=t.map(e=>e.dataset.productId),i=new Set(Object.keys(x)),s=a.filter(e=>i.has(e)).length===i.size,c=Array.isArray(e)?e.filter(e=>"string"==typeof e):[],l=[...c,...a.filter(e=>!c.includes(e))];(c.length||s)&&JSON.stringify(l)!==JSON.stringify(e)&&ae(g,l)}function Fe(e){const t=vt();if(t.active){const{hub:n,panel:o}=Ct(t),r=Math.max(0,t.order.indexOf(e?.dataset?.productId)),a=o.left+1+mt+r*(pt+ut);return document.documentElement.dataset.expLauncherAnchor=n.anchor,{top:o.top+1+mt,right:St()-a-pt,anchor:n.anchor,delta:Et(),flyout:!0,size:pt}}const n=Nt(t);if(n){document.documentElement.dataset.expLauncherAnchor="top";const o=t.row?t.row.left+Math.max(0,t.order.indexOf(e?.dataset?.productId))*(t.row.size+t.row.gap):n.hub.left;return{top:n.hub.top,right:St()-o-n.hub.size,anchor:"top",delta:Et(),site:!0,size:n.hub.size}}const{offset:o,x:r}=Ge(e),a=Et(),i=innerHeight-60+a,s=i<=(innerHeight-48)/2?"top":"bottom";if(document.documentElement.dataset.expLauncherAnchor=s,t.tabs){const e="top"===s?i+o:i+48-ft-o;return{top:Math.max(8,Math.min(innerHeight-ft-8,e))+et(i,s),right:0,anchor:s,delta:a,tab:!0,width:ht,height:ft}}return{top:Math.max(8,Math.min(innerHeight-56,"top"===s?i+o:i-o))+et(i,s),right:12+r,anchor:s,delta:a}}function Ge(e){const t=getComputedStyle(e);return{offset:parseFloat(t.getPropertyValue("--exp-launcher-offset"))||0,x:parseFloat(t.getPropertyValue("--exp-launcher-x"))||0}}const Je="a[href],button,input,select,textarea,summary,iframe,[role=button],[role=link],[role=menuitem],[role=tab]",Ke=8;let Ye=null,Ze=!1;function Xe(e,t){let n=document.elementsFromPoint(e,t).find(e=>e!==document.documentElement&&e!==document.body&&!T.has(e)&&!e.closest("[data-exp-product-launcher]"));for(let o,r=0;n?.shadowRoot&&r<4&&(o=n.shadowRoot.elementsFromPoint(e,t).find(e=>e.getRootNode()===n.shadowRoot));r++)n=o;const o=e=>e.parentElement||(e.parentNode instanceof ShadowRoot?e.parentNode.host:null);let r=null;for(let e=n;e;e=o(e)){if(T.has(e)||e.matches("[data-exp-product-launcher]"))return null;!r&&e.matches(Je)&&(r=e)}if(!r)return null;let a=!1;for(let e=r;e&&e!==document.body&&e!==document.documentElement;e=o(e)){if(e.matches("[role=banner]")||e.matches("header")&&!e.parentElement?.closest("article,aside,main,nav,section"))return r;const t=getComputedStyle(e),n=e!==r&&/auto|scroll/.test(t.overflowY)&&e.scrollHeight>e.clientHeight;if(n&&e.clientWidth>=.9*innerWidth&&e.clientHeight>=.9*innerHeight)return null;if(a||=n,"fixed"===t.position)return r;if("sticky"===t.position)return e.getBoundingClientRect().height<=.25*innerHeight?r:null}const i=document.scrollingElement||document.documentElement;return!a&&i.scrollHeight<=i.clientHeight+1?r:null}function Qe(e){const t=new Set;for(let n=e.top;n<=e.bottom;n+=16)for(let o=e.left;o<=e.right;o+=16){if(o<0||n<0||o>=innerWidth||n>=innerHeight)continue;const e=Xe(o,n);e&&t.add(e)}return[...t].map(e=>e.getBoundingClientRect()).filter(e=>e.width&&e.height)}function et(e,t){if(Ze)return 0;const n=performance.now();if(Ye&&Ye.origin===e&&n-Ye.at<1e3)return Ye.value;const o=[...document.querySelectorAll('[data-exp-product-launcher="1"]')].map(Ge);if(!o.length)return 0;const r=vt().tabs,a=Ke,i=o.map(n=>r?Math.max(8,Math.min(innerHeight-ft-8,"top"===t?e+n.offset:e+48-ft-n.offset)):Math.max(8,Math.min(innerHeight-56,"top"===t?e+n.offset:e-n.offset))),s=r?{top:Math.min(...i)-a,bottom:Math.max(...i)+ft+a,right:innerWidth,left:innerWidth-gt-a}:{top:Math.min(...i)-a,bottom:Math.max(...i)+48+a,right:innerWidth-12+a,left:innerWidth-12-48-Math.max(...o.map(e=>e.x))-a},c=e=>({...s,top:s.top+e,bottom:s.bottom+e}),l=e=>c(e).top>=8-a&&c(e).bottom<=innerHeight-8+a,d=(e,t)=>t.some(t=>t.left<s.right&&t.right>s.left&&t.top<c(e).bottom&&t.bottom>c(e).top);let p=[],u=0;for(let e=0;e<4;e++){const e=Qe(c(u));if(!e.length)break;p=p.concat(e);const t=[0,...p.flatMap(e=>[e.top-s.bottom,e.bottom-s.top])].filter(e=>l(e)&&!d(e,p));if(!t.length){u=0;break}u=t.reduce((e,t)=>Math.abs(t)<Math.abs(e)?t:e)}return Ye={origin:e,at:n,value:u},u}let tt=0,nt=0,ot=0,rt=0;function at(){const e=performance.now();tt||(nt=e+2e3),clearTimeout(tt),tt=setTimeout(()=>{if(tt=0,!document.querySelector('[data-exp-product-launcher="1"]')||Ze||document.hidden)return;const e=Ye?Ye.value:0;Ye=null;const t=Et(),n=innerHeight-60+t,o=et(n,n<=(innerHeight-48)/2?"top":"bottom");ot=performance.now(),rt=o!==e?0:Math.min(4e3,Math.max(1e3,2*rt)),o!==e&&ie("launcher-site-controls","core")},Math.max(0,Math.min(300,nt-e),ot+rt-e))}function it(e,t=null){const n=e=>e?.shadowRoot?.querySelector('[data-exp-part="launcher"],.launcher'),o=n(e)?.getBoundingClientRect();if(!o||!o.width)return null;const r=[...document.querySelectorAll('[data-exp-product-launcher="1"]')],a=r.map(e=>n(e)?.getBoundingClientRect()).filter(e=>e?.width&&e?.height),i=Math.min(...a.map(e=>e.left)),s=r.flatMap(e=>[...e.shadowRoot?.querySelectorAll("[data-exp-reserved]")||[]]).filter(e=>e!==t&&!t?.contains(e)).map(e=>e.getBoundingClientRect()).filter(e=>e.width&&e.height).map(e=>({top:e.top,bottom:e.bottom,left:e.left,right:e.left<i?Math.min(e.right,i-8):e.right})).filter(e=>e.right>e.left),c=s.length?s.reduce((e,t)=>({top:Math.min(e.top,t.top),bottom:Math.max(e.bottom,t.bottom),left:Math.min(e.left,t.left),right:Math.max(e.right,t.right)})):null,l=Math.min(o.left,...a.map(e=>e.left),...s.map(e=>e.left));return{own:o,launchers:a,reserved:c,gridLeft:l,anchorTop:"top"===document.documentElement.dataset.expLauncherAnchor}}function st(e,t,n=312){const o=it(e,t);if(!o)return null;const{own:r,reserved:a,gridLeft:i,anchorTop:s}=o;t.style.width=Math.max(0,Math.min(n,innerWidth-24))+"px";const c=t.offsetWidth||n;Object.assign(t.style,{left:"auto",bottom:"auto"});const l=e=>t.style.setProperty("max-height",Math.max(0,e)+"px","important"),d=(n,o,r,a)=>(r=Math.round(Math.max(8,Math.min(innerHeight-a-8,r))),Object.assign(t.style,{right:Math.round(o)+"px",top:r+"px"}),e.dataset.menuSide=n,{top:r,right:Math.round(o),width:c,side:n}),p=jt();if("right"===p?.hub?.dock){const o=St(),r=p.hub;t.style.width=Math.min(n,Math.max(0,o-16))+"px";const a=t.offsetWidth||n,i=r.left+r.size+8,s=i+a<=o-8,c=s?i:Math.max(8,Math.min(o-a-8,r.left)),u=s?p.bottom>r.top+r.size?p.bottom+8:r.top:p.bottom+8,m=innerHeight-u-8;return l(m<160?innerHeight-16:m),e.dataset.openDirection="down",d(m<160?"rail-viewport":s?"rail-beside":"rail-below",o-c-a,m<160?8:u,t.offsetHeight)}if(p){const n=a&&a.left<innerWidth-8&&a.right>innerWidth-8-c?p.down?Math.max(p.bottom,a.bottom):Math.min(p.top,a.top):p.down?p.bottom:p.top,o=p.down?innerHeight-n-16:n-16;if(o<160)return l(innerHeight-16),d("viewport",8,8,t.offsetHeight);l(o);const r=t.offsetHeight;return e.dataset.openDirection=p.down?"down":"up",d("flyout",8,p.down?n+8:n-8-r,r)}if(a){const n=o.launchers.filter(e=>e.left<a.right&&e.right>a.right-c),r=s?Math.max(a.bottom,...n.map(e=>e.bottom)):Math.min(a.top,...n.map(e=>e.top)),i=s?innerHeight-r-16:r-16;if(i>=200&&a.right-8>=c){l(i);const n=t.offsetHeight;return e.dataset.openDirection=s?"down":"up",d("reserved",innerWidth-a.right,s?r+8:r-8-n,n)}}if(i-16>=c){l(innerHeight-16);const n=t.offsetHeight;return e.dataset.openDirection="down",d("beside",innerWidth-i+8,s?r.top:r.bottom-n,n)}const u=[...o.launchers,...a?[a]:[]].filter(e=>e.left<innerWidth-12&&e.right>innerWidth-12-c).reduce((e,t)=>({top:Math.min(e.top,t.top),bottom:Math.max(e.bottom,t.bottom)}),{top:r.top,bottom:r.bottom}),m=innerHeight-u.bottom-16,h=u.top-16;if(Math.max(h,m)<160)return l(innerHeight-16),e.dataset.openDirection="down",d("viewport",8,8,t.offsetHeight);const f=s?m<160&&h>m:!(h<160&&m>h);l(f?h:m);const g=t.offsetHeight;return e.dataset.openDirection=f?"up":"down",d("stacked",12,f?u.top-g-8:u.bottom+8,g)}function ct(e,t,n=null){const o=it(e,t);if(!o)return null;const{own:r,reserved:a,gridLeft:i,anchorTop:s}=o,c=t.offsetWidth||260,l=t.offsetHeight||t.scrollHeight||72,d=n&&!n.hidden&&n.getClientRects().length?n.getBoundingClientRect():null;let p,u;if(d?.width&&d?.height){const e=s?d.bottom+8:d.top-l-8;(s?e+l<=innerHeight-8:e>=8)?(p=d.right,u=e):d.left-8-c>=8?(p=d.left-8,u=s?d.top:d.bottom-l):(p=d.right,u=s?d.top-l-8:d.bottom+8)}else if(jt()){const e=jt();"right"===e.hub?.dock?(p=Math.max(8,Math.min(St()-c-8,e.hub.left+e.hub.size+8))+c,u=e.bottom+8):(p=St()-8,u=kt(e.down?e.bottom+8:e.top-l-8,l,p-c,p,e.down,t))}else a&&a.right-8>=c?(p=a.right,u=s?a.bottom+8:a.top-l-8):i-16>=c?(p=i-8,u=s?r.top:r.bottom-l):(p=r.right,u=s?r.bottom+8:r.top-l-8);const m=Math.round(Math.max(8,Math.min(innerWidth-c-8,p-c)));return u=Math.round(Math.max(8,Math.min(innerHeight-l-8,u))),t.style.setProperty("left",m+"px","important"),t.style.setProperty("right","auto","important"),t.style.setProperty("top",u+"px","important"),t.style.setProperty("bottom","auto","important"),{left:m,top:u}}const lt=Object.freeze({dropper:"#bc94f5",ward:"#5fd9a0",thread:"#ff7636"}),dt=Object.freeze({dropper:"Dropper",ward:"WARD",thread:"THREAD"}),pt=40,ut=6,mt=7,ht=34,ft=44,gt=44,bt=48,xt=()=>[...document.querySelectorAll('[data-exp-product-launcher="1"]')],yt=e=>e?.shadowRoot?.querySelector('[data-exp-part="launcher"],.launcher')||null;function vt(){const e=xt(),t=1===e.length||e.length>1&&e.every(e=>e.dataset.expFlyout===f.PROTOCOL)?function(e){const t=Tt()?.row;if(!t||!e)return null;const n=t.right-e*t.size-(e-1)*t.gap;return n>=t.minLeft?{left:n,top:t.top,size:t.size,gap:t.gap}:null}(e.length):null,n=t?null:Tt(),o=!t&&Boolean(n)&&f.flyoutActive(e);return{hosts:e,active:o,tabs:!t&&!n&&f.tabsReady(e),row:t,lead:o?f.leadProduct(e):"",order:o||t?f.flyoutOrder(e):[],open:o&&"1"===document.documentElement.dataset.expFlyoutOpen}}let wt=null;function St(){if(!wt?.isConnected){const e=document.querySelector('[data-exp-product-launcher="1"]')?.shadowRoot;if(!e)return innerWidth;wt=document.createElement("div"),wt.className="exp-view-probe",wt.setAttribute("aria-hidden","true"),wt.style.cssText="position:fixed;inset:0;visibility:hidden;pointer-events:none",e.append(wt)}return wt.getBoundingClientRect().width||innerWidth}function kt(e,t,n,o,r,a=null){const i=[...document.querySelectorAll('[data-exp-product-launcher="1"]')].flatMap(e=>[...e.shadowRoot?.querySelectorAll("[data-exp-reserved]")||[]]).filter(e=>e!==a&&"hidden"!==getComputedStyle(e).visibility).map(e=>e.getBoundingClientRect()).filter(e=>e.width&&e.height&&e.left<o&&e.right>n).sort((e,t)=>r?e.top-t.top:t.bottom-e.bottom);for(const n of i)n.top<e+t&&n.bottom>e&&(e=r?n.bottom+8:n.top-t-8);return e}function Et(){const e=Number(re(b,0))||0,t=!e&&vt().tabs?Math.max(64,Math.round(.2*innerHeight))-(innerHeight-60):e;return Math.max(8-(innerHeight-60),Math.min(4,t))}function At(){const e=Tt();if(e)return{left:e.left,top:e.top,size:e.size||pt,shape:e.shape,anchor:"top",site:!0,dock:e.dock};const t=innerHeight-60+Et(),n=t<=(innerHeight-48)/2?"top":"bottom";return{left:St()-12-48,top:Math.max(8,Math.min(innerHeight-56,t))+et(t,n),size:48,anchor:n,site:!1}}function Ct(e=vt()){const t=At(),n=function(e,t){const n=2+2*mt+pt*t+ut*Math.max(0,t-1),o=2+2*mt+pt,r=Math.max(8,Math.min(St()-8-n,"right"===e.dock?e.left+e.size+6:e.left+e.size-n)),a="right"===e.dock&&e.left+e.size+6+n<=St()-8?e.top:"top"===e.anchor?e.top+e.size+6:e.top-6-o;return{left:r,top:a,width:n,height:o,right:r+n,bottom:a+o}}(t,e.order.length),o=e.open?n:{top:t.top,bottom:t.top+t.size};return{hub:t,panel:n,top:Math.min(t.top,o.top),bottom:Math.max(t.top+t.size,o.bottom),down:"top"===t.anchor}}const Ot=e=>{const t=e.getBoundingClientRect();if(t.width<1||t.height<1)return null;const n=getComputedStyle(e);return"hidden"===n.visibility||"none"===n.display?null:t};let Pt=null,zt=null;function Mt(e){e!==zt&&"function"==typeof ResizeObserver&&(Pt??=new ResizeObserver(()=>{Lt=null,Sn()}),zt&&Pt.unobserve(zt),zt=e,e&&Pt.observe(e))}function $t(e,t,n,o){const r=Ot(e);if(!r||r.height<40||r.top<-1||r.top>8)return null;const a=[...t.querySelectorAll(o)].map(Ot).filter(Boolean);if(!a.length)return null;const i=document.elementFromPoint(a[0].left+a[0].width/2,a[0].top+a[0].height/2);if(!i||!e.contains(i))return null;const s=Math.max(...[...t.querySelectorAll("input,button,a")].map(Ot).filter(Boolean).map(e=>e.right)),c=[...n.querySelectorAll("button,a,input")].map(Ot).filter(Boolean);if(!c.length)return null;const l=Math.min(...c.map(e=>e.left))-16,d=l-pt;if(d<s+8)return null;const p=c.reduce((e,t)=>e.left<=t.left?e:t),u=Math.round(Math.max(28,Math.min(40,p.height)));return{left:d,top:Math.round(r.top+(r.height-pt)/2),row:{right:l,minLeft:s+8,size:u,gap:8,top:Math.round(r.top+(r.height-u)/2)}}}const Rt=Object.freeze([{host:/(^|\.)twitch\.tv$/,find:function(){const e=document.querySelector('nav[data-a-target="top-nav-container"] .top-nav__menu');return e&&Mt(e),e&&e.children.length>=3?$t(e,e.children[1],e.children[2],'input[type="search"],input[data-a-target="tw-input"]'):null}},{host:/(^|\.)kick\.com$/,find:function(){const e='input[data-testid="search"]',t=[...document.querySelectorAll("nav")].find(t=>t.querySelector(e)&&Ot(t))||null;t&&Mt(t);const n=t&&[...t.children].find(t=>t.querySelector(e)),o=t?.lastElementChild;return n&&o&&o!==n?$t(t,n,o,e):null}},{host:/^(www|sh)\.reddit\.com$/,find:function(){if(!document.querySelector('[data-exp-product-launcher="1"][data-product-id="thread"]'))return null;const e=document.querySelector("#left-sidebar-container");Mt(e);const t=e&&Ot(e),n=[...document.querySelectorAll('button[aria-controls="left-sidebar-container"],button[aria-label="Collapse navigation"],button[aria-label="Collapse sidebar"],button[aria-label="Expand navigation"],button[aria-label="Expand sidebar"]')].filter(e=>!e.closest("[data-exp-owned]")).map(Ot).filter(Boolean).find(e=>e.bottom>0&&e.top<innerHeight&&e.right>0&&e.left<Math.min(innerWidth/2,420))||null,o=document.querySelector('reddit-header-large,shreddit-header,header[role="banner"]'),r=o&&Ot(o),a=t&&t.width>=120&&t.right<=Math.min(St()-48,600)&&t.bottom>80,i=n?Math.max(24,Math.min(48,Math.min(n.width,n.height))):32;let s=a?t.right-i/2:n?n.left+(n.width-i)/2:12,c=n?n.bottom+8:a?Math.max(8,t.top)+56:Math.max(8,r?.bottom||48)+12;const l=[...e?.querySelectorAll("button,a[href]")||[]].slice(0,120).map(Ot).filter(Boolean);for(let e=0;e<8;e++){const e=l.find(e=>e.left<s+i&&e.right>s&&e.top<c+i&&e.bottom>c);if(!e)break;c=e.bottom+8}return s=Math.max(8,Math.min(St()-i-8,s)),c=Math.max(8,Math.min(innerHeight-i-8,c)),{left:Math.round(s),top:Math.round(c),dock:"right",size:i,shape:"circle"}}}]);let It,Lt=null;function Tt(){if(void 0!==It&&"right"!==It?.dock&&"1"===document.documentElement.dataset.expFlyoutOpen)return It;const e=performance.now();if(!Lt||e-Lt.at>150||Lt.width!==innerWidth||Lt.height!==innerHeight){const t=Rt.find(e=>e.host.test(location.hostname));let n=null;try{n=t?t.find():null}catch{}Lt={at:e,width:innerWidth,height:innerHeight,slot:n}}return It="1"===document.documentElement.dataset.expFlyoutOpen?Lt.slot:void 0,Lt.slot}function Nt(e=vt()){if(e.active)return null;const t=e.row;if(t){const n=e.hosts.length*t.size+(e.hosts.length-1)*t.gap;return{hub:{left:t.left,top:t.top,size:t.size,width:n,anchor:"top",site:!0,row:!0},panel:null,top:t.top,bottom:t.top+t.size,down:!0}}if(1!==e.hosts.length)return null;const n=Tt();return n?{hub:{...n,size:n.size||pt,anchor:"top",site:!0},panel:null,top:n.top,bottom:n.top+(n.size||pt),down:!0}:null}function jt(e=vt()){return e.active?Ct(e):Nt(e)}function Dt(e){const t=document.documentElement;return"1"===t.dataset.expFlyoutOpen!==(e=Boolean(e)&&vt().active)&&(e?(It=void 0,Tt(),t.dataset.expFlyoutOpen="1",It=Lt?.slot??null):(delete t.dataset.expFlyoutOpen,It=void 0,Lt=null),Jt(),e?qt():document.dispatchEvent(new Event("exp-core:flyout-close")),ie("flyout","core"),!0)}function qt(){const e=vt();if(!e.active)return;const t=()=>{let e=document.activeElement;for(;e?.shadowRoot?.activeElement;)e=e.shadowRoot.activeElement;return e},n=t(),o=document.documentElement.getAttribute("data-exp-open-menu")||"",r=[e.lead,...e.order.filter(t=>t!==e.lead&&t!==o),...o&&o!==e.lead?[o]:[]].map(t=>e.hosts.find(e=>e.dataset.productId===t)).filter(Boolean);for(const e of r)if("function"==typeof e.showPopover)try{e.dataset.expRestack="1",e.matches(":popover-open")&&e.hidePopover(),e.showPopover()}catch{delete e.dataset.expRestack}if(n?.isConnected&&t()!==n)try{n.focus({preventScroll:!0})}catch{}}function Bt(e){document.documentElement.dataset.expFlyoutFocus=e,document.dispatchEvent(new Event("exp-core:flyout-focus"))}function _t(e){const t=e.currentTarget?.host,n=vt();if(!n.open||!t||e.target!==yt(t)||e.altKey||e.ctrlKey||e.metaKey)return;const o=n.order.indexOf(t.dataset.productId),r=n.order.length-1,a={ArrowRight:o+1,ArrowDown:o+1,ArrowLeft:o-1,ArrowUp:o-1,Home:0,End:r}[e.key];void 0!==a&&(e.preventDefault(),e.stopPropagation(),Bt(n.order[Math.max(0,Math.min(r,a))]))}function Vt(e){const t=vt();t.open&&["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","Home","End"].includes(e.key)&&(e.preventDefault(),Bt(["ArrowLeft","ArrowUp","End"].includes(e.key)?t.order.at(-1):t.order[0]))}let Ut=0;function Wt(e){const t=e.currentTarget;t.dataset.expRestack?delete t.dataset.expRestack:"open"===e.newState&&!Ut&&vt().open&&(Ut=requestAnimationFrame(()=>{Ut=0,vt().open&&qt()}))}const Ht="http://www.w3.org/2000/svg";function Ft(e){e.shadowRoot?.querySelectorAll('[data-exp-part="flyout-hub"],[data-exp-part="flyout-panel"]').forEach(e=>{e.expDragCleanup?.(),e.remove()})}function Gt(e,t){const n=e.shadowRoot;if(!n)return;let o=n.querySelector('[data-exp-part="flyout-hub"]'),r=n.querySelector('[data-exp-part="flyout-panel"]');if(!o||!r){Ft(e),r=document.createElement("div"),r.dataset.expPart="flyout-panel",r.className="exp-flyout-panel",r.hidden=!0,o=document.createElement("button"),o.type="button",o.dataset.expPart="flyout-hub",o.className="exp-flyout-hub",o.setAttribute("aria-haspopup","true");const t=document.createElement("span");t.className="exp-flyout-icon";const a=document.createElement("span");a.dataset.expPart="flyout-count",a.className="exp-flyout-count",a.setAttribute("aria-hidden","true");const i=document.createElement("span");i.dataset.expPart="flyout-mark",i.className="exp-flyout-mark",i.hidden=!0,o.append(t,a,i),o.addEventListener("click",e=>{const t="1"!==document.documentElement.dataset.expFlyoutOpen;Dt(t),t&&0===e.detail&&Bt(vt().order[0])}),o.addEventListener("keydown",Vt),o.expDragCleanup=Yt(o,e.dataset.productId,{reorder:!1,canDrag:()=>!At().site,title:"Drag to move the launcher.",layout:Jt}),n.append(r,o)}const a=o.querySelector(".exp-flyout-icon");if(!a.firstElementChild){const t=yt(e)?.querySelector("img,svg:not(.launcher-ring):not(.ring),.icon");if(t){const e=t.cloneNode(!0);e.removeAttribute("id"),e.removeAttribute("style"),e.setAttribute("aria-hidden","true"),a.append(e)}}const{hub:i,panel:s}=Ct(t),c=t.order.length-1;o.querySelector('[data-exp-part="flyout-count"]').textContent="+"+c;const l=t.order.find(e=>t.hosts.some(t=>t.dataset.productId===e&&"1"===t.dataset.expUpdate)),d=o.querySelector('[data-exp-part="flyout-mark"]');d.hidden=!l,l&&d.style.setProperty("--exp-flyout-mark",lt[l]||"#a1a1aa");const p=t.order.map(e=>t.hosts.find(t=>t.dataset.productId===e)).find(e=>void 0!==e?.dataset.expProgress);!function(e,t,n,o,r){let a=e.querySelector('[data-exp-part="flyout-ring"]');if(!o)return a?.setAttribute("hidden",""),void e.classList.remove("has-ring");const i=t+10;a||(a=document.createElementNS(Ht,"svg"),a.dataset.expPart="flyout-ring",a.setAttribute("class","exp-flyout-ring"),a.setAttribute("aria-hidden","true"),e.prepend(a));const s=[t,n,o.fraction,o.color,r].join("|");if(a.removeAttribute("hidden"),e.classList.add("has-ring"),a.dataset.key===s)return;a.dataset.key=s,a.setAttribute("width",i),a.setAttribute("height",i),a.setAttribute("viewBox",`0 0 ${i} ${i}`);const c="exp-flyout-ring-mask",l=[`<rect x="${t-17}" y="${t-9}" width="${i-(t-17)}" height="${i-(t-9)}" fill="black"/>`].concat(r?[`<rect x="${t-4}" y="0" width="${i-(t-4)}" height="14" fill="black"/>`]:[]),d=function(e,t){const n=e+4,o=t-1;return`M${(e+10)/2} 6H${n-o}A${o} ${o} 0 0 1 ${n} ${6+o}V${n-o}A${o} ${o} 0 0 1 ${n-o} ${n}H${6+o}A${o} ${o} 0 0 1 6 ${n-o}V${6+o}A${o} ${o} 0 0 1 ${6+o} 6Z`}(t,n),p=Math.round(1e3*o.fraction)/10;a.innerHTML=`<mask id="${c}"><rect width="${i}" height="${i}" fill="white"/>${l.join("")}</mask><g mask="url(#${c})"><path d="${d}" fill="none" stroke="#0e0e10" stroke-width="4"/><path d="${d}" fill="none" stroke="#3f3f46" stroke-width="2"/><path d="${d}" fill="none" stroke="${o.color}" stroke-width="2" pathLength="100" stroke-dasharray="${p} 200"/></g>`}(o,i.size,"circle"===i.shape?i.size/2:i.size===pt?10:12,p?{fraction:Number(p.dataset.expProgress),color:lt[p.dataset.productId]||"#a1a1aa"}:null,Boolean(l)),o.dataset.size=String(i.size),o.dataset.shape=i.shape||"rectangle",o.setAttribute("aria-expanded",String(t.open));const u=[];l&&u.push(`${dt[l]||l} update available`),p&&u.push(`${dt[p.dataset.productId]||p.dataset.productId} ${Math.round(100*Number(p.dataset.expProgress))}%`),o.setAttribute("aria-label",["ExtraPotions: "+t.order.map(e=>dt[e]||e).join(", "),...u].join(". ")),Object.assign(o.style,{left:Math.round(i.left)+"px",top:Math.round(i.top)+"px",width:i.size+"px",height:i.size+"px"}),r.hidden=!t.open,Object.assign(r.style,{left:Math.round(s.left)+"px",top:Math.round(s.top)+"px",width:s.width+"px",height:s.height+"px"})}function Jt(){const e=vt(),t=document.documentElement;!e.active&&t.dataset.expFlyoutOpen&&delete t.dataset.expFlyoutOpen;const n=t.getAttribute("data-exp-open-menu")||"";for(const t of e.hosts){if(!T.has(t))continue;const o=t.dataset.productId,r=Tt();if("circle"===r?.shape?(t.dataset.expRailLauncher="circle",t.style.setProperty("--exp-rail-launcher-size",r.size+"px")):(delete t.dataset.expRailLauncher,t.style.removeProperty("--exp-rail-launcher-size")),!e.active){Nt(e)?t.dataset.expFlyoutRole="site":delete t.dataset.expFlyoutRole,e.row?(t.dataset.expSiteIcon="1",t.style.setProperty("--exp-site-icon-size",e.row.size+"px")):(delete t.dataset.expSiteIcon,t.style.removeProperty("--exp-site-icon-size")),e.tabs?t.dataset.expEdgeTab="1":delete t.dataset.expEdgeTab,e.tabs&&n===o?t.dataset.expFlyoutSelected="1":delete t.dataset.expFlyoutSelected,Ft(t);continue}delete t.dataset.expEdgeTab,delete t.dataset.expSiteIcon,t.style.removeProperty("--exp-site-icon-size");const a=e.open?"tile":"hidden";t.dataset.expFlyoutRole!==a&&(t.dataset.expFlyoutRole=a),e.open&&n===o?t.dataset.expFlyoutSelected="1":delete t.dataset.expFlyoutSelected,o===e.lead?Gt(t,e):Ft(t)}}function Kt(e){ae(g,[]),ae(b,0),He(),ie("launcher-grid-moved",e)}function Yt(e,t,{layout:n=()=>{},reorder:o=!0,canDrag:r=()=>!0,title:a=""}={}){const i=[],s=(e,t,n,o)=>{e.addEventListener(t,n,o),i.push(()=>e.removeEventListener(t,n,o))};let c=0,l=0,d=0,p=null,u=!1,m="",h="",f=[];e.title=e.title||a||"Drag to move the launchers. Shift+drag or Alt+Arrow keys reorder.",s(e,"pointerdown",n=>{if(!(0!==n.button||o&&(vt().active||Nt())||!o&&n.shiftKey)&&r()){p=n.pointerId,c=n.clientX,l=n.clientY,d=Et(),m=n.shiftKey?"order":"group",f=Zt(),f.includes(t)||f.push(t),u=!1,h="",n.preventDefault();try{e.setPointerCapture(n.pointerId)}catch{}}}),s(e,"dragstart",e=>e.preventDefault()),s(window,"pointermove",o=>{if(o.pointerId!==p)return;const r=o.clientX-c,a=o.clientY-l;if(!h&&Math.max(Math.abs(r),Math.abs(a))>4&&(h=m),h){if(u=!0,Ze=!0,o.preventDefault(),e.classList.add("is-dragging"),"group"===h)ae(b,Math.round(Math.max(8-(innerHeight-60),Math.min(4,d+a))));else{const e=f.indexOf(t),n=vt().tabs?Math.round(a/bt)*("top"===document.documentElement.dataset.expLauncherAnchor?1:-1):Math.abs(r)>Math.abs(a)?Math.round(-r/56):3*Math.round(a/56),o=Math.max(0,Math.min(f.length-1,e+n)),i=[...f];i.splice(e,1),i.splice(o,0,t),ae(g,i)}He(),ie("launcher-grid-moved",t),n()}},{passive:!1,capture:!0});const x=o=>{if(o.pointerId===p){p=null,Ze&&(Ze=!1,Ye=null,He(),ie("launcher-grid-moved",t),n()),e.classList.remove("is-dragging");try{e.releasePointerCapture(o.pointerId)}catch{}}};return s(window,"pointerup",x,!0),s(window,"pointercancel",x,!0),s(e,"lostpointercapture",x),s(e,"click",e=>{u&&(e.preventDefault(),e.stopImmediatePropagation(),u=!1)},!0),s(e,"keydown",r=>{if(!o||vt().active||!r.altKey||!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(r.key))return;r.preventDefault();let a=Zt();a.includes(t)||a.push(t);const i=a.indexOf(t),s="top"===document.documentElement.dataset.expLauncherAnchor?-1:1,c=vt().tabs?{ArrowLeft:0,ArrowRight:0,ArrowUp:s,ArrowDown:-s}[r.key]:{ArrowLeft:1,ArrowRight:-1,ArrowUp:-3,ArrowDown:3}[r.key],l=Math.max(0,Math.min(a.length-1,i+c));a=[...a],a.splice(i,1),a.splice(l,0,t),ae(g,a),He(),ie("launcher-grid-moved",t),n(),e.focus()}),()=>{for(;i.length;)i.pop()()}}function Zt(){let e=re(g,[]);Array.isArray(e)||(e=[]);const t=[...document.querySelectorAll('[data-exp-product-launcher="1"]')].sort((e,t)=>Number(e.dataset.launcherSlot||0)-Number(t.dataset.launcherSlot||0)).map(e=>e.dataset.productId);if(!e.length)return t;const n=new Set(e);return[...e,...t.filter(e=>!n.has(e))]}function Xt(e,t=null){try{if("function"==typeof GM_getValue)return GM_getValue(e,t)}catch{}try{return JSON.parse(localStorage.getItem(e))??t}catch{return t}}function Qt(e,t){try{if("function"==typeof GM_setValue)return void GM_setValue(e,t)}catch{}try{localStorage.setItem(e,JSON.stringify(t))}catch{}}function en(e,t){const n=`exp:v3:${String(e||"product")}:notice:${String(t||"change")}`;return!0!==Xt(n,!1)&&(Qt(n,!0),!0)}function tn(){const e=[...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')].map(e=>e.shadowRoot?.querySelector('[data-exp-part="launcher"]')).filter(Boolean).map(e=>e.getBoundingClientRect()).filter(e=>e.width&&e.height),t=[...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')].flatMap(e=>[...e.shadowRoot?.querySelectorAll('[data-exp-floating-notice="1"]')||[]].map(t=>({host:e,notice:t}))).filter(({notice:e})=>!e.hidden&&e.getClientRects().length).sort((e,t)=>Number(e.host.dataset.launcherSlot||0)-Number(t.host.dataset.launcherSlot||0)||e.host.dataset.productId.localeCompare(t.host.dataset.productId));if(!e.length||!t.length)return;let n="top"===document.documentElement.dataset.expLauncherAnchor?"top":"bottom",o=Math.min(...e.map(e=>e.top)),r=Math.max(...e.map(e=>e.bottom)),a=Math.max(...e.map(e=>e.right));const i=jt();i&&(n=i.down?"top":"bottom",o=i.top,r=i.bottom,a=St()-8);let s="top"===n?r+8:o-8;for(const{notice:e}of t){const t=Math.min(e.offsetWidth||e.scrollWidth||260,Math.max(0,innerWidth-24)),o=e.offsetHeight||e.scrollHeight||72,r=Math.max(8,Math.min(innerWidth-t-8,a-t));let c="top"===n?s:s-o;i&&(c=kt(c,o,r,r+t,"top"===n,e)),e.style.setProperty("width",`${t}px`,"important"),e.style.setProperty("left",`${r}px`,"important"),e.style.setProperty("right","auto","important"),e.style.setProperty("top",`${Math.max(8,Math.min(innerHeight-o-8,c))}px`,"important"),e.style.setProperty("bottom","auto","important"),s="top"===n?c+o+8:c-8}}function nn(e,n={}){if(T.has(e))return T.get(e);const o=n.productId||n.id||e.dataset.productId,r=ce(o),a=r?r.launcherPriority:n.priority??0;Object.assign(e.dataset,{expProductLauncher:"1",productId:o,launcherPriority:String(a)}),e.dataset.expFlyout=f.PROTOCOL,f.isSiteProduct(o)?e.dataset.expSiteProduct="1":delete e.dataset.expSiteProduct,Ue(e);const i=e.shadowRoot?_e(e.shadowRoot,":host::backdrop{all:initial!important;display:none!important;background:transparent!important;pointer-events:none!important}",{expLauncherBackdrop:"1"}):null,s=t.protectLauncherHost(e),c=e.shadowRoot?_e(e.shadowRoot,function(e){const t=lt[e]||"#a1a1aa",n=':is([data-exp-part="launcher"],.launcher)';return`:host([data-exp-flyout-role]) ${n}{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;border-radius:10px!important;box-sizing:border-box!important}\n:host([data-exp-flyout-role]) ${n} > :is(img,svg,.icon):not(.launcher-ring):not(.ring){width:26px!important;height:26px!important}\n:host([data-exp-flyout-role="hidden"]) ${n}{visibility:hidden!important;pointer-events:none!important}\n:host([data-exp-flyout-selected="1"]) ${n}{border-color:${t}!important;box-shadow:inset 0 0 0 1px ${t}!important}\n:host([data-exp-edge-tab]) ${n}{width:${ht}px!important;height:${ft}px!important;min-width:${ht}px!important;min-height:${ft}px!important;max-width:${ht}px!important;max-height:${ft}px!important;border-radius:10px 0 0 10px!important;border-right-width:0!important;box-sizing:border-box!important;overflow:visible!important;transform:none!important}\n:host([data-exp-edge-tab]) ${n} > :is(img,svg,.icon):not(.launcher-ring):not(.ring){width:24px!important;height:24px!important}\n:host([data-exp-edge-tab]) ${n} :is(.ring,.launcher-ring,.launcher-badge,.update-badge){display:none!important}\n:host([data-exp-edge-tab]) ${n}::before{content:'';position:absolute;top:0;bottom:0;right:0;left:${ht-gt}px}\n:host([data-exp-edge-tab][data-exp-update="1"]) ${n}::after{content:'';position:absolute;top:3px;left:3px;width:7px;height:7px;border-radius:2px;background:${t};pointer-events:none}\n:host([data-exp-edge-tab][data-exp-flyout-selected="1"]) ${n}{border-color:${t}!important;box-shadow:inset 3px 0 0 ${t}!important}\n.exp-flyout-hub{all:initial;position:fixed;z-index:2147483601;box-sizing:border-box;display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:radial-gradient(circle at 50% 35%,#1d1a24,#0c0b10 70%);border:1px solid color-mix(in srgb,${t} 50%,#3f3f46);box-shadow:inset 0 1px 0 #ffffff12;cursor:pointer;pointer-events:auto}\n.exp-flyout-hub[data-size="40"]{border-radius:10px}\n.exp-flyout-hub[data-shape="circle"]{border-radius:50%;background:var(--theme-panel,#181c1f);box-shadow:none}\n:host([data-exp-rail-launcher="circle"][data-exp-flyout-role="site"]) ${n}{width:var(--exp-rail-launcher-size)!important;height:var(--exp-rail-launcher-size)!important;min-width:var(--exp-rail-launcher-size)!important;min-height:var(--exp-rail-launcher-size)!important;max-width:var(--exp-rail-launcher-size)!important;max-height:var(--exp-rail-launcher-size)!important;border-radius:50%!important}\n:host([data-exp-rail-launcher="circle"][data-exp-flyout-role="site"]) ${n}>:is(img,svg,.icon):not(.launcher-ring):not(.ring){width:22px!important;height:22px!important}\n:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher){width:var(--exp-site-icon-size)!important;height:var(--exp-site-icon-size)!important;min-width:var(--exp-site-icon-size)!important;min-height:var(--exp-site-icon-size)!important;max-width:var(--exp-site-icon-size)!important;max-height:var(--exp-site-icon-size)!important;padding:0!important;border:0!important;border-radius:6px!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;transition:none!important}\n:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher):hover{background:color-mix(in srgb,currentColor 16%,transparent)!important}\n:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher):focus-visible{outline:2px solid ${t}!important;outline-offset:1px!important}\n:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher)>:is(img,svg,.icon):not(.launcher-ring):not(.ring){width:22px!important;height:22px!important}\n:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher) :is(.ring,.launcher-ring,.launcher-badge,.update-badge){display:none!important}\n:host([data-exp-flyout-role="site"][data-exp-site-icon][data-exp-update="1"]) :is([data-exp-part="launcher"],.launcher)::after{content:'';position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:2px;background:${t};pointer-events:none}\n.exp-flyout-hub.has-ring{border-color:transparent}\n.exp-flyout-ring{position:absolute;left:-6px;top:-6px;pointer-events:none;overflow:visible}\n.exp-flyout-ring[hidden]{display:none}\n.exp-flyout-hub:focus-visible{outline:2px solid ${t};outline-offset:3px}\n.exp-flyout-icon{display:grid;place-items:center;width:32px;height:32px;pointer-events:none}\n.exp-flyout-hub[data-size="40"] .exp-flyout-icon{width:26px;height:26px}\n.exp-flyout-hub[data-shape="circle"] .exp-flyout-icon{width:22px;height:22px}\n.exp-flyout-icon>*{display:block!important;position:static!important;width:100%!important;height:100%!important;margin:0!important}\n.exp-flyout-count{position:absolute;right:-6px;bottom:-6px;box-sizing:border-box;min-width:20px;height:16px;padding:0 4px;border-radius:4px;background:#27272a;border:1px solid #3f3f46;outline:2px solid #0e0e10;color:#fafafa;font:600 10px/14px Inter,"Segoe UI",system-ui,sans-serif;text-align:center;pointer-events:none}\n.exp-flyout-mark{position:absolute;top:-5px;right:-5px;width:10px;height:10px;box-sizing:border-box;border-radius:3px;background:var(--exp-flyout-mark,#a1a1aa);outline:2px solid #0e0e10;pointer-events:none}\n.exp-flyout-mark[hidden]{display:none}\n.exp-flyout-panel{position:fixed;z-index:2147483590;box-sizing:border-box;background:#09090b;border:1px solid #27272a;border-radius:12px;box-shadow:0 12px 32px #0008;pointer-events:auto}\n.exp-flyout-panel[hidden]{display:none!important}`}(o),{expFlyoutStyle:"1"}):null;e.shadowRoot?.addEventListener("keydown",_t),e.addEventListener("toggle",Wt);let l=0;const d=()=>{l||(l=requestAnimationFrame(()=>{l=0,He(),Jt(),j.get(e)?.layout()}))};document.addEventListener("exp-core:coordination",d),addEventListener("resize",d),He(),Jt(),ie("launcher-added",o);const p=()=>{s(),i?.dispose(),c?.dispose(),e.shadowRoot?.removeEventListener("keydown",_t),e.removeEventListener("toggle",Wt),Ft(e),delete e.dataset.expFlyoutRole,delete e.dataset.expFlyoutSelected,delete e.dataset.expEdgeTab,cancelAnimationFrame(l),document.removeEventListener("exp-core:coordination",d),removeEventListener("resize",d),delete e.dataset.expProductLauncher,delete e.dataset.expFlyout,delete e.dataset.expSiteProduct,T.delete(e),He(),ie("launcher-removed",o)};return T.set(e,p),p}function on(e){return e instanceof HTMLElement&&(e.tabIndex=-1,e.style.outline="none",e.focus({preventScroll:!0}),!0)}function rn(e){const t=document.documentElement,n=t.dataset.expNoticeOwner||"";return!(n&&n!==e||(t.dataset.expNoticeOwner=String(e),0))}function an(e){document.documentElement.dataset.expNoticeOwner===String(e)&&(delete document.documentElement.dataset.expNoticeOwner,document.dispatchEvent(new Event("exp-core:notice-released")))}function sn(e={}){const{shadow:t,panel:n,notice:o,versionButton:r=null}=e,a=e.host||t?.host;if(!(t instanceof ShadowRoot&&n instanceof Element&&o instanceof Element))return Object.freeze({show(){},hide(){},toggle(){},layout(){},setMenuOpen(){},destroy(){}});const i=Math.max(0,Number(e.durationMs??3e4)),s=!1!==e.manageVersion;let c=0,l=!1,d=!1,p=0,u=!1;const m=String(a?.dataset?.productId||"product")+":"+ ++q;!function(e){e.querySelector("style[data-exp-floating-notice]")||_e(e,'.exp-floating-update{position:fixed;z-index:2147483647;box-sizing:border-box;width:min(312px,calc(100vw - 24px));max-width:calc(100vw - 24px);margin:0;padding:10px 32px 10px 10px;border:1px solid var(--exp-notice-border,#6f42b4);border-radius:10px;background:linear-gradient(180deg,var(--exp-notice-top,#251a35),var(--exp-notice-bottom,#18181d) 70%);color:var(--exp-notice-text,#f4f4f6);box-shadow:0 10px 28px #0008;font:500 var(--exp-font-size-small,11px)/1.45 system-ui,sans-serif}.exp-floating-update[hidden]{display:none!important}.exp-floating-update[data-exp-update-notice]{padding:10px;font:400 var(--exp-font-size-small,11px)/1.42 ui-sans-serif,system-ui,"Segoe UI",sans-serif}.exp-floating-update-dismiss{position:absolute;top:7px;right:7px;width:23px;height:23px;padding:0;border:1px solid transparent;border-radius:7px;background:transparent;color:inherit;cursor:pointer;font:15px/1 Arial,sans-serif}.exp-floating-update-dismiss:hover,.exp-floating-update-dismiss:focus-visible{border-color:var(--exp-notice-border,#6f42b4);outline:none}',{expFloatingNotice:"1"})}(t),Ue(t),o.classList.add("update-notice","exp-floating-update"),o.dataset.placement="menu",delete o.dataset.expFloatingNotice,o.setAttribute("role","status");let h=o.querySelector(":scope > .exp-floating-update-dismiss,.update-dismiss");h||(h=document.createElement("button"),h.type="button",h.className="exp-floating-update-dismiss",h.setAttribute("aria-label","Dismiss Changelog"),h.textContent="×",o.prepend(h));const f=e.themeSource instanceof Element?e.themeSource:n,g=e.returnFocus||r;function b(){clearTimeout(c),c=0}function x(){d||p||(p=requestAnimationFrame(()=>{p=0,y()}))}function y(){if(d||o.hidden)return;!function(e,t){const n=getComputedStyle(t),o=(e,t)=>e.map(e=>n.getPropertyValue(e).trim()).find(Boolean)||t;e.style.setProperty("--exp-notice-border",o(["--exp-notice-border","--theme-muted","--theme-accent","--accent","--accent2","--teal","--mb-brand"],n.borderTopColor||"#6f42b4")),e.style.setProperty("--exp-notice-top",o(["--exp-notice-top","--theme-bg","--theme-panel","--surface","--panel","--raised","--mb-surface","--bg","--mb-bg"],n.backgroundColor||"#251a35")),e.style.setProperty("--exp-notice-bottom",o(["--exp-notice-bottom","--theme-bg","--bg","--mb-bg","--surface","--mb-surface"],n.backgroundColor||"#18181d")),e.style.setProperty("--exp-notice-text",o(["--exp-notice-text","--theme-text","--text","--mb-ink"],n.color||"#f4f4f6"))}(o,f);const e=Math.min(K(),Math.max(0,innerWidth-24));o.style.setProperty("width",e+"px","important"),ct(a||t.host,o,l?n:null)}function v(){an(m)}function w(){u&&!d&&k()}function S(){b(),u=!1;const e=o.contains(t.activeElement);o.hidden=!0,g?.setAttribute("aria-expanded","false"),e&&g?.focus({preventScroll:!0}),v()}function k(){l||rn(m)?(u=!1,o.hidden=!1,g?.setAttribute("aria-expanded","true"),b(),i&&(c=setTimeout(S,i)),x()):u=!0}function E(){o.hidden?k():S()}function A(){s?E():o.hidden||k()}const C=new ResizeObserver(x);C.observe(n),C.observe(o);const O=new MutationObserver(x);O.observe(o,{attributes:!0,attributeFilter:["hidden"],childList:!0,subtree:!0});const P=()=>x(),z=e=>{"Escape"===e.key&&(e.preventDefault(),e.stopPropagation(),S())};return o.addEventListener("keydown",z),h.addEventListener("click",S),r?.addEventListener("click",A),addEventListener("resize",x,{passive:!0}),document.addEventListener("exp-core:coordination",P),document.addEventListener("exp-core:notice-released",w),Object.freeze({show:k,hide:S,toggle:E,layout:y,setMenuOpen:function(e){l=Boolean(e),l||o.hidden||rn(m)||(b(),o.hidden=!0,g?.setAttribute("aria-expanded","false"),u=!0),x()},destroy(){d=!0,cancelAnimationFrame(p),b(),C.disconnect(),O.disconnect(),o.removeEventListener("keydown",z),h.removeEventListener("click",S),r?.removeEventListener("click",A),removeEventListener("resize",x),document.removeEventListener("exp-core:coordination",P),document.removeEventListener("exp-core:notice-released",w),v()}})}function cn(e){e.querySelectorAll('button[role="switch"],button.toggle').forEach(e=>{e.classList.add("toggleSwitch"),e.setAttribute("role","switch"),e.hasAttribute("aria-checked")||e.setAttribute("aria-checked","false");const t=e.closest(".row,.mini-row,.fl-switch,.setting-row");if(t){t.classList.add("fl-switch");const n=t.querySelector(".label,.copy>strong,.row-copy>strong,.setting-label,span");n&&n.classList.add("fl-switch-text"),e.hasAttribute("aria-label")||e.hasAttribute("aria-labelledby")||e.setAttribute("aria-label",n?.textContent||t.textContent.trim())}}),e.querySelectorAll(".row,.mini-row,.setting-row").forEach(e=>{e.classList.contains("fl-switch")||e.classList.add("mini-row")}),e.querySelectorAll("select").forEach(e=>e.classList.add("select-lite")),e.querySelectorAll("button.action,button.secondary,button.primary,button.compact,.diagnostics-controls button,.button-grid button,.menu-footer button").forEach(e=>{e.dataset.expPart||e.classList.add("life-btn")}),e.querySelectorAll(".route-body").forEach(e=>e.classList.toggle("fl-tool-hidden",e.hidden));const t=e.querySelector('.fl-tool-header[aria-expanded="true"]');e.querySelectorAll(".fl-tool-header").forEach(e=>{t&&e.classList.toggle("last-opened",e===t);const n=e.querySelector(".fl-tool-chevron");if(n){const t="true"===e.getAttribute("aria-expanded")?"▾":"▸";n.textContent!==t&&(n.textContent=t)}})}function ln(e={}){const{id:n,host:o,shadow:r,panel:a,setOpen:i,getSettings:s=()=>({})}=e;if(!(n&&o&&r&&a&&"function"==typeof i))throw new Error("Incomplete menu controller configuration");if(D.has(o))return D.get(o);const c=Math.max(15e3,Number(e.idleTimeoutMs)||0);let l=!1,d=!1,p=0,u=0;const h=[],f=(e,t,n,o)=>{e.addEventListener(t,n,o),h.push(()=>e.removeEventListener(t,n,o))},g=e.themeRoot;let b="system";function x(e){if(!g)return;b=t.normalizeThemeMode(e);const r=t.resolveTheme(b,n);for(const e of[g,a]){for(const t of B)e.style.setProperty("--theme-"+t,r[t]);e.style.setProperty("--theme-skin",r.accent),e.style.setProperty("--theme-skin-vertical",r.accent),e.dataset.uiTheme=r.id,e.dataset.themeSkin="flat",e.style.colorScheme=r.mode}o.dataset.uiTheme=r.id,qe(o,r)}function y(){clearTimeout(p),p=0,u=0}function v(e=Date.now()){return!(d||!l||!u||e<u||(y(),i(!1,!1),0))}function w(){y(),!d&&l&&!1!==s().menuAutoClose&&(u=Date.now()+c,p=setTimeout(()=>v(),c+20))}function S(){document.documentElement.getAttribute("data-exp-open-menu")===n&&document.documentElement.removeAttribute("data-exp-open-menu")}g&&(f(matchMedia("(prefers-color-scheme: dark)"),"change",()=>{"system"===b&&x(b)}),x(s().uiTheme));const k="function"==typeof e.keepOpen?e.keepOpen:()=>!1;for(const e of["pointerdown","click","wheel","keydown","input","change"])f(a,e,w,{passive:"wheel"===e});f(document,"exp-core:flyout-close",()=>{l&&i(!1,!1)}),f(document,"exp-core:menu-open",()=>{l&&document.documentElement.getAttribute("data-exp-open-menu")!==n&&i(!1,!1)}),!1!==e.closeOnOutsidePointer&&f(document,"pointerdown",e=>{if(l&&e.isTrusted&&!e.composedPath().includes(o)&&!(r.activeElement instanceof HTMLSelectElement)){try{if(k(e))return}catch{}i(!1,!1)}},!0);const E=Object.freeze({state(e){d||(l=Boolean(e),l?(document.documentElement.setAttribute("data-exp-open-menu",n),document.dispatchEvent(new Event("exp-core:menu-open"))):S(),a.classList.toggle("fl-rail-open",l),l?w():y())},setTheme:x,scheduleDismiss:w,cancelDismiss:y,enforceDeadline:v,get isOpen(){return l},get dismissAt(){return u},get timerActive(){return Boolean(p)},idleTimeoutMs:c,destroy(){d||(d=!0,l=!1,y(),S(),h.forEach(e=>e()),D.delete(o))}});return h.push(m.bindMenuSize({host:o,shadow:r,panel:a,onLayout:e.onLayout})),D.set(o,E),E}function dn(n){const{id:o,host:r,shadow:a,launcher:s,panel:c,getSettings:d=()=>({}),setOpen:p,shortcutKey:u="",productTheme:h,launcherSrc:f}=n;if(j.has(r))return j.get(r);const g=[...a.querySelectorAll("style[data-exp-launcher-backdrop],style[data-exp-flyout-style]")];a.querySelectorAll("style").forEach(e=>{g.includes(e)||(e.dispose?e.dispose():e.remove())});try{a.adoptedStyleSheets=[]}catch{}const b=_e(a,Y+'\n    [data-exp-part="dock"]{box-sizing:border-box;overflow-x:hidden;overscroll-behavior:contain}\n    [data-exp-part="dock"] :is(.row,.group,.section,.fl-tool-body,.route-body,.fl-tool-title){min-width:0;max-width:100%;overflow-wrap:anywhere!important}\n    [data-exp-part="dock"] :is(input,select,textarea){min-width:0;max-width:100%}\n    .update-notice,.changelog{max-height:calc(100vh - 24px)!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;overflow-wrap:anywhere}\n\n    [data-exp-system-tools]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;align-items:stretch;grid-column:1/-1!important;min-width:0}\n    [data-exp-system-tools]>details{box-sizing:border-box;min-width:0;margin:0!important;padding:7px!important;border:1px solid var(--theme-line);border-radius:7px;grid-column:auto!important;overflow-wrap:anywhere}\n    [data-exp-system-tools]>details[open]{grid-column:1/-1!important}\n    [data-exp-system-tools]>details>summary{cursor:pointer;font-weight:600}\n    .exp-system-card>summary{cursor:pointer}\n    .exp-system-card>summary+*{margin-top:6px}\n    :host{color-scheme:dark}\n    [data-exp-part="launcher"]{box-sizing:border-box!important;width:48px!important;min-width:48px!important;max-width:48px!important;height:48px!important;min-height:48px!important;max-height:48px!important}\n    [data-exp-part="launcher"] .launcher-icon{width:40px!important;height:40px!important}\n    .header-icon{width:38px!important;height:38px!important}\n    .header-icon .menu-icon{width:38px!important;height:38px!important}\n    :host([data-exp-theme-deprioritized="1"]) .theme-row:has(.exp-theme-swatches),:host([data-exp-theme-deprioritized="1"]) #mb-theme-dots{display:none!important}\n    :host([data-exp-theme-deprioritized="1"]) #mb-cluster{--mb-bg:var(--theme-bg)!important;--mb-surface:var(--theme-panel)!important;--mb-chip:var(--theme-raised)!important;--mb-ink:var(--theme-text)!important;--mb-muted:var(--theme-muted)!important;--mb-line:var(--theme-line)!important;--mb-brand:var(--theme-accent)!important;--mb-brand-ink:var(--theme-onAccent)!important;--mb-hover:var(--theme-raised)!important;--mb-track:var(--theme-line)!important}\n    [hidden]{display:none!important}\n    .exp-core-theme{position:static;display:contents;color:var(--theme-text);font:13px/1.42 ui-sans-serif,system-ui,"Segoe UI",sans-serif}\n    [data-exp-part="dock"],[data-exp-part="launcher"]{position:fixed}\n    [data-exp-part="dock"]{color:var(--theme-text);scrollbar-width:thin}\n    [data-exp-part="dock"] [data-exp-part="title"]{color:var(--theme-text)}\n    .exp-core-theme a{color:var(--theme-link)}\n    button,input,select,textarea{font-family:inherit}\n    button{color:inherit}\n    button:disabled{opacity:.5;cursor:not-allowed}\n    button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--theme-focus);outline-offset:2px}\n    button.fl-tool-header{width:100%;border:0;background:transparent;color:var(--theme-text);text-align:left;font:inherit}\n    .fl-tool-header .fl-tool-chevron{font:var(--exp-font-size-body,13px)/1.42 system-ui}\n    .fl-tool-body[hidden]{display:none!important}\n    .fl-tool-body>.group,.fl-tool-body>.section,.fl-tool-body>.flat-group{grid-column:1/-1;min-width:0}\n    .fl-tool-body :is(.group,.section,.flat-group){display:grid!important;grid-template-columns:minmax(0,1fr)!important}\n    .fl-tool-body :is(.group,.section,.flat-group)>*{grid-column:1/-1!important;min-width:0}\n    .group,.section,.flat-group{margin:0;padding:0;border:0;background:transparent}\n    .group>h3,.section>h3,.section>h2{margin:8px 0 3px;font-size:var(--exp-font-size-small,11px);font-weight:800;color:var(--theme-muted)}\n    .group:first-child>h3,.section:first-child>h3{margin-top:6px}\n    .group>.row,.section>.row,.flat-group>.row{min-width:0}\n    .row>.copy,.row>.row-copy,.row>.setting-label,.row>div:first-child{min-width:0;flex:1}\n    .label,.copy>strong,.row-copy>strong,.setting-label{font-size:var(--exp-font-size-body,13px);font-weight:500;line-height:1.25}\n    .copy>.help,.row-copy>small,.help,.empty,.note,.meta{font-size:var(--exp-font-size-small,11px);line-height:1.4;color:var(--theme-muted)}\n    .copy>.help,.row-copy>small{display:block;margin-top:3px}\n    .toggleSwitch{padding:0;min-width:34px;max-width:34px;min-height:20px;max-height:20px}\n    .toggleSwitch>span{display:none}\n    .row>.life-btn,.mini-row>.life-btn{width:auto;min-width:50px;margin:0;padding:3px 7px}\n    .row>select,.mini-row>select{max-width:55%}\n    .button-grid,.actions,.profile-actions,.menu-footer,.diagnostics-controls>div,.rules-transfer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;min-width:0}\n    .button-grid>*{min-width:0}\n    .life-btn.warn{border-color:#cb6868!important;background:#402020!important;color:#ffd7d7!important}\n    input:not([type=file]),textarea{box-sizing:border-box;max-width:100%;min-width:0;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-inset);color:var(--theme-text);padding:5px 6px;font-size:var(--exp-font-size-body,13px)}\n    input[type=search],textarea{width:100%}\n    .identity{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--theme-line)}\n    .identity>.copy{flex:1;min-width:0}\n    .identity-actions{display:flex;gap:6px;align-items:center}\n    .identity-actions>.life-btn{width:auto;margin:0;padding:3px 6px}\n    .theme-row{flex-wrap:wrap}\n    .exp-theme-swatches{min-width:0}\n    .appearance-group,.auth-advanced,.rule-card,.stat-card{grid-column:1/-1;min-width:0;border:1px solid var(--theme-line);border-radius:7px;margin-top:6px;padding:6px;background:var(--theme-inset)}\n    summary{cursor:pointer;font-size:var(--exp-font-size-body,13px)}\n    .feature-pair,.category-grid{display:block}\n    .status-value,output{font-size:var(--exp-font-size-small,11px);color:var(--theme-muted)}\n    .live,.sr-only,.status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}\n    .toast{position:fixed;z-index:2147483647;right:12px;max-width:calc(100vw - 24px)}\n    .update-notice{position:fixed;z-index:2147483647}\n    .diag{margin:6px 0 0}\n    .diag[hidden]{display:none!important}\n    .diag:not([hidden]){display:block}\n    .utility-grid,.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}\n    .workspace-actions{grid-column:1/-1}\n    .setting-arrow,.step-btn{width:25px;min-height:25px;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-raised);color:var(--theme-text)}\n    .step-value{flex:1;text-align:center;font-size:var(--exp-font-size-small,11px)}\n    .stepper{display:flex;align-items:center;gap:5px}\n  ',{expCoreStyle:e});try{a.adoptedStyleSheets=[...a.adoptedStyleSheets,...g.map(e=>e.expSheet).filter(Boolean)]}catch{}const x=document.createElement("div");x.className="exp-core-theme",[...a.childNodes].filter(e=>e!==b).forEach(e=>x.append(e)),a.append(x),c.dataset.expPart="dock",c.classList.add("exp-menu-surface"),function(e,t){if(e.dataset.expCoreLauncher)return;const n=e.querySelector("img,.launcher-gem svg,.icon,svg:not(.launcher-ring):not(.ring)");if(!n)throw new Error("Core launcher requires the product launcher artwork");const o=n.cloneNode(!0);o.removeAttribute("style"),o.removeAttribute("id"),o.setAttribute("class","icon launcher-icon"),t&&"IMG"===o.tagName&&(o.src=t),e.replaceChildren(o),e.dataset.expCoreLauncher="1",e.dataset.expPart="launcher",e.removeAttribute("data-help")}(s,f),function(e){const t=e.querySelector(".menu-head,header,.head");if(!t)return;t.classList.add("menu-head");const n=t.querySelector(".header-brand,.identity,.brand");if(!n)return;n.classList.add("header-brand");let o=n.firstElementChild;if("IMG"===o?.tagName||"svg"===o?.tagName.toLowerCase()){const e=document.createElement("div");e.className="header-icon",o.before(e),e.append(o),o.classList.add("menu-icon"),o=e}o&&(o.classList.add("header-icon"),o.querySelector("img,svg")?.classList.add("menu-icon"));const r=n.children[1];r&&r.classList.add("header-copy");const a=r?.firstElementChild;a?.classList.add("header-title-row");const i=a?.querySelector("h1,h2,h3,strong,.menu-title");i&&(i.dataset.expPart="title");const s=t.querySelector('.version,.header-version,[id$="header-version"]');s&&(s.dataset.expPart="version");const c=r?.querySelector('small,.subtitle,.menu-subtitle,[id$="subtitle"]');c&&(c.dataset.expPart="subtitle");const l=t.querySelector('.close,.menu-close,[id$="rail-close"]');l&&(l.dataset.expPart="close"),e.querySelector(".divider")?.classList.add("header-divider");for(const t of e.querySelectorAll("nav>.tool-panel,nav>section")){t.classList.add("fl-tool-panel");const e=t.querySelector(":scope>button"),n=t.querySelector(":scope>div");if(!e||!n)continue;if(e.classList.add("fl-tool-header"),n.classList.add("fl-tool-body"),!e.querySelector(".fl-tool-title")){let t=e.querySelector("span:not(.chevron)");t||(t=document.createElement("span"),t.textContent=e.textContent,e.replaceChildren(t)),t.classList.add("fl-tool-title")}let o=e.querySelector(".chevron,.fl-tool-chevron");o||(o=document.createElement("span"),o.textContent="▸",e.append(o)),o.classList.add("fl-tool-chevron")}}(c),cn(c);let y=null;const v=c.querySelector(".menu-head");if(v&&!v.querySelector(".support-wrap")&&""!==n.supportUrl){y=un({url:n.supportUrl||l,label:"Support "+o.toUpperCase()});let e=v.querySelector(".header-actions");if(!e){e=document.createElement("div"),e.className="header-actions";const t=v.querySelector('[data-exp-part="close"]');t&&e.append(t),v.append(e)}e.prepend(y.element)}We(a),Ue(a);const w=c.querySelector('.version,[data-exp-part="version"]'),S=[...x.querySelectorAll(".update-notice,.changelog")].map(e=>sn({host:r,shadow:a,panel:c,notice:e,versionButton:e.classList.contains("changelog")?w:null,manageVersion:!1,durationMs:3e4}));f&&c.querySelectorAll(".header-icon img").forEach(e=>e.src=f),r.dataset.coreVersion=e,r.dataset.coreSource="exp-core";let k,E="system",A=!1,C=!1,O=0;const P=[],z=(e,t,n,o)=>{e.addEventListener(t,n,o),P.push(()=>e.removeEventListener(t,n,o))};let M=null;function $(){r.dataset.expThemeDeprioritized="0",r.dataset.expThemeOwner=o,function(e){k=e;for(const e of B)x.style.setProperty("--theme-"+e,k[e]),r.style.setProperty("--"+e,k[e]);x.style.setProperty("--theme-skin",k.skin||k.swatch||k.accent),x.style.setProperty("--theme-skin-vertical",k.skinVertical||k.skin||k.swatch||k.accent),Object.assign(x.dataset,{uiTheme:k.id,themeSkin:"flat"===k.skinMode?"flat":"gradient"}),r.dataset.uiTheme=k.id,x.style.colorScheme=k.mode,r.style.colorScheme=k.mode}(M)}function R(e){E=t.normalizeThemeMode(e),M=G(t.resolveTheme(E,o)),qe(r,M),$()}const I=matchMedia("(prefers-color-scheme: dark)"),L=()=>{"system"===E&&R(E)};function T(){if(C||!s.isConnected)return;const e=d();x.style.setProperty("--exp-menu-width",K()+"px");const t=m.menuSizeTokens();x.style.setProperty("--exp-font-size-body",t.body+"px"),x.style.setProperty("--exp-font-size-small",t.small+"px"),x.classList.toggle("reduce-motion",!0===e.reduceMotion||"on"===e.reduceMotion||"reduce"===e.reducedMotion||("system"===e.reduceMotion||"system"===e.reducedMotion)&&matchMedia("(prefers-reduced-motion:reduce)").matches),x.style.setProperty("--exp-ui-opacity","1");const{top:n,right:o}=Fe(r);Object.assign(s.style,{top:n+"px",right:o+"px",bottom:"auto",left:"auto",zIndex:A?"2147483647":"2147483600"}),Object.assign(c.style,{overflowY:"auto",overflowX:"hidden",overscrollBehavior:"contain",zIndex:A?"2147483647":"2147483599"}),A&&(st(r,c,K()),S.forEach(e=>e.layout()))}let N,D,q;I.addEventListener("change",L),P.push(()=>I.removeEventListener("change",L));const _=document.createComment("menu arrangement styles");function V(){O||C||(O=requestAnimationFrame(()=>{O=0,cn(c),N?.update(),T()}))}a.append(_),P.push(Yt(s,o,{layout:T}));const U=ln({...n,id:o,host:r,shadow:a,panel:c,getSettings:d,setOpen:p,onLayout:V});z(window,"keydown",e=>{u&&e.altKey&&e.shiftKey&&e.key.toLowerCase()===u.toLowerCase()&&!e.repeat&&(e.preventDefault(),p(!A,!0))}),z(window,"resize",V),z(document,"exp-core:coordination",V),z(document,"exp-core:coordination",$);const W={layout:T,setTheme:R,state(e){A=Boolean(e),A&&function(){if(N)return;const e=new Set(a.querySelectorAll("style"));N=i.mount({panel:c,id:o,onChange:V,resetLaunchers(){Kt(o),V()}});for(const t of a.querySelectorAll("style"))e.has(t)||a.insertBefore(t,_);_.remove(),D=new ResizeObserver(V),D.observe(c),q=new MutationObserver(e=>{e.some(e=>"childList"===e.type||"hidden"===e.attributeName)&&V()}),q.observe(c,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["hidden"]})}(),U.state(A),S.forEach(e=>e.setMenuOpen(A)),A&&c.querySelectorAll("[data-exp-health]").forEach(e=>e.refreshHealth?.()),V()},update(){cn(c),A&&c.querySelectorAll("[data-exp-health]").forEach(e=>e.refreshHealth?.()),V()},get dismissAt(){return U.dismissAt},destroy(){C=!0,N?.destroy(),_.remove(),y?.destroy(),U.destroy(),cancelAnimationFrame(O),D?.disconnect(),q?.disconnect(),S.forEach(e=>e.destroy()),P.forEach(e=>e()),b.dispose(),j.delete(r)}};return j.set(r,W),R(d().uiTheme),V(),W}function pn(e={}){const n=String(e.productId||"").toLowerCase(),o=String(e.repository||""),a="function"==typeof e.currentVersion?()=>String(e.currentVersion()||""):()=>String(e.currentVersion||""),i="function"==typeof e.enabled?e.enabled:()=>!0,s="function"==typeof e.onError?e.onError:()=>{};if(!n||!o)throw new Error("Incomplete update checker configuration");function c(){const e=a();if(!e)throw new Error("Update checker current version unavailable");return e}const l=String(e.endpoint||"https://api.github.com/repos/"+o+"/releases/latest"),d="https://github.com/"+o+"/releases",p=d+"/latest/download/"+String(e.scriptAsset||n+".user.js"),u="exp:v3:"+n+":update-cache",m=432e5;let h={};function f(){try{if("function"==typeof GM_getValue){const e=GM_getValue(u,null);if(e&&"object"==typeof e&&!Array.isArray(e))return{...e}}}catch{}try{const e=JSON.parse(localStorage.getItem(u)||"null");if(e&&"object"==typeof e&&!Array.isArray(e))return{...e}}catch{}return{...h}}function g(e){if(!r.productDataResetting(n)){h={...e||{}};try{"function"==typeof GM_setValue&&GM_setValue(u,h)}catch{}try{localStorage.setItem(u,JSON.stringify(h))}catch{}}}function b(e){const t={...e||{}};return!Object.hasOwn(t,"lastCheckAt")&&t.checkedAt&&(t.lastCheckAt=Number(t.checkedAt)||0),!Object.hasOwn(t,"lastRemoteVersion")&&t.latest&&(t.lastRemoteVersion=String(t.latest||"")),Array.isArray(t.details)||(t.details=[]),t}function x(e,n){const o=c(),r=b(e),a=String(r.lastRemoteVersion||"");return{checkedAt:Number(r.lastCheckAt||0),latest:a||null,state:n||r.state||"idle",current:o,available:Boolean(a&&t.compareVersions(a,o)>0),details:r.details.slice(0,4),quiet:Boolean(r.quiet&&a&&t.compareVersions(a,o)>0),checkedForVersion:r.checkedForVersion||null,lastRemoteVersion:a||null,lastHttpStatus:Number(r.lastHttpStatus||0),lastError:String(r.lastError||""),installUrl:p,releaseUrl:d}}return Object.freeze({get CURRENT_VERSION(){return c()},ENDPOINT:l,INSTALL_URL:p,RELEASE_URL:d,CHECK_INTERVAL:m,check:async function(e=!1){const n=c();let o=b(f());if(!i()&&!e)return x(o,"disabled");const r=Date.now(),a=o.checkedForVersion===n;if(a||(o.checkedForVersion=n,o.lastCheckAt=0,o.checkLeaseUntil=0,o.lastRemoteVersion="",o.lastHttpStatus=0,o.lastError="",o.details=[],o.quiet=!1,o.availableVersion="",o.availableAt=0),g(o),!e&&Number(o.checkLeaseUntil||0)>r)return x(o,"checking");if(!e&&a&&r-Number(o.lastCheckAt||0)<m)return x(o,"cached");o.checkedForVersion=n,o.lastCheckAt=r,o.checkLeaseUntil=r+3e4,o.lastError="",o.state="checking",g(o);try{const e=await new Promise((e,t)=>{if("function"!=typeof GM_xmlhttpRequest)return t(Object.assign(new Error("Update request capability unavailable"),{code:"UPDATE_CAPABILITY"}));GM_xmlhttpRequest({method:"GET",url:l,timeout:1e4,headers:{Accept:"application/vnd.github+json","Cache-Control":"no-cache",Pragma:"no-cache"},onload(n){if(n.status>=200&&n.status<300)return e(n);t(Object.assign(new Error("Update metadata request failed"),{code:"UPDATE_HTTP_"+n.status,status:n.status}))},onerror:()=>t(Object.assign(new Error("Update metadata request failed"),{code:"UPDATE_NETWORK"})),ontimeout:()=>t(Object.assign(new Error("Update metadata request timed out"),{code:"UPDATE_TIMEOUT"}))})}),r=JSON.parse(String(e.responseText||"{}")),a=String(r.tag_name||"").replace(/^v/,"");if(!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(a))throw Object.assign(new Error("Invalid update metadata"),{code:"UPDATE_METADATA"});return o=b(f()),o.checkedForVersion=n,o.lastCheckAt=Date.now(),o.checkLeaseUntil=0,o.lastRemoteVersion=a,o.lastHttpStatus=Number(e.status||0),o.lastError="",o.details=function(e){const t=[];let n=!1;for(const o of String(e||"").split(/\r?\n/)){if(/^##\s+/.test(o)){if(n)break;n=!0;continue}if(!n)continue;const e=o.match(/^\s*[-*]\s+(.+)/);if(!e)continue;const r=e[1].replace(/\[([^\]]+)\]\([^)]+\)/g,"$1").replace(/[`*_]/g,"").trim();if(r&&t.push(r.slice(0,220)),4===t.length)break}return t}(r.body),o.quiet=function(e,t){for(const n of String(e||"").split(/\r?\n/)){if(!/^##\s+/.test(n))continue;const e=n.match(/^##\s+v?(\d+\.\d+\.\d+)\b(.*)$/);return Boolean(e&&e[1]===t&&/\(quiet\)\s*$/.test(e[2]))}return!1}(r.body,a),o.state="checked",t.compareVersions(a,n)>0?(o.availableVersion=a,o.availableAt=Date.now()):(o.availableVersion="",o.availableAt=0),g(o),x(o,"checked")}catch(e){o=b(f()),o.checkedForVersion=n,o.lastCheckAt=Date.now(),o.checkLeaseUntil=0,o.lastError=String(e?.message||"Update check failed"),o.state="failed",g(o);try{s(e)}catch{}return x(o,"failed")}},status:function(){return x(f())},compare:t.compareVersions})}function un({url:e=l,label:n="Support"}={}){if(!e)return null;const o=document.createElement("div");o.className="support-wrap";const a=document.createElement("style");a.dataset.expSupportControl="1",a.dataset.expOwned="1",a.textContent=t.supportControlCss();const i=document.createElement("button");i.type="button",i.id="exp-support-button",i.className="support-button",i.setAttribute("aria-label",n),i.setAttribute("aria-expanded","false"),i.setAttribute("aria-controls","exp-support-popover"),i.title=n,i.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.2-4.35-9.55-8.45C.42 9.02 2.3 5 6.25 5c2.15 0 3.56 1.21 4.33 2.3C11.36 6.21 12.77 5 14.92 5c3.95 0 5.83 4.02 3.8 7.55C16.36 16.65 12 21 12 21Z"/></svg>';const s=document.createElement("div");s.id="exp-support-popover",s.className="support-popover",s.setAttribute("role","dialog"),s.setAttribute("aria-label",n),s.hidden=!0;const c=document.createElement("strong");c.textContent=n;const d=document.createElement("span");d.textContent="Donations are optional. All features stay free.";const p=document.createElement("a");p.href=e,p.target="_blank",p.rel="noopener noreferrer",p.textContent="Open Ko-fi",s.append(c,d,p,r.createBitcoinDonation()),o.append(a,i,s);const u=e=>{e?.stopPropagation?.(),r.placeDonationPanel(s,i),s.hidden=!s.hidden,i.setAttribute("aria-expanded",String(!s.hidden))},m=e=>{s.hidden||e.composedPath().includes(o)||e.composedPath().includes(s)||(s.hidden=!0,i.setAttribute("aria-expanded","false"))};return i.addEventListener("click",u),document.addEventListener("pointerdown",m,!0),Object.freeze({element:o,button:i,popover:s,hide(){s.hidden=!0,i.setAttribute("aria-expanded","false")},destroy(){i.removeEventListener("click",u),document.removeEventListener("pointerdown",m,!0),s.remove(),o.remove()}})}function mn(){const e=n.compatibility(),t=$e(),o=[...Array.isArray(e.conflicts)?e.conflicts:[],...t.conflicts];return Object.freeze({...e,conflicts:Object.freeze(o.map(e=>Object.freeze({...e}))),status:o.length?"conflicts-detected":"no-conflicts-observed",interoperability:t})}function hn(t,o={}){return{...n.createReport(t,o,{version:e,source:"exp-core",sourceVersion:a}),interoperability:{suite:pe(),presentation:{phases:{...R},providers:Me()},pageObserver:De(),navigationObserver:he(),states:Ee(),health:$e()}}}function fn(e){const t=`${String(e.report||"Diagnostics").toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${(new Date).toISOString().replace(/[:.]/g,"-")}.json`,n=URL.createObjectURL(new Blob([JSON.stringify(e,null,2)],{type:"application/json"})),o=document.createElement("a");o.href=n,o.download=t,o.click(),setTimeout(()=>URL.revokeObjectURL(n),1e3)}function gn(e,t=()=>{}){return n.createControls(e,t)}const{normalizeHealth:bn,createHealthControls:xn}=s,{createRecoveryGuard:yn}=c;let vn=0,wn="";const Sn=()=>{vn||(vn=requestAnimationFrame(()=>{vn=0,He(),Jt(),(()=>{const e=Tt(),t=e?e.left+","+e.top:"";t!==wn&&(wn=t,ie("launcher-site-slot","core"))})(),at()}))};let kn=0;const En=()=>{kn||(kn=setTimeout(()=>{kn=0,Lt=null,Sn()},150))},An=e=>"attributes"===e.type||[...e.addedNodes,...e.removedNodes].some(e=>"1"===e.dataset?.expProductLauncher),Cn=new MutationObserver(e=>{En(),e.some(An)&&Sn()}),On=()=>{document.documentElement&&(Cn.observe(document.documentElement,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["data-exp-product-launcher","data-product-id","data-launcher-priority","data-launcher-reserved-rows","data-exp-flyout","data-exp-update","data-exp-progress","data-exp-open-menu","data-exp-flyout-open"]}),Sn())};document.documentElement?On():addEventListener("DOMContentLoaded",On,{once:!0}),document.addEventListener("exp-core:coordination",Sn),document.addEventListener("exp-core:menu-open",function(){if(vt().active)return void(Dt(!0)||qt());const e=document.documentElement.getAttribute("data-exp-open-menu"),t=[...document.querySelectorAll('[data-exp-product-launcher="1"]')].find(t=>t.dataset.productId===e);if(t&&"function"==typeof t.hidePopover)try{t.matches(":popover-open")&&t.hidePopover(),t.showPopover()}catch{}}),document.addEventListener("exp-core:flyout-focus",function(){const e=document.documentElement.dataset.expFlyoutFocus||"",t=vt();if(e&&t.active){Jt();for(const n of t.hosts){if(!T.has(n))continue;const o="hub"===e?n.dataset.productId===t.lead?n.shadowRoot?.querySelector('[data-exp-part="flyout-hub"]'):null:n.dataset.productId===e?yt(n):null;o&&(delete document.documentElement.dataset.expFlyoutFocus,o.focus({preventScroll:!0}))}}}),document.addEventListener("pointerdown",function(e){if(!e.isTrusted||!vt().open)return;const t=e.composedPath();xt().some(e=>t.includes(e))||Dt(!1)},!0),addEventListener("keydown",function(e){"Escape"===e.key&&vt().open&&(Dt(!1),Bt("hub"))},!0),addEventListener("resize",Sn,{passive:!0}),addEventListener("scroll",()=>{at(),/^(www|sh)\.reddit\.com$/.test(location.hostname)&&En()},{passive:!0,capture:!0});const Pn=Object.freeze({...r,setMenuHelp:p.setMenuHelp,...m,...h,normalizeHealth:bn,createHealthControls:xn,createRecoveryGuard:yn,version:e,sourceVersion:a,protocol:u,gridProtocol:"exp-launcher-grid-v3",reference:t,css:Y,themes:function(){return Object.freeze(t.THEME_MODES.map(e=>Object.freeze(G(t.resolveTheme(e)))))},create:dn,createMenuController:ln,createProduct:function({id:e,name:t,version:n,subtitle:o="",artwork:r,theme:a,sections:i=[],getSettings:s,onSettings:c=()=>{},priority:d,supportUrl:p=l,keepOpen:u}){const m=document.createElement("div");m.id="exp-"+e+"-root",m.dataset.expOwned="1";const h=m.attachShadow({mode:"open"}),f=document.createElement("aside");f.hidden=!0,f.setAttribute("role","dialog"),f.setAttribute("aria-label",t+" settings");const g=document.createElement("header");g.className="menu-head";const b=document.createElement("div");b.className="header-brand";const x=document.createElement("img");x.src=r,x.alt="";const y=document.createElement("div"),v=document.createElement("div"),w=document.createElement("strong");w.textContent=t;const S=document.createElement("button");S.type="button",S.className="version",S.textContent="v"+n,S.setAttribute("aria-label","View "+t+" v"+n+" Changelog"),v.append(w,S),y.append(v),b.append(x,y);const k=document.createElement("button");k.className="close",k.textContent="×",k.setAttribute("aria-label","Close "+t);const E=document.createElement("div");E.className="header-actions";const A=un({url:p,label:"Support "+t});A&&E.append(A.element),E.append(k),g.append(b,E);const C=document.createElement("div");C.className="header-divider";const O=document.createElement("nav");let P,z=!1,M="";const $=new Map;function R(e,t){J(t,e.render({core:Pn,onSettings:c})),P?.update()}function I(e,t=!0){z=Boolean(e),f.hidden=!z,L.setAttribute("aria-expanded",String(z)),z&&(M="",O.querySelectorAll(".route-body").forEach(e=>e.hidden=!0),O.querySelectorAll("button[data-section]").forEach(e=>e.setAttribute("aria-expanded","false"))),P.state(z),t&&(z?on(f):L.focus())}for(const e of i){const t=document.createElement("section");t.className="tool-panel";const n=document.createElement("button");n.type="button",n.textContent=e.label,n.dataset.section=e.id;const o=document.createElement("div");o.className="route-body",o.hidden=!0,$.set(e.id,{section:e,body:o,button:n}),n.addEventListener("click",()=>{const t=o.hidden;O.querySelectorAll(".route-body").forEach(e=>e.hidden=!0),O.querySelectorAll("button[data-section]").forEach(e=>{e.classList.toggle("last-opened",e===n),e.setAttribute("aria-expanded",String(t&&e===n))}),o.hidden=!t,M=t?e.id:"",t&&R(e,o),P.update()}),t.append(n,o),O.append(t)}const L=document.createElement("button");L.className="launcher",L.type="button",L.setAttribute("aria-label","Open "+t);const T=x.cloneNode(!0);L.append(T),L.addEventListener("click",()=>I(!z)),k.addEventListener("click",()=>I(!1)),f.append(g,C,O),h.append(f,L),document.documentElement.append(m),P=dn({id:e,host:m,shadow:h,panel:f,launcher:L,getSettings:s,setOpen:I,productTheme:a,supportUrl:p,keepOpen:u});const N=nn(m,{productId:e,priority:d}),j=e=>{"Escape"===e.key&&z&&I(!1)};return document.addEventListener("keydown",j),{host:m,shadow:h,panel:f,launcher:L,versionButton:S,open:()=>I(!0),close:()=>I(!1),toggle:()=>I(!z),refresh:()=>P.update(),renderActive:function(){if(!M)return!1;const e=$.get(M);return!(!e||e.body.hidden||(R(e.section,e.body),0))},get isOpen(){return z},destroy(){document.removeEventListener("keydown",j),A?.destroy(),P.destroy(),N(),m.remove()}}},menuTemplate:d.template,setMenuStatus:d.setMenuStatus,createSupportControl:un,createProductNotice:function(e={}){const{host:t,shadow:n,panel:o,versionButton:r=null}=e;if(!(t instanceof Element&&n instanceof ShadowRoot&&o instanceof Element))throw new Error("Product notice requires a mounted Core product");const a=document.createElement("div");a.className="update-notice",a.dataset.expUpdateNotice="1",a.hidden=!0,a.innerHTML='<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker">What\'s New</div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" target="_blank" rel="noopener noreferrer">Install Update</a></div>',(n.querySelector(".exp-core-theme")||n).append(a);const i=sn({host:t,shadow:n,panel:o,notice:a,versionButton:null,returnFocus:e.returnFocus||r,manageVersion:!1,durationMs:e.durationMs??3e4}),s=()=>{"function"==typeof e.onVersion?e.onVersion():i.toggle()};return r?.addEventListener("click",s),Object.freeze({element:a,show:function(t={}){a.querySelector(".update-kicker").textContent=t.kicker||"What's New",a.querySelector(".update-title").textContent=t.title||"",a.querySelector(".update-version").textContent=t.version?"v"+t.version:"",a.querySelector(".update-text").textContent=t.text||"";const n=a.querySelector(".update-list");n.replaceChildren();const r=Array.isArray(t.details)?t.details.slice(0,4):[];for(const e of r){const t=document.createElement("li");t.textContent=e,n.append(t)}n.hidden=!r.length;const s=a.querySelector(".update-release"),c=t.releaseUrl||e.releaseUrl||"";s.hidden=!c,c&&(s.href=c);const l=a.querySelector(".update-action"),d=t.actionUrl||e.installUrl||"";l.hidden=!d||!1===t.showAction,d&&(l.href=d),l.textContent=t.actionText||"Install Update",a.dataset.noticeKind=t.kind||"current",i.setMenuOpen(!o.hidden&&o.getClientRects().length>0),i.show()},hide:i.hide,toggle:i.toggle,layout:i.layout,setMenuOpen:i.setMenuOpen,destroy(){r?.removeEventListener("click",s),i.destroy(),a.remove()}})},createLifecycle:()=>o(Pn),createProductServices:function(e={}){const t=String(e.productId||"").toLowerCase(),n=String(e.repository||""),r=e.currentVersion;if(!t||!n||"function"!=typeof r&&!String(r||""))throw new Error("Incomplete product services configuration");const a=o(Pn),i=Object.freeze({createDiagnosticsReport:hn,downloadDiagnostics:fn,createDiagnosticsControls:gn}),s=pn({productId:t,repository:n,currentVersion:r,endpoint:e.endpoint,scriptAsset:e.scriptAsset,enabled:e.enabled,onError:e.onError});return Object.freeze({lifecycle:a,diagnostics:i,updates:s})},registerLauncher:nn,setLauncherUpdate:function(e,t){const n=xt().find(t=>t.dataset.productId===String(e||""));return!!n&&(t?n.dataset.expUpdate="1":delete n.dataset.expUpdate,Jt(),ie("launcher-update",e),!0)},setLauncherProgress:function(e,t){const n=xt().find(t=>t.dataset.productId===String(e||""));if(!n)return!1;const o=Number(t);return null!=t&&Number.isFinite(o)?n.dataset.expProgress=String(Math.max(0,Math.min(1,o))):delete n.dataset.expProgress,Jt(),ie("launcher-progress",e),!0},bindLauncherDrag:Yt,launcherPlacement:Fe,placeMenu:st,placeNotice:ct,resetLauncherGrid:Kt,layout:He,replaceMenuContent:J,createDisclosure:function(e,...t){return i.createDisclosure({document,label:e,category:"advanced",contents:t,className:"exp-system-card"})},createSystemGrid:function(...e){const t=document.createElement("div");return t.dataset.expSystemTools="1",t.append(...e),t},isOwnedSheet:function(e){try{return"1"===e?.ownerNode?.dataset?.expOwned||".exp-owned-sheet-marker"===e?.cssRules?.[0]?.selectorText}catch{return!1}},menuWidth:K,cloneSettings:function(e){return JSON.parse(JSON.stringify(e))},applyTextGradient:function(e,t){const n={"background-color":"transparent","background-image":t,"background-clip":"text","-webkit-background-clip":"text","background-size":"auto","background-position":"0% 0%","background-repeat":"repeat"};for(const[t,o]of Object.entries(n))e.style.setProperty(t,o,"important")},injectStyle:_e,applyTheme:function(e,t,n){const o=j.get(e)||D.get(e);o&&o.setTheme(t,n)},applyMatteToggleChrome:Ue,applyTwoColumnSettingsGrid:function(e){if(!(e instanceof HTMLElement))return!1;const t=Ve(e);return t&&!t.querySelector("style[data-exp-settings-grid]")&&_e(t,'[data-exp-settings-grid="two-column"]{display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-items:stretch!important;column-gap:0!important}[data-exp-settings-grid="two-column"]>*{grid-column:1/-1!important;min-width:0!important}[data-exp-settings-grid="two-column"]>[data-exp-grid-cell="compact"]{grid-column:1/-1!important}',{expSettingsGrid:"1"}),e.dataset.expSettingsGrid="two-column",t&&Ue(t),!0},applyContentDrivenMenuLayout:We,publishMenuPalette:qe,createMenuNotice:sn,takeNoticeTurn:rn,releaseNoticeTurn:an,createReleaseUpdateChecker:pn,registerFloatingNotice:function(e,t){if(!(e instanceof Element&&t instanceof Element))return()=>{};if(N.has(t))return N.get(t);t.dataset.expFloatingNotice="1";const n=()=>requestAnimationFrame(tn),o=new MutationObserver(n);o.observe(t,{attributes:!0,attributeFilter:["hidden","class"]});const r=new ResizeObserver(n);r.observe(t),addEventListener("resize",n,{passive:!0}),document.addEventListener("exp-core:coordination",n);const a=()=>{o.disconnect(),r.disconnect(),removeEventListener("resize",n),document.removeEventListener("exp-core:coordination",n),N.delete(t)};return N.set(t,a),n(),a},layoutFloatingNotices:tn,claimNotice:en,consumeVersionChange:function(e,t,n=""){const o=`exp:v3:${String(e||"product")}:installed-version`;let r=String(Xt(o,"")||"");if(!r&&n)try{r=String(localStorage.getItem(n)||"")}catch{}return Qt(o,String(t||"")),r&&r!==t&&en(e,`updated:${t}`)?r:""},isQuietUpgrade:function(e,n,o,r){const a=/^\d+\.\d+\.\d+$/;if(e=String(e||""),n=String(n||""),!a.test(e)||!a.test(n)||t.compareVersions(n,e)<=0)return!1;const i=new Set(Array.from(r||[],String)),s=Array.from(o||[],String).filter(o=>a.test(o)&&t.compareVersions(o,e)>0&&t.compareVersions(o,n)<=0);return s.includes(n)&&s.every(e=>i.has(e))},focusMenuSurface:on,registerDiagnosticsProduct:function(t,o,r){const a=n.registerProduct(t,o,r);a&&(a.dataset.expCoreVersion=e);const i=ce(t);return de({productId:t,productVersion:o}),i?.presentationPhases?.length&&ze({productId:t}),a},registerSuiteProduct:de,suiteContract:ce,suiteSnapshot:pe,hasProductCapability:function(e){return ue(e).length>0},capabilityProviders:ue,emitSuiteEvent:fe,publishSuiteState:function(t,n,o={}){const r=String(t||"").toLowerCase(),a=String(n||"").trim().toLowerCase();if(!/^[a-z][a-z0-9-]+$/.test(r))throw new Error("Invalid suite state product ID");if(!/^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(a))throw new Error("Invalid suite state event type");let i={};try{i=function(e,t,n={}){const o=String(e||"").toLowerCase(),r=String(t||"").trim().toLowerCase(),a=ce(o),i=a?.state,s=n&&"object"==typeof n&&!Array.isArray(n)?n:{};if(!i||i.type!==r)return Se(s);const c=Object.keys(s),l=Object.keys(i.fields),d=c.filter(e=>!Object.hasOwn(i.fields,e));if(d.length)throw new Error(`Unknown suite state field: ${d[0]}`);const p=l.filter(e=>!Object.hasOwn(s,e));if(p.length)throw new Error(`Missing suite state field: ${p[0]}`);const u={};for(const[e,t]of Object.entries(i.fields)){const n=s[e];if("boolean"===t){if("boolean"!=typeof n)throw new Error(`Invalid boolean suite state field: ${e}`);u[e]=n}else if("token"===t){const t=String(n??"").trim().toLowerCase();if(!/^[a-z0-9][a-z0-9._:-]{0,79}$/.test(t))throw new Error(`Invalid token suite state field: ${e}`);u[e]=t}else if("count"===t){const t=Number(n);if(!Number.isSafeInteger(t)||t<0)throw new Error(`Invalid count suite state field: ${e}`);u[e]=t}else{if("percent-nullable"!==t)throw new Error(`Unsupported suite state schema kind: ${t}`);if(null===n)u[e]=null;else{const t=Number(n);if(!Number.isFinite(t)||t<0||t>100)throw new Error(`Invalid percent suite state field: ${e}`);u[e]=t}}}return Se(u)}(r,a,JSON.parse(JSON.stringify(o||{})))}catch(e){throw e}const s=JSON.stringify(i);if(s.length>4096)throw new Error("Suite state payload exceeds 4096 bytes");const c=`${r}:${a}`;let l=function(e,t){const n=String(e||"").toLowerCase(),o=String(t||"").trim().toLowerCase();return[...document.querySelectorAll("meta[data-exp-suite-state-product][data-exp-suite-state-type]")].find(e=>e.dataset.expSuiteStateProduct===n&&e.dataset.expSuiteStateType===o)||null}(r,a);return(l?.dataset.expSuiteStatePayload||"")!==s&&L.get(c)!==s&&(L.set(c,s),l||(l=document.createElement("meta"),l.dataset.expOwned="1",l.dataset.expSuiteStateProduct=r,l.dataset.expSuiteStateType=a,(document.head||document.documentElement||document.body)?.append(l)),l.dataset.expSuiteStatePayload=s,l.dataset.expSuiteStateCoreVersion=e,l.dataset.expSuiteStateTrust=A,l.dataset.expSuiteStateAt=String(Date.now()),fe(r,a,i),!0)},suiteStateSnapshot:Ee,latestSuiteState:Ae,subscribeSuiteState:function(e,t,n={}){if("function"!=typeof t)throw new TypeError("Suite state callback must be a function");const o=String(e||"").toLowerCase();if(!/^[a-z][a-z0-9-]+$/.test(o))throw new Error("Invalid suite state product ID");const r=ce(o)?.state?.type||"",a=String(n.type||r).trim().toLowerCase();if(a&&!/^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(a))throw new Error("Invalid suite state event type");let i=!1;const s=e=>{!i&&e&&t(Object.freeze({...e,state:Object.freeze(Se(e.state||{}))}))};!1!==n.immediate&&s(Ae(o,a));const c=Ce(e=>{e.source===o&&(a&&e.type!==a||s(Ae(o,a)))},a?{type:a}:{});return()=>{i||(i=!0,c())}},onSuiteEvent:Ce,suiteSitePaused:ye,suiteSitePausePersisted:function(e=location.hostname){return!be(e)},setSuiteSitePaused:ve,pageContext:function(){return Object.freeze({href:location.href,origin:location.origin,hostname:location.hostname,pathname:location.pathname,topLevel:window.top===window.self})},observeNavigation:function(e,t={}){if("function"!=typeof e)throw new TypeError("Navigation callback must be a function");!function(e="core"){let t=me();if(t)return Object.freeze({leader:!1,owner:t.dataset.expNavigationObserver||"unknown"});t=document.createElement("meta"),t.dataset.expOwned="1",t.dataset.expNavigationObserver=String(e||"core").toLowerCase(),t.dataset.expNavigationProtocol="exp-navigation-observer-v1",t.dataset.expNavigationEpoch="0",t.dataset.expNavigationSubscribers="0",(document.head||document.documentElement||document.body)?.append(t);let n=location.href,o=0,r="",a=!1;const i=e=>{if(a)return!1;const r=location.href;if(r===n)return!1;n=r,o+=1,t.dataset.expNavigationEpoch=String(o);const i=JSON.stringify({protocol:"exp-navigation-observer-v1",owner:t.dataset.expNavigationObserver,epoch:o,kind:String(e||"navigation"),href:r,at:Date.now()});return document.dispatchEvent(new CustomEvent(O,{detail:i})),!0},s={},c={};for(const e of["pushState","replaceState"]){const t=history[e];s[e]=t;const n=function(...n){const o=r;r=e;try{const o=Reflect.apply(t,this,n);return i(e),o}finally{r=o}};c[e]=n,history[e]=n}const l=()=>i("popstate"),d=()=>i("hashchange"),p=()=>i(r||"currententrychange");addEventListener("popstate",l),addEventListener("hashchange",d),globalThis.navigation?.addEventListener("currententrychange",p);const u=e=>{let n;try{n="string"==typeof e.detail?JSON.parse(e.detail):e.detail}catch{return}n&&"exp-navigation-observer-v1"===n.protocol&&"release-if-idle"===n.type&&(()=>{if(a||Number(t.dataset.expNavigationSubscribers||0)>0)return!1;a=!0;for(const e of Object.keys(c))history[e]===c[e]&&(history[e]=s[e]);removeEventListener("popstate",l),removeEventListener("hashchange",d),globalThis.navigation?.removeEventListener("currententrychange",p),document.removeEventListener(P,u),t.isConnected&&t.remove()})()};document.addEventListener(P,u),Object.freeze({leader:!0,owner:t.dataset.expNavigationObserver})}(t.productId||t.owner||"core");let n=me();n&&(n.dataset.expNavigationSubscribers=String(Number(n.dataset.expNavigationSubscribers||0)+1));const o=t=>{let n;try{n="string"==typeof t.detail?JSON.parse(t.detail):t.detail}catch{return}n&&"exp-navigation-observer-v1"===n.protocol&&e(Object.freeze({...n}))};document.addEventListener(O,o);let r=!1;return()=>{if(r)return;if(r=!0,document.removeEventListener(O,o),n=me(),!n)return;const e=Math.max(0,Number(n.dataset.expNavigationSubscribers||0)-1);n.dataset.expNavigationSubscribers=String(e),e||document.dispatchEvent(new CustomEvent(P,{detail:JSON.stringify({protocol:"exp-navigation-observer-v1",type:"release-if-idle"})}))}},navigationObserverState:he,suiteTrust:A,registerPresentationProvider:ze,presentationProviders:Me,suiteHealth:$e,readPresentationState:Re,setPresentationState:Ie,clearPresentationState:function(e,t){return Ie(e,t,Object.fromEntries(I.map(e=>[e,null])))},presentationStateChain:Le,isPresentationSuppressed:function(e){for(const t of Le(e))for(const e of Object.values(t.state))if("hide"===e?.visibility||"collapse"===e?.visibility)return!0;return!1},presentationPhases:R,presentationChannels:I,observePresentationState:function(e,t={}){if("function"!=typeof e)throw new TypeError("Presentation state callback must be a function");const n=t.source?String(t.source).toLowerCase():"",o=t.channel?String(t.channel).toLowerCase():"",r=t=>{let r;try{r="string"==typeof t.detail?JSON.parse(t.detail):t.detail}catch{return}if(!r||"exp-presentation-state-v1"!==r.protocol)return;if(n&&r.source!==n)return;if(o&&!r.channels?.includes(o))return;const a=t.target instanceof Element?t.target:null;a&&e(Object.freeze({...r}),a)};return document.addEventListener($,r),()=>document.removeEventListener($,r)},observePage:function(e,t={}){if("function"!=typeof e)throw new TypeError("Page observer callback must be a function");je(t.productId||t.owner||"core",t);const n=t=>{let n;try{n="string"==typeof t.detail?JSON.parse(t.detail):t.detail}catch{return}n&&"exp-page-observer-v1"===n.protocol&&e(n,t.target instanceof Element?t.target:document.documentElement)};return document.addEventListener(C,n),()=>document.removeEventListener(C,n)},observePageBatch:function(e,t={}){if("function"!=typeof e)throw new TypeError("Page batch callback must be a function");const n=String(t.productId||t.owner||"core").toLowerCase(),o=ce(n),r=Oe([t.phase||o?.presentationPhases?.[0]||"observe"])[0]||"observe";je(n,t);const a=new Map,i=`${z}:${r}`,s=`${M}:${r}`,c=e=>{let t;try{t="string"==typeof e.detail?JSON.parse(e.detail):e.detail}catch{return}if(!t||"exp-page-observer-v1"!==t.protocol)return;const n=e.target instanceof Element?e.target:null;n&&a.set(n,t)},l=t=>{let n;try{n="string"==typeof t.detail?JSON.parse(t.detail):t.detail}catch{return}if(!n||"exp-page-observer-v1"!==n.protocol||n.phase!==r)return;const o=[...a.entries()];a.clear(),e(Object.freeze({...n}),Object.freeze(o.map(([e])=>e)),Object.freeze(o.map(([,e])=>Object.freeze({...e}))))};return document.addEventListener(i,c),document.addEventListener(s,l),()=>{document.removeEventListener(i,c),document.removeEventListener(s,l),a.clear()}},pageObserverState:De,suiteProducts:x,suitePriority:v,productCompatibility:mn,createCompatibilityControls:function(){const e=document.createElement("details");e.className="exp-tools-card",e.style.cssText="border:1px solid var(--theme-line,var(--line,#777));border-radius:7px;padding:7px;margin-top:8px";const t=document.createElement("summary");t.textContent="Product Compatibility";const n=document.createElement("div");n.setAttribute("aria-live","polite");const o=document.createElement("button");o.type="button",o.className="life-btn action",o.textContent="Refresh Compatibility";const r=()=>{n.replaceChildren();const e=mn(),t=pe(),o=new Map(e.interoperability.products.map(e=>[e.id,e]));if(!t.products.length){const e=document.createElement("p");e.textContent="No ExtraPotions products are registered on this page yet.",n.append(e)}for(const e of t.products){const t=o.get(e.id),r=document.createElement("p"),a=null==t?.stateAgeMs?"":` · state ${Math.max(0,Math.round(t.stateAgeMs/1e3))}s ago`;r.textContent=`${e.id.toUpperCase()} ${e.version} · Core ${e.coreVersion} · ${"healthy"===t?.status?"Healthy":"Check Compatibility"}${a}`,n.append(r)}const r=document.createElement("p"),a=De(),i=he();r.textContent=`Shared observers · DOM: ${a.active?a.owner||"active":"idle"} · Navigation: ${i.active?i.owner||"active":"idle"}`,n.append(r);const s=document.createElement("p");s.textContent=e.conflicts.length?e.conflicts.map(e=>e.type).join(", "):"No interoperability conflicts detected on this page.",n.append(s);const c=document.createElement("small");c.textContent="Only products running on this page are shown. Shared suite state is advisory coordination data, not an authorization signal.",n.append(c)};return e.addEventListener("toggle",()=>{e.open&&r()}),o.addEventListener("click",r),e.append(t,n,o),e},bindDiagnosticsControls:n.bindControls,createDiagnosticsReport:hn,downloadDiagnostics:fn,createDiagnosticsControls:gn,mountMenuArrangement:i.mount,mountSubmenuTabs:i.mountTabs,menuCategories:i.categories,categorizeMenuSections:i.describe,createMenuCategoryDisclosure:(e,t,...n)=>i.createDisclosure({document,label:e,category:t,contents:n}),collapseMenuSubmenus:i.collapseSubmenus,compareVersions:t.compareVersions});return Pn})(),b=g.createProductServices({productId:"ward",repository:"ExtraPotions/WARD",currentVersion:()=>e.VERSION,enabled:()=>e.Settings.snapshot().updateNotifications,onError:t=>e.Core.safeError(Object.assign(t,{code:"UPDATE_CHECK"}),"ward.updates")});e.Core=b.lifecycle,e.Diagnostics=b.diagnostics,e.Updates=b.updates,e.Settings=(()=>{const e="exp:v3:ward",t=new Map,n=Object.freeze({schema:1,enabled:!0,retailers:Object.freeze({amazon:!0,walmart:!0,ebay:!0,etsy:!0,target:!0,bestbuy:!0,shopify:!0}),protectionReviews:[],protectionLevel:"balanced",contentAction:"automatic",confidencePolicy:"confirmed-supported",defaultAction:"collapse",safeMode:!1,autoClipCoupons:!0,compactSearch:!1,siteColors:"system",recommendationCleanup:!0,sellerClarity:!0,sellerClaritySearch:!0,sellerClarityAlways:!1,trustedBrands:[],reducedMotion:"system",nonColorIndicators:!0,explanationDetail:"concise",updateNotifications:!0,launcherPosition:"automatic-end-bottom",uiTheme:"system",menuAutoClose:!0,menuNotifications:!0,shortcut:"",categories:{},pageExceptions:[],patterns:{}});let o;const r=new Set,a=t=>`${e}:${t}`;let i,s="",c=!1,l=!1;function d(e,t){if("function"!=typeof GM_setValue||"function"!=typeof GM_getValue)throw Error("Manager storage is unavailable. Changes are temporary.");if(GM_setValue(e,g.cloneSettings(t)),n=GM_getValue(e,void 0),o=t,JSON.stringify(n)!==JSON.stringify(o))throw Error("Settings were not saved. Retry saving.");var n,o}function p(e){try{return localStorage.getItem(e)}catch{return null}}function u(e){if(g.productDataResetting?.("ward"))return;const n=a(e);if(c&&t.has(n))return t.get(n);l=!1;try{if("function"==typeof GM_getValue){const e=GM_getValue(n,void 0);if(void 0!==e)return e}const e=p(n);return null===e?t.get(n):JSON.parse(e)}catch{return l=!0,s="Saved data could not be read. Reload or export before retrying.",t.get(n)}}function m(e,n){if(g.productDataResetting?.("ward"))return!1;const o=a(e);t.set(o,g.cloneSettings(n));try{d(o,n),c=!1,s="";try{!function(e){const t=p(e);if(null===t)return;const n=a("page-settings-backup:"+encodeURIComponent(location.origin||location.hostname)),o="function"==typeof GM_getValue?GM_getValue(n,[]):[],r=Array.isArray(o)?o:[];d(n,r.includes(t)?r:[...r,t]),localStorage.removeItem(e)}(o)}catch{s="Settings saved. A legacy page copy could not be archived."}return!0}catch{return c=!0,s="Settings are temporary. Storage is unavailable; retry saving.",!1}}function h(e){if(!e||"object"!=typeof e||Array.isArray(e))throw Object.assign(new Error("Settings must be an object"),{code:"SETTINGS_TYPE"});const t=g.cloneSettings(n);for(const n of["enabled","safeMode","autoClipCoupons","compactSearch","recommendationCleanup","sellerClarity","sellerClaritySearch","sellerClarityAlways","nonColorIndicators","updateNotifications","menuAutoClose","menuNotifications"])"boolean"==typeof e[n]&&(t[n]=e[n]);t.siteColors=["light","dark","system"].includes(e.siteColors)?e.siteColors:"system";const o={...n.retailers};if("boolean"==typeof e.amazonEnabled&&(o.amazon=e.amazonEnabled),e.retailers&&"object"==typeof e.retailers&&!Array.isArray(e.retailers))for(const t of Object.keys(o))"boolean"==typeof e.retailers[t]&&(o[t]=e.retailers[t]);t.retailers=o;const r={protectionLevel:["essential","balanced","custom"],contentAction:["automatic","hide","dim"],confidencePolicy:["confirmed","confirmed-supported","custom"],defaultAction:["hide","dim","collapse","annotate","allow"],reducedMotion:["system","reduce","allow"],explanationDetail:["concise","detailed"],launcherPosition:["automatic-end-bottom","end-top","end-bottom","start-top","start-bottom"],uiTheme:["light","dark","system"]};for(const[n,o]of Object.entries(r)){const r=e[n];o.includes(r)&&(t[n]=r)}"string"==typeof e.shortcut&&e.shortcut.length<=40&&(t.shortcut=e.shortcut);for(const n of["categories","patterns"])e[n]&&"object"==typeof e[n]&&!Array.isArray(e[n])&&(t[n]=Object.fromEntries(Object.entries(e[n]).filter(([e,t])=>/^[a-z][a-z0-9.-]+$/.test(e)&&["inherit","on","off"].includes(t))));return t.pageExceptions=Array.isArray(e.pageExceptions)?e.pageExceptions.filter(e=>e&&"string"==typeof e.path&&e.path.length<=500&&"string"==typeof e.patternId&&/^[a-z][a-z0-9.-]+$/.test(e.patternId)).slice(0,200).map(e=>({path:e.path,patternId:e.patternId})):[],t.protectionReviews=Array.isArray(e.protectionReviews)?e.protectionReviews.filter(e=>e&&["correct","wrong","missed"].includes(e.verdict)&&/^[a-z][a-z0-9.-]+$/.test(e.patternId)&&Object.keys(o).includes(e.retailer)).slice(-100).map(e=>({verdict:e.verdict,patternId:e.patternId,retailer:e.retailer,at:Number(e.at)||0})):[],t.trustedBrands=Array.isArray(e.trustedBrands)?[...new Set(e.trustedBrands.filter(e=>"string"==typeof e&&/^[a-z0-9]{1,60}$/.test(e)))].slice(-200):[],t}function f(){const e=u("settings");if(c&&o)return b();try{o=h(e??n),i=void 0}catch{return i=g.cloneSettings(e),o=g.cloneSettings(n),o.safeMode=!0,s="Saved settings need recovery. Original data is preserved.",b()}return l?(o.safeMode=!0,b()):(m("settings",o),b())}function b(){return g.cloneSettings(o||n)}function x(e,t="replace"){if(g.productDataResetting?.("ward"))return b();if(l)return s="Saved data is unreadable. Retry before changing settings.",b();const n=h(e);if(void 0!==i)try{d(a("recovery:"+Date.now()),i)}catch{return s="Original data could not be backed up. Retry recovery.",b()}o=n,i=void 0,m("settings",n);for(const e of r)e(b(),t);return b()}return Object.freeze({storageStatus:function(){return{error:s,unsaved:c,recovery:void 0!==i}},recoveryData:function(){return{product:"ward",saved:void 0===i?u("settings"):g.cloneSettings(i)}},retrySave:function(){if(l)return u("settings"),l?b():(s="",f());if(void 0!==i)return x({...n,safeMode:!0},"recover-settings");m("settings",b());for(const e of r)e(b(),"retry-save");return b()},resetAll:function(){g.clearProductData("ward"),t.clear(),s="",i=void 0,c=!1,o=g.cloneSettings(n);for(const e of r)e(b(),"product-reset");return b()},PREFIX:e,SCHEMA:1,defaults:n,validate:h,load:f,snapshot:b,diagnosticSnapshot:function(e=b()){const{trustedBrands:t,pageExceptions:n,...o}=e;return{...o,trustedBrandCount:t.length,pageExceptionCount:n.length}},replace:x,update:function(e,t="update"){return x({...b(),...e},t)},subscribe:function(e){return r.add(e),()=>r.delete(e)},exportData:function(){return{product:"ward",generation:3,schema:1,settings:b()}},prepareImport:function(e){if(!e||"ward"!==e.product||3!==e.generation||1!==e.schema)throw Object.assign(new Error("Unsupported WARD export"),{code:"IMPORT_SCHEMA"});return h(e.settings)}})})(),e.Patterns=(()=>{const e=[{id:"upsell.membership.prime",category:"upsell",label:"Prime Membership Promotion",defaultAction:"collapse",allowedActions:["hide","dim","collapse","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"pressure.urgency",category:"urgency",label:"Urgency Message",defaultAction:"dim",allowedActions:["dim","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"pressure.scarcity",category:"scarcity",label:"Scarcity Message",defaultAction:"annotate",allowedActions:["dim","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"pressure.subscription",category:"subscription",label:"Subscription Promotion",defaultAction:"collapse",allowedActions:["dim","collapse","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"upsell.financial-product",category:"upsell",label:"Credit or Installment Promotion",defaultAction:"collapse",allowedActions:["dim","collapse","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"upsell.protection-plan",category:"upsell",label:"Protection-Plan Promotion",defaultAction:"collapse",allowedActions:["dim","collapse","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"upsell.business-membership",category:"upsell",label:"Amazon Business Promotion",defaultAction:"collapse",allowedActions:["hide","dim","collapse","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"sponsorship.placement",category:"sponsored",label:"Sponsored Placement",defaultAction:"hide",allowedActions:["hide","dim","collapse","annotate","allow"],essentialPolicy:"complete-placement-only"},{id:"cross-sell.recommendation",category:"cross-sell",label:"Cross-Sell Recommendation",defaultAction:"collapse",allowedActions:["hide","dim","collapse","annotate","allow"],essentialPolicy:"complete-placement-only"},{id:"upsell.amazon-service",category:"upsell",label:"Amazon Service Promotion",defaultAction:"collapse",allowedActions:["hide","dim","collapse","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"pressure.shopping-assistant",category:"shopping-assistant",label:"AI Shopping Assistant Prompt",defaultAction:"collapse",allowedActions:["hide","dim","collapse","annotate","allow"],essentialPolicy:"complete-placement-only"},{id:"pressure.social-proof",category:"social-proof",label:"Popularity Claim",defaultAction:"dim",allowedActions:["dim","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"upsell.store-membership",category:"upsell",label:"Store Membership Promotion",defaultAction:"collapse",allowedActions:["hide","dim","collapse","annotate","allow"],essentialPolicy:"mixed-annotate"},{id:"pressure.signup-popup",category:"signup-popup",label:"Email Sign-Up Pop-Up",defaultAction:"hide",allowedActions:["hide","dim","allow"],essentialPolicy:"complete-placement-only"},{id:"promotion.announcement-bar",category:"announcement",label:"Announcement Bar",defaultAction:"dim",allowedActions:["hide","dim","collapse","allow"],essentialPolicy:"complete-placement-only"},{id:"pricing.reference-price",category:"pricing",label:"Reference price, not verified",defaultAction:"annotate",allowedActions:["annotate","allow"],essentialPolicy:"mixed-annotate"}].map(e=>Object.freeze({...e})),t=new Map(e.map(e=>[e.id,e]));function n(){if(t.size!==e.length)throw Object.assign(new Error("Duplicate pattern ID"),{code:"PATTERN_DUPLICATE"});for(const t of e)if(!t.allowedActions.includes(t.defaultAction)||!t.essentialPolicy)throw Object.assign(new Error("Invalid pattern definition"),{code:"PATTERN_INVALID"});return!0}return n(),Object.freeze({all:()=>e.slice(),get:e=>t.get(e),has:e=>t.has(e),validate:n})})(),e.Audit=(()=>{let e=0,t=new WeakMap,n=new Set,o=new Set,r=new Set;const a=new Map;function i(n){const o=function(n){let o=t.get(n);return o||(o="target-"+ ++e,t.set(n,o)),o}(n);let r=a.get(o);return r||(r={targetId:o,node:n,detections:new Map,decisions:new Map,requestedAction:null,appliedAction:null,confidence:null,structuralSafe:null,reason:null,revealed:!1},a.set(o,r)),r}return Object.freeze({detected:function(e,t={}){if(!(e instanceof Element))return;const o=i(e),r=String(t.detectorId||"unknown"),a=String(t.patternId||"unknown"),s=`${o.targetId}|${r}|${a}`;n.add(s),o.detections.set(`${r}|${a}`,{detectorId:r,patternId:a,confidence:String(t.confidence||"unknown"),structuralSafe:!0===t.structuralSafe,structuralReason:t.structuralReason?String(t.structuralReason):null})},decision:function(e,t={}){if(!(e instanceof Element))return;const n=i(e),r=String(t.detectorId||"unknown"),a=String(t.patternId||"unknown"),s=`${n.targetId}|${r}|${a}`;o.add(s);const c={detectorId:r,patternId:a,requestedAction:String(t.requestedAction||"allow"),appliedAction:String(t.appliedAction||"allow"),confidence:String(t.confidence||"unknown"),structuralSafe:!0===t.structuralSafe,reason:t.reason?String(t.reason):null};n.decisions.set(`${r}|${a}`,c),n.requestedAction=c.requestedAction,n.appliedAction=c.appliedAction,n.confidence=c.confidence,n.structuralSafe=c.structuralSafe,n.reason=c.reason},revealed:function(e){if(!(e instanceof Element))return;const t=i(e);r.add(t.targetId),t.revealed=!0},concealed:function(e){if(!(e instanceof Element))return;const n=t.get(e);if(!n)return;r.delete(n);const o=a.get(n);o&&(o.revealed=!1)},prune:function(){for(const[e,t]of a)if(!t.node?.isConnected){a.delete(e),r.delete(e);for(const t of[...n])t.startsWith(`${e}|`)&&n.delete(t);for(const t of[...o])t.startsWith(`${e}|`)&&o.delete(t)}},snapshot:function(){const e=[...a.values()].map(e=>{const t=[...e.detections.values()];return{targetId:e.targetId,duplicate:t.length>1,detections:t,decisions:[...e.decisions.values()],confidence:e.confidence,requestedAction:e.requestedAction,appliedAction:e.appliedAction,structuralSafe:e.structuralSafe,reason:e.reason,revealed:e.revealed}}),t=e.filter(e=>null!==e.appliedAction);return{schemaVersion:1,privacy:"Detector and action metadata only. Page text, form values, selectors, URLs, and DOM markup are excluded.",counts:{detected:n.size,acted:t.filter(e=>"allow"!==e.appliedAction).length,downgraded:t.filter(e=>e.requestedAction!==e.appliedAction).length,skipped:t.filter(e=>"allow"===e.appliedAction).length,revealed:r.size,duplicateTargets:e.filter(e=>e.duplicate).length,structuralCollapseSkipped:t.filter(e=>("hide"===e.requestedAction||"collapse"===e.requestedAction)&&e.appliedAction!==e.requestedAction&&!1===e.structuralSafe).length},targets:e}},resetRoute:function(){e=0,t=new WeakMap,n=new Set,o=new Set,r=new Set,a.clear()}})})(),e.Retailers=(()=>{const e=new Map,t=["eligible","classify","detect","structuralSafety","diagnose","nextEpoch","cleanup"];return Object.freeze({register:function(n){if(!n||"string"!=typeof n.key||!/^[a-z][a-z0-9-]*$/.test(n.key))throw Object.assign(new Error("Retailer adapter needs a lowercase key"),{code:"RETAILER_KEY"});if(e.has(n.key))throw Object.assign(new Error(`Duplicate retailer adapter: ${n.key}`),{code:"RETAILER_DUPLICATE"});for(const e of t)if("function"!=typeof n[e])throw Object.assign(new Error(`Retailer adapter ${n.key} is missing ${e}()`),{code:"RETAILER_INTERFACE"});return e.set(n.key,n),n},all:function(){return[...e.values()]},get:function(t){return e.get(t)||null},keys:function(){return[...e.keys()]},current:function(){for(const t of e.values())try{if(t.eligible())return t}catch{}return null}})})(),e.Retailer=(()=>{const t=Object.freeze({id:"none",key:"none",label:"Store",health:"inactive",eligible:!1,pageType:"unsupported"}),n=()=>[];function o(){return e.Retailers.current()}function r(e,t){return(...n)=>{const r=o();return r&&"function"==typeof r[e]?r[e](...n):t(...n)}}return Object.freeze({coverage:function(){const t=o(),n=t?.patterns?.(),r=t?.patternIds||[],a=Array.isArray(n)?n:[],i=[...new Set(a.filter(e=>!0===e.complete).map(e=>e.patternId))],s=[...new Set(r)].filter(e=>!i.includes(e));return{retailer:t?.key||"none",supportedCategories:i,conservativeCategories:s,unsupportedCategories:e.Patterns.all().map(e=>e.id).filter(e=>!r.includes(e))}},key:()=>o()?.key||"none",label:()=>o()?.label||"Store",features:()=>o()?.features||Object.freeze({}),patternIds:()=>new Set(o()?.patternIds||[]),eligible:()=>Boolean(o()),enabled:e=>Boolean(e?.enabled)&&Boolean(o())&&!1!==e.retailers?.[o().key],classify:r("classify",()=>"other"),detect:r("detect",n),couponCandidates:r("couponCandidates",n),verifyCouponTarget:r("verifyCouponTarget",()=>({eligible:!1,reason:"unsupported-store"})),cosmeticRecommendationCandidates:r("cosmeticRecommendationCandidates",n),structuralSafety:r("structuralSafety",()=>({safe:!1,reason:"unsupported-store"})),supportsSellerClarity:()=>"function"==typeof o()?.sellerFacts,sellerFacts:r("sellerFacts",()=>null),listingBrands:r("listingBrands",n),theme:r("theme",()=>null),diagnose:()=>o()?.diagnose()||t,nextEpoch:()=>{for(const t of e.Retailers.all())t.nextEpoch()},cleanup:()=>{for(const t of e.Retailers.all())t.cleanup()}})})(),e.AmazonAdapter=(()=>{const t="ward.retailer.amazon",n=[];let o="inactive",r=0,a=null,i=new WeakSet,s=0;const c=new Set,l=new Set(["www.amazon.com"]),d='div.ape-wrapper[id^="ape_"][id$="_wrapper"], #hqpWrapper, #heroQuickPromoContainer, div.celwidget[data-feature-name="heroQuickPromo"]',p=".s-result-item.AdHolder, .s-result-item:has(.sb-desktop)",u=['[data-component-type="s-sponsored-result"]',p,d,'div.ape-placement[id^="ape_"][id$="_placement"]','div.ape-feedback[id^="ape_"][id*="_placement_Feedback"]','div.a-carousel-container[id^="sp_detail"][data-a-carousel-options]','li.dpx-smidget-desktop-pill-list-item:has(button[data-action-id^="related_questions_sponsored_related_question_"])'],m=u.join(","),h=".mobile-gateway-strategic_prime-retention-plan-switch-homepage-wd-widget-cx",f='[data-card-metrics-id^="abxs-yo-dsk-dynamic-upsell_"]',g=[".order-card",".js-order-card","#searchOrdersInput","#time-filter",'form[action^="/your-orders/"]',"[data-buybox-component]","#buybox","#desktop_buybox","#price","#corePrice_feature_div","#availability","#deliveryBlockMessage","#mir-layout-DELIVERY_BLOCK","#addToCart","#buyNow","#checkout",'[name="placeYourOrder1"]','[data-testid*="checkout"]'].join(","),b=[h,f,"#sims-fbt","#buyItWith",'[data-feature-name="sims-fbt"]',"#primeDPUpsellStaticContainerNPA","#primeDPUpsellStaticContainer","#businessPrimeDPUpsellStaticContainer","#businessSavings_feature_div",'[data-feature-name="businessSavings"]','[data-csa-c-content-id*="business-savings" i]',"#primeSavingsUpsellAccordionRow","#attach-warranty-pane","#protectionPlan_feature_div","#insuranceAndWarranty_feature_div",'[data-feature-name="insuranceAndWarranty"]','[data-csa-c-content-id*="insurance-and-warranty" i]',"#snsAccordionRowMiddle","#subscribeAndSaveAccordionRow","#creditCard_feature_div","#installmentCalculator_feature_div","#audible-promo"].join(","),x=["#rufus-container","video","audio","iframe",".a-carousel",".a-carousel-container",'[role="slider"]',"[aria-live]",'[data-testid*="rufus" i]','[data-testid*="video" i]','[data-testid*="follow" i]','[data-feature-name*="video" i]','[data-feature-name*="creator" i]','[data-feature-name*="follow" i]','[data-cel-widget*="video" i]','[data-cel-widget*="media" i]'].join(","),y=Object.freeze([{id:"amazon.prime.product",patternId:"upsell.membership.prime",pages:["product","search","cart","checkout","home","orders","other"],selectors:[h,'[data-feature-name="desktop-dp-ilm"]',"#primeDPUpsellStaticContainerNPA","#primeDPUpsellStaticContainer","#nav-join-prime","#osu-prime-recommendations","#prime-spc-stripe-recommendations",".isoa-wrapper-radio",".udm-primary-delivery-message:has(.prime-signup-ingress)",'span[data-csa-c-owner="PromotionsDiscovery"]:has(label[id^="greenBadge"])',"#businessPrimeDPUpsellStaticContainer","#primeSavingsUpsellAccordionRow","#pep_feature_div"]},{id:"amazon.urgency.deal",patternId:"pressure.urgency",pages:["product","search","cart"],selectors:['.a-badge[data-a-badge-type="deal"]',"#dealBadge_feature_div","#dealProgress_feature_div",".sc-delight-pricing","#delightPricingBadge_feature_div"]},{id:"amazon.scarcity.stock",patternId:"pressure.scarcity",pages:["product","search","cart"],selectors:[".sc-product-scarcity",'[class*="_scarcityMessage_"]','span[aria-label*="left in stock" i]']},{id:"amazon.subscription.sns",patternId:"pressure.subscription",pages:["product","cart"],selectors:[".sc-subscribe-and-save-upsell-message","#snsAccordionRowMiddle","#subscribeAndSaveAccordionRow"]},{id:"amazon.financial.credit",patternId:"upsell.financial-product",pages:["product","cart","checkout","search"],selectors:["#creditCard_feature_div","#installmentCalculator_feature_div",'[data-feature-name*="creditCard" i]','[data-csa-c-content-id*="credit" i]']},{id:"amazon.plan.protection",patternId:"upsell.protection-plan",pages:["product","cart"],selectors:["#attach-warranty-pane","#protectionPlan_feature_div","#insuranceAndWarranty_feature_div",'[data-feature-name*="protectionPlan" i]','[data-feature-name="insuranceAndWarranty"]','[data-csa-c-content-id*="insurance-and-warranty" i]']},{id:"amazon.business.promo",patternId:"upsell.business-membership",pages:["product","search","cart","home","orders"],selectors:[f,"#businessPrimeDPUpsellStaticContainer","#businessSavings_feature_div",'[data-feature-name="businessSavings"]','[data-feature-name*="business" i][class*="promo" i]','[data-csa-c-content-id*="business-savings" i]']},{id:"amazon.sponsored.placement",patternId:"sponsorship.placement",pages:["product","search","home","orders"],selectors:[...u,"[data-ad-details]","#sp_detail",'[data-cel-widget^="sp_"]']},{id:"amazon.cross-sell.recommendation",patternId:"cross-sell.recommendation",pages:["product","cart","home"],selectors:["#sims-fbt","#desktop-dp-sims_session-similarities-sims-feature","#buyItWith",'[data-feature-name="sims-fbt"]']},{id:"amazon.service.promo",patternId:"upsell.amazon-service",pages:["product","home","orders","other"],selectors:["#audible-promo",'[data-feature-name*="audible" i][class*="promo" i]','[data-feature-name*="music" i][class*="promo" i]']},{id:"amazon.ai.rufus",patternId:"pressure.shopping-assistant",pages:["product","search","home"],selectors:["#rufus-container",'[data-testid*="rufus" i]']}]),v=new Set(["pressure.urgency","pressure.scarcity"]);function w(e){if(!e.textContent.trim()&&!e.getAttribute("aria-label")?.trim()&&!e.querySelector("img,svg,[aria-label]"))return!1;try{const t=e.getBoundingClientRect();return t.width>0&&t.height>0}catch{return!1}}function S(e=location.pathname){return/^\/(?:your-orders\/(?:orders|search)|gp\/(?:your-account|css)\/order-history)(?:\/|$)/.test(e)?"orders":/\/dp\/|\/gp\/product\//.test(e)?"product":/\/s(?:\/|$)/.test(e)?"search":/\/cart|\/gp\/cart/.test(e)?"cart":/\/checkout|\/gp\/buy/.test(e)?"checkout":"/"===e||""===e?"home":"other"}function k(){return l.has(location.hostname)}function E(e){return!e||e===document.documentElement||e===document.head||e===document.body||e===document.scrollingElement||e.matches?.('#a-page, #pageContent, main, [role~="main"]')||Boolean(e.querySelector?.('#a-page, #pageContent, main, [role~="main"], [data-exp-owned="1"]'))}function A(e,t){try{return[...e.querySelectorAll(t)]}catch(e){return P(e,"DETECTOR_SELECTOR"),[]}}function C(e){return Boolean(e.matches?.(g)||e.closest?.(g)||A(e,g).length)}function O(e){return e?.isConnected?E(e)||e.closest?.('[data-exp-owned="1"]')?{safe:!1,reason:"protected-root"}:e.matches?.(m)&&!C(e)?{safe:!0,reason:"complete-sponsored-placement"}:e.matches?.(x)||e.closest?.(x)||A(e,x).length?{safe:!1,reason:"dynamic-widget"}:e.matches?.(b)?{safe:!0,reason:"known-static"}:{safe:!1,reason:"unverified-container"}:{safe:!1,reason:"detached"}}function P(r,a){n.push({code:a,at:Date.now()}),n.length>8&&n.shift(),o="degraded",e.Core.safeError(Object.assign(r||new Error(a),{code:a}),t)}function z(){a=null,i=new WeakSet,s=0,c.clear()}function M(e){if("product"!==S()||!e.closest("#ppd")||"redeem"!==(e.value||e.textContent||"").trim().toLowerCase())return null;if(e.matches("a[href]")&&e.getAttribute("href")&&!e.getAttribute("href").startsWith("#"))return null;if(e.form&&"submit"===e.type)return null;for(let t=e.parentElement,n=0;t&&"ppd"!==t.id&&n<5;t=t.parentElement,n+=1){const e=(t.textContent||"").replace(/\s+/g," ").trim();if(e.length>700)return null;if(/\bpromo\s*code\b/i.test(e)&&/\d+(?:\.\d+)?\s*%\s*off\b/i.test(e))return t.querySelector('input[type="radio"], input[type="checkbox"], select, [name="placeYourOrder1"], #addToCart, #buyNow')?null:1===[...t.querySelectorAll('button, a, input[type="button"], [role="button"]')].filter(e=>"redeem"===(e.value||e.textContent||"").trim().toLowerCase()).length?t:null}return null}const $=e=>(e?.textContent||"").replace(/\s+/g," ").trim();function R(e,t){for(const n of t){const t=$(A(e,n)[0]);if(t)return t}return""}const I=Object.freeze([...new Set(y.map(e=>e.patternId))]),L=Object.freeze({keepInLight:/#nav(?:bar|-[\w-]+)\b|\.nav-[\w-]+/,keepInLightRoot:"#navbar",darkInvert:[".ssf-share-trigger","i.a-icon-dropdown","i.a-icon-popover","i.a-icon-section-expand","i.a-icon-section-collapse","i.a-icon-map-marker"],darkInvertPicture:["img.nav-categ-image"]});return Object.freeze({key:"amazon",label:"Amazon",features:Object.freeze({coupons:!0,compactSearch:!0,recommendationCleanup:!0}),patternIds:I,ID:t,VERSION:"3",classify:S,eligible:k,detect:function(t=[document]){if(!k())return o="inactive",a=null,[];const n=S();a&&a.pageType!==n&&z();const l=new Map,u=y.filter(e=>e.pages.includes(n));o="healthy";for(const o of u)try{for(const a of t)for(const t of o.selectors)for(const u of[...a.matches?.(t)?[a]:[],...A(a,t)]){const a="amazon.sponsored.placement"===o.id&&(u.closest("#hqpWrapper")||u.closest("#heroQuickPromoContainer")||u.closest(p)||u.closest(d))||u;if(!a.isConnected||E(a)||a.closest('[data-exp-owned="1"]'))continue;if(v.has(o.patternId)&&!w(a))continue;c.add(o.id),i.has(a)||(i.add(a),s+=1);const m=C(a),h=O(a),f=m?"ambiguous":"confirmed";e.Audit?.detected?.(a,{detectorId:o.id,patternId:o.patternId,confidence:f,structuralSafe:h.safe,structuralReason:h.reason});const g=`${o.id}:${t}:${a.dataset.wardInstance||""}`;l.has(a)||l.set(a,Object.freeze({evidenceId:g,detectorId:o.id,patternId:o.patternId,pageType:n,node:a,signals:["adapter-selector"],exclusions:m?["essential-overlap"]:[],essentialOverlap:m,structuralSafe:h.safe,structuralReason:h.reason,confidence:f,epoch:r}))}}catch(e){P(e,"DETECTOR_FAILURE")}return a={pageType:n,eligibleDetectors:u.map(({id:e})=>e),matchedDetectors:[...c],matchedTargets:s},[...l.values()]},couponCandidates:function(e=[document]){if(!k())return[];const t=e.flatMap(e=>A(e,'[data-component-type="s-coupon-component"] .s-coupon-tile.unclaimed input[type="checkbox"]:not(:checked), .ct-coupon-tile.unclaimed input[type="checkbox"]:not(:checked)'));return"product"===S()&&t.push(...e.flatMap(e=>A(e,'#ppd button, #ppd a, #ppd input[type="button"], #ppd [role="button"]')).filter(e=>M(e))),t.filter((e,t,n)=>n.indexOf(e)===t)},cosmeticRecommendationCandidates:function(e=[document]){return k()?e.flatMap(e=>A(e,'#sims-fbt, #buyItWith, [data-feature-name="sims-fbt"]')).filter((e,t,n)=>n.indexOf(e)===t&&!C(e)&&O(e).safe):[]},structuralSafety:O,verifyCouponTarget:function(e){if(!e?.isConnected||e.disabled||e.checked||e.hidden||"1"===e.dataset.wardCouponAttempted)return{eligible:!1,reason:"not-unclaimed"};if("true"===e.getAttribute("aria-disabled")||e.closest("[inert], [hidden]"))return{eligible:!1,reason:"not-unclaimed"};const t=M(e),n=t||e.closest('[data-component-type="s-coupon-component"], .ct-coupon-tile');return n?n.closest('#addToCart, #buyNow, #checkout, [name="placeYourOrder1"], [data-testid*="checkout"]')?{eligible:!1,reason:"unsafe-context"}:{eligible:!0,component:n,tile:t?null:e.closest(".s-coupon-tile, .ct-coupon-tile"),kind:t?"redeem":"checkbox"}:{eligible:!1,reason:"ambiguous-control"}},sellerFacts:function(e=document){if(!k()||"product"!==S())return null;const t=A(e,"#bylineInfo")[0];let n=R(e,["#productOverview_feature_div tr.po-brand td.a-span9 span"]);!n&&t&&(n=$(t).replace(/^Visit the\s+/i,"").replace(/\s+Store$/i,"").replace(/^Brand:\s*/i,""));const o=R(e,["#sellerProfileTriggerId",'[offer-display-feature-name="desktop-merchant-info"] .offer-display-feature-text-message',"#merchantInfoFeature_feature_div .offer-display-feature-text-message"]),r=R(e,['[offer-display-feature-name="desktop-fulfiller-info"] .offer-display-feature-text-message',"#fulfillerInfoFeature_feature_div .offer-display-feature-text-message"]),a=A(e,"#acrPopover")[0]?.getAttribute("title")||"",i=Number((/([\d.]+)\s+out of 5/i.exec(a)||[])[1])||0,s=Number(R(e,["#acrCustomerReviewText"]).replace(/[^\d]/g,""))||0,c={};for(const t of A(e,"#cm_cr_dp_d_rating_histogram a[aria-label], #histogramTable a[aria-label]")){const e=/(\d+)\s*percent of reviews have (\d) stars?/i.exec(t.getAttribute("aria-label")||"");e&&(c[e[2]]=Number(e[1]))}const l=t?.closest("#byline_ratings_container")||t?.closest("#bylineInfo_feature_div")||t||A(e,"#title_feature_div")[0]||null;return n||o?{brand:n,seller:o,firstParty:/^amazon(?:\.com)?(?:\s+services(?:\s+llc)?)?$/i.test(o),shipsFrom:r,rating:i,ratingCount:s,distribution:c,anchor:l}:null},listingBrands:function(e=[document]){if(!k()||"search"!==S())return[];const t='[data-component-type="s-search-result"] [data-cy="title-recipe"] h2.a-size-mini > span.a-size-base-plus.a-color-base',n=e.flatMap(e=>[...e.matches?.(t)?[e]:[],...A(e,t)]);return n.filter((e,t)=>n.indexOf(e)===t&&!e.closest('[data-exp-owned="1"]')).map(e=>({brand:$(e),brandNode:e}))},diagnose:function(){return{id:t,version:"3",health:o,eligible:k(),pageType:k()?S():"unsupported",detectorCount:y.length,coverage:a?{...a,eligibleDetectors:a.eligibleDetectors.slice(),matchedDetectors:a.matchedDetectors.slice()}:null,errors:n.map(({code:e})=>({code:e}))}},nextEpoch:function(){return r+=1,o=k()?"healthy":"inactive",z(),r},cleanup:function(){r+=1,o="inactive",z(),n.length=0},theme:()=>L,patterns:()=>y.map(({id:e,patternId:t,pages:n})=>({id:e,patternId:t,pages:n.slice()}))})})(),e.Retailers.register(e.AmazonAdapter),e.createRetailerModule=t=>{const n=`ward.retailer.${t.key}`;let o=0,r="inactive",a=null;const i=[],s='[data-exp-owned="1"]',c=t.eligible||(()=>t.hosts.includes(location.hostname)),l=t.classify||((e=location.pathname)=>t.routes.find(([t])=>t.test(e))?.[1]||("/"===e?"home":"other")),d=t.essential||'button,input,select,textarea,form,[role="button"],[aria-live],video,audio,iframe,[data-exp-owned="1"]',p=t.purchaseWording||/add to cart|buy now|checkout|place order/i;function u(t,o){i.push({code:t,at:Date.now()}),i.length>8&&i.shift(),r="degraded",o&&e.Core.safeError(Object.assign(o,{code:t}),n)}function m(e,t){try{return[...e.matches?.(t)?[e]:[],...e.querySelectorAll(t)]}catch(e){return u("DETECTOR_SELECTOR"),[]}}function h(e){return!(e&&e!==document.body&&e!==document.documentElement&&e!==document.head&&!e.closest?.(s))||(t.protectedRoots?Boolean(e.matches?.(t.protectedRoots)||e.querySelector?.(`${t.protectedRoots}, ${s}`)):Boolean(e.matches?.('main,header,nav,footer,[role="main"]')))}function f(e){return t.modules&&e.matches?.(t.modules)?Boolean(e.querySelector?.(d)):function(e){return(t.purchaseWording?[...e.querySelectorAll?.('button, a, input[type="submit"]')||[]]:m(e,"a")).some(e=>p.test(e.textContent||e.value||e.getAttribute("aria-label")||""))}(e)||Boolean(e.matches?.(d)||e.closest?.(t.essential?d:"form")||e.querySelector?.(d))}function g(e,t){try{return Boolean(e.matches?.(t))}catch{return!1}}function b(e){if(!e?.isConnected)return{safe:!1,reason:"detached"};if(h(e))return{safe:!1,reason:"protected-root"};if(f(e))return{safe:!1,reason:"essential-overlap"};if(t.safeUnits){const n=t.safeUnits.find(([t,,n])=>g(e,t)&&(!n||n(e)));return n?{safe:!0,reason:n[1]}:{safe:!1,reason:"unverified-container"}}const n=t.detectors.find(t=>t.selectors.some(t=>g(e,t)));return{safe:Boolean(n?.complete),reason:n?.complete?"known-static":"unverified-container"}}return Object.freeze({key:t.key,label:t.label,ID:n,VERSION:"1",patternIds:Object.freeze([...new Set(t.detectors.map(e=>e.patternId))]),features:Object.freeze({coupons:!1,compactSearch:!1,recommendationCleanup:!1}),eligible:c,classify:l,detect:function(n=[document]){if(!c())return r="inactive",a=null,[];const i=l(),s=new Map,d=new Set;r="healthy";const p=t.detectors.filter(e=>e.pages.includes(i));for(const r of p){const a=`${t.key}.${r.id}`;try{for(const c of n)for(const n of r.selectors)for(const l of m(c,n)){if(r.match&&!r.match(l))continue;const n=r.unit&&r.unit(l)||l;if(!n.isConnected||h(n)||r.text&&!r.text.test((n.textContent||"").trim()))continue;const c=f(n),p=b(n),u=c?"ambiguous":t.confidence||"supported";d.add(a),e.Audit?.detected?.(n,{detectorId:a,patternId:r.patternId,confidence:u,structuralSafe:p.safe,structuralReason:p.reason}),s.has(n)||s.set(n,Object.freeze({detectorId:a,evidenceId:a,patternId:r.patternId,pageType:i,node:n,signals:["retailer-selector"],exclusions:c?["essential-overlap"]:[],essentialOverlap:c,structuralSafe:p.safe,structuralReason:p.reason,confidence:u,epoch:o}))}}catch(e){u("DETECTOR_FAILURE",e)}}return a={pageType:i,eligibleDetectors:p.map(e=>`${t.key}.${e.id}`),matchedDetectors:[...d],matchedTargets:s.size},[...s.values()]},structuralSafety:b,theme:()=>t.theme||null,diagnose:()=>({id:n,version:"1",health:r,eligible:c(),pageType:c()?l():"unsupported",detectorCount:t.detectors.length,coverage:a,errors:i.slice()}),nextEpoch:()=>(o++,a=null,r=c()?"healthy":"inactive",o),cleanup(){o++,a=null,r="inactive",i.length=0},patterns:()=>t.detectors.map(e=>({id:`${t.key}.${e.id}`,patternId:e.patternId,complete:Boolean(e.complete),pages:e.pages.slice()}))})},(()=>{const t='[data-testid="badgeTagComponent"]',n=/check ?out|place (?:your )?order|add to cart|buy now|continue/i;e.WalmartAdapter=e.createRetailerModule({key:"walmart",label:"Walmart",hosts:["www.walmart.com","walmart.com"],confidence:"confirmed",purchaseWording:n,essential:['[data-testid*="add-to-cart" i]','[data-testid="ugpp-main-price"]','[data-testid="product-title"]','[data-testid*="checkout" i]','[data-testid*="fulfillment" i]','form[action*="cart" i]','button[type="submit"]'].join(","),protectedRoots:'[data-testid="maincontent"], [data-testid="main-content-container"], [data-testid="layout-container"], [data-testid="item-stack"], main, [role~="main"]',safeUnits:[[t,"known-badge"],["section","membership-banner",e=>e.querySelector('[data-testid="wplus-banner-title-cart"]')],['[data-testid="item-addon-services-new"], [data-testid="oneDebitCardBannerLink"], [data-testid="save-with-walmart-plus-badge"], [data-testid="wplus-opt-out-banner"], [data-testid="more-ways-to-pay-component-wrapper"]',"known-static"],['[data-testid="skyline-ad"], [data-testid="brand-box-ad"], [data-testid="sp"], [data-testid="sb-container"]',"complete-sponsored-placement"]],classify:(e=location.pathname)=>/^\/ip\//.test(e)?"product":/^\/(?:search|browse|shop|cp)(?:\/|$)/.test(e)?"search":/^\/cart(?:\/|$)/.test(e)?"cart":/^\/checkout(?:\/|$)/.test(e)?"checkout":/^\/(?:orders|account|purchase-history)(?:\/|$)/.test(e)?"orders":"/"===e||""===e?"home":"other",detectors:[{id:"social-proof.badge",patternId:"pressure.social-proof",pages:["search","product","home","cart"],selectors:[t],text:/\bbought since\b|\bin [\d.,]+k?\+? people'?s carts?\b|\bpeople (?:are )?(?:viewing|looking)\b|\b[\d.,]+k?\+? (?:viewed|bought)\b/i,complete:!0},{id:"scarcity.badge",patternId:"pressure.scarcity",pages:["search","product","cart"],selectors:[t],text:/\blow stock\b|\bonly \d+ left\b|\balmost gone\b/i,complete:!0},{id:"urgency.badge",patternId:"pressure.urgency",pages:["search","product"],selectors:[t],text:/^(?:deal|flash deal|ends (?:in|soon).*)$/i,complete:!0},{id:"membership.badge",patternId:"upsell.store-membership",pages:["search","product","cart","home"],selectors:[t],text:/^save with$|walmart\s?\+/i,complete:!0},{id:"membership.cart-badge",patternId:"upsell.store-membership",pages:["cart","search","product"],selectors:['[data-testid="save-with-walmart-plus-badge"]'],complete:!0},{id:"membership.checkout-banner",patternId:"upsell.store-membership",pages:["checkout"],selectors:['[data-testid="wplus-opt-out-banner"]'],complete:!0},{id:"financial.more-ways-to-pay",patternId:"upsell.financial-product",pages:["checkout"],selectors:['[data-testid="more-ways-to-pay-component-wrapper"]'],complete:!0},{id:"membership.cart-banner",patternId:"upsell.store-membership",pages:["cart"],selectors:['[data-testid="wplus-banner-title-cart"]'],unit:e=>{const t=e.closest("section");return t&&!(e=>[...e.querySelectorAll('button, a, input[type="submit"]')].some(e=>n.test(e.textContent||e.value||e.getAttribute("aria-label")||"")))(t)?t:null},complete:!0},{id:"plan.protection",patternId:"upsell.protection-plan",pages:["product","cart"],selectors:['[data-testid="item-addon-services-new"]'],complete:!0},{id:"financial.card",patternId:"upsell.financial-product",pages:["product","cart","checkout","home"],selectors:['[data-testid="oneDebitCardBannerLink"]'],complete:!0},{id:"sponsored.placement",patternId:"sponsorship.placement",pages:["search","product","home"],selectors:['[data-testid="skyline-ad"]','[data-testid="brand-box-ad"]','[data-testid="sp"]','[data-testid="sb-container"]',"[data-ad-component-type]"],complete:!0},{id:"reference-price",patternId:"pricing.reference-price",pages:["search","product"],selectors:['[data-testid="ugpp-was-price"]']}]}),e.Retailers.register(e.WalmartAdapter)})(),(()=>{const t=".s-card__attribute-row .su-styled-text",n=".x-ebay-signal .ux-textspans, #qtyAvailability .ux-textspans",o=".srp-river-answer--ITEMS_CAROUSEL_WITH_COLOR",r='section:has(h2):has(.carousel):not(:has([data-test-id="cart-bucket"]))',a=`${o}, ${r}`,i='[data-testid="PAYMENTS_PROMOTIONS"]',s='div[id^="placement_"]:has([data-click*=\'"eventFamily":"ADV"\'])';function c(e){return/^sponsored$/i.test((document.getElementById(e)?.textContent||"").trim())}e.EbayAdapter=e.createRetailerModule({key:"ebay",label:"eBay",hosts:["www.ebay.com","ebay.com","cart.ebay.com","pay.ebay.com"],confidence:"confirmed",essential:['[data-testid="TOTAL"]','[data-testid="SUB_TOTAL"]','[data-testid="PAYMENT_METHODS"]','[data-testid="KLARNA_BUTTON"]','[data-testid="CTA_MESSAGE_WRAPPER"]',"#binBtn_btn","#isCartBtn_btn","#atcBtn_btn",".x-bin-action",".x-atc-action",".x-msku",".x-quantity__input","#qtyTextBox",'[data-testid*="checkout" i]','form[action*="checkout" i]','button[type="submit"]'].join(","),protectedRoots:'#mainContent, #CenterPanel, #RightSummaryPanel, .srp-main, .srp-river, ul.srp-results, main, [role~="main"]',purchaseWording:/buy it now|place bid|add to cart|check ?out|make offer|confirm and pay|pay now|continue/i,modules:a,safeUnits:[[`${t}, ${n}`,"known-text-signal"],[a,"complete-module"],[i,"known-static"],["li.s-card","complete-sponsored-placement"],[s,"complete-sponsored-placement"]],classify:(e=location.pathname)=>"pay.ebay.com"===location.hostname?"checkout":/^\/itm\//.test(e)?"product":/^\/(?:sch|b)\//.test(e)?"search":"cart.ebay.com"===location.hostname||/^\/(?:cart|sc)(?:\/|$)/.test(e)?"cart":/^\/(?:checkout|pay)(?:\/|$)/.test(e)?"checkout":/^\/mye\//.test(e)?"orders":"/"===e||""===e?"home":"other",detectors:[{id:"social-proof.card",patternId:"pressure.social-proof",pages:["search"],selectors:[t],text:/^[\d,.]+k?\+? (?:sold|watchers?|watching)$/i,complete:!0},{id:"social-proof.item",patternId:"pressure.social-proof",pages:["product"],selectors:[n],text:/^(?:in [\d,.]+k?\+? carts?|[\d,.]+k?\+? (?:sold|watchers?|watching)|[\d,.]+k?\+? (?:people|viewers?) .*)$/i,complete:!0},{id:"scarcity.card",patternId:"pressure.scarcity",pages:["search"],selectors:[t],text:/^(?:last one|only [\d,]+ left|[\d,]+ left)$/i,complete:!0},{id:"scarcity.item",patternId:"pressure.scarcity",pages:["product"],selectors:[n],text:/^(?:last one|only [\d,]+ (?:left|available)|limited quantity)$/i,complete:!0},{id:"financial.checkout",patternId:"upsell.financial-product",pages:["checkout"],selectors:[i],complete:!0},{id:"recommendation.cart",patternId:"cross-sell.recommendation",pages:["cart"],selectors:[r],complete:!0},{id:"recommendation.module",patternId:"cross-sell.recommendation",pages:["search"],selectors:[o],complete:!0},{id:"sponsored.card",patternId:"sponsorship.placement",pages:["search"],selectors:["li.s-card"],match:function(e){return[...e.querySelectorAll("[aria-labelledby]")].some(e=>e.getAttribute("aria-labelledby").split(/\s+/).some(c))||[...e.querySelectorAll("span, div")].some(e=>!e.childElementCount&&/^sponsored$/i.test((e.textContent||"").trim()))},complete:!0},{id:"sponsored.banner",patternId:"sponsorship.placement",pages:["search"],selectors:[s],complete:!0}]}),e.Retailers.register(e.EbayAdapter)})(),(()=>{const t=e=>`[data-appears-component-name="${e}"]`,n=t("Etsy-Modules-ListingPage-UrgencySignal-RecsRankingApiSpec"),o=t("klarna_osm_messaging"),r=".v2-listing-card",a="li.wt-block-grid__item, li.wt-list-unstyled",i=".wt-text-strikethrough",s=[t("Cart_Recommendations_ApiSpec_List"),t("promoted_picks_for_you")].join(", "),c=/^ad(?: by etsy seller|\s?・\s?by\b.*|\s?from shop\b.*)$/i;e.EtsyAdapter=e.createRetailerModule({theme:Object.freeze({darkTextVars:["text","border","hovered-text","hovered-border","pressed-text","pressed-border"].map(e=>`--clg-color-app-button-secondary-${e}`),darkVarRoots:":root,[data-clg-mode],[data-clg-theme]"}),key:"etsy",label:"Etsy",hosts:["www.etsy.com","etsy.com"],confidence:"confirmed",essential:[t("add_to_cart_form"),t("express_checkout_button"),t("variations"),t("price"),'form[action*="cart" i]',"[data-add-to-cart-button]","[data-buy-box-region]",'button[type="submit"]'].join(","),protectedRoots:'main, [role~="main"], #content, #gnav-header-inner, ul.wt-grid, ol.wt-grid',purchaseWording:/add to cart|buy it now|check ?out|proceed to|place order|continue/i,modules:s,safeUnits:[[`${n}, ${o}`,"known-static"],[s,"complete-module"],[`${a}, ${r}`,"complete-sponsored-placement"],[i,"price-text"]],classify:(e=location.pathname)=>/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?listing\//.test(e)?"product":/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(?:search|c|market|featured)(?:\/|$)/.test(e)?"search":/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?cart(?:\/|$)/.test(e)?"cart":/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(?:checkout|cart\/checkout)(?:\/|$)/.test(e)?"checkout":/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?your\/(?:purchases|orders)/.test(e)?"orders":"/"===e||""===e?"home":"other",detectors:[{id:"sponsored.listing",patternId:"sponsorship.placement",pages:["search"],selectors:[r],match:function(e){return[...e.querySelectorAll("span, p")].some(e=>!e.childElementCount&&c.test((e.textContent||"").trim()))},unit:function(e){const t=e.closest(a);return t&&1===t.querySelectorAll(r).length?t:null},complete:!0},{id:"reference-price.card",patternId:"pricing.reference-price",pages:["search"],selectors:[`${r} ${i}`],complete:!0},{id:"reference-price.item",patternId:"pricing.reference-price",pages:["product"],selectors:[`${t("price")} ${i}`],complete:!0},{id:"social-proof.item",patternId:"pressure.social-proof",pages:["product"],selectors:[n],text:/\bcarts?\b|\bpeople\b|\bviewing\b|\bbought\b|\bpopular now\b|\bbestseller\b/i,complete:!0},{id:"scarcity.item",patternId:"pressure.scarcity",pages:["product"],selectors:[n],text:/\bonly \d+ left\b|\blow in stock\b|\balmost gone\b|\bselling fast\b/i,complete:!0},{id:"recommendation.module",patternId:"cross-sell.recommendation",pages:["cart"],selectors:[s],complete:!0},{id:"financial.klarna",patternId:"upsell.financial-product",pages:["product","cart"],selectors:[o],complete:!0}]}),e.Retailers.register(e.EtsyAdapter)})(),e.TargetAdapter=e.createRetailerModule({key:"target",label:"Target",hosts:["www.target.com","target.com"],theme:Object.freeze({darkInvert:['svg:has(> use[href*="/cart.svg#"])']}),routes:[[/^\/checkout(?:\/|$)/,"checkout"],[/^\/(?:cart|co-cart)(?:\/|$)/,"cart"],[/^\/p\//,"product"],[/^\/(?:s|c)(?:\/|$)/,"search"]],detectors:[{id:"sponsored",patternId:"sponsorship.placement",pages:["home","search","product"],selectors:['[data-test="sponsoredLabel"]','[data-test="sponsored-label"]'],text:/^sponsored$/i},{id:"scarcity",patternId:"pressure.scarcity",pages:["product","search","cart"],selectors:['[data-test="low-stock-message"]','[data-test="availabilityMessage"]'],text:/only \d+ left|low stock|almost gone/i},{id:"urgency",patternId:"pressure.urgency",pages:["product","search"],selectors:['[data-test="promotion-message"]','[data-test="deal-end-message"]'],text:/limited time|ends? (?:today|soon|in)/i},{id:"membership",patternId:"upsell.store-membership",pages:["home","product","cart"],selectors:['[data-test="circle360-promotion"]','[data-test="circle-card-promotion"]'],text:/target circle|circle 360/i,complete:!0},{id:"financing",patternId:"upsell.financial-product",pages:["product","cart"],selectors:['[data-test="affirm-message"]','[data-test="afterpay-message"]'],text:/affirm|afterpay|pay in/i},{id:"recommendations",patternId:"cross-sell.recommendation",pages:["product","cart"],selectors:['[data-test="recommendation-module"]'],complete:!0}]}),e.Retailers.register(e.TargetAdapter),e.BestBuyAdapter=e.createRetailerModule({key:"bestbuy",label:"Best Buy",hosts:["www.bestbuy.com","bestbuy.com"],routes:[[/^\/checkout(?:\/|$)/,"checkout"],[/^\/cart(?:\/|$)/,"cart"],[/^\/site\/(?:[^/]+\/)*\d+\.p$/,"product"],[/^\/site\/searchpage\.jsp$/,"search"]],detectors:[{id:"sponsored",patternId:"sponsorship.placement",pages:["home","search","product"],selectors:[".sponsored-label",'[data-testid="sponsored-label"]'],text:/^sponsored$/i},{id:"scarcity",patternId:"pressure.scarcity",pages:["product","search"],selectors:[".availability-message",'[data-testid="low-stock-message"]'],text:/only \d+ left|low stock|almost gone/i},{id:"urgency",patternId:"pressure.urgency",pages:["product","search"],selectors:[".offer-end-date",".deal-ending"],text:/limited time|ends? (?:today|soon|in)/i},{id:"membership",patternId:"upsell.store-membership",pages:["home","product","cart"],selectors:[".my-best-buy-membership-promotion",'[data-testid="membership-promotion"]'],text:/my best buy|membership|total|plus/i,complete:!0},{id:"financing",patternId:"upsell.financial-product",pages:["product","cart"],selectors:[".financing-offer",".credit-card-offer"],text:/financing|credit card|monthly|payments/i},{id:"protection",patternId:"upsell.protection-plan",pages:["product","cart"],selectors:[".gsp-offer",'[data-testid="protection-plan-promotion"]'],text:/protection|geek squad/i},{id:"recommendations",patternId:"cross-sell.recommendation",pages:["product","cart"],selectors:[".recommendation-carousel",".shop-related-items"],complete:!0},{id:"reference-price",patternId:"pricing.reference-price",pages:["product","search"],selectors:[".pricing-price__regular-price"]}]}),e.Retailers.register(e.BestBuyAdapter),e.ShopifyAdapter=(()=>{const t=/\/checkouts?\//,n=["home","search","product","cart","other"],o=e=>new RegExp(`^(?=[\\s\\S]{1,160}$)[\\s\\S]*?(?:${e})`,"i"),r=/sign ?up|subscribe|newsletter|join|\d+ ?% off|discount|unlock|exclusive|be the first|first order|vip|rewards/i,a=/back in stock|notify me|restock|wait ?list|sign ?in|log ?in|password|track (?:your )?order|shipping address|payment/i,i=/add to cart|buy now|checkout|place order/i;let s=null;const c=e.createRetailerModule({key:"shopify",label:"Shopify store",hosts:[],eligible:()=>!t.test(location.pathname)&&function(){if(null!==s)return s;const e=Boolean(document.querySelector('#shopify-features,meta[name="shopify-digital-wallet"],meta[name="shopify-checkout-api-token"]'));return"loading"!==document.readyState&&(s=e),e}(),routes:[[t,"checkout"],[/^\/cart(?:\/|$)/,"cart"],[/\/products\//,"product"],[/^\/(?:collections|search)(?:\/|$)/,"search"]],detectors:[{id:"urgency",patternId:"pressure.urgency",pages:n,selectors:["countdown-timer",'[class*="countdown" i]','[class*="timer" i]'],text:o("ends? (?:today|soon|in)|limited time|hurry|offer ends|sale ends")},{id:"scarcity",patternId:"pressure.scarcity",pages:["product","search","cart"],selectors:['[class*="inventory" i]','[class*="stock" i]'],text:o("only \\d+ left|low stock|almost gone|selling fast")},{id:"social-proof",patternId:"pressure.social-proof",pages:n,selectors:['[class*="sales-pop" i]','[class*="social-proof" i]','[class*="recent-sale" i]','[class*="viewers" i]'],text:o("\\d+ (?:people|others|customers|shoppers)|bought|viewing|in (?:their )?carts?")},{id:"recommendations",patternId:"cross-sell.recommendation",pages:["product","cart"],selectors:["product-recommendations",".product-recommendations","complementary-products",".frequently-bought-section",'[class*="frequently-bought" i]'],complete:!0}]}),l=new WeakSet;let d=0;function p(e,t){try{return[...e.matches?.(t)?[e]:[],...e.querySelectorAll?.(t)||[]]}catch{return[]}}const u=e=>Boolean(e.querySelector('form[action*="/cart"],form[action*="/checkout"],form[action*="/account"]')||[...e.querySelectorAll('a,button,input[type="submit"]')].some(e=>i.test(e.textContent||e.value||e.getAttribute("aria-label")||"")));function m(t,n,o){l.add(t);const r=`shopify.${n}`;return e.Audit?.detected?.(t,{detectorId:r,patternId:o,confidence:"confirmed",structuralSafe:!0,structuralReason:"verified-placement"}),Object.freeze({detectorId:r,evidenceId:r,patternId:o,pageType:c.classify(),node:t,signals:["shopify-structure"],exclusions:[],essentialOverlap:!1,structuralSafe:!0,structuralReason:"verified-placement",confidence:"confirmed",epoch:d})}const h='[id^="shopify-section-"][id*="announcement"],.shopify-section-group-header-group[id^="shopify-section-"][id*="banner"]';function f(e){let t=null;for(let n=e.parentElement;n&&n!==document.body&&n!==document.documentElement;n=n.parentElement)"fixed"===getComputedStyle(n).position&&(t=n);return t}const g=()=>[document.body,document.documentElement].some(e=>e&&/hidden|clip/.test(getComputedStyle(e).overflowY));function b(e){const t=getComputedStyle(e);if("none"===t.display||"hidden"===t.visibility||0===Number(t.opacity))return!1;const n=e.getBoundingClientRect();return n.width>0&&n.height>0&&n.right>0&&n.bottom>0&&n.left<innerWidth&&n.top<innerHeight}const x=[400,1200,3e3],y=new WeakMap;function v(t){const n=getComputedStyle(t);if("none"===n.display||0!==Number(n.opacity)&&"hidden"!==n.visibility)return;const o=y.get(t)||0;if(o>=x.length)return;y.set(t,o+1);const r=d;setTimeout(()=>{r===d&&t.isConnected&&e.Engine.processBatch([t])},x[o])}const w=[{id:"attentive",marker:'iframe#attentive_creative,iframe[src*=".attn.tv/"]',frame:!0,styles:!0},{id:"klaviyo",marker:'[data-kl-scroll-locking-modal="true"]',lockClass:"klaviyo-prevent-body-scrolling"}],S=e=>w.find(t=>e.matches(t.marker)||e.querySelector(t.marker));function k(e,t){let n=!1;return!(!e.isConnected||!p(e,t.marker).some(t=>{let o=!1;for(let n=t;n;n=n.parentElement){const t=getComputedStyle(n),r=n===e&&"hide"===n.dataset.wardAction;if(!r&&(n.hidden||"true"===n.getAttribute("aria-hidden")||"none"===t.display))return!1;if(r&&"none"===n.style.display&&"important"!==n.style.getPropertyPriority("display"))return!1;if("hidden"!==t.visibility&&0!==Number(t.opacity)||(o=!0),n===e)break}return!o||(n=!0,!1)}))||!!n&&null}const E=e=>f(e)||("fixed"===getComputedStyle(e).position?e:null),A=new Set,C=new WeakSet,O=new Map;let P=null;const z=()=>[document.documentElement,document.body].filter(Boolean);function M(e,t){const n=O.get(e)||{provider:t,count:0,saved:new Map,removedClass:!1};if(O.set(e,n),!(e=>e.lockClass?document.body.classList.contains(e.lockClass):z().some(e=>/hidden|clip/.test(`${e.style.overflow} ${e.style.overflowY}`)))(t))return!0;if(t.styles&&("hidden"!==document.documentElement.style.overflow||"hidden"!==document.body.style.overflow||"absolute"!==document.body.style.position||"0px"!==document.body.style.inset))return!1;if(++n.count>5)return!1;if(t.lockClass&&(document.body.classList.remove(t.lockClass),n.removedClass=!0),t.styles)for(const e of z()){const t=n.saved.get(e)||new Map;n.saved.set(e,t);for(const n of e===document.body?["overflow","position","inset"]:["overflow"]){const o=e.style.getPropertyValue(n);o&&(t.has(n)||t.set(n,[o,e.style.getPropertyPriority(n)]),e.style.removeProperty(n))}}return!0}function $(e,t=!1){const n=O.get(e),o=n&&k(e,n.provider);if((null!==o||t)&&(O.delete(e),n&&!1!==o)){n.removedClass&&document.body.classList.add(n.provider.lockClass);for(const[e,t]of n.saved)for(const[n,[o,r]]of t)e.style.getPropertyValue(n)||"inset"===n&&["top","right","bottom","left"].some(t=>e.style.getPropertyValue(t))||"overflow"===n&&(e.style.overflowX||e.style.overflowY)||e.style.setProperty(n,o,r)}}function R(){for(const t of A)C.add(t),e.Actions.restoreNode(t);T()}function I(){for(const e of A){const t=S(e),n=!!t&&k(e,t);if(!1!==n){if(null!==n)if("hide"===e.dataset.wardAction){if("hide"===e.dataset.wardAction&&!M(e,t))return R()}else $(e)}else O.delete(e)}g()&&[...A].some(e=>"hide"===e.dataset.wardAction)&&R()}function L(e){if(A.add(e),!P){P=new MutationObserver(I);for(const e of z())P.observe(e,{attributes:!0,attributeFilter:["style","class"]})}S(e)&&P.observe(e,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["data-ward-action","data-kl-scroll-locking-modal","style","class","hidden","aria-hidden","id","src"]})}function T(){P?.disconnect(),P=null;for(const e of[...O.keys()])$(e,!0);A.clear()}return Object.freeze({...c,patternIds:Object.freeze([...c.patternIds,"pressure.signup-popup","promotion.announcement-bar"]),detect:function(e=[document]){const t=c.detect(e);if(!c.eligible()||"checkout"===c.classify())return t;const n=new Set(t.map(e=>e.node));for(const o of function(e){const t=new Set;for(const n of e){for(const e of p(n,h))t.add(e);for(const e of p(n,"announcement-bar,.announcement-bar"))e.closest(h)||e.parentElement?.closest("announcement-bar,.announcement-bar")||t.add(e);for(const e of[n.closest?.(h)])e&&t.add(e)}return[...t].filter(e=>e.isConnected&&!e.querySelector("input,select,textarea")&&!u(e))}(e))n.has(o)||(n.add(o),t.push(m(o,"announcement-bar","promotion.announcement-bar")));for(const o of function(e){const t=new Set,n=g(),o=e=>e&&!t.has(e)&&!C.has(e)&&!e.closest('[data-exp-owned="1"]')&&!(e=>Boolean(e.querySelector('nav,[role="navigation"],[role="menu"]'))||e.querySelectorAll("a[href]").length>3)(e)&&!e.querySelector('input[type="password"]')&&!u(e),i=e=>{const t=(e.textContent||"").replace(/\s+/g," ");return r.test(t)&&!a.test(t)};for(const r of e){for(const e of p(r,'input[type="email"],input[type="tel"],input[name*="email" i]')){const r=f(e);!o(r)||n&&!S(r)||(b(r)?i(r)&&t.add(r):v(r))}for(const e of w)for(const n of p(r,e.marker)){const r=E(n),a=e.frame?n:r;if(!o(r))continue;const s=A.has(r)&&"hide"===r.dataset.wardAction&&!1!==k(r,e);b(a)||s?(e.frame||i(r))&&t.add(r):v(a)}}return[...t]}(e))n.has(o)||(n.add(o),L(o),t.push(m(o,"signup-popup","pressure.signup-popup")));return t},structuralSafety:e=>l.has(e)&&e.isConnected?{safe:!0,reason:"verified-placement"}:c.structuralSafety(e),nextEpoch:()=>(d++,c.nextEpoch()),cleanup(){d++,s=null,T(),c.cleanup()},patterns:()=>[...c.patterns(),{id:"shopify.signup-popup",patternId:"pressure.signup-popup",complete:!0,pages:n.slice()},{id:"shopify.announcement-bar",patternId:"promotion.announcement-bar",complete:!0,pages:n.slice()}]})})(),e.Retailers.register(e.ShopifyAdapter),e.Activity=(()=>{const e=new Map,t={interventions:0,couponsConfirmed:0,couponsSkipped:0,couponsFailed:0,structuralCollapseSkipped:0},n=[],o={};let r=new WeakSet;return Object.freeze({apply:function(n,o){const r=e.get(n);e.set(n,{patternId:o.patternId,category:o.category,action:o.action,confidence:o.confidence,revealed:!1}),r||(t.interventions+=1)},remove:function(t){e.delete(t)},reveal:function(t){const o=e.get(t);o&&!o.revealed&&(o.revealed=!0,n.push({patternId:o.patternId,action:o.action,at:Date.now()}),n.length>20&&n.shift())},conceal:function(t){const n=e.get(t);n&&(n.revealed=!1)},coupon:function(e){"confirmed"===e?t.couponsConfirmed+=1:"skipped"===e?t.couponsSkipped+=1:t.couponsFailed+=1},structuralSkip:function(e,n="unsafe-structural-target"){e&&r.has(e)||(e&&r.add(e),t.structuralCollapseSkipped+=1,o[n]=(o[n]||0)+1)},snapshot:function(){const r={};for(const t of e.values()){const e=`${t.category}:${t.action}`;r[e]=(r[e]||0)+1}return{active:e.size,breakdown:r,totals:{...t},structuralSkipsByReason:{...o},reveals:n.map(e=>({...e}))}},resetRoute:function(){e.clear(),r=new WeakSet}})})(),e.PageStyles=(()=>{const t=new Set;return Object.freeze({inject:function(n,o={}){let r=String(n||""),a=!1;const i=e.Core.injectStyle(document,r,o),s={get textContent(){return r},set textContent(t){r=String(t||"");try{i.textContent=r}catch(t){e.Core.safeError(Object.assign(t,{code:"STYLE_UPDATE"}),"ward.styles")}},active:()=>!a&&Boolean(i?.isConnected),remove(){if(!a){a=!0;try{i?.remove()}catch{}t.delete(s)}}};return t.add(s),s},cleanup:function(){for(const e of[...t])e.remove()}})})(),e.SiteColor=(()=>{const e=new Map;let t;function n(n){const o=String(n||"").trim();if(!o||/^(transparent|none|inherit|initial|unset|currentcolor)$/i.test(o))return null;const r=o.toLowerCase();if(e.has(r))return e.get(r);try{if(t||=(()=>{const e=document.createElement("canvas");return e.width=e.height=1,e.getContext("2d",{willReadFrequently:!0})})(),!t)return null;t.fillStyle="#000",t.fillStyle=o;const n=String(t.fillStyle);let a=null;if(/^#[0-9a-f]{6}$/i.test(n))a={r:parseInt(n.slice(1,3),16),g:parseInt(n.slice(3,5),16),b:parseInt(n.slice(5,7),16),a:1};else{const e=n.match(/^rgba?\(\s*([\d.]+)\s*[, ]\s*([\d.]+)\s*[, ]\s*([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)$/i);if(e)a={r:+e[1],g:+e[2],b:+e[3],a:void 0===e[4]?1:+e[4]};else if(/^(?:oklch|oklab|lch|lab|hwb|color)\(/i.test(n)){t.clearRect(0,0,1,1),t.fillRect(0,0,1,1);const[e,n,o,r]=t.getImageData(0,0,1,1).data;a={r:e,g:n,b:o,a:Math.round(r/255*1e3)/1e3}}}return e.set(r,a),e.size>512&&e.delete(e.keys().next().value),a}catch{return null}}const o=(e,t=0,n=1)=>Math.min(n,Math.max(t,e)),r=e=>{const t=e/255;return t<=.04045?t/12.92:((t+.055)/1.055)**2.4},a=e=>e?.2126*r(e.r)+.7152*r(e.g)+.0722*r(e.b):0,i=e=>e?(Math.max(e.r,e.g,e.b)-Math.min(e.r,e.g,e.b))/255:0,s=(e,t)=>{const o=a("string"==typeof e?n(e):e),r=a("string"==typeof t?n(t):t);return(Math.max(o,r)+.05)/(Math.min(o,r)+.05)},c=e=>e.a<.999?`rgba(${e.r}, ${e.g}, ${e.b}, ${Math.round(1e3*e.a)/1e3})`:`rgb(${e.r}, ${e.g}, ${e.b})`;function l(e,t,r){const a=n(e),i=n(t);if(!a||!i)return t||e;const s=o(r);return c({r:Math.round(a.r+(i.r-a.r)*s),g:Math.round(a.g+(i.g-a.g)*s),b:Math.round(a.b+(i.b-a.b)*s),a:a.a+(i.a-a.a)*s})}function d(e,t,o,r=4.5){const a=n(t);let i=n(e);if(!a||!i||s(i,a)>=r)return e;const c=n(o.text||"#ffffff"),d=n(o.page||"#000000"),p=c?s(c,a):0,u=d?s(d,a):0;let m=p>=u?o.text:o.page;if(!n(m))return e;Math.max(p,u)<r&&(m=s(n("#ffffff"),a)>=s(n("#000000"),a)?"#ffffff":"#000000");let h=m;for(let t=1;t<=10;t+=1){const n=l(e,m,t/10);if(h=n,s(n,a)>=r)break}return h}return Object.freeze({parse:n,rgba:c,luminance:a,saturation:i,contrastRatio:s,mix:l,background:function(e,t,r=t.page){let s=n(e);if(!s||s.a<.08)return e;const d=s.a;d<.999&&(s=function(e,t){const r="string"==typeof e?n(e):e,a="string"==typeof t?n(t):t;if(!r)return a;if(!a||r.a>=.999)return{...r,a:1};const i=o(r.a),s=o(a.a),c=i+s*(1-i);return c<=.001?{r:0,g:0,b:0,a:0}:{r:Math.round((r.r*i+a.r*s*(1-i))/c),g:Math.round((r.g*i+a.g*s*(1-i))/c),b:Math.round((r.b*i+a.b*s*(1-i))/c),a:c}}(s,n(r)||n(t.page)));const p=e=>{if(d>=.999)return e;const t=n(e);return t?c({...t,a:d}):e},u=a(s),m=i(s),h=n(t.page),f=n(t.overlay||t.raised||t.surface);if(!h||!f)return p(t.surface);const g=.28+.66*o((u-.08)/.92),b=l(t.page,t.overlay||t.raised||t.surface,g);if(m<.12)return p(b);const x=o(.12*m,.02,.08);return p(l(b,t.raised||t.surface,x))},foreground:function(e,t,o=t.page,r=4.5){const s=n(e);if(!s||s.a<.08)return e;const p=a(s),u=i(s);return d(u>.2&&p>.08?l(t.muted,c({...s,a:1}),Math.min(.38,.42*u)):p<.5?t.text:l(t.text,t.muted,.22),o,t,r)},ensureContrast:d})})(),e.SiteRules=(()=>{const t=e.SiteColor,n="data-exp-ward-inline",o="--exp-ward-",r="bg",a="fg",i="ln",s=new Map([["background-color",r],["background-image",r],["color",a],["-webkit-text-fill-color",a],["caret-color",a],["text-decoration-color",a],["fill",a],["stroke",a],["border-top-color",i],["border-right-color",i],["border-bottom-color",i],["border-left-color",i],["border-block-start-color",i],["border-block-end-color",i],["border-inline-start-color",i],["border-inline-end-color",i],["outline-color",i],["column-rule-color",i],["box-shadow","shadow"],["mix-blend-mode","blend"]]),c=new Map([["background",r],["border",i],["border-color",i],["border-top",i],["border-right",i],["border-bottom",i],["border-left",i],["outline",i]]),l=/^(inherit|initial|unset|revert|revert-layer|transparent|currentcolor|none|auto)$/i,d=/#[0-9a-f]{3,8}\b|\b(?:rgb|hsl)a?\([^()]*\)/gi,p=/^(\d{1,3})(\s*,\s*|\s+)(\d{1,3})\2(\d{1,3})$/,u=/(^|[\s>+~,(])a(?=[.:#\[\s,>+~)]|$)/i,m=/(^|[\s>+~,(])(img|picture|video|canvas)(?=[.:#\[\s,>+~)]|$)/i,h=/(^|[\s>+~,(])(button|select)(?=[.:#\[\s,>+~)]|$)|\[role=["']?button/i,f=/(^|[\s>+~,(])(input|textarea)(?=[.:#\[\s,>+~)]|$)/i,b=/(^|[\s>+~,(])(button)(?=[.:#\[\s,>+~)]|$)|\[role=["']?button|[.#][\w-]*(?:button|btn)/i,x=[u,m,h,f,b];function y(e){const t=[];let n=0,o="",r=0;for(let a=0;a<e.length;a++){const i=e[a];o?"\\"===i?a++:i===o&&(o=""):'"'===i||"'"===i?o=i:"("===i||"["===i?n++:")"===i||"]"===i?n--:","!==i||n||(t.push(e.slice(r,a).trim()),r=a+1)}return t.push(e.slice(r).trim()),t.filter(Boolean)}let v=null,w=null,S=null,k=!1,E=0,A=0,C=null,O="",P=null;const z=new WeakMap,M=new Map;let $=new WeakMap;const R={engine:"rules",builds:0,sheets:0,rules:0,blocked:0,fetched:0,inline:0,lastMs:0,maxMs:0},I=e=>!!e&&!e.includes("var(")&&!l.test(e)&&CSS.supports("color",e),L=e=>I(e)?t.parse(e):null,T=new Map,N=e=>e&&t.saturation(e)<.15,j=e=>!e||e.a<.001,D=(e,n)=>{const o=t.parse(e);return o&&n<.999?t.rgba({...o,a:n}):e},q=e=>!j(e)&&!N(e)&&t.luminance(e)<.8;function B(e,n,o){const s=o,c=t.parse(e);if(j(c)){if(n!==r||!c||/^transparent$/i.test(e)||q({...c,a:1}))return e;const o=t.parse(t.background(t.rgba({...c,a:1}),w,v.bg));return o?`rgba(${Math.round(o.r)}, ${Math.round(o.g)}, ${Math.round(o.b)}, 0)`:e}return n===r?q(c)?o?e:function(e){const n="dark"===v.mode,o=n?v.bg:v.panel,r=e=>n?e<=.18:e>=.55;let a=t.rgba({...e,a:1});for(let n=1;n<=10&&!r(t.luminance(t.parse(a)));n++)a=t.mix(t.rgba({...e,a:1}),o,n/10);return D(a,e.a)}(c):D(t.background(t.rgba({...c,a:1}),w,v.bg),c.a):n===a?s&&!q(c)?v.accent:t.foreground(e,w,v.panel):n===i?N(c)?D(v.line,c.a):e:N(c)&&t.luminance(c)>.6?D(t.background(t.rgba({...c,a:1}),w,v.bg),c.a):e}const _=(e,t)=>o+t+"-"+e.slice(2);function V(e,t,n,r){if(I(e))return B(e,t,r);let a="",i="";const s=()=>{i&&(a+=i.replace(/url\(\s*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^)]*)\s*\)|#[0-9a-f]{3,8}\b|\b(?:rgb|hsl)a?\([^()]*\)|(?<![-\w#.])[a-z]{3,22}(?![-\w(])/gi,e=>{if(/^[a-z]+$/i.test(e))return(e=>{const t=e.toLowerCase();return T.has(t)||T.set(t,I(t)),T.get(t)})(e)?B(e,t,r):e;if(!/^url\(/i.test(e))return B(e,t,r);const o=e.slice(4,-1).trim().replace(/^["']|["']$/g,"");if(!o||/^(data:|blob:|https?:|\/\/|#)/i.test(o))return e;try{return'url("'+new URL(o,n).href+'")'}catch{return e}}),i="")};for(let c=0;c<e.length;)if(e.startsWith("var(",c)){let i=1,l=c+4;for(;l<e.length&&i;){const t=e[l++];"("===t?i++:")"===t&&i--}const d=e.slice(c+4,l-1),p=d.indexOf(","),u=(p<0?d:d.slice(0,p)).trim(),m=p<0?"":", "+V(d.slice(p+1).trim(),t,n,r);s(),a+=u.startsWith("--")&&!u.startsWith(o)?`var(${_(u,t)}, var(${u}${m}))`:e.slice(c,l),c=l}else i+=e[c++];return s(),a}function U(e,n,o){const s=n.trim(),c=s.match(p);return c?[r,a,i].map(n=>{const o=t.parse(B(`rgb(${c[1]}, ${c[3]}, ${c[4]})`,n));return o?`${_(e,n)}:${[o.r,o.g,o.b].map(Math.round).join(c[2])}`:""}).filter(Boolean):!I(s)&&!s.includes("var(")&&s.search(d)<0?[]:[r,a,i].map(t=>`${_(e,t)}:${V(s,t,o)}`)}let W=null;function H(e){const t=/^var\(\s*(--[\w-]+)\s*(?:,\s*([^()]+|[a-z]+\([^()]*\)))?\)$/i.exec(e.trim());return t?(W||=getComputedStyle(document.documentElement),L(W.getPropertyValue(t[1]).trim())||L((t[2]||"").trim())):null}const F=()=>e.Retailer.theme?.()||null;function G(e,n,i=e.selectorText||""){const d=e.style,p=[],g="light"===v.mode&&!!F()?.keepInLight?.test(i);let x=!1;const y=d.getPropertyValue("background-color"),S=d.getPropertyValue("color"),k=L(y)||H(y),E=I(S)||!!H(S),A=u.test(i),C=m.test(i),O=L(d.getPropertyValue("color")),P=/url\(/i.test(d.getPropertyValue("background-image"))||/^(absolute|fixed)$/.test(d.getPropertyValue("position"))&&j(k)&&O&&t.luminance(O)>.8,z=!g&&q(k)&&!E&&b.test(i)?t.luminance(k)>.4?"#0f1111":"#ffffff":"",M=h.test(i)?/:hover/.test(i)?t.mix(v.raised,v.text,.12):v.raised:f.test(i)?v.inset:"";for(let e=0;e<d.length;e++){const i=d[e];if(i.startsWith("--")){g||i.startsWith(o)||p.push(...U(i,d.getPropertyValue(i),n));continue}const c=s.get(i);if(!c)continue;const u=d.getPropertyValue(i);if(!u){x=!0;continue}const m=d.getPropertyPriority(i)?"!important":"";if(g){p.push(i+":"+u+m);continue}let h=u;if("blend"===c)h="normal",C&&"normal"!==u&&p.push("background-color:rgb(255, 255, 255)");else if(l.test(u)||C)h=u;else if("background-color"===i&&M&&N(k)&&!j(k))h=D(M,k.a);else if(c===a&&"fill"!==i&&"stroke"!==i&&(q(k)||P))h=u;else if("background-color"===i&&z)h=u;else if(c!==a||"fill"!==i&&"stroke"!==i)h=V(u,c,n,c===r?E:c===a&&"color"===i&&A);else{const e=L(u);h=e?N(e)?t.ensureContrast(v.text,v.panel,w,3):u:u.includes("var(")?V(u,a,n):u}p.push(i+":"+h+m)}if(z&&(p.push("color:"+z),p.after=`:is(${i}) *{color:${z}!important}`),x&&!g)for(const[e,t]of c){const o=d.getPropertyValue(e);o&&o.includes("var(")&&p.push(e+":"+V(o,t,n)+(d.getPropertyPriority(e)?"!important":""))}return p}function J(e,t){let n="";for(const o of e)if(o instanceof CSSStyleRule){const e=new Map;for(const t of o.selectorText.includes(",")&&x.some(e=>e.test(o.selectorText))?y(o.selectorText):[o.selectorText]){const n=x.map(e=>e.test(t)?1:0).join("");e.set(n,e.has(n)?e.get(n)+","+t:t)}const r=o.cssRules?.length?J(o.cssRules,t):"";let a=!0;for(const i of e.values()){const e=G(o,t,i),s=e.join(";"),c=a?r:"";a=!1,(s||c)&&(n+=`${i}{${s}${s&&c?";":""}${c}}${e.after||""}`,R.rules++)}}else if(o instanceof CSSImportRule){let e="";try{e=o.styleSheet?J(o.styleSheet.cssRules,o.styleSheet.href||t):""}catch{}if(!e)continue;o.layerName&&(e=`@layer ${o.layerName}{${e}}`),n+=o.media?.mediaText?`@media ${o.media.mediaText}{${e}}`:e}else if(o.cssRules&&!(o instanceof CSSKeyframesRule)){const e=J(o.cssRules,t),r=o.cssText.indexOf("{");e&&r>0&&(n+=o.cssText.slice(0,r)+"{"+e+"}")}return n}const K=e=>{try{return e.cssRules}catch{return null}},Y=e=>{const t=K(e);return(t?t.length:"x")+":"+(e.ownerNode?.textContent?.length||0)+":"+(e.href||"")+":"+(e.disabled?0:1)+":"+(e.media?.mediaText||"")},Z=()=>[...document.styleSheets].filter(e=>e.ownerNode!==S&&!e.ownerNode?.closest?.('[id^="exp-"],[data-exp-owned]')&&!g.isOwnedSheet(e));function X(e){const t=e.href;return t?M.has(t)?M.get(t):(M.set(t,null),fetch(t,{credentials:"omit"}).then(e=>e.ok?e.text():Promise.reject(new Error(String(e.status)))).then(e=>{const n=new CSSStyleSheet;n.replaceSync(e),M.set(t,n),R.fetched++,k&&de()}).catch(()=>{}),null):null}function Q(){const t=performance.now(),r=[];W=null,R.sheets=R.blocked=0;let a=0;for(const e of Z()){if(e.disabled)continue;R.sheets++;let t=K(e);if(!t&&(R.blocked++,t=X(e)?.cssRules||null,!t))continue;const n=w.id+"|"+Y(e)+"|"+t.length;let o=z.get(e);if(!o||o.key!==n){R.rules=0;let r=J(t,e.href||location.href);r&&e.media?.mediaText&&"all"!==e.media.mediaText&&(r=`@media ${e.media.mediaText}{${r}}`),o={key:n,text:r,rules:R.rules},z.set(e,o)}a+=o.rules,r.push(o.text)}R.rules=a;const i=v,s=`${re}{}html{color-scheme:${i.mode};background-color:${i.bg}!important;color:${i.text}!important}body{background-color:${i.bg}!important;color:${i.text}!important}::selection{background:${i.line};color:${i.text}}:where(a[href]){color:${i.accent}}:where(a[href]) :where(p,h1,h2,h3,h4,h5,h6,li,dt,dd,figcaption){color:${i.text}}main{background-color:${i.bg}!important}${function(e){const t=F();return"dark"===e&&t?(t.darkInvert?.length?`:is(${t.darkInvert.join(",")}){filter:invert(1)!important}`:"")+(t.darkInvertPicture?.length?`:is(${t.darkInvertPicture.join(",")}){filter:invert(1) hue-rotate(180deg)!important}`:"")+(t.darkTextVars?.length?`${t.darkVarRoots||":root"}{${t.darkTextVars.map(e=>`${e}:${v.text}!important`).join(";")}}`:""):""}(i.mode)}[${n}~="bg"]{background-color:var(${o}inline-bg)!important}[${n}~="fg"]{color:var(${o}inline-fg)!important}[${n}~="ln"]{border-color:var(${o}inline-ln)!important}[${n}~="fill"]{fill:var(${o}inline-fill)!important}[${n}~="stroke"]{stroke:var(${o}inline-stroke)!important}[${n}~="blend"]{mix-blend-mode:normal!important}[${oe}]{color:var(${o}native-fg)!important}`+r.join(""),c=document.documentElement;S?.isConnected||(S?.remove(),S=e.Core.injectStyle(document,s,{expWardRules:"1"}),S.id="exp-ward-rules",S.dataset.expOwned="1",S.isConnected||c.append(S)),S.textContent!==s&&(S.textContent=s);const l=ae()?.ownerNode,d=l?Z().map(e=>e.ownerNode).filter(Boolean).pop():null;d&&l.compareDocumentPosition(d)&Node.DOCUMENT_POSITION_FOLLOWING&&c.append(l),"ward"!==c.getAttribute("data-exp-site-colors")&&c.setAttribute("data-exp-site-colors","ward"),c.dataset.expSitePalette="slate-blue-"+i.mode,O=Z().map(Y).join("|"),function(){const e=document.querySelectorAll(ne),t=e.length?ae():null;if(!e.length||!t)return;const n=[];for(const t of e){n.push(t);for(const e of t.querySelectorAll("*"))n.length<400&&n.push(e)}for(const e of n)e.removeAttribute(oe);let r;t.disabled=!0;try{r=n.map(e=>getComputedStyle(e).color)}finally{t.disabled=!1}n.forEach((e,t)=>{e.style.getPropertyValue(o+"native-fg")!==r[t]&&e.style.setProperty(o+"native-fg",r[t]),e.setAttribute(oe,"")})}(),R.builds++,R.lastMs=Math.round(performance.now()-t),R.maxMs=Math.max(R.maxMs,R.lastMs)}function ee(e){const s=e.style;if(!s||e===document.documentElement||e===document.body||e.closest('[id^="exp-"],[data-exp-owned]'))return;const c="light"===v.mode&&F()?.keepInLightRoot;if(c&&e.closest(c))return void(e.hasAttribute(n)&&e.removeAttribute(n));const d=e instanceof SVGElement&&se(e.ownerSVGElement||e)?[e.getAttribute("fill")||"",e.getAttribute("stroke")||""]:["",""],p=[s.backgroundColor,s.color,s.borderColor||s.borderTopColor,s.mixBlendMode,...d].join("|");if($.get(e)===p+w.id)return;$.set(e,p+w.id);const u=[];s.mixBlendMode&&"normal"!==s.mixBlendMode&&!e.matches("img,picture,video,canvas")&&u.push("blend");const m=te.get(e)||new Map;for(const[e,t]of[[r,"background-color"],[a,"color"]]){const n=s.getPropertyValue(t),o=m.get(t);if("important"!==s.getPropertyPriority(t)){o&&m.delete(t);continue}const i=o&&o.mapped===n?o.value:n,c=L(e===r?i:m.get("background-color")?.value||s.getPropertyValue("background-color")),d=!i||l.test(i)||e===a&&q(c)?"":V(i,e,location.href,e===r&&!!s.color);d&&d!==i?(n!==d&&s.setProperty(t,d,"important"),m.set(t,{value:i,mapped:s.getPropertyValue(t)})):o&&(s.setProperty(t,o.value,"important"),m.delete(t))}m.size?te.set(e,m):te.delete(e),$.set(e,[s.backgroundColor,s.color,s.borderColor||s.borderTopColor,s.mixBlendMode,...d].join("|")+w.id);for(const[e,n]of[["fill",d[0]],["stroke",d[1]]]){const r=o+"inline-"+e,a=L(n);if(a&&N(a)){const n=t.ensureContrast(v.text,v.panel,w,3);u.push(e),s.getPropertyValue(r)!==n&&s.setProperty(r,n)}else s.getPropertyValue(r)&&s.removeProperty(r)}for(const[e,t]of[[r,s.backgroundColor],[a,s.color],[i,s.borderColor||s.borderTopColor]]){const n=o+"inline-"+e;if(m.has(e===r?"background-color":e===a?"color":"")){s.getPropertyValue(n)&&s.removeProperty(n);continue}const i=!t||l.test(t)||e===a&&q(L(s.backgroundColor))?"":V(t,e,location.href,e===r&&!!s.color);i&&i!==t?(u.push(e),s.getPropertyValue(n)!==i&&s.setProperty(n,i)):s.getPropertyValue(n)&&s.removeProperty(n)}if(u.includes(r)&&!u.includes(a)&&!m.has("color")){const i=e.getAttribute(n)||"";/fg/.test(i)&&e.setAttribute(n,i.replace(/fg/,"").trim());const c=getComputedStyle(e).color,l=t.ensureContrast(c,s.getPropertyValue(o+"inline-"+r),w);l&&l!==c&&(u.push(a),s.setProperty(o+"inline-"+a,l))}u.length?e.getAttribute(n)!==u.join(" ")&&e.setAttribute(n,u.join(" ")):e.hasAttribute(n)&&e.removeAttribute(n)}const te=new Map,ne='[class*="single-video-card_style_themingTextColor"],[class*="live-events-streaming-widget_style_themingTextColor"]',oe="data-exp-ward-native",re=".exp-ward-rules-mark";function ae(){for(const e of[...document.adoptedStyleSheets,...document.styleSheets])try{for(let t=0;t<Math.min(4,e.cssRules.length);t++)if(e.cssRules[t].selectorText===re)return e}catch{}return null}const ie=new WeakMap,se=e=>(ie.has(e)||ie.set(e,e.querySelectorAll("*").length<=12),ie.get(e)),ce="[style],[fill],[stroke]",le=e=>{if(1===e.nodeType){e.matches(ce)&&ee(e);for(const t of e.querySelectorAll(ce))ee(t)}};function de(){!E&&k&&(E=setTimeout(()=>{E=0,k&&Q()},120))}function pe(e){e.target?.matches?.('link[rel~="stylesheet"]')&&de()}function ue(e){const t=g.sitePalette(e);if(!k||!v||v.id!==t.id||v.mode!==t.mode){if(v=t,w={...t,id:t.id+"-"+t.mode,page:t.bg,surface:t.panel,overlay:t.panel,input:t.inset},!k){k=!0,C=new MutationObserver(e=>{let t=!1;for(const n of e){if("attributes"===n.type){n.target!==S&&ee(n.target);continue}const e=3===n.target.nodeType?n.target.parentNode:n.target;if(e!==S)if("STYLE"!==e?.nodeName)for(const e of[...n.addedNodes,...n.removedNodes])1===e.nodeType&&e!==S&&((e.matches("style,link")||e.querySelector('style,link[rel~="stylesheet"]'))&&(t=!0),e.isConnected&&(le(e),(e.matches(ne)||e.querySelector(ne))&&(t=!0)));else t=!0}t?de():A||(A=setTimeout(()=>{A=0,k&&Z().map(Y).join("|")!==O&&de()},1e3))}),C.observe(document.documentElement,{subtree:!0,childList:!0,characterData:!0,attributes:!0,attributeFilter:["style","fill","stroke"]}),document.addEventListener("load",pe,!0);const e=matchMedia("(prefers-color-scheme: dark)"),t=()=>{if(k&&"system"===v.id){const e=v.id;v=null,ue(e)}};e.addEventListener("change",t),P=()=>e.removeEventListener("change",t)}Q(),le(document.documentElement),R.inline=document.querySelectorAll(`[${n}]`).length}}return Object.freeze({apply:e=>ue(e),clear:function(){k=!1,clearTimeout(E),E=0,clearTimeout(A),A=0,C?.disconnect(),C=null,document.removeEventListener("load",pe,!0),P?.(),P=null,S?.remove(),S=null,O="",function(){for(const[e,t]of te)for(const[n,o]of t)e.style.getPropertyValue(n)===o.mapped&&e.style.setProperty(n,o.value,"important");te.clear()}(),$=new WeakMap;for(const e of document.querySelectorAll(`[${oe}]`))e.removeAttribute(oe),e.style.removeProperty(o+"native-fg");for(const e of document.querySelectorAll(`[${n}]`)){e.removeAttribute(n);for(const t of[r,a,i,"fill","stroke"])e.style.removeProperty(o+"inline-"+t)}const e=document.documentElement;"ward"===e?.getAttribute("data-exp-site-colors")&&(e.removeAttribute("data-exp-site-colors"),delete e.dataset.expSitePalette)},health:()=>({...R,inline:document.querySelectorAll(`[${n}]`).length})})})(),e.SiteTheme=Object.freeze({apply(t=e.Settings.snapshot()){t.enabled&&!t.safeMode&&e.Retailer.enabled(t)&&!g.suiteSitePaused()?e.SiteRules.apply(t.siteColors):e.SiteRules.clear()},clear:()=>e.SiteRules.clear(),health:()=>e.SiteRules.health()}),e.Actions=(()=>{const t=new Map,n=new WeakMap;let o,r=0;function a(e){const{node:t,original:n}=e;e.companion?.remove(),e.companion=null,t.classList.remove("exp-ward-dimmed"),n&&(t.hidden=n.hidden,null===n.ariaHidden?t.removeAttribute("aria-hidden"):t.setAttribute("aria-hidden",n.ariaHidden),n.inert?t.setAttribute("inert",""):t.removeAttribute("inert"),n.display?t.style.setProperty("display",n.display,n.displayPriority):t.style.removeProperty("display"),n.opacity?t.style.setProperty("opacity",n.opacity,n.opacityPriority):t.style.removeProperty("opacity"),n.filter?t.style.setProperty("filter",n.filter,n.filterPriority):t.style.removeProperty("filter"),t.style.position=n.position),t.removeAttribute("data-ward-action"),g.clearPresentationState(t,"ward")}function i(e,t){const n=e.node;return e.revealed?"1"===n.dataset.wardRevealed&&e.companion?.isConnected&&e.companion.classList.contains("exp-ward-reprotect"):"allow"===t?!n.hasAttribute("data-ward-action")&&!e.companion&&!n.classList.contains("exp-ward-dimmed"):"dim"===t?"dim"===n.dataset.wardAction&&n.classList.contains("exp-ward-dimmed")&&"0.58"===n.style.getPropertyValue("opacity")&&"important"===n.style.getPropertyPriority("opacity")&&!e.companion:"annotate"===t?"annotate"===n.dataset.wardAction&&e.companion?.isConnected&&e.companion.classList.contains("exp-ward-annotation"):"collapse"===t?"collapse"===n.dataset.wardAction&&n.hidden&&n.hasAttribute("inert")&&"none"===n.style.getPropertyValue("display")&&"important"===n.style.getPropertyPriority("display")&&e.companion?.isConnected&&e.companion.classList.contains("exp-ward-collapse"):"hide"===t&&"hide"===n.dataset.wardAction&&n.hidden&&n.hasAttribute("inert")&&"none"===n.style.getPropertyValue("display")&&"important"===n.style.getPropertyPriority("display")}function s(e,t,n){const o=document.createElement("collapse"===t||"reprotect"===t?"button":"span");if(o.dataset.expOwned="1",o.className=`exp-ward-${t}`,"collapse"===t){o.type="button",o.setAttribute("aria-expanded","false"),o.setAttribute("aria-label",`${n}. Show content`);const t=document.createElement("span");t.className="exp-ward-collapse-label",t.textContent="Protected by WARD";const r=document.createElement("span");r.className="exp-ward-collapse-action",r.textContent="Show",o.append(t,r),o.addEventListener("click",()=>l(e.id))}else"reprotect"===t?(o.type="button",o.textContent="Protect Again",o.setAttribute("aria-label",`Protect ${n} again`),o.addEventListener("click",()=>d(e.id))):o.textContent=n;"annotation"===t&&"li"===e.node.localName?e.node.prepend(o):e.node.insertAdjacentElement("afterend",o),e.companion=o}function c(l,d){if(function(e){return!(e instanceof Element)||e===document.documentElement||e===document.head||e===document.body||e===document.scrollingElement}(l))return e.Core.safeError(Object.assign(new Error("WARD refused an intervention against a protected document root"),{code:"ACTION_ROOT_GUARD"}),"ward.actions"),null;o?.active()||(o=e.PageStyles.inject("\n      .exp-ward-dimmed{\n        opacity:.58!important;\n        filter:saturate(.72)!important;\n        transition:opacity .12s ease,filter .12s ease!important\n      }\n      .exp-ward-collapse,.exp-ward-reprotect{\n        display:flex!important;\n        align-items:center!important;\n        justify-content:space-between!important;\n        gap:10px!important;\n        width:100%!important;\n        min-height:28px!important;\n        margin:4px 0!important;\n        padding:5px 8px!important;\n        border:1px solid rgba(183,91,0,.38)!important;\n        border-radius:6px!important;\n        background:rgba(255,244,199,.72)!important;\n        color:#4a3518!important;\n        box-shadow:none!important;\n        font:600 11px/1.25 system-ui,sans-serif!important;\n        cursor:pointer!important;\n        text-align:left!important\n      }\n      .exp-ward-collapse:hover,.exp-ward-reprotect:hover{\n        background:rgba(255,244,199,.9)!important;\n        border-color:rgba(183,91,0,.6)!important\n      }\n      .exp-ward-collapse:focus-visible,.exp-ward-reprotect:focus-visible{\n        outline:2px solid #1b70c9!important;\n        outline-offset:2px!important\n      }\n      .exp-ward-collapse-label{\n        overflow:hidden!important;\n        text-overflow:ellipsis!important;\n        white-space:nowrap!important;\n        opacity:.82!important\n      }\n      .exp-ward-collapse-action{\n        flex:0 0 auto!important;\n        font-weight:800!important\n      }\n      .exp-ward-annotation{\n        display:inline-block!important;\n        margin:2px 4px!important;\n        padding:2px 5px!important;\n        border:1px solid rgba(183,91,0,.32)!important;\n        border-radius:5px!important;\n        background:rgba(255,244,199,.65)!important;\n        color:#5a421f!important;\n        font:700 12px/1.3 system-ui,sans-serif!important;white-space:normal!important;overflow-wrap:anywhere!important;max-width:100%!important;box-sizing:border-box!important\n      }\n      .exp-ward-reprotect{\n        width:auto!important;\n        margin:4px 0 4px auto!important;\n        color:#4a3518!important\n      }\n    ",{wardActions:"1"}));const p=function(e){const o=n.get(e);if(o&&t.get(o.id)===o)return o.id;o&&n.delete(e);const a="ward-"+ ++r,i={id:a,node:e,action:"allow",patternId:"",category:"",confidence:"",structuralSafe:null,original:null,companion:null,revealed:!1};return t.set(a,i),n.set(e,i),e.dataset.wardInstance=a,a}(l),u=t.get(p);!function(e){if(e.original)return;const t=e.node;e.original={hidden:t.hidden,ariaHidden:t.getAttribute("aria-hidden"),inert:t.hasAttribute("inert"),display:t.style.getPropertyValue("display"),displayPriority:t.style.getPropertyPriority("display"),opacity:t.style.getPropertyValue("opacity"),opacityPriority:t.style.getPropertyPriority("opacity"),filter:t.style.getPropertyValue("filter"),filterPriority:t.style.getPropertyPriority("filter"),position:t.style.position}}(u),u.guard??=new MutationObserver(()=>{!t.has(p)||u.revealed||i(u,u.action)||c(l,{action:u.action,pattern:{id:u.patternId,category:u.category,label:e.Patterns.get(u.patternId)?.label||"protected content"},confidence:u.confidence,structuralSafe:u.structuralSafe,reason:u.reason})}),u.guard.observe(l,{attributes:!0,attributeFilter:["style","hidden","inert","class","data-ward-action"]});const m="hide"!==d.action&&"collapse"!==d.action||!1!==d.structuralSafe?d.action:"dim",h=u.action===m&&u.patternId===d.pattern.id&&u.category===d.pattern.category&&u.confidence===d.confidence;if(u.action=m,u.patternId=d.pattern.id,u.category=d.pattern.category,u.confidence=d.confidence,u.reason=d.reason||"protection-policy",u.structuralSafe=d.structuralSafe??u.structuralSafe,u.revealed)return l.dataset.wardRevealed="1",i(u,m)||s(u,"reprotect",d.pattern.label),p;if(h&&i(u,m))return p;if(a(u),l.removeAttribute("data-ward-revealed"),l.dataset.wardAction=u.action,"hide"===u.action)l.contains(document.activeElement)&&document.activeElement.blur(),l.hidden=!0,l.style.setProperty("display","none","important"),l.setAttribute("inert","");else if("dim"===u.action)l.classList.add("exp-ward-dimmed"),l.style.setProperty("opacity","0.58","important"),l.style.setProperty("filter","saturate(0.72)","important");else if("collapse"===u.action){const e=l.contains(document.activeElement);l.hidden=!0,l.style.setProperty("display","none","important"),l.setAttribute("inert",""),s(u,"collapse",`Show ${d.pattern.label}`),e&&u.companion.focus()}else"annotate"===u.action?s(u,"annotation",`WARD: ${d.pattern.label}`):(u.action="allow",l.removeAttribute("data-ward-action"));return function(e){"hide"===e.action||"collapse"===e.action||"dim"===e.action?g.setPresentationState(e.node,"ward",{visibility:e.action}):g.clearPresentationState(e.node,"ward")}(u),"allow"===u.action?e.Activity.remove(p):e.Activity.apply(p,u),p}function l(n){const o=t.get(n);return!(!o||"allow"===o.action||(a(o),o.revealed=!0,o.node.dataset.wardRevealed="1",s(o,"reprotect",e.Patterns.get(o.patternId)?.label||"protected content"),e.Activity.reveal(n),e.Audit?.revealed?.(o.node),0))}function d(n){const o=t.get(n);return!!o?.revealed&&(o.node.removeAttribute("data-ward-revealed"),o.revealed=!1,e.Activity.conceal(n),e.Audit?.concealed?.(o.node),c(o.node,{action:o.action,pattern:{id:o.patternId,category:o.category,label:e.Patterns.get(o.patternId)?.label||"protected content"},confidence:o.confidence,structuralSafe:o.structuralSafe,reason:o.reason}),!0)}function p(o,r=!0){const i=t.get(o);return!!i&&(i.guard?.disconnect(),a(i),i.node.removeAttribute("data-ward-revealed"),i.node.removeAttribute("data-ward-instance"),e.Activity.remove(o),r&&(t.delete(o),n.delete(i.node)),!0)}function u(){for(const e of[...t.keys()])p(e)}const m=new Set(["pressure.urgency","pressure.scarcity"]),h=e=>![...e.childNodes].filter(e=>!e.classList?.contains("exp-ward-annotation")).some(e=>e.textContent.trim())&&!e.getAttribute("aria-label")?.trim()&&!e.querySelector("img,svg,[aria-label]");return Object.freeze({apply:c,reveal:l,endReveal:d,restore:p,restoreNode:function(e){const t=n.get(e);return!!t&&p(t.id)},restoreAll:u,reconcile:function(e,n){for(const[o,r]of t)!n.has(r.node)&&e.some(e=>e===r.node||e.contains?.(r.node))&&p(o)},cleanup:function(){u(),o?.remove(),o=null},snapshot:function(){return[...t.values()].map(({id:e,action:t,patternId:n,category:o,confidence:r,reason:a,revealed:i,node:s})=>({id:e,action:t,patternId:n,category:o,confidence:r,reason:a,revealed:i,connected:s.isConnected}))},prune:function(){for(const[o,r]of t)r.node.isConnected&&"annotate"===r.action&&m.has(r.patternId)&&h(r.node)?p(o):r.node.isConnected||(r.guard?.disconnect(),r.companion?.remove(),t.delete(o),n.delete(r.node),e.Activity.remove(o))}})})(),e.SellerClarity=(()=>{const t="seller-clarity",n=new Set(["SCHWINN","STRYKER","KRYPTONITE","BRITA","NZXT","SKLZ","TRXTRAINING","DEWALT","RYOBI","ZAGG","OTTERBOX","NETGEAR","SKULLCANDY","CRKT","KRK","SHURE","BLACKWING","VTECH"]),o=Object.freeze({"seller.not-brand":{kind:"hint",text:"Sold by a third-party seller that is not the brand or the store."},"brand.generated-name":{kind:"hint",text:"The brand has an unusual all-caps name pattern. This alone says nothing about product quality or authenticity."},"ratings.polarized":{kind:"hint",text:"Ratings are split between many 5-star and many 1-star reviews."},"ratings.thin-high":{kind:"hint",text:"A very high score from only a few ratings."}});let r,a=new Set,i=Object.create(null);function s(e){return String(e||"").toLowerCase().replace(/[^a-z0-9]/g,"")}function c(e){const t=String(e||"").trim();if(!/^[A-Z]{5,10}$/.test(t)||n.has(t))return!1;const o=t.split(/[AEIOUY]/).map(e=>e.length);return!/[AEIOUY]/.test(t)||Math.max(...o)>=4}function l(e,t){const n=s(e),o=s(t);return!(!n||!o)&&(n.includes(o)||o.includes(n))}function d(e,t){const n=s(e);return Boolean(n)&&(t.trustedBrands||[]).includes(n)}function p(e,t){const n=[];if(!e)return n;const o=d(e.brand,t);!e.seller||e.firstParty||!e.brand||l(e.seller,e.brand)||o||n.push("seller.not-brand"),e.brand&&!o&&c(e.brand)&&n.push("brand.generated-name");const r=e.distribution||{};return Number(r[5])>=55&&Number(r[1])>=15&&n.push("ratings.polarized"),Number(e.ratingCount)>0&&Number(e.ratingCount)<25&&Number(e.rating)>=4.7&&n.push("ratings.thin-high"),n}function u(){r?.active()||(r=e.PageStyles.inject("\n      .exp-ward-clarity{\n        display:block!important;\n        box-sizing:border-box!important;\n        max-width:560px!important;\n        margin:8px 0!important;\n        padding:8px 10px!important;\n        border:1px solid #ffb000!important;\n        border-radius:6px!important;\n        background:#19191e!important;\n        color:#fffaf3!important;\n        font:500 14px/1.5 system-ui,sans-serif!important;\n        overflow-wrap:anywhere!important;\n        text-align:left!important\n      }\n      .exp-ward-clarity-title{display:block!important;margin:0 0 4px!important;font-weight:800!important;color:#ffb000!important}\n      .exp-ward-clarity-facts{display:block!important;margin:0 0 4px!important;color:#fffaf3!important}\n      .exp-ward-clarity-list li{color:#fffaf3!important}\n      .exp-ward-clarity-list{margin:0 0 6px!important;padding:0 0 0 16px!important;list-style:disc!important}\n      .exp-ward-clarity-list li{margin:2px 0!important}\n      .exp-ward-clarity-trust{\n        display:inline-block!important;\n        padding:3px 8px!important;\n        border:1px solid #ffb000!important;\n        border-radius:5px!important;\n        background:#101014!important;\n        color:#fffaf3!important;\n        font:700 14px/1.5 system-ui,sans-serif!important;\n        cursor:pointer!important\n      }\n      .exp-ward-clarity-trust:focus-visible{outline:2px solid #ffb000!important;outline-offset:2px!important}\n      .exp-ward-clarity-chip{\n        display:inline-block!important;\n        margin:2px 4px!important;\n        padding:2px 5px!important;\n        border:1px solid #ffb000!important;\n        border-radius:5px!important;\n        background:#19191e!important;\n        color:#fffaf3!important;\n        font:700 12px/1.4 system-ui,sans-serif!important\n      }\n    ",{wardSellerClarity:"1"}))}function m(e,t,n){const o=document.createElement(e);return t&&(o.className=t),void 0!==n&&(o.textContent=n),o}function h(e){return e.dataset.expOwned="1",e.dataset.wardOwner=t,a.add(e),e}function f(e){i[e]=(i[e]||0)+1}function g(e,n){if(!e?.brandNode?.isConnected)return;const r=e.brandNode.nextElementSibling;if(d(e.brand,n)||!c(e.brand))return void(r?.dataset?.wardOwner===t&&(a.delete(r),r.remove()));if(r?.dataset?.wardOwner===t)return;u();const i=h(m("span","exp-ward-clarity-chip","Generated-Style Brand"));i.title=o["brand.generated-name"].text,i.dataset.wardSignal="brand.generated-name",e.brandNode.after(i),f("brand.generated-name")}function b(){for(const e of a)e.remove();for(const e of document.querySelectorAll(`[data-ward-owner="${t}"]`))e.remove();a=new Set,i=Object.create(null)}return Object.freeze({SIGNALS:o,generatedBrandName:c,sellerIsBrand:l,signalsFor:p,process:function(n,r,i){if(function(t){return e.Retailer.enabled(t)&&!t.safeMode&&!1!==t.sellerClarity&&e.Retailer.supportsSellerClarity()}(r)){if("product"===i){const n=e.Retailer.sellerFacts(document);n?function(n,r,i){const c=!0===i.sellerClarityAlways,l=n.anchor;if(!l?.isConnected)return;const d=JSON.stringify([r,n.brand,n.seller,n.shipsFrom]),p=l.nextElementSibling;for(const e of document.querySelectorAll(`.exp-ward-clarity[data-ward-owner="${t}"]`))e!==p&&(a.delete(e),e.remove());if(!r.length&&!c)return void(p?.dataset?.wardOwner===t&&(a.delete(p),p.remove()));if(p?.dataset?.wardOwner===t&&p.dataset.wardDigest===d)return;p?.dataset?.wardOwner===t&&(a.delete(p),p.remove()),u();const g=h(m("div","exp-ward-clarity"));g.dataset.wardDigest=d,g.setAttribute("role","note"),g.setAttribute("aria-label","WARD Seller Clarity"),g.append(m("strong","exp-ward-clarity-title",r.length?"Seller clarity: worth a second look":"Seller Clarity"));const b=[n.brand?`Brand: ${n.brand}`:"",n.seller?`Sold by: ${n.seller}`:"",n.shipsFrom?`Ships from: ${n.shipsFrom}`:""].filter(Boolean);if(b.length&&g.append(m("span","exp-ward-clarity-facts",b.join(" · "))),r.length){const e=m("ul","exp-ward-clarity-list");for(const t of r){const n=m("li","",o[t].text);n.dataset.wardSignal=t,e.append(n)}g.append(e)}if(/^[a-z0-9]{1,60}$/.test(s(n.brand))&&r.some(e=>"seller.not-brand"===e||"brand.generated-name"===e)){const t=m("button","exp-ward-clarity-trust",`Trust ${n.brand}`);t.type="button",t.addEventListener("click",()=>function(t){const n=s(t);if(!n)return;const o=e.Settings.snapshot().trustedBrands||[];o.includes(n)||e.Settings.update({trustedBrands:[...o,n]},"trusted-brand")}(n.brand)),g.append(t)}l.after(g);for(const e of r)f(e)}(n,p(n,r),r):b()}else if("search"===i&&!1!==r.sellerClaritySearch)for(const t of e.Retailer.listingBrands(n))g(t,r);else b();for(const e of[...a])e.isConnected||a.delete(e)}else b()},clear:b,cleanup:function(){b(),r?.remove(),r=null},snapshot:function(){return{notes:a.size,signals:{...i}}},normalize:s})})(),e.Layout=(()=>{let t;return Object.freeze({apply:function(n,o){if(!e.Retailer.enabled(n)||!e.Retailer.features().compactSearch||n.safeMode||!n.compactSearch||"search"!==o)return t?.remove(),void(t=null);t?.active()||(t=e.PageStyles.inject('\n      [data-component-type="s-search-result"]{margin-block:4px!important;padding-block:6px!important}\n      [data-component-type="s-search-result"] .a-section{margin-bottom:4px!important}\n    ',{wardLayout:"compact-search"}))},cleanup:function(){t?.remove(),t=null},active:()=>Boolean(t?.active())})})(),e.Engine=(()=>{let t=!1,n=0;const o=g.createRecoveryGuard();let r=location.href,a=!1,i={state:"ready",reason:"not-run",lastResult:null},s="";const c=new Set;function l(){const t=function(){const t=e.Activity.snapshot(),n=e.Retailer.diagnose();return JSON.stringify({active:t.active,totals:t.totals,breakdown:t.breakdown,adapter:n.health,coupon:i,quarantined:a,recovery:o.snapshot("protection",r)})}();t!==s&&(s=t,e.UI?.refreshActivity?.())}function d(t,n){const o=e.Patterns.get(t.patternId);if(!o)return;const r=function(t,n,o){if(!e.Retailer.enabled(o)||o.safeMode)return{action:"allow",reason:"protection-disabled"};if(o.pageExceptions?.some(e=>e.path===location.hostname+location.pathname&&e.patternId===n.id))return{action:"allow",reason:"remembered-page-exception"};const r=o.patterns[n.id]||"inherit",a=o.categories[n.category]||"inherit";if("off"===r)return{action:"allow",reason:"pattern-disabled"};if("inherit"===r&&"off"===a)return{action:"allow",reason:"category-disabled"};if("blocked"===t.confidence)return{action:"allow",reason:"blocked-confidence"};if(t.essentialOverlap)return{action:n.allowedActions.includes("annotate")?"annotate":"allow",reason:"essential-overlap"};if("ambiguous"===t.confidence)return{action:n.allowedActions.includes("annotate")?"annotate":"allow",reason:"ambiguous-confidence"};if("supported"===t.confidence&&"confirmed"===o.confidencePolicy)return{action:"allow",reason:"confidence-policy"};if("automatic"===o.contentAction&&"custom"!==o.protectionLevel&&"cross-sell.recommendation"===n.id&&o.recommendationCleanup&&!0===t.structuralSafe)return{action:"collapse",reason:"recommendation-cleanup"};let i,s;return"hide"===o.contentAction||"dim"===o.contentAction?(i=n.allowedActions.includes(o.contentAction)?o.contentAction:"dim",s="content-action"):"essential"===o.protectionLevel?"complete-placement-only"===n.essentialPolicy&&!0===t.structuralSafe?(i=n.defaultAction,s="essential-complete-placement"):"annotate"===n.defaultAction&&n.allowedActions.includes("annotate")?(i="annotate",s="essential-annotate"):n.allowedActions.includes("dim")?(i="dim",s="essential-dim"):n.allowedActions.includes("annotate")?(i="annotate",s="essential-annotate"):(i="allow",s="essential-allow"):"custom"===o.protectionLevel?(i=n.allowedActions.includes(o.defaultAction)?o.defaultAction:n.defaultAction,s="custom-policy"):(i=n.defaultAction,s="balanced-pattern-policy"),"supported"===t.confidence&&"hide"===i&&(i=n.allowedActions.includes("collapse")?"collapse":"annotate",s="supported-safe-action"),{action:i,reason:s}}(t,o,n),a=function(t,n,o){return"hide"!==t&&"collapse"!==t||!1!==n.structuralSafe?t:(e.Activity.structuralSkip(n.node,n.structuralReason||"unsafe-structural-target"),o.allowedActions.includes("dim")?"dim":o.allowedActions.includes("annotate")?"annotate":"allow")}(r.action,t,o),i=r.action!==a?t.structuralReason||"unsafe-structural-target":r.reason;e.Audit?.decision?.(t.node,{detectorId:t.detectorId,patternId:t.patternId,confidence:t.confidence,requestedAction:r.action,appliedAction:a,structuralSafe:t.structuralSafe,reason:i}),e.Actions.apply(t.node,{action:a,pattern:o,confidence:t.confidence,structuralSafe:t.structuralSafe,reason:i})}function p(o,r,s,d,u="checkbox",m=0,h=null){setTimeout(()=>{if(c.delete(o),s!==n||!t)return;if(location.href!==d)return a=!0,i={state:"quarantined",reason:"unexpected-navigation",lastResult:"failed"},e.Activity.coupon("failed"),o.dataset.wardCouponFailure="unexpected-navigation",void l();const f="redeem"===u?r.isConnected&&/\b(redeemed|promotion applied|promo code applied)\b/i.test(r.textContent||""):r.isConnected&&(o.isConnected&&o.checked||h?.isConnected&&r.contains(h)&&h.matches('.claimed, [data-claimed="true"]'));if(!f&&r.isConnected&&m<9)return c.add(o),void p(o,r,s,d,u,m+1,h);if(f)e.Activity.coupon("confirmed"),i={state:"confirmed",reason:"coupon-confirmed",lastResult:"confirmed"};else{const t=r.isConnected?"no-confirmation":"detached";e.Activity.coupon("failed"),o.dataset.wardCouponFailure=t,i={state:"attention",reason:t,lastResult:"failed"}}l()},300)}function u(n="unknown"){const o=e.Actions.snapshot(),r={hide:0,dim:0,collapse:0,annotate:0};for(const e of o)Object.hasOwn(r,e.action)&&(r[e.action]+=1);g.publishSuiteState("ward","ward.state-changed",{active:Boolean(t),pageType:String(n||"unknown"),interventions:o.length,hide:r.hide,dim:r.dim,collapse:r.collapse,annotate:r.annotate})}function m(s=[document],m=!1){if(location.href!==r&&(o.clearContext(r),r=location.href),!t||g.suiteSitePaused())return!1;if(!m&&o.snapshot("protection",r).suspended)return!1;try{return function(o=[document]){if(!t)return;o=[...new Set(o.map(e=>e.closest?.("[data-ward-instance]")||e))];const r=e.Settings.snapshot();if(!e.Retailer.enabled(r)||r.safeMode)return e.Actions.restoreAll(),e.SellerClarity?.clear(),e.UI?.restack?.(),l(),void u("inactive");const s=e.Retailer.classify();e.Layout.apply(r,s);const m=e.Retailer.detect(o),h=new Set;for(const e of m)h.add(e.node),d(e,r);if(r.recommendationCleanup&&e.Retailer.features().recommendationCleanup)for(const t of e.Retailer.cosmeticRecommendationCandidates(o)){if(h.has(t))continue;const n=e.Retailer.structuralSafety(t),o={detectorId:`${e.Retailer.key()}.cross-sell.recommendation`,patternId:"cross-sell.recommendation",pageType:s,node:t,signals:["recommendation-cleanup"],exclusions:[],essentialOverlap:!1,structuralSafe:n.safe,structuralReason:n.reason,confidence:"confirmed"};e.Audit?.detected?.(t,{detectorId:o.detectorId,patternId:o.patternId,confidence:o.confidence,structuralSafe:o.structuralSafe,structuralReason:o.structuralReason}),d(o,r),h.add(t)}e.Actions.reconcile(o,h);try{e.SellerClarity?.process(o,r,s)}catch(t){e.Core.safeError(Object.assign(t,{code:"SELLER_CLARITY"}),"ward.seller-clarity")}(function(t,o){if(!e.Retailer.enabled(o)||o.safeMode||!o.autoClipCoupons||!e.Retailer.features().coupons)return void(i={state:"disabled",reason:"coupon-setting",lastResult:i.lastResult});if(a)return void(i={state:"quarantined",reason:i.reason||"coupon-quarantine",lastResult:i.lastResult});const r=e.Retailer.couponCandidates(t);r.length||"ready"!==i.state||(i={state:"idle",reason:"no-eligible-coupon",lastResult:null});for(const t of r){if("1"===t.dataset.wardCouponAttempted)continue;const o=e.Retailer.verifyCouponTarget(t);if(o.eligible){if(!c.has(t)){i={state:"checking",reason:"awaiting-confirmation",lastResult:i.lastResult},t.dataset.wardCouponAttempted="1",c.add(t);try{const e=location.href;t.click(),p(t,o.component,n,e,o.kind,0,o.tile)}catch(n){c.delete(t),a=!0,i={state:"quarantined",reason:"activation-error",lastResult:"failed"},e.Activity.coupon("failed"),e.Core.safeError(Object.assign(n,{code:"COUPON_ACTIVATION"}),"ward.amazon.coupon")}}}else t.dataset.wardCouponSkipped||(t.dataset.wardCouponSkipped=o.reason,e.Activity.coupon("skipped"),i={state:"attention",reason:o.reason,lastResult:"skipped"})}})(o,r),e.Actions.prune(),e.Audit?.prune?.(),e.UI?.restack?.(),l(),u(s)}(s),o.succeeded("protection",r),!0}catch(t){if(m)throw t;return o.failed("protection",r),l(),e.Core.safeError(t,"ward.protection"),!1}}function h(){t=!1,c.clear(),i={state:"disabled",reason:"engine-stopped",lastResult:i.lastResult},e.Actions.restoreAll(),e.Retailer.cleanup(),e.SellerClarity?.clear(),e.Layout.cleanup(),u("inactive")}return Object.freeze({retry:function(){return o.retry("protection",r,()=>{const n=e.Settings.snapshot();return!(!t||n.safeMode||!e.Retailer.enabled(n)||g.suiteSitePaused())&&m([document],!0)})},start:function(){t||(t=!0,n+=1,a=!1,i={state:"ready",reason:"start",lastResult:null},e.Retailer.nextEpoch(),e.Audit?.resetRoute?.(),m([document]))},stop:h,cleanup:function(){h(),e.Actions.cleanup(),e.SellerClarity?.cleanup(),e.PageStyles.cleanup(),e.Activity.resetRoute(),e.Audit?.resetRoute?.()},navigation:function(){n+=1,a=!1,i={state:"ready",reason:"navigation",lastResult:null},c.clear(),e.Retailer.nextEpoch(),e.Actions.restoreAll(),e.SellerClarity?.clear(),e.Layout.cleanup(),e.Activity.resetRoute(),e.Audit?.resetRoute?.(),t&&m([document])},rebuild:function(){e.Actions.restoreAll(),e.SellerClarity?.clear(),e.Layout.cleanup(),e.Audit?.resetRoute?.(),t&&m([document])},processBatch:m,resumeCoupons:function(){a=!1,c.clear(),i={state:"ready",reason:"manual-resume",lastResult:i.lastResult};for(const e of document.querySelectorAll("[data-ward-coupon-attempted],[data-ward-coupon-failure],[data-ward-coupon-skipped]"))delete e.dataset.wardCouponAttempted,delete e.dataset.wardCouponFailure,delete e.dataset.wardCouponSkipped;return t&&m([document]),l(),!0},diagnostics:function(){return{product:{id:"ward",version:e.VERSION,active:t},recovery:o.snapshot("protection",r),adapter:e.Retailer.diagnose(),coupon:{...i,quarantined:a,pending:c.size},activity:e.Activity.snapshot(),sellerClarity:e.SellerClarity?.snapshot()||null,audit:e.Audit?.snapshot?.()||null,interventions:e.Actions.snapshot(),core:e.Core.diagnosticSnapshot()}},get active(){return t},get couponQuarantined(){return a}})})(),e.VERSION="3.12.5",e.ReleaseNotes=(()=>{const t=Object.freeze({"3.12.5":["The launcher is a tab on the right edge of the window instead of a badge in the corner.","With other ExtraPotions products on the page, each has its own tab; drag to move them, Shift+drag to reorder."],"3.12.4":["On Etsy, a labelled ad stays inside its listing, so result rows keep their shape.","Shopify announcement bars named as header banners are dimmed, and eBay’s sponsored store banner above results is recognised.","In Dark, Target’s cart icon and badges and Etsy’s outlined buttons are readable.","Built on Core 3.17.4."],"3.12.3":["WARD's tile in the shared launcher is green, matching its menus and gem.","Built on Core 3.17.3."],"3.12.2":["WARD has a new green emerald gem, and its menus use the matching green.","Built on Core 3.17.2."],"3.12.1":["Release notes show in full in the changelog card.","Built on Core 3.17.1."],"3.12.0":["Labels are in Title Case.","Built on Core 3.17.0."],"3.11.1":["In Light, Amazon's header keeps its own colours, so its logo and search button stay clear.","In Dark, department headings drawn as pictures, such as Electronics, read on the dark bar."],"3.11.0":["Walmart, eBay and Etsy now run on the same store module as Target, Best Buy and Shopify, so every store treats purchase controls alike: a cue that touches one is labelled, never hidden.","The Coverage card lists what WARD can act on at Walmart, eBay and Etsy instead of None.","The old colour engine is gone; the current one is the only engine.","Built on Core 3.16.0."],"3.10.1":["Protect again keeps the reason the menu showed before.","The seller note never shows twice when the store page changes around it.","Built on Core 3.15.1: menu lists and scrollbars are light in Light, and update cards take turns."],"3.10.0":["Remove the floating page-actions bar; its actions stay in the menu.","Drop hover tips from settings that explain themselves, such as Seller notes, Active protections and the per-store switches."],"3.9.0":["Show menu sections as drawers in charcoal with WARD amber; the menu reopens on the drawer you used last.","Keep product photos at their own brightness on dark site colours.","Place Amazon seller notes below the byline and rating row instead of inside it.","Restore page colours correctly after Safe Mode is turned off and on again."],"3.8.0":["Recolor stores with a new, lighter engine that restyles a page once instead of after every change.","Keep purchase buttons their true colors with a readable label, and keep small icons visible, in Dark.","Tidy the update and changelog notices to match the other products."],"3.7.0":["Soften product photos on dark site colors; hover or focus a photo to see it at full brightness.","Fix unreadable dark-on-dark text on Amazon with dark site colors.","Use less processor time while scrolling and on pages that keep changing.","Use sentence-case wording in update and changelog notices."],"3.6.0":["Remove repeated retailer and coupon headings from the menu.","Give every retailer tab its own shopping-bag icon.","Keep Diagnostics on one row with Show and Copy, and outline Reset all settings.","Use sentence-case labels and a refreshed menu header."],"3.5.0":["Use Slate Blue Light, Dark or System for menus and supported site themes.","Migrate retired color choices to System and remove extra theme and opacity controls.","Show product-only Light, Dark and current changelog screenshots."],"3.4.49":["Clear store colors on checkout pages and restore the saved palette on return.","Keep protected ads hidden when the site resets their presentation.","Apply saved site colors at document start, before the page body loads.","Coalesce subtree repaint work and skip unchanged palette requests."],"3.4.48":[],"3.4.47":[],"3.4.46":[],"3.4.45":[],"3.4.44":[],"3.4.43":[],"3.4.42":[],"3.4.41":[],"3.4.40":[],"3.4.39":[],"3.4.38":[],"3.4.37":[],"3.4.36":[],"3.4.35":[],"3.4.34":[],"3.4.33":[],"3.4.32":["Maintenance release; product features and settings are unchanged.","Includes the current shared foundation."],"3.4.31":[],"3.4.30":[],"3.4.29":[],"3.4.28":[],"3.4.27":[],"3.4.26":[],"3.4.25":[],"3.4.24":[],"3.4.23":[],"3.4.22":[],"3.4.21":[],"3.4.20":[],"3.4.19":[],"3.4.18":[],"3.4.17":[],"3.4.16":["Captures README screenshots with the shared ExtraPotions tool.","Keeps the README screenshot list in step with the README."],"3.4.15":[],"3.4.14":[],"3.4.13":[],"3.4.12":[],"3.4.11":[],"3.4.10":[],"3.4.9":[],"3.4.8":[],"3.4.7":[],"3.4.6":[],"3.4.5":[],"3.4.4":[],"3.4.3":[],"3.4.2":[],"3.4.1":[],"3.4.0":[],"3.3.11":[],"3.3.10":[],"3.3.9":[],"3.3.8":[],"3.3.7":[],"3.3.6":[],"3.3.5":[],"3.3.4":[],"3.3.3":[],"3.3.2":[],"3.3.1":[],"3.3.0":[],"3.2.31":[],"3.2.30":[],"3.2.29":[],"3.2.28":[],"3.2.27":[],"3.2.26":[],"3.2.25":[],"3.2.24":[],"3.2.23":[],"3.2.22":[],"3.2.21":[],"3.2.20":[],"3.2.19":[],"3.2.18":[],"3.2.17":[],"3.2.16":[],"3.2.15":[],"3.2.14":[],"3.2.13":[],"3.2.12":[],"3.2.11":[],"3.2.10":[],"3.2.9":[],"3.2.8":[],"3.2.7":[],"3.2.6":[],"3.2.5":[],"3.2.4":[],"3.2.3":[],"3.2.2":[],"3.2.1":[],"3.2.0":[]}),n=Object.freeze(["3.4.32","3.4.16"]);return Object.freeze({current:function(){return t[e.VERSION]||Object.freeze(["Current WARD improvements and fixes."])},isQuietUpgrade:function(o){return g.isQuietUpgrade(o,e.VERSION,Object.keys(t),n)},QUIET_RELEASES:n})})(),e.MenuChrome=Object.freeze({create:e=>g.create({...e,launcherSrc:"https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg",productTheme:{id:"ward",name:"WARD gem",swatch:"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)",bg:"#101014",panel:"#19191e",line:"#3a3532",text:"#fffaf3",muted:"#b9afa7",accent:"#ffb000",accent2:"#ff4a35",skin:"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)",skinVertical:"linear-gradient(180deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)"}})}),e.UI=(()=>{let t;function n(){const t=e.Settings.storageStatus();if(t.error)return{state:"attention",reason:t.error,checkedAt:Date.now(),action:{label:t.recovery?"Use Safe Defaults":"Retry Saving",run:()=>e.Settings.retrySave()}};const n=e.Settings.snapshot(),o=e.Engine.diagnostics(),r=Date.now();return n.safeMode||!1===n.enabled||g.suiteSitePaused()?{state:"paused",reason:"Protection and coupon actions are paused.",checkedAt:r}:"inactive"===o.adapter.health?{state:"waiting",reason:"This page has no supported retailer module.",checkedAt:r}:e.Retailer.enabled(n)?"attention"===o.coupon.state?{state:"attention",reason:"A coupon action could not be confirmed. Review its status before attempting it again.",checkedAt:r}:o.coupon.quarantined||o.recovery?.suspended?{state:"attention",reason:o.coupon.quarantined?"Coupon collection stopped after an unsafe or failed attempt.":"Protection processing stopped after repeated failures.",checkedAt:r,action:{label:"Retry",run:()=>{if(!e.Settings.snapshot().safeMode&&!g.suiteSitePaused())return o.coupon.quarantined?e.Engine.resumeCoupons():e.Engine.retry()}}}:"degraded"===o.adapter.health?{state:"attention",reason:"Some retailer detection is unavailable. Essential content is kept visible.",checkedAt:r}:{state:"working",reason:"Protection is active for supported content. Coverage varies by category.",checkedAt:r}:{state:"paused",reason:"Protection is disabled for this retailer.",checkedAt:r}}const o=g.themes();let r,a,i,s,c,l,d,p,u,m,h,f,b,x="",y=!1;const v=[["page","Protection"],["look","Appearance"],["tools",e.Retailer.label()],["system","System"]],w=[["signup-popup","Email Sign-Up Pop-Ups","pressure.signup-popup"],["announcement","Announcement Bars","promotion.announcement-bar"],["prime","Prime Upsells","upsell.membership.prime"],["urgency","Urgency Messages","pressure.urgency"],["scarcity","Scarcity Messages","pressure.scarcity"],["subscription","Subscribe & Save Pressure","pressure.subscription"],["credit","Credit and Installment Promotions","upsell.financial-product"],["protection-plan","Protection Plans","upsell.protection-plan"],["business","Amazon Business Promotions","upsell.business-membership"],["sponsored","Sponsored Placements","sponsorship.placement"],["recommendations","Cross-Sell Recommendations","cross-sell.recommendation"],["services","Amazon Service Promotions","upsell.amazon-service"],["ai","Amazon AI Shopping Prompts","pressure.shopping-assistant"],["social-proof","Popularity Claims","pressure.social-proof"],["store-membership","Store Membership Promotions","upsell.store-membership"],["reference-price","Reference Prices","pricing.reference-price"]],S=[["signup-popup","Email Sign-Up Pop-Ups"],["announcement","Announcement Bars"],["upsell","Upsells"],["urgency","Urgency"],["scarcity","Scarcity"],["subscription","Subscriptions"],["sponsored","Sponsored Placements"],["cross-sell","Cross-Sell Recommendations"],["shopping-assistant","Shopping Assistants"],["social-proof","Popularity Claims"],["pricing","Reference Prices"]];function k(e,t,n){const o=document.createElement(e);return t&&(o.className=t),void 0!==n&&(o.textContent=n),o}function E(e={}){if(!i)return;const t=Boolean(e.available&&e.latest);i.classList.toggle("update-available",t),g.setLauncherUpdate?.("ward",t),i.setAttribute("aria-label",t?`Open WARD · Update v${e.latest} available`:"Open WARD")}function A(t={},n=!1,o="",r=!1){if(!m)return;const a=n||r?e.VERSION:t.latest;if(!n&&!r&&!e.Core.claimNotice("ward",`available:${a}`))return;const i=(r||n?e.ReleaseNotes.current():Array.isArray(t.details)&&t.details.length?t.details:["A newer WARD build is available.","Install the latest userscript for the newest fixes and improvements."]).slice(0,4);m.show({kicker:r?"Current Version":n?"Update Complete":"Update Available",title:r?"WARD Changelog":n?"WARD Updated":"New WARD Version Available",version:a,text:r?`What's new in v${e.VERSION}.`:n?`Updated from v${o} to v${e.VERSION}.`:`v${t.latest} is ready to install.`,details:i,releaseUrl:e.Updates.RELEASE_URL,actionUrl:e.Updates.INSTALL_URL,showAction:!(n||r),kind:r?"current":n?"complete":"available"}),p?.layout()}function C(e=""){const t=k("img");return t.src="https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg",t.alt=e,t}function O(e){const t=k("section","section");return e&&t.append(k("h3","",e)),t}function P(e,t,n){const o=k(n.matches('button[role="switch"],select,input,textarea')?"label":"div","row"),r=k("span","row-copy"),a=k("strong","",e);return g.setMenuHelp(n,t),r.append(a),o.append(r,n),o}function z(e,t,n){const o=k("button","switch");return o.type="button",o.setAttribute("role","switch"),o.setAttribute("aria-label",t),o.setAttribute("aria-checked",String(Boolean(e))),o.addEventListener("click",()=>n("true"!==o.getAttribute("aria-checked"))),o}function M(e,t,n,o){const r=k("select","select");r.setAttribute("aria-label",t);for(const[t,o]of n){const n=k("option","",o);n.value=t,n.selected=t===e,r.append(n)}return r.addEventListener("change",()=>o(r.value)),r}function $(e,t,n=""){const o=k("button",`action ${n}`.trim(),e);return o.type="button",o.addEventListener("click",t),o}function R(e){d&&(d.textContent=e,d.hidden=!1,d.style.top=`${Math.max(8,(i?.getBoundingClientRect().top||60)-48)}px`,clearTimeout(h),h=setTimeout(()=>{d&&(d.hidden=!0)},3e3))}function I(t,n){const o=e.Settings.update(t,n);return e.Settings.storageStatus().error&&R(e.Settings.storageStatus().error),s?.classList.contains("open")?W():p?.update(),o}function L(e,t){return e[t]||"inherit"}function T(t,n){I({patterns:{...e.Settings.snapshot().patterns,[t]:n}},`pattern:${t}`)}function N(t,n){I({categories:{...e.Settings.snapshot().categories,[t]:n}},`category:${t}`)}function j(){const t=function(){const t=e.Engine.diagnostics();return"degraded"===t.adapter.health||t.coupon.quarantined?{id:"attention",label:"Attention"}:"inactive"===t.adapter.health?{id:"inactive",label:"Inactive"}:{id:"healthy",label:"Healthy"}}(),n=k("span",`tag health-${t.id}`,t.label);return n.setAttribute("data-exp-adapter-health",t.id),n}function D(e){return{"balanced-pattern-policy":"Balanced Policy","custom-policy":"Custom Policy","content-action":"Content Action Preference","essential-complete-placement":"Essential Policy","essential-annotate":"Essential Policy","essential-dim":"Essential Policy","recommendation-cleanup":"Recommendation Cleanup","dynamic-widget":"Dynamic Widget Safety","unverified-container":"Container Safety","essential-overlap":"Purchase-Control Safety","ambiguous-confidence":"Ambiguous Detection"}[e]||"Protection Policy"}function q(t){if(!t)return;const n=e.Settings.snapshot(),o=e.Activity.snapshot(),r=e.Audit.snapshot(),a=e.Actions.snapshot().filter(e=>e.connected&&"allow"!==e.action),i=a.filter(e=>e.revealed),s=O("Activity");s.append(P("Active Protections","",k("span","tag",String(o.active))),P("Temporarily Revealed","",k("span","tag",String(i.length))));const c=Object.entries(o.breakdown).sort(([e],[t])=>e.localeCompare(t));if(c.length){const e=k("div","activity-breakdown");for(const[t,n]of c){const[,o]=t.split(":");e.append(k("span","tag",`${n} ${o}`))}s.append(e)}const l=new Map;for(const e of r.targets){if(!e.appliedAction||"allow"===e.appliedAction)continue;const t=D(e.reason);l.set(t,(l.get(t)||0)+1)}if("detailed"===n.explanationDetail&&l.size){const e=k("div","activity-reasons");for(const[t,n]of l)e.append(P(t,"Why WARD acted.",k("span","tag",String(n))));s.append(e)}const d=k("div","settings-transfer"),p=$("Reapply Protection",()=>{for(const t of e.Actions.snapshot())e.Actions.endReveal(t.id);H()});if(p.dataset.expPrimary="1",d.append($("Reveal This Page",()=>{for(const t of e.Actions.snapshot())e.Actions.reveal(t.id);H()},"primary"),p),s.append(d),a.length){const t=k("div","current-protections");for(const n of a.slice(0,8)){const o=e.Patterns.get(n.patternId);t.append(P(o?.label||"Protected Content",`${n.action}${n.confidence?` · ${n.confidence}`:""} · ${D(n.reason)}`,$(n.revealed?"Protect Again":"Show",()=>{n.revealed?e.Actions.endReveal(n.id):e.Actions.reveal(n.id),H()})))}const n=k("p","","Show temporarily restores the content. Allow here remembers this protection type for this page only.");t.prepend(n);for(const n of a.slice(0,8))t.append($("Allow "+(e.Patterns.get(n.patternId)?.label||"content")+" here",()=>{const t=e.Settings.snapshot(),o=location.hostname+location.pathname;I({pageExceptions:[...(t.pageExceptions||[]).filter(e=>e.path!==o||e.patternId!==n.patternId),{path:o,patternId:n.patternId}]},"page-exception"),R("This protection type is now allowed on this page."),H()}));s.append(t)}t.replaceChildren(s);const u=Object.entries(o.breakdown).reduce((e,[t,n])=>t.startsWith("sponsored:")?e+n:e,0);t.dataset.wardActivityText=[[u,"sponsored"],[o.active-u,"other"]].filter(([e])=>e>0).map(([e,t])=>`${e} ${t}`).join(" · "),setTimeout(()=>function(e){const t=e.closest("details")?.querySelector(":scope > summary");if(!t)return;let n=t.querySelector("[data-ward-activity-count]");const o=e.dataset.wardActivityText||"";o?(n||(n=k("span"),n.dataset.wardActivityCount="1",n.style.cssText='display:inline-block;margin-left:4px;padding:2px 4px;border:1px solid var(--theme-line);border-radius:4px;color:var(--theme-text);font:500 11px/1.2 "Segoe UI",system-ui,sans-serif;white-space:nowrap',t.append(n)),n.textContent=" "+o):n?.remove()}(t),0)}function B(t){if(!t)return;const n=e.Engine.diagnostics().coupon,o=O("");o.setAttribute("aria-label","Coupon Activity"),o.append(P("Coupon Status","",k("span",`tag coupon-${n.state}`,function(e){return{ready:"Ready",idle:"Ready",checking:"Checking",confirmed:"Confirmed",attention:"Attention",quarantined:"Paused",disabled:"Off"}[e.state]||"Ready"}(n)))),n.quarantined&&o.append(P("Safety Pause","Coupon automation stopped after an unsafe result.",$("Resume Coupon Clipping",()=>{e.Engine.resumeCoupons(),H()}))),t.replaceChildren(o)}function _(t){const n=document.createDocumentFragment(),o=O();o.append(P("Enable WARD","",z(t.enabled,"Enable WARD",e=>I({enabled:e},"enabled")))),o.append(P("Protection Level","",M(t.protectionLevel,"Protection Level",[["essential","Essential"],["balanced","Balanced"],["custom","Custom"]],e=>I({protectionLevel:e},"level")))),o.append(P("Content Action","",M(t.contentAction,"Content Action",[["automatic","Automatic"],["hide","Hide"],["dim","Dim"]],e=>I({contentAction:e},"content-action")))),o.append(P(`${e.Retailer.label()} adapter`,"",j()));const r=k("div");return r.setAttribute("data-exp-activity-summary","1"),q(r),o.append(P("Calm Shopping","Dims pressure cues and collapses safe promotional modules.",$("Apply Preset",()=>{I({protectionLevel:"balanced",contentAction:"automatic",recommendationCleanup:!0,confidencePolicy:"confirmed-supported"},"calm-shopping"),R("Calm shopping preset applied.")}))),n.append(o,g.createDisclosure("Page Activity",r),function(){const t=g.createDisclosure("Protection Review");t.dataset.wardReview="1";const n=(t,n)=>{I({protectionReviews:[...e.Settings.snapshot().protectionReviews||[],{verdict:t,patternId:n,retailer:e.Retailer.key(),at:Date.now()}].slice(-100)},"protection-review"),R(e.Settings.storageStatus().unsaved?e.Settings.storageStatus().error:"Local review saved.")};for(const o of e.Actions.snapshot().filter(e=>e.connected&&"allow"!==e.action).slice(0,8)){const r=O(),a=k("div","",e.Patterns.get(o.patternId)?.label||o.patternId);a.style.cssText="padding:4px 8px 0;font-weight:600",a.title=`${o.action} · ${o.confidence} · ${D(o.reason)}`,r.append(a);const i=k("div","settings-transfer");i.append($("Correct",()=>n("correct",o.patternId)),$("Wrong Target",()=>{if(n("wrong",o.patternId),!confirm("Allow this protection type for this page?"))return;const t=e.Settings.snapshot(),r=location.hostname+location.pathname;I({pageExceptions:[...t.pageExceptions.filter(e=>e.path!==r||e.patternId!==o.patternId),{path:r,patternId:o.patternId}]},"review-page-correction"),R(e.Settings.storageStatus().unsaved?e.Settings.storageStatus().error:"Page correction saved.")})),r.append(i),t.append(r)}let o=e.Retailer.patternIds().values().next().value||"";const r=[...e.Retailer.patternIds()].map(t=>[t,e.Patterns.get(t)?.label||t]),a=k("label","");a.style.cssText="display:flex;flex-direction:column;gap:2px;padding:4px 8px";const i=M(o,"Missed Protection Type",r,e=>{o=e});i.dataset.expFullWidth="1",a.append(k("span","","Missed Content"),i),t.append(a,$("Record",()=>{o&&n("missed",o)}));const s=k("div","",`${e.Settings.snapshot().protectionReviews.length} reviews saved`);return s.style.cssText="padding:4px 8px",t.append(s),t}()),n}function V(t){const n=document.createDocumentFragment();n.append(g.createThemeModeControl({value:t.uiTheme,onChange:e=>I({uiTheme:e},"menu-theme")}),g.createSiteColorControl({value:t.siteColors,onChange:e=>I({siteColors:e},"site-theme")}));const o=O("Accessibility");return o.append(P("Reduce Motion","",M(t.reducedMotion,"Reduce Motion",[["system","Follow System"],["reduce","Reduce"],["allow","Allow"]],e=>I({reducedMotion:e},"reduced-motion")))),o.append(P("Non-Color Indicators","",z(t.nonColorIndicators,"Non-Color Indicators",e=>I({nonColorIndicators:e},"non-color")))),n.append(o,function(t){const n=document.createElement("div");n.append(g.createMenuSizeControls());for(const[o,r]of[["menuAutoClose","Auto-Close Menu"],["updateNotifications","Update Notifications"]])n.append(P(r,"",z(t[o],r,t=>{I({[o]:t},o),"updateNotifications"===o&&t&&e.Updates.check(!0).then(e=>{E(e),R(e.available?"A WARD update is available.":"WARD update check complete.")})})));return n}(t)),n}function U(t){const n=document.createDocumentFragment();n.append(function(t){const n=document.createDocumentFragment(),o=O("");o.setAttribute("aria-label",e.Retailer.label());const r=e.Retailer.features(),a=e.Retailer.coverage(),i=g.createDisclosure("Coverage");for(const[t,n]of[["supportedCategories","Supported Complete Units"],["conservativeCategories","Conservative Detection"],["unsupportedCategories","Not Covered"]]){const o=k("p");o.textContent=`${n}: ${a[t].map(t=>e.Patterns.get(t)?.label||t).join(", ")||"None"}`,i.append(o)}const s=k("p");s.textContent="Coverage applies to recognized page patterns. Mixed content and essential purchasing controls remain visible.",i.append(s),n.append(i);const c=e.Retailer.key();if(o.append(P(`Protect ${e.Retailer.label()}`,"",z(!1!==t.retailers?.[c],`Protect ${e.Retailer.label()}`,e=>I({retailers:{...t.retailers,[c]:e}},"store-setting")))),r.coupons&&o.append(P("Auto-Clip Coupons","",z(t.autoClipCoupons,"Auto-Clip Coupons",e=>I({autoClipCoupons:e},"coupon-setting")))),r.compactSearch&&o.append(P("Compact Search","",z(t.compactSearch,"Compact Search",e=>I({compactSearch:e},"compact-search")))),r.recommendationCleanup&&o.append(P("Recommendation Cleanup","",z(t.recommendationCleanup,"Recommendation Cleanup",e=>I({recommendationCleanup:e},"recommendation-cleanup")))),n.append(o),e.Retailer.supportsSellerClarity()){const e=g.createDisclosure("Seller Clarity");e.append(P("Seller Notes","",z(t.sellerClarity,"Seller Notes",e=>I({sellerClarity:e},"seller-clarity"))),P("Search Brand Labels","Labels generated-style brand names in search results.",z(t.sellerClaritySearch,"Search Brand Labels",e=>I({sellerClaritySearch:e},"seller-clarity-search"))),P("Always Show Seller Summary","",z(t.sellerClarityAlways,"Always Show Seller Summary",e=>I({sellerClarityAlways:e},"seller-clarity-always"))));const o=(t.trustedBrands||[]).length;o&&e.append(P("Trusted Brands",`${o} brand${1===o?"":"s"} trusted on this device.`,$("Clear",()=>{I({trustedBrands:[]},"trusted-brands-cleared"),R("Trusted brands cleared.")}))),n.append(e)}if(r.coupons){const e=k("div");e.setAttribute("data-exp-coupon-status","1"),B(e),n.append(e)}return n}(t));const o=g.createDisclosure("Retailer Modules");for(const n of e.Retailers.all())o.append(P(n.label,"",z(!1!==t.retailers[n.key],`Protect ${n.label}`,t=>I({retailers:{...e.Settings.snapshot().retailers,[n.key]:t}},"retailer-module"))));n.append(o);const r=g.createDisclosure(`Advanced ${e.Retailer.label()}`),a=O("Pattern Controls");return a.append(P("Individual Patterns","",$(y?"Hide":"Customize",()=>{y=!y,W()}))),r.append(a),"custom"===t.protectionLevel&&r.append(function(e){const t=document.createDocumentFragment(),n=O("Custom Policy");n.append(P("Default Action","Used when Content action is Automatic and the pattern supports it.",M(e.defaultAction,"Default Action",[["hide","Hide"],["dim","Dim"],["collapse","Collapse"],["annotate","Annotate"],["allow","Allow"]],e=>I({defaultAction:e},"default-action"))),P("Confidence Policy","Controls whether supported detections may be acted on.",M(e.confidencePolicy,"Confidence Policy",[["confirmed","Confirmed Only"],["confirmed-supported","Confirmed + supported"],["custom","Custom Overrides"]],e=>I({confidencePolicy:e},"confidence-policy"))),P("Explanation Detail","Controls how much decision context appears in Activity.",M(e.explanationDetail,"Explanation Detail",[["concise","Concise"],["detailed","Detailed"]],e=>I({explanationDetail:e},"explanation-detail"))));const o=O("Category Controls");for(const[t,n]of S)o.append(P(n,"",M(L(e.categories,t),n,[["inherit","Inherit"],["on","On"],["off","Off"]],e=>N(t,e))));return t.append(n,o),t}(t)),y&&r.append(function(t){const n=O(`${e.Retailer.label()} patterns`);n.classList.add("advanced-patterns");const o=e.Retailer.patternIds();for(const[,e,r]of w)o.has(r)&&n.append(P(e,"",M(L(t.patterns,r),e,[["inherit","Inherit"],["on","On"],["off","Off"]],e=>T(r,e))));return n}(t)),n.append(r,function(){const t=k("div","settings-transfer");return t.style.cssText="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0",t.append($("Export",async()=>{try{await navigator.clipboard.writeText(JSON.stringify(e.Settings.storageStatus().recovery?e.Settings.recoveryData():e.Settings.exportData(),null,2)),R("WARD settings copied.")}catch(t){e.Core.safeError(Object.assign(t,{code:"EXPORT_COPY"}),"ward.ui"),R("Copy failed.")}})),t.append($("Import",()=>{const t=prompt("Paste a WARD settings export");if(null!==t)try{const n=e.Settings.prepareImport(JSON.parse(t));e.Settings.replace(n,"import"),R(e.Settings.storageStatus().unsaved||e.Settings.storageStatus().recovery?e.Settings.storageStatus().error:"WARD settings imported."),W()}catch(t){e.Core.safeError(t,"ward.import"),alert("WARD could not import that settings file.")}})),g.createDisclosure("Settings Transfer",t)}(),function(){const t=g.createDisclosure("Page Tools");t.append(P("Safe Mode","Pause protection and coupon actions without changing saved preferences.",z(e.Settings.snapshot().safeMode,"Safe Mode",e=>I({safeMode:e},"safe-mode"))));for(const n of e.Settings.snapshot().pageExceptions||[])t.append(P(n.path,n.patternId,$("Remove Exception",()=>{I({pageExceptions:e.Settings.snapshot().pageExceptions.filter(e=>e.path!==n.path||e.patternId!==n.patternId)},"remove-page-exception"),W()})));return t}()),n}function W(){if(!c)return;const a=e.Settings.snapshot();var i;i=e.Settings.snapshot().uiTheme,g.applyTheme(r,i,o),r.dataset.expNonColor=a.nonColorIndicators?"1":"0";for(const o of c.querySelectorAll(".tool-panel > .route")){const i=o.dataset.view===x,s=o.parentElement.querySelector(".route-body");if(o.setAttribute("aria-current",i?"page":"false"),o.setAttribute("aria-expanded",String(i)),s.hidden=!i,!i)continue;l=s;const c={page:()=>_(a),look:()=>V(a),tools:()=>U(a),system:()=>(t?.dispose(),t=g.createProductTimeline("ward",n,R,{layout:"grouped",showActivity:!1}),g.createProductSystem({id:"ward",version:e.VERSION,issueSettings:()=>({current:e.Settings.diagnosticSnapshot(),defaults:e.Settings.diagnosticSnapshot(e.Settings.defaults)}),timeline:t.element,layout:"grouped",diagnostics:e.Diagnostics.createDiagnosticsControls(()=>e.Diagnostics.createDiagnosticsReport("WARD",{host:r,product:{id:"ward",version:e.VERSION},settings:e.Settings.diagnosticSnapshot(),...e.Engine.diagnostics()}),R),onReset:()=>{e.Settings.resetAll(),W(),location.reload()},notify:R}))}[x];c&&g.replaceMenuContent(l,c())}p?.update()}function H(){if(t?.refresh(),!s?.classList.contains("open")||!l)return;q(l.querySelector("[data-exp-activity-summary]")),B(l.querySelector("[data-exp-coupon-status]"));const e=l.querySelector("[data-exp-adapter-health]");e&&e.replaceWith(j()),p?.layout()}function F(t,n=!0){t?(x="",s.classList.add("open"),s.setAttribute("aria-hidden","false"),i.setAttribute("aria-expanded","true"),W(),n&&e.Core.focusMenuSurface(s)):(s.classList.remove("open"),s.setAttribute("aria-hidden","true"),i.setAttribute("aria-expanded","false"),n&&i.focus()),p?.state(Boolean(t))}function G(){F(!0)}function J(){F(!1)}return Object.freeze({init:()=>{!function(){if(window.top!==window.self||r)return;r=k("div"),r.dataset.expOwned="1",r.id="exp-ward-root",a=r.attachShadow({mode:"open"}),g.injectStyle(a,'\n    .ward-shell{display:contents}\n    .row-help{display:block;margin-top:4px;color:var(--muted);font:400 var(--exp-font-size-small,12px)/1.5 "Segoe UI",system-ui,sans-serif}\n    .activity-breakdown{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0}\n    .activity-reasons,.current-protections{display:grid;gap:4px;margin-top:6px}\n    .health-healthy,.coupon-confirmed{color:light-dark(#21643b,#95e6ae)!important}\n    .health-attention,.coupon-attention,.coupon-quarantined{color:light-dark(#7a4b00,#ffd17a)!important}\n    .health-inactive,.coupon-disabled{color:var(--muted)!important}\n    :host([data-exp-non-color="1"]) .health-healthy::before{content:\'✓ \';font-weight:900}\n    :host([data-exp-non-color="1"]) :is(.health-attention,.coupon-attention,.coupon-quarantined)::before{content:\'! \';font-weight:900}\n    :host([data-exp-non-color="1"]) .health-inactive::before{content:\'– \';font-weight:900}\n  ',{wardUiStyle:"1"}),i=k("button","ward-launcher"),i.append(C("")),i.type="button",i.dataset.help="Drag To Move · Click To Open WARD",i.setAttribute("aria-label","Open WARD"),i.setAttribute("aria-haspopup","dialog"),i.setAttribute("aria-expanded","false"),i.addEventListener("click",()=>s.classList.contains("open")?J():G()),s=k("aside","ward"),s.setAttribute("role","dialog"),s.setAttribute("aria-modal","true"),s.setAttribute("aria-label","WARD Menu"),s.setAttribute("aria-hidden","true");const t=k("div","ward-shell"),o=k("header","ward-header"),l=k("div","brand"),h=k("div","brand-mark");h.append(C(""));const y=k("div"),w=k("div");w.append(k("strong","","WARD")),w.append($(`v${e.VERSION}`,()=>{!1!==u?.hidden||"current"!==u.dataset.noticeKind?A({},!1,"",!0):(m?.hide(),p?.layout())},"version")),y.append(w),l.append(h,y);const S=k("button","close","×");S.type="button",S.setAttribute("aria-label","Close WARD"),S.addEventListener("click",J),o.append(l,S),c=k("nav","ward-nav"),c.setAttribute("aria-label","WARD Sections");for(const[e,t]of v){const n=k("section","tool-panel"),o=k("button","route",t);o.type="button",o.dataset.view=e,o.setAttribute("aria-controls",`exp-ward-view-${e}`),o.addEventListener("click",()=>{x=x===e?"":e,W()});const r=k("div","route-body");r.id=`exp-ward-view-${e}`,r.hidden=!0,n.append(o,r),c.append(n)}t.append(o,k("div","header-divider"),c),s.append(t),d=k("div","toast"),d.hidden=!0,a.append(i,s,d),document.documentElement.append(r),g.setMenuStatus("ward",n),f=e.Core.registerLauncher(r,{productId:"ward"}),p=e.MenuChrome.create({id:"ward",host:r,shadow:a,launcher:i,panel:s,getSettings:()=>e.Settings.snapshot(),setOpen:F,shortcutKey:"w"}),g.injectStyle(a,':host .row:has([data-exp-adapter-health="healthy"]){display:none!important}',{wardMenuState:"1"}),m=g.createProductNotice({host:r,shadow:a,panel:s,durationMs:3e4,returnFocus:s.querySelector(".version"),releaseUrl:e.Updates.RELEASE_URL,installUrl:e.Updates.INSTALL_URL}),u=m.element;const O=e.Core.consumeVersionChange("ward",e.VERSION,"exp:v3:ward:last-version-v2");O&&!e.ReleaseNotes.isQuietUpgrade(O)&&A({},!0,O),e.Settings.snapshot().updateNotifications&&e.Updates.check(!1).then(e=>{E(e),e.available&&!e.quiet&&A(e)}),b=e=>{if(!s.classList.contains("open"))return;if("Escape"===e.key)return e.preventDefault(),void J();if("Tab"!==e.key)return;const t=[...s.querySelectorAll('button:not(:disabled),select:not(:disabled),input:not(:disabled),[tabindex]:not([tabindex="-1"])')].filter(e=>!e.hidden&&e.getClientRects().length);if(!t.length)return;const n=t[0],o=t.at(-1),r=a.activeElement;r===s?(e.preventDefault(),(e.shiftKey?o:n).focus()):e.shiftKey&&r===n?(e.preventDefault(),o.focus()):e.shiftKey||r!==o||(e.preventDefault(),n.focus())},document.addEventListener("keydown",b),W()}()},cleanup:function(){t?.dispose(),m?.destroy(),f?.(),p?.destroy(),clearTimeout(h),document.removeEventListener("keydown",b),r?.remove(),r=a=i=s=c=l=d=p=u=m=null},open:G,close:J,refresh:function(){s?.classList.contains("open")&&W()},refreshActivity:H,restack:function(){r&&r.parentNode===document.documentElement&&r.nextSibling&&(r.hasAttribute("popover")||a?.activeElement||document.documentElement.append(r))}})})(),e.VERSION="3.12.5",g.registerDiagnosticsProduct("ward",e.VERSION),e.App=(()=>{let t,n,o,r;async function a(){e.Settings.load(),document.documentElement&&e.SiteTheme.apply(),await(document.body?Promise.resolve():new Promise(e=>{const t=()=>{n.disconnect(),removeEventListener("DOMContentLoaded",t),e()},n=new MutationObserver(()=>{document.body&&t()});n.observe(document,{childList:!0,subtree:!0}),addEventListener("DOMContentLoaded",t,{once:!0})})),e.SiteTheme.apply(),t=e.Core.createScheduler(t=>e.Engine.processBatch(t),{source:"ward"}),n=e.Core.onNavigation(()=>{e.SiteTheme.apply(),e.Engine.navigation()}),o=e.Settings.subscribe(()=>{e.SiteTheme.apply(),"enabled"!==r?.state||g.suiteSitePaused()||!e.Retailer.enabled(e.Settings.snapshot())||e.Engine.active?e.Engine.rebuild():(e.Engine.start(),t.start())});try{e.UI.init()}catch(e){throw e.code=e.code||"UI_INIT_FAILED",e}}async function i(){const n=e.Settings.snapshot();if(e.SiteTheme.apply(n),!e.Retailer.enabled(n))return t.stop(),e.Engine.stop(),void e.UI.refresh();try{e.Engine.start()}catch(e){throw e.code=e.code||"ENGINE_START_FAILED",e}t.start(),n.updateNotifications&&e.Updates.check(),e.UI.refresh()}async function s(){e.SiteTheme.clear(),t.stop(),e.Engine.stop(),e.UI.refresh()}async function c(){e.SiteTheme.clear(),t?.stop(),o?.(),n?.(),e.UI.cleanup(),e.Engine.cleanup()}return Object.freeze({start:function(){return r=e.Core.register({id:"ward",version:e.VERSION,capabilities:["lifecycle","settings","diagnostics","dom-scheduler","navigation","launcher","ui"]},{initialize:a,enable:i,disable:s,cleanup:c}),r.initialize().then(()=>r.enable()).catch(t=>e.Core.safeError(t,"ward")),r},get lifecycle(){return r}})})(),e.App.start()})})();
+(() => {
+'use strict';
+const EXP = Object.create(null);
+// WARD is listed for every https page because Shopify storefronts share no domain. Nothing of WARD or its Core
+// runs until this gate passes: on the stores named in the metadata it passes at once, and on any other page only
+// when the parsed page is a Shopify storefront. Shopify checkout and embedded frames never pass.
+const wardGate = (storeHosts, run) => {
+  if (storeHosts.includes(location.hostname)) { run(); return; }
+  if (window.top !== window.self || /\/checkouts?\//.test(location.pathname)) return;
+  const check = () => { if (document.querySelector('#shopify-features,meta[name="shopify-digital-wallet"],meta[name="shopify-checkout-api-token"]')) run(); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', check, { once: true });
+  else check();
+};
+wardGate(["www.amazon.com","www.walmart.com","www.ebay.com","cart.ebay.com","pay.ebay.com","www.etsy.com","www.target.com","target.com","www.bestbuy.com","bestbuy.com"], () => {
+// Native exp-core foundation. Shared UI primitives are owned and maintained here.
+const CoreFoundation = (() => {
+const THEME_MODES = Object.freeze(['light', 'dark', 'system']);
+const normalizeThemeMode = value => THEME_MODES.includes(value) ? value : 'system';
+const systemThemeMode = () => typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+const SLATE_BLUE = Object.freeze({
+  light: Object.freeze({bg:'#f4f6fa',panel:'#ffffff',raised:'#e6ecf5',inset:'#edf1f7',line:'#718096',text:'#182230',muted:'#4c5d73',accent:'#2459b8',accent2:'#2459b8',link:'#2459b8',focus:'#2459b8',onAccent:'#ffffff'}),
+  dark: Object.freeze({bg:'#111720',panel:'#1b2430',raised:'#283547',inset:'#0c121a',line:'#8293ab',text:'#edf2f8',muted:'#afbed1',accent:'#8cb7ff',accent2:'#8cb7ff',link:'#8cb7ff',focus:'#8cb7ff',onAccent:'#111720'}),
+});
+// Menus use charcoal neutrals with each product's own colour; store recolouring keeps Slate Blue.
+const CHARCOAL = Object.freeze({
+  light: Object.freeze({bg:'#dcdad7',panel:'#ebe9e6',raised:'#d2cfcb',inset:'#d8d5d1',line:'#86807a',text:'#1c1a19',muted:'#57524d',onAccent:'#ffffff'}),
+  dark: Object.freeze({bg:'#141416',panel:'#1d1d20',raised:'#29292d',inset:'#0f0f11',line:'#6c6c74',text:'#ececee',muted:'#a8a8ae',onAccent:'#141416'}),
+});
+// Each product's badge colour, tuned to 4.5:1 on the panel in that mode.
+const PRODUCT_ACCENTS = Object.freeze({
+  dropper: Object.freeze({light:'#862ff1',dark:'#a869f5'}),
+  ward: Object.freeze({light:'#0d7246',dark:'#1fbf7a'}),
+  thread: Object.freeze({light:'#bd3300',dark:'#ff4500'}),
+});
+function productPalette(product, mode) {
+  const accent = PRODUCT_ACCENTS[product]?.[mode];
+  return accent ? {...CHARCOAL[mode],accent,accent2:accent,link:accent,focus:accent} : SLATE_BLUE[mode];
+}
+function resolveTheme(value, product = '') {
+  const id=normalizeThemeMode(value),mode=id==='system'?systemThemeMode():id,p=productPalette(product,mode);
+  return {...p,id,mode,name:id[0].toUpperCase()+id.slice(1),swatch:p.accent,canvas:p.bg,surface:p.panel,primary:p.accent,companion:p.accent,counterpoint:p.accent,interactive:p.accent,skin:p.accent,skinVertical:p.accent,skinMode:'flat'};
+}
+const UI_THEMES = Object.freeze(THEME_MODES.map(id=>Object.freeze(resolveTheme(id))));
+const SHARED_UI_THEMES = UI_THEMES;
+
+// A support control carries these styles into native and custom Shadow DOM shells.
+function supportControlCss() {
+    return `
+      .support-wrap { position:static; }
+      .support-button {
+        width:30px; height:30px; min-width:30px; padding:0;
+        border:1px solid var(--theme-line); border-radius:8px; background:var(--theme-panel); color:var(--theme-muted);
+        cursor:pointer;
+      }
+      .support-button { box-sizing:border-box; display:grid; place-items:center; }
+      .support-button svg { width:15px; height:15px; fill:currentColor; }
+      .support-button:hover,
+      .support-button:focus-visible {
+        border-color:var(--theme-accent); color:var(--theme-accent2); background:var(--theme-raised); outline:none;
+      }
+      .support-popover {
+        position:absolute; z-index:14; top:35px; right:0;
+        width:min(190px,100%); max-width:100%;
+        box-sizing:border-box; padding:8px 9px;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 46%,var(--theme-line));
+        border-radius:9px; background:var(--theme-panel); color:var(--theme-text);
+        box-shadow:0 10px 28px #0009;
+      }
+      .support-popover[hidden] { display:none; }
+      .support-popover strong { display:block; margin-bottom:3px; font-size:var(--exp-font-size-small,11px); }
+      .support-popover span { display:block; color:var(--theme-muted); font-size:var(--exp-font-size-small,11px); line-height:1.35; }
+      .support-popover a {
+        display:flex; align-items:center; justify-content:center; min-height:26px; margin-top:7px; padding:0 9px;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 58%,var(--theme-line));
+        border-radius:7px; background:color-mix(in srgb,var(--theme-panel) 76%,var(--theme-accent) 24%);
+        color:var(--theme-text); text-decoration:none; font-size:var(--exp-font-size-small,11px); font-weight:800;
+      }
+      .support-popover a:hover,
+      .support-popover a:focus-visible {
+        border-color:var(--theme-accent2); outline:none;
+        background:color-mix(in srgb,var(--theme-panel) 66%,var(--theme-accent) 34%);
+      }
+    `;
+}
+
+function css() {
+    return `
+      :host { all: initial; --exp-font-size-small:11px; --exp-font-size-body:13px; }
+      * { box-sizing: border-box; }
+      small { font-size:var(--exp-font-size-small,11px); }
+      .exp-core-theme {
+        position: fixed; right: 12px; z-index: 2147483600;
+        display: flex; flex-direction: column-reverse; align-items: flex-end;
+        width: max-content; max-width: calc(100vw - 24px); gap: 8px;
+        --exp-ui-opacity:1; --exp-menu-width:260px;
+        font: 13px/1.42 ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: var(--theme-text);
+      }
+      .exp-core-theme.open-up { flex-direction: column; }
+      [data-exp-part="dock"],
+      .update-notice {
+        opacity:var(--exp-ui-opacity,1);
+        transition:opacity .15s ease;
+      }
+      .exp-core-theme [data-exp-part="dock"],
+      .exp-core-theme > .update-notice[data-placement="menu"] {
+        width:min(var(--exp-menu-width,260px), calc(100vw - 24px));
+      }
+
+      .progress-age { color:#a7a7b0; }
+      .progress-age.warn { color:#f59e0b; }
+      .progress-age.bad { color:#ef4444; font-weight:800; }
+      /* 3.2.0 progress panel */
+      .exp-core-theme{pointer-events:none!important}
+      .exp-core-theme :is([data-exp-part="dock"],.update-notice,[data-exp-part="launcher"]){pointer-events:auto!important}
+      .exp-core-theme .badge-row{position:fixed!important;min-height:112px!important;height:auto!important;justify-content:flex-end!important;align-items:center!important;pointer-events:none!important}
+
+      .badge-row {display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:8px!important;width:100%!important;min-height:112px!important;height:auto!important;position:relative!important}
+
+      [data-exp-part="launcher"] {
+        position:relative; width:48px; min-width:48px; height:48px; min-height:48px; align-self:flex-end; padding:0; margin:0;
+        display:grid; place-items:center; border:1px solid color-mix(in srgb,var(--theme-accent) 30%,transparent); border-radius:10px;
+        background:var(--theme-panel,#18181b); box-shadow:0 6px 22px #0006; cursor:grab; touch-action:none; user-select:none;
+        transition:.14s border-color,.14s box-shadow,.14s background,.14s transform;
+      }
+      .action-separator{grid-column:1/-1;width:100%;border:0;border-top:1px solid var(--theme-line,#34343b);margin:8px 0 0}
+      .stream-subsection-label{grid-column:1/-1;min-width:0;margin:1px 0 2px;color:var(--theme-accent2);font-size:var(--exp-font-size-small,11px);font-weight:900;line-height:1.2;letter-spacing:.08em;text-transform:uppercase}
+      .stream-subsection-label.with-divider{margin-top:7px;padding-top:8px;border-top:1px solid var(--theme-line,#34343b)}
+      .queue-switches{display:grid;grid-template-columns:minmax(58px,.7fr) minmax(0,1.3fr);column-gap:10px;row-gap:0;min-width:0;margin:6px 0;padding:2px 0;border:0;align-items:stretch}
+      .queue-switches-label{grid-column:1;grid-row:1/span 3;display:flex;align-items:center;min-width:0;font-size:var(--exp-font-size-body,13px);font-weight:700;line-height:1.2;color:var(--theme-text,#efeff1)}
+      .queue-switches>.fl-switch{grid-column:2;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px;min-width:0;padding:5px 0!important;text-align:left!important}
+      .queue-switches>.fl-switch>span:first-child{display:block;flex:1 1 auto;width:auto!important;min-width:0!important;min-height:0!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important;line-height:1.25;text-align:left}
+      .queue-switches>.fl-switch>.toggleSwitch{flex:0 0 34px;margin-left:auto}
+      .appearance-separator{grid-column:1/-1;width:100%;border:0;border-top:1px solid var(--theme-line,#34343b);margin:3px 0 1px}
+
+      [data-exp-part="launcher"]:hover {
+        border-color:color-mix(in srgb,var(--theme-accent) 58%,transparent);
+        background:color-mix(in srgb,var(--theme-panel,#18181b) 96%,var(--theme-accent) 4%);
+        box-shadow:0 8px 24px #0007; transform:scale(1.015);
+      }
+      [data-exp-part="launcher"][aria-expanded="true"] {
+        border-color:color-mix(in srgb,var(--theme-accent) 72%,transparent);
+        background:var(--theme-panel,#18181b);
+        box-shadow:0 0 0 1px color-mix(in srgb,var(--theme-accent) 22%,transparent),0 8px 26px #0008;
+        transform:scale(1.01);
+      }
+      [data-exp-part="launcher"].is-dragging {
+        cursor:grabbing; transform:scale(1.03); box-shadow:0 10px 28px #0009;
+      }
+      [data-exp-part="launcher"].update-available::after {
+        content:"↑"; position:absolute; top:-4px; right:-4px; width:14px; height:14px; display:grid; place-items:center;
+        border:2px solid var(--theme-panel,#18181b); border-radius:4px; background:#f59e0b; color:#111114; font-size:var(--exp-font-size-small,11px); font-weight:950;
+        box-shadow:0 2px 6px #0007; z-index:4; pointer-events:none;
+      }
+      [data-exp-part="launcher"] .ring { position:absolute; top:50%; left:50%; width:44px; height:44px; pointer-events:none; transform:translate(-50%,-50%); }
+      [data-exp-part="launcher"] .track { fill:none; stroke:color-mix(in srgb,var(--theme-line,#34343b) 72%,transparent); stroke-width:2.5; }
+      [data-exp-part="launcher"] .fill { fill:none; stroke:var(--theme-accent,#9147ff); stroke-width:2.5; stroke-linecap:round; transition:.2s stroke; }
+      [data-exp-part="launcher"] .icon { position:absolute; top:50%; left:50%; width:40px; height:40px; pointer-events:none; z-index:1; transform:translate(-50%,-50%); }
+      [data-exp-part="dock"] {
+        position:fixed; right:12px; top:auto; bottom:auto;
+        display:none; width:min(var(--exp-menu-width,260px), calc(100vw - 24px)); max-width:calc(100vw - 24px);
+        height:max-content; min-height:0; max-height:none; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; flex:0 0 auto;
+        transition:.15s width;
+        padding:9px 9px 4px; background:var(--theme-bg); border:1px solid var(--theme-line); border-radius:14px; box-shadow:0 18px 50px #0008;
+      }
+      [data-exp-part="dock"].fl-rail-open { display:block; height:max-content; min-height:0; max-height:none; }
+      [data-exp-part="dock"]:focus { outline:none; }
+      [data-exp-part="dock"] :is(.fl-tool-body,.row,.group,.section,.fl-tool-title) { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+      [data-exp-part="dock"] :is(input,select,textarea) { min-width:0; max-width:100%; }
+      [data-exp-part="dock"] :is(option,optgroup) { background:var(--theme-panel) !important; color:var(--theme-text) !important; }
+      .menu-head {
+        position:relative;
+        display:grid; grid-template-columns:minmax(0,1fr) auto;
+        align-items:start; gap:8px; width:100%;
+      }
+      .header-actions { display:flex; align-items:flex-start; gap:5px; position:static; }
+      [data-exp-part="close"] {
+        width:30px; height:30px; min-width:30px; padding:0;
+        border:1px solid #3a3a42; border-radius:8px; background:#151519; color:#b8b8c0;
+        cursor:pointer;
+      }
+      ${supportControlCss()}
+      .header-brand {
+        display:grid; grid-template-columns:38px minmax(0,1fr);
+        align-items:center; gap:8px; min-width:0; width:100%;
+      }
+      .header-icon {
+        box-sizing:border-box; width:38px; height:38px; display:grid; place-items:center;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 48%,var(--theme-line));
+        border-radius:9px; background:var(--theme-panel);
+        box-shadow:inset 0 0 0 1px color-mix(in srgb,#000 22%,transparent);
+      }
+      .header-icon .menu-icon { width:38px; height:38px; display:block; }
+      .header-copy { min-width:0; overflow:hidden; }
+      .header-title-row { display:flex; align-items:center; gap:6px; min-width:0; flex-wrap:wrap; }
+      [data-exp-part="title"] { margin:0; font-size:15px; font-weight:800; line-height:1.1; }
+      [data-exp-part="version"] {
+        min-height:18px; padding:1px 6px; border:1px solid #4a3b61; border-radius:5px;
+        background:#1b1721; color:#c9a7ff; cursor:pointer; font:800 var(--exp-font-size-small,11px)/1 ui-sans-serif,system-ui,sans-serif;
+        white-space:nowrap;
+      }
+      [data-exp-part="version"]:hover,
+      [data-exp-part="version"]:focus-visible {
+        border-color:#9147ff; background:#251d31; color:#fff; outline:none;
+      }
+      [data-exp-part="subtitle"] {
+        margin-top:2px; font-size:var(--exp-font-size-small,11px); line-height:1.2; color:#adadb8;
+        white-space:normal; overflow-wrap:anywhere;
+      }
+      [data-exp-part="close"] { font:18px/1 Arial,sans-serif; }
+      [data-exp-part="close"]:hover,
+      [data-exp-part="close"]:focus-visible { border-color:#9147ff; color:#fff; background:#211b2b; outline:none; }
+      .header-divider { height:1px; width:100%; margin:5px 0; background:linear-gradient(90deg,transparent,#9147ff88 50%,transparent); }
+      .update-notice {
+        position:fixed; display:block; width:100%; max-width:calc(100vw - 24px); margin:0; padding:10px;
+        box-sizing:border-box;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 62%,var(--theme-line)); border-radius:10px;
+        background:
+          linear-gradient(
+            180deg,
+            color-mix(in srgb,var(--theme-panel) 88%,var(--theme-accent) 12%),
+            var(--theme-bg) 76%
+          );
+        color:var(--theme-text);
+        box-shadow:0 10px 28px #0008; z-index:12;
+      }
+      .update-notice[hidden] { display:none; }
+      .update-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding-right:22px; }
+      .update-heading { min-width:0; }
+      .update-kicker { margin-bottom:2px; color:var(--theme-accent2); font-size:var(--exp-font-size-small,11px); font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+      .update-title { font-size:var(--exp-font-size-body,13px); line-height:1.25; font-weight:850; color:var(--theme-text); }
+      .update-version {
+        flex:none; padding:2px 6px;
+        border:1px solid color-mix(in srgb,var(--theme-accent) 62%,var(--theme-line));
+        border-radius:5px;
+        background:color-mix(in srgb,var(--theme-panel) 82%,var(--theme-accent) 18%);
+        color:var(--theme-text);
+        font-size:var(--exp-font-size-small,11px); font-weight:800; white-space:nowrap;
+      }
+      .update-text { margin-top:6px; font-size:var(--exp-font-size-small,11px); line-height:1.45; color:var(--theme-muted); white-space:normal; overflow:visible; }
+      .update-list { margin:7px 0 0; padding:0 0 0 15px; color:var(--theme-text); font-size:var(--exp-font-size-small,11px); line-height:1.4; scrollbar-width:thin; }
+      .update-list li::marker { color:var(--theme-accent); }
+      .update-list li + li { margin-top:3px; }
+      .update-footer { display:flex; justify-content:flex-end; gap:6px; margin-top:8px; padding-top:7px; border-top:1px solid var(--theme-line); }
+      .update-action,
+      .update-release,
+      .update-dismiss,
+      .life-btn {
+        border:1px solid var(--theme-line); border-radius:7px;
+        background:var(--theme-bg); color:var(--theme-text); cursor:pointer;
+      }
+      .update-action,
+      .update-release { min-height:27px; padding:0 10px; font-size:var(--exp-font-size-small,11px); font-weight:800; }
+      .update-action,
+      .update-release { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+      /* The release control is a link in the shared notice; it reads as a button, not as link text. */
+      .exp-core-theme a.update-release { color:var(--theme-text); text-decoration:none; }
+      .update-action[hidden],
+      .update-release[hidden] { display:none; }
+      .update-action {
+        border-color:var(--theme-accent);
+        background:color-mix(in srgb,var(--theme-panel) 68%,var(--theme-accent) 32%);
+        color:var(--theme-text);
+      }
+      .update-release {
+        border-color:color-mix(in srgb,var(--theme-line) 78%,var(--theme-accent) 22%);
+        background:var(--theme-panel);
+        color:var(--theme-text);
+      }
+      .update-dismiss {
+        position:absolute; top:7px; right:7px; width:23px; height:23px; padding:0;
+        border-color:transparent; background:transparent; color:var(--theme-muted); font-family:Arial,sans-serif; font-size:15px; line-height:1;
+      }
+      .update-action:hover,
+      .update-action:focus-visible,
+      .update-release:hover,
+      .update-release:focus-visible,
+      .update-dismiss:hover,
+      .update-dismiss:focus-visible,
+      .life-btn:hover {
+        border-color:var(--theme-accent);
+        color:var(--theme-text);
+        outline:none;
+      }
+      .update-action:hover,
+      .update-action:focus-visible {
+        background:color-mix(in srgb,var(--theme-panel) 55%,var(--theme-accent) 45%);
+      }
+      .update-release:hover,
+      .update-release:focus-visible {
+        background:color-mix(in srgb,var(--theme-panel) 88%,var(--theme-accent) 12%);
+      }
+      .toast { margin-bottom:7px; padding:6px 8px; border:1px solid #34343b; border-radius:8px; background:#18181b; color:#efeff1; font-size:var(--exp-font-size-small,11px); box-shadow:0 8px 24px #0006; }
+      .toast[hidden] { display:none; }
+      .fl-tool-panel { position:relative; margin-top:5px; border:1px solid #27272d; background:#19191e; border-radius:9px; overflow:visible; }
+      .fl-tool-header { display:flex; justify-content:space-between; align-items:flex-start; height:auto; min-height:0; padding:7px 8px; cursor:pointer; border-radius:8px; }
+      .fl-tool-header:hover { background:#9147ff18; }
+      .fl-tool-header.last-opened { box-shadow:inset 3px 0 0 #b783ff; }
+      .fl-tool-title { min-width:0; flex:1; font-size:var(--exp-font-size-body,13px); font-weight:700; white-space:normal; overflow-wrap:anywhere; }
+      .fl-tool-chevron { background:none; border:0; color:#adadb8; cursor:pointer; }
+      .fl-tool-body { padding:0 10px 8px; }
+      .fl-tool-body:not(.fl-tool-hidden) { display:grid; height:auto; min-height:0; max-height:none; overflow:visible; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; column-gap:8px; }
+      .exp-core-theme .fl-tool-body:not(.fl-tool-hidden) { grid-template-columns:minmax(0,1fr); }
+      .exp-core-theme .fl-tool-body:not(.fl-tool-hidden) > * { grid-column:1/-1; }
+      .fl-tool-body > :is(.fl-switch,.mini-row,.life-btn) { min-width:0; }
+      .fl-tool-body > :is(.diag) { grid-column:1/-1; }
+      .fl-tool-hidden { display:none !important; }
+      .fl-switch,
+      .mini-row { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; height:auto; min-height:0; padding:6px 0; }
+      .fl-switch + .fl-switch,
+      .mini-row + .mini-row { border-top:1px solid #26262b; }
+      .fl-switch-text,
+      .mini-row > span {
+        min-width:0;
+        font-size:var(--exp-font-size-body,13px);
+        line-height:1.25;
+        white-space:normal;
+        word-break:normal;
+        overflow-wrap:break-word;
+        hyphens:none;
+      }
+      .toggleSwitch {
+        position:relative; box-sizing:border-box; flex:none; width:34px; height:20px;
+        border:1px solid color-mix(in srgb,var(--theme-line) 88%,var(--theme-muted) 12%);
+        border-radius:6px;
+        background:color-mix(in srgb,var(--theme-bg) 84%,var(--theme-panel) 16%);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+        cursor:pointer;
+        transition:.15s background,.15s border-color;
+      }
+      .toggleSwitch::after {
+        content:""; position:absolute; top:2px; left:2px; width:14px; height:14px;
+        box-sizing:border-box; border:0; border-radius:4px;
+        background:color-mix(in srgb,var(--theme-muted) 82%,var(--theme-text) 18%);
+        box-shadow:none;
+        transition:.15s transform,.15s background;
+      }
+      .toggleSwitch[aria-checked="true"] {
+        border-color:color-mix(in srgb,var(--theme-line) 52%,var(--theme-accent) 48%);
+        background:color-mix(in srgb,var(--theme-panel) 72%,var(--theme-accent) 28%);
+      }
+      .toggleSwitch[aria-checked="true"]::after {
+        transform:translateX(14px);
+        background:var(--theme-text);
+      }
+      .life-btn { width:100%; min-height:28px; margin-top:6px; font-size:var(--exp-font-size-body,13px); }
+      .life-btn.last-opened { box-shadow:inset 3px 0 0 #b783ff; }
+      .select-lite { min-width:0; max-width:72px; background:#111114; color:#efeff1; border:1px solid #34343b; border-radius:6px; padding:4px 6px; font-size:var(--exp-font-size-body,13px); }
+      .auth-required {
+        grid-column:1/-1;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:8px;
+        margin-top:6px;
+        padding:7px 8px;
+        border:1px solid color-mix(in srgb,#f59e0b 46%,var(--theme-line));
+        border-radius:7px;
+        background:color-mix(in srgb,var(--theme-panel) 84%,#f59e0b 16%);
+        color:#ffe5a8;
+        font-size:var(--exp-font-size-small,11px);
+        font-weight:800;
+      }
+      .auth-required[hidden] { display:none !important; }
+      .auth-required .life-btn {
+        width:auto;
+        min-width:112px;
+        margin:0;
+        flex:0 0 auto;
+      }
+      .auth-advanced { margin-top:2px; border:1px solid var(--theme-line); border-radius:7px; background:var(--theme-inset); padding:6px 8px; }
+      .auth-advanced > summary { cursor:pointer; list-style:none; color:var(--theme-muted); font-size:var(--exp-font-size-body,13px); font-weight:600; user-select:none; }
+      .auth-advanced > summary::-webkit-details-marker { display:none; }
+      .auth-advanced[open] > summary { margin-bottom:6px; color:var(--theme-text); }
+      .auth-advanced-body { display:flex; flex-direction:column; gap:6px; }
+      .auth-hint { color:var(--theme-muted); font-size:var(--exp-font-size-small,11px); line-height:1.35; }
+      .auth-input { width:100%; min-height:30px; border:1px solid var(--theme-line); border-radius:6px; background:var(--theme-inset); color:var(--theme-text); padding:6px 8px; font-size:var(--exp-font-size-body,13px); }
+      .auth-input:focus { outline:2px solid var(--theme-focus); outline-offset:2px; border-color:var(--theme-focus); }
+      .theme-row { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:28px; padding:6px 0; font-size:var(--exp-font-size-body,13px); }
+      .fl-tool-panel { border-color:var(--theme-line); background:var(--theme-panel); }
+      .fl-tool-body { border-color:var(--theme-line); background:var(--theme-bg); color:var(--theme-text); }
+      .select-lite,
+      .life-btn { border-color:var(--theme-line); background:var(--theme-raised); color:var(--theme-text); }
+      .exp-core-theme a { color:var(--theme-link); }
+      .fl-tool-chevron,
+      [data-exp-part="subtitle"] { color:var(--theme-muted); }
+      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch { border:2px solid #fff; background:#050505; }
+      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch::after { top:0; left:0; border:1px solid #050505; background:#fff; }
+      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"] { background:#fff; border-color:#fff; }
+      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"]::after { background:#050505; border-color:#fff; transform:translateX(14px); }
+      @media (forced-colors: active) {
+        .toggleSwitch { forced-color-adjust:none; border:1px solid CanvasText; background:Canvas; }
+        .toggleSwitch::after { border-color:CanvasText; background:CanvasText; }
+        .toggleSwitch[aria-checked="true"] { border-color:Highlight; background:Highlight; }
+        .toggleSwitch[aria-checked="true"]::after { border-color:HighlightText; background:HighlightText; }
+      }
+      .exp-core-theme[data-ui-theme="warm"] [data-exp-part="dock"]:not([data-exp-menu-layout="lean"]) {
+        border:1px solid color-mix(in srgb,var(--theme-line) 84%,var(--theme-accent) 16%) !important;
+        background-image:
+          radial-gradient(120% 65% at 50% -18%,color-mix(in srgb,var(--theme-accent) 9%,transparent),transparent 72%),
+          linear-gradient(180deg,color-mix(in srgb,var(--theme-panel) 42%,var(--theme-bg) 58%),var(--theme-bg) 44%) !important;
+        background-clip:padding-box !important;
+        box-shadow:0 18px 50px #0009,inset 0 1px 0 #ffedcf12;
+      }
+      .exp-core-theme[data-ui-theme="warm"] .header-icon {
+        background:linear-gradient(155deg,color-mix(in srgb,var(--theme-accent) 13%,var(--theme-panel)),var(--theme-panel) 70%);
+        box-shadow:inset 0 1px 0 #ffedcf20,0 2px 9px #0005;
+      }
+      .exp-core-theme[data-ui-theme="warm"] [data-exp-part="version"] {
+        border-color:color-mix(in srgb,var(--theme-line) 66%,var(--theme-accent) 34%);
+        background:color-mix(in srgb,var(--theme-panel) 88%,var(--theme-accent) 12%);
+        color:var(--theme-accent2);
+      }
+      .exp-core-theme[data-ui-theme="warm"] [data-exp-part="close"] {
+        border-color:var(--theme-line);background:var(--theme-panel);color:var(--theme-muted);
+      }
+      .exp-core-theme[data-ui-theme="warm"] .header-divider {
+        background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--theme-accent) 55%,transparent) 50%,transparent);
+      }
+      .exp-core-theme[data-ui-theme="warm"] :is(.fl-tool-header,.life-btn):not(.last-opened) {
+        box-shadow:inset 0 1px 0 #ffedcf0a;
+      }
+      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"] {
+        background:#fff;
+        border-color:#fff;
+      }
+      .exp-core-theme[data-ui-theme="contrast"] .toggleSwitch[aria-checked="true"]::after {
+        background:#050505;
+        border-color:#fff;
+      }
+      .campaign-manager-title { min-width:0; font-size:var(--exp-font-size-body,13px); font-weight:800; color:var(--theme-text); }
+      .campaign-manager-summary { flex:0 0 auto; font-size:var(--exp-font-size-small,11px); font-weight:700; color:var(--theme-muted); }
+      .campaign-manager-note { padding:6px 8px 3px; font-size:var(--exp-font-size-small,11px); line-height:1.35; color:var(--theme-muted); }
+      .diag { display:none; box-sizing:border-box;width:100%;min-width:0;height:160px;max-height:160px;overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere;box-shadow:inset 0 2px 6px #0006; margin-top:6px; padding:7px; border:1px solid #2b2b31; border-radius:7px; background:#101014; font:var(--exp-font-size-small,11px)/1.45 ui-monospace,SFMono-Regular,Consolas,monospace; color:#b8b8c0; white-space:pre-wrap; }
+      .diag.open { display:block; }
+      .has-tooltip { position:relative; }
+      .has-tooltip::after { content:attr(data-tip); position:absolute; left:0; top:calc(100% + 4px); width:min(190px, calc(100vw - 48px)); max-width:100%; padding:6px 8px; border:1px solid #3b3b44; border-radius:7px; background:#0e0e10; color:#efeff1; box-shadow:0 6px 18px #0007; box-sizing:border-box; font-size:var(--exp-font-size-small,11px); line-height:1.35; white-space:normal; overflow-wrap:anywhere; opacity:0; pointer-events:none; z-index:999; transform:translateY(-2px); transition:.12s opacity,.12s transform; }
+      .has-tooltip:hover::after,
+      .has-tooltip:focus-visible::after { opacity:1; transform:translateY(0); }
+      .reduce-motion *,
+      .reduce-motion *::before,
+      .reduce-motion *::after { animation:none !important; transition:none !important; }
+      @media (max-width:700px) {
+        .badge-row { width:100%; }
+      }
+    `;
+  }
+
+function protectLauncherHost(host) {
+    host = host?.getRootNode?.().host || host;
+    if (!host || host.nodeType !== 1) return () => {};
+    host.dataset.expOwned = '1';
+    const shadow = host.shadowRoot;
+    const hostCss = `:host{all:initial!important;position:fixed!important;top:0!important;left:0!important;right:auto!important;bottom:auto!important;display:block!important;width:0!important;height:0!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;overflow:visible!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:2147483647!important;isolation:isolate!important;transform:none!important;filter:none!important;clip:auto!important;clip-path:none!important;contain:none!important;content-visibility:visible!important;mix-blend-mode:normal!important}`;
+    let protectionSheet = null;
+    let protectionStyle = null;
+    let repairing = false;
+    const installHostCss = () => {
+      if (!shadow) return;
+      try {
+        const current = shadow.adoptedStyleSheets;
+        if (protectionSheet && current?.includes?.(protectionSheet)) return;
+        const view = host.ownerDocument?.defaultView || window;
+        const Sheet = view.CSSStyleSheet || (typeof CSSStyleSheet === 'function' ? CSSStyleSheet : null);
+        if (typeof Sheet === 'function' && Sheet.prototype?.replaceSync && current && typeof current[Symbol.iterator] === 'function') {
+          if (!protectionSheet) {
+            protectionSheet = new Sheet();
+            protectionSheet.replaceSync(hostCss);
+          }
+          if (![...current].includes(protectionSheet)) shadow.adoptedStyleSheets = [...current, protectionSheet];
+          return;
+        }
+      } catch {}
+      if (!protectionStyle) {
+        protectionStyle = document.createElement('style');
+        protectionStyle.dataset.expHostProtection = '1';
+        protectionStyle.textContent = hostCss;
+      }
+      if (!protectionStyle.isConnected) {
+        try { shadow.prepend(protectionStyle); } catch {}
+      }
+    };
+    const ensure = () => {
+      if (repairing) return;
+      repairing = true;
+      try {
+        const root = document.documentElement;
+        if (root && host.parentNode !== root) root.append(host);
+        if (host.hidden) host.hidden = false;
+        host.removeAttribute('hidden');
+        host.removeAttribute('inert');
+        if (host.getAttribute('aria-hidden') === 'true') host.removeAttribute('aria-hidden');
+        installHostCss();
+        if (typeof host.showPopover === 'function') {
+          if (host.getAttribute('popover') !== 'manual') host.setAttribute('popover', 'manual');
+          let open = false;
+          try { open = host.matches(':popover-open'); } catch {}
+          if (!open) { try { host.showPopover(); } catch {} }
+        }
+      } catch {}
+      repairing = false;
+    };
+    ensure();
+    const hostObserver = new MutationObserver(() => queueMicrotask(ensure));
+    hostObserver.observe(host, { attributes: true, attributeFilter: ['hidden', 'inert', 'aria-hidden', 'popover'] });
+    const rootObserver = new MutationObserver(() => {
+      if (host.parentNode !== document.documentElement) queueMicrotask(ensure);
+    });
+    rootObserver.observe(document.documentElement, { childList: true });
+    const timer = setInterval(ensure, 2000);
+    const onToggle = () => queueMicrotask(ensure);
+    host.addEventListener('toggle', onToggle);
+    return () => {
+      hostObserver.disconnect();
+      rootObserver.disconnect();
+      clearInterval(timer);
+      host.removeEventListener('toggle', onToggle);
+      if (protectionSheet && shadow?.adoptedStyleSheets) {
+        try { shadow.adoptedStyleSheets = [...shadow.adoptedStyleSheets].filter((sheet) => sheet !== protectionSheet); } catch {}
+      }
+      try { protectionStyle?.remove(); } catch {}
+    };
+  }
+
+function compareVersions(a, b) {
+    // Semantic version order: a leading "v" and build metadata are ignored, and a pre-release sorts below its release.
+    const parse = (value) => {
+      const [core, pre] = String(value || '').trim().replace(/^v/i, '').split('+')[0].split(/-(.*)/s);
+      return { core: core.split('.').slice(0, 3).map((part) => parseInt(part, 10) || 0), pre: pre ? pre.split('.') : [] };
+    };
+    const pa = parse(a), pb = parse(b);
+    for (let i = 0; i < 3; i += 1) {
+      const na = pa.core[i] || 0, nb = pb.core[i] || 0;
+      if (na !== nb) return na > nb ? 1 : -1;
+    }
+    if (!pa.pre.length || !pb.pre.length) return pa.pre.length === pb.pre.length ? 0 : pa.pre.length ? -1 : 1;
+    for (let i = 0; i < Math.max(pa.pre.length, pb.pre.length); i += 1) {
+      const x = pa.pre[i], y = pb.pre[i];
+      if (x === undefined || y === undefined) return x === undefined ? -1 : 1;
+      if (x === y) continue;
+      const nx = /^\d+$/.test(x), ny = /^\d+$/.test(y);
+      if (nx && ny) return Number(x) > Number(y) ? 1 : -1;
+      if (nx !== ny) return nx ? -1 : 1;
+      return x > y ? 1 : -1;
+    }
+    return 0;
+  }
+return Object.freeze({ THEME_MODES, SLATE_BLUE, CHARCOAL, PRODUCT_ACCENTS, normalizeThemeMode, resolveTheme, UI_THEMES, SHARED_UI_THEMES, css, supportControlCss, protectLauncherHost, compareVersions });
+})();
+
+/* Local diagnostic capture shared at build time by ExtraPotions products. */
+const ExtraPotionsDiagnostics = (() => {
+  const LIMIT = 100;
+  const supportedProducts = ["thread","dropper","ward"];
+  const protocol = 'exp-core-coordination-v1';
+  const entries = [], hooks = [], registrations = new Map();
+  const startedAt = new Date().toISOString();
+  let omitted = 0, recording = false, active = true;
+  const redact = value => String(value)
+    .replace(/https?:\/\/[^\s"<>]+/gi, '[url]')
+    .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, '[email]')
+    .replace(/\b(Bearer|OAuth)\s+\S+/gi, '$1 [redacted]')
+    .replace(/\b(token|password|secret|authorization|cookie)\s*[:=]\s*[^\s,;]+/gi, '$1=[redacted]')
+    .replace(/\b\d{3}-\d{7}-\d{7}\b/g, '[order-id]')
+    .replace(/\b[A-Za-z0-9_-]{40,}\b/g, '[opaque-id]')
+    .slice(0, 2000);
+  const RESOURCE_INITIATOR_TYPES = new Set(['audio','beacon','css','embed','fetch','font','iframe','img','link','navigation','object','ping','script','track','video','xmlhttprequest','other']);
+  const resourceInitiatorType = value => {
+    const type = String(value || '').trim().toLowerCase();
+    return RESOURCE_INITIATOR_TYPES.has(type) ? type : 'other';
+  };
+  function clean(value, depth = 0, seen = new WeakSet()) {
+    if (depth > 8) return '[depth limit]';
+    if (typeof value === 'string') return redact(value);
+    if (typeof value === 'bigint') return String(value);
+    if (typeof value === 'function' || typeof value === 'symbol') return undefined;
+    if (!value || typeof value !== 'object') return value;
+    if (value instanceof Node || value === window) return undefined;
+    if (seen.has(value)) return '[circular]';
+    seen.add(value);
+    try {
+      if (value instanceof Error) return { name: redact(value.name), message: redact(value.message), stack: redact(value.stack || '') };
+      if (Array.isArray(value)) return value.slice(0, 100).map(item => clean(item, depth + 1, seen));
+      const result = {};
+      for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(value)).slice(0, 150)) {
+        if (/token|cookie|authorization|password|secret|pageText|innerHTML|outerHTML|formValue|matchText|__proto__|constructor|prototype/i.test(key)) continue;
+        if (!('value' in descriptor)) continue;
+        const item = clean(descriptor.value, depth + 1, seen);
+        const safeKey = redact(key);
+        if (item !== undefined && safeKey) result[safeKey] = item;
+      }
+      return result;
+    } catch { return '[unavailable]'; } finally { seen.delete(value); }
+  }
+  function record(level, kind, values) {
+    if (recording || !active) return;
+    recording = true;
+    try {
+      entries.push({ at: new Date().toISOString(), level, kind, values: clean(values.slice(0, 10)) });
+      if (entries.length > LIMIT) { entries.shift(); omitted += 1; }
+    } catch {} finally { recording = false; }
+  }
+  for (const level of ['debug', 'log', 'info', 'warn', 'error']) {
+    try {
+      const original = console[level];
+      if (typeof original !== 'function') continue;
+      const wrapped = function(...args) { record(level, 'console', args); return Reflect.apply(original, this, args); };
+      console[level] = wrapped;
+      if (console[level] === wrapped) hooks.push({ level, original, wrapped });
+    } catch {}
+  }
+  function resourceErrorDetails(target) {
+    const element = target?.tagName || 'unknown';
+    const root = target?.getRootNode?.();
+    const host = root?.host || null;
+    const productId = host?.dataset?.productId || host?.dataset?.expDiagnosticsProduct || null;
+    const owned = Boolean(
+      productId ||
+      host?.dataset?.expOwned === '1' ||
+      target?.dataset?.expOwned === '1'
+    );
+    let assetHost = null;
+    try {
+      const raw = target?.currentSrc || target?.src || target?.href || '';
+      assetHost = raw ? new URL(raw, location.href).hostname : null;
+    } catch {}
+    return {
+      element,
+      owner: owned ? (productId || 'extrapotions') : 'page',
+      assetHost,
+    };
+  }
+  const onError = event => record('error', event.target === window ? 'runtime-error' : 'resource-error',
+    event.target === window
+      ? [event.error || event.message, { line: event.lineno, column: event.colno }]
+      : [resourceErrorDetails(event.target)]);
+  const onRejection = event => record('error', 'unhandled-rejection', [event.reason]);
+  addEventListener('error', onError, true);
+  addEventListener('unhandledrejection', onRejection);
+
+  function registerProduct(id, version, host) {
+    id = String(id).toLowerCase();
+    if (!supportedProducts.includes(id)) return null;
+    let marker = registrations.get(id);
+    if (!marker) {
+      marker = document.createElement('meta');
+      marker.dataset.expOwned = '1';
+      marker.dataset.expDiagnosticsProduct = id;
+      marker.dataset.expProductVersion = String(version || 'unknown').slice(0, 40);
+      marker.dataset.expCoordinationProtocol = protocol;
+      marker.dataset.expDiagnosticsInstance = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+      registrations.set(id, marker);
+    }
+    if (!marker.isConnected) (document.head || document.documentElement)?.append(marker);
+    if (host) host.dataset.expDiagnosticsInstance = marker.dataset.expDiagnosticsInstance;
+    return marker;
+  }
+  addEventListener('DOMContentLoaded', () => { for (const marker of registrations.values()) if (!marker.isConnected) (document.head || document.documentElement)?.append(marker); }, { once: true });
+  function compatibility() {
+    const markers = [...document.querySelectorAll('meta[data-exp-diagnostics-product]')];
+    const hosts = [...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')];
+    const conflicts = [];
+    const products = supportedProducts.map(id => {
+      const records = markers.filter(n => n.dataset.expDiagnosticsProduct === id);
+      const launchers = hosts.filter(n => n.dataset.productId === id);
+      const versions = [...new Set(records.map(n => redact(n.dataset.expProductVersion || 'unknown')))];
+      const protocols = [...new Set(records.map(n => redact(n.dataset.expCoordinationProtocol || 'unknown')))];
+      if (records.length > 1 || launchers.length > 1) conflicts.push({ type: 'duplicate-product', products: [id], instances: Math.max(records.length, launchers.length) });
+      if (protocols.some(p => p !== protocol && p !== 'unknown')) conflicts.push({ type: 'protocol-mismatch', products: [id], protocols });
+      return { id, status: records.length || launchers.length ? 'observed' : 'not-observed', versions, protocols, instances: Math.max(records.length, launchers.length), launchers: launchers.length };
+    });
+    const boxes = hosts.map(host => {
+      // An inaccessible shadow or unknown box is not evidence of a collision.
+      const launcher = host.shadowRoot?.querySelector('[data-exp-part="launcher"]');
+      if (!launcher || !launcher.getClientRects().length || getComputedStyle(launcher).visibility === 'hidden') return null;
+      return { id: host.dataset.productId, box: launcher.getBoundingClientRect() };
+    }).filter(x => x && supportedProducts.includes(x.id));
+    for (let a = 0; a < boxes.length; a++) for (let b = a + 1; b < boxes.length; b++) {
+      const x = boxes[a], y = boxes[b];
+      if (Math.min(x.box.right, y.box.right) - Math.max(x.box.left, y.box.left) > 2 && Math.min(x.box.bottom, y.box.bottom) - Math.max(x.box.top, y.box.top) > 2)
+        conflicts.push({ type: 'launcher-overlap', products: [x.id, y.id] });
+    }
+    return { scope: 'current-page', installationInventory: 'unavailable', products, conflicts,
+      status: conflicts.length ? 'conflicts-detected' : 'no-conflicts-observed',
+      limitations: ['Disabled products and products outside their match rules cannot be enumerated.', 'Only reported registrations, protocol mismatches, duplicate instances and observable launcher overlap are checked.'] };
+  }
+  // Diagnostics: the hardest-to-read text on screen and what covers the page, so a washed-out site can be
+  // diagnosed from a copied report. Records colors and element names only, never page text.
+  function readabilityScan({limit=25,budget=6000}={}){
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=1;const context=canvas.getContext('2d',{willReadFrequently:true});
+    const rgba=color=>{context.clearRect(0,0,1,1);context.fillStyle='#000';context.fillStyle=color;context.fillRect(0,0,1,1);return [...context.getImageData(0,0,1,1).data].map(n=>n/255);};
+    const channel=v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4,luminance=c=>.2126*channel(c[0])+.7152*channel(c[1])+.0722*channel(c[2]);
+    const up=node=>node.parentElement||node.getRootNode?.().host||null;
+    const css=color=>'rgb('+color.slice(0,3).map(v=>Math.round(v*255)).join(', ')+')';
+    const name=node=>({tag:node.tagName.toLowerCase(),id:node.id?String(node.id).slice(0,40):'',cls:String(node.className?.baseVal??node.className??'').slice(0,80),host:node.getRootNode?.().host?.tagName.toLowerCase()||''});
+    const backdrop=node=>{const layers=[];for(let n=node;n;n=up(n)){const c=rgba(getComputedStyle(n).backgroundColor);if(c[3]>0)layers.push(c);if(c[3]>=.99)break;}return layers.reduceRight((base,c)=>base.map((v,i)=>c[i]*c[3]+v*(1-c[3])),[1,1,1]);};
+    const nodes=[];const walk=root=>{for(const node of root.querySelectorAll('*')){if(nodes.length>=budget)return;if(node.closest('[data-exp-owned="1"]')||node.id?.startsWith('exp-'))continue;nodes.push(node);if(node.shadowRoot)walk(node.shadowRoot);}};
+    walk(document);
+    const rows=[];
+    for(const node of nodes){
+      const text=[...node.childNodes].reduce((sum,child)=>sum+(child.nodeType===3?child.textContent.trim().length:0),0);
+      if(!text)continue;
+      const box=node.getBoundingClientRect();
+      if(!box.width||!box.height||box.bottom<0||box.top>innerHeight*2)continue;
+      const style=getComputedStyle(node),fg=rgba(style.color),bg=backdrop(node),mixed=fg.slice(0,3).map((v,i)=>v*fg[3]+bg[i]*(1-fg[3]));
+      const a=luminance(mixed),b=luminance(bg);
+      rows.push({ratio:Math.round((Math.max(a,b)+.05)/(Math.min(a,b)+.05)*100)/100,...name(node),textLength:text,color:style.color,background:css(bg),opacity:style.opacity,
+        ...(style.filter!=='none'?{filter:style.filter}:{})});
+    }
+    rows.sort((x,y)=>x.ratio-y.ratio);
+    const layer=node=>{const style=getComputedStyle(node);return {...name(node),background:style.backgroundColor,opacity:style.opacity,position:style.position,...(style.filter!=='none'?{filter:style.filter}:{}),...(style.backdropFilter&&style.backdropFilter!=='none'?{backdropFilter:style.backdropFilter}:{}),...(style.mixBlendMode!=='normal'?{blend:style.mixBlendMode}:{})};};
+    const points=[[.5,.4],[.1,.4],[.5,.85]].map(([x,y])=>{
+      const px=Math.round(innerWidth*x),py=Math.round(innerHeight*y);
+      const stack=document.elementsFromPoint(px,py).filter(node=>!node.closest('[data-exp-owned="1"]')).slice(0,6).map(layer);
+      let root=document,deepest=null;for(let i=0;i<20;i++){const hit=root.elementFromPoint(px,py);if(!hit||hit===deepest)break;deepest=hit;if(!hit.shadowRoot)break;root=hit.shadowRoot;}
+      const chain=[];for(let n=deepest;n&&chain.length<10;n=up(n))chain.push(layer(n));
+      return {x:px,y:py,stack,chain};
+    });
+    // Click-through layers (pointer-events:none) never show up at a point, so list large painted layers too.
+    const overlays=[];
+    for(const node of nodes){
+      if(overlays.length>=8)break;
+      const style=getComputedStyle(node);if(style.position!=='fixed'&&style.position!=='absolute'&&style.position!=='sticky')continue;
+      const box=node.getBoundingClientRect(),area=Math.max(0,Math.min(box.right,innerWidth)-Math.max(box.left,0))*Math.max(0,Math.min(box.bottom,innerHeight)-Math.max(box.top,0));
+      if(area<innerWidth*innerHeight*.5)continue;
+      const painted=rgba(style.backgroundColor)[3]>0||style.filter!=='none'||(style.backdropFilter&&style.backdropFilter!=='none')||style.mixBlendMode!=='normal';
+      if(painted)overlays.push({...layer(node),coverage:Math.round(area/(innerWidth*innerHeight)*100)/100,pointerEvents:style.pointerEvents,zIndex:style.zIndex});
+    }
+    return {scanned:nodes.length,truncated:nodes.length>=budget,viewport:{width:innerWidth,height:innerHeight},colorScheme:getComputedStyle(document.documentElement).colorScheme,worst:rows.slice(0,limit),overlays,points};
+  }
+  function createReport(product, details = {}, core = {}) {
+    const { host, shadow: suppliedShadow, ...rest } = details;
+    const shadow = suppliedShadow || host?.shadowRoot;
+    const id = String(product || 'ExtraPotions').toLowerCase();
+    const registration = registerProduct(id, details.product?.version || details.version, host);
+    const data = clean(rest);
+    const count = selector => document.querySelectorAll(selector).length;
+    const navigation = performance.getEntriesByType('navigation')[0];
+    const resources = performance.getEntriesByType('resource');
+    const byType = {};
+    for (const entry of resources) {
+      const summary = byType[resourceInitiatorType(entry.initiatorType)] ||= { count: 0, durationMs: 0, transferBytes: 0 };
+      summary.count++; summary.durationMs += Math.round(entry.duration); summary.transferBytes += entry.transferSize || 0;
+    }
+    const page = { origin: location.origin, protocol: location.protocol, readyState: document.readyState, contentType: document.contentType, characterSet: document.characterSet, compatibilityMode: document.compatMode, language: document.documentElement?.lang || null, direction: document.documentElement?.dir || 'auto',
+      structure: { elements: count('*'), headings: count('h1,h2,h3,h4,h5,h6'), links: count('a[href]'), forms: count('form'), inputs: count('input,select,textarea'), buttons: count('button,[role="button"]'), images: count('img'), videos: count('video'), audio: count('audio'), frames: count('iframe'), scripts: count('script'), stylesheets: document.styleSheets.length },
+      layout: { documentWidth: document.documentElement?.scrollWidth || 0, documentHeight: document.documentElement?.scrollHeight || 0, scrollX, scrollY, horizontalOverflow: (document.documentElement?.scrollWidth || 0) > innerWidth },
+      preferences: { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, darkColorScheme: matchMedia('(prefers-color-scheme: dark)').matches, forcedColors: matchMedia('(forced-colors: active)').matches },
+      performance: { navigation: navigation ? { type: navigation.type, durationMs: Math.round(navigation.duration), responseMs: Math.round(navigation.responseEnd), domInteractiveMs: Math.round(navigation.domInteractive), domContentLoadedMs: Math.round(navigation.domContentLoadedEventEnd), loadMs: Math.round(navigation.loadEventEnd), redirectCount: navigation.redirectCount } : null, resources: { count: resources.length, byType }, paint: performance.getEntriesByType('paint').map(e => ({ name: e.name, startMs: Math.round(e.startTime) })) },
+      privacy: { pageText: 'excluded', formValues: 'excluded', urlPathsAndQueries: 'excluded', resourceUrls: 'excluded', cookiesAndStorage: 'excluded; sanitized plugin state supplied separately' } };
+    const environment = { hostname: location.hostname, topLevelContext: window.top === window.self, visibility: document.visibilityState, online: navigator.onLine, language: navigator.language, userAgent: navigator.userAgent, viewport: { width: innerWidth, height: innerHeight, pixelRatio: devicePixelRatio } };
+    const rect = n => { const b = n.getBoundingClientRect(); return { width: b.width, height: b.height, x: b.x, y: b.y, visible: !!n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden' }; };
+    const first = selector => shadow?.querySelector(selector) || null;
+    const visibleFirst = selector => [...(shadow?.querySelectorAll(selector) || [])].find(n => !n.hidden && n.getClientRects().length) || first(selector);
+    const progressCard = first('[data-exp-part="progress-card"]');
+    const launcher = first('[data-exp-part="launcher"]');
+    const launcherRow = first('[data-exp-part="launcher-row"]');
+    const menu = first('[data-exp-part="dock"]');
+    const notice = visibleFirst('[data-exp-update-notice],.update-notice,.changelog');
+    const uiGeometry = {
+      progressCardRect: progressCard ? rect(progressCard) : null,
+      launcherRect: launcher ? rect(launcher) : null,
+      launcherRowRect: launcherRow ? rect(launcherRow) : null,
+      menuRect: menu ? rect(menu) : null,
+      noticeRect: notice ? rect(notice) : null,
+    };
+    const ui = {
+      mounted: !!host?.isConnected,
+      menuSizing: 'viewport-clamped',
+      uiGeometry,
+      progressPanelWidth: progressCard ? Math.round(progressCard.getBoundingClientRect().width) : null,
+      launcherRowWidth: launcherRow ? Math.round(launcherRow.getBoundingClientRect().width) : null,
+      menuWidth: menu ? Math.round(menu.getBoundingClientRect().width) : null,
+      noticeWidth: notice && !notice.hidden ? Math.round(notice.getBoundingClientRect().width) : null,
+      surfaces: [...(shadow?.querySelectorAll('[data-exp-part="dock"]') || [])].map(rect),
+      categories: [...(shadow?.querySelectorAll('.route,.nav-item,.fl-tool-header') || [])].map(n => ({ name: redact(n.textContent.trim()), expanded: n.getAttribute('aria-expanded') })),
+      swatches: [...(shadow?.querySelectorAll('.exp-theme-swatch') || [])].map(n => ({ name: n.getAttribute('aria-label'), selected: n.getAttribute('aria-pressed'), ...rect(n) })),
+    };
+    let manager = null;
+    try { if (typeof GM_info === 'object') manager = { name: GM_info.scriptHandler || null, version: GM_info.version || null, injectInto: GM_info.injectInto || null }; } catch {}
+    return { ...data, report: `${product} Diagnostics`, schemaVersion: 3, generatedAt: new Date().toISOString(), page,
+      technical: { manager, core: clean(core), capabilities: { mutationObserver: typeof MutationObserver === 'function', constructedStylesheets: typeof CSSStyleSheet === 'function' && 'replaceSync' in CSSStyleSheet.prototype, clipboard: !!navigator.clipboard, trustedTypes: !!globalThis.trustedTypes } },
+      console: { startedAt, scope: 'accessible-userscript-realm-and-window-events', limit: LIMIT, omitted, hooks: hooks.map(h => ({ level: h.level, installed: console[h.level] === h.wrapped })), entries: clean(entries), limitations: ['No DevTools history, browser-internal logs, or inaccessible isolated-world console messages.', 'Messages are redacted and bounded; attribution to another script is not inferred.'] },
+      // Product state is reported once, at the top level of the report.
+      plugin: { id, version: data.product?.version || data.version || registration?.dataset.expProductVersion || null, stateLocation: 'top-level', compatibility: compatibility() },
+      environment, ui, core: data.core || clean(core),
+      readability: data.readability || (() => { try { return readabilityScan(); } catch (error) { return { error: String(error?.message || error) }; } })() };
+  }
+  function dispose() {
+    active = false;
+    for (const {level, original, wrapped} of hooks) if (console[level] === wrapped) console[level] = original;
+    removeEventListener('error', onError, true); removeEventListener('unhandledrejection', onRejection);
+    for (const marker of registrations.values()) marker.remove();
+  }
+  // Core owns the shared diagnostics interaction contract: Show/Hide first, Copy second,
+  // transient Diagnostics Copied / Copy Failed feedback, and fresh reports per action.
+  // The report behind each set of controls, so Report a Problem can attach a fresh one.
+  const reportSources = new WeakMap();
+  function reportSource(container) {
+    if (!container) return null;
+    if (reportSources.has(container)) return reportSources.get(container);
+    for (const node of container.querySelectorAll?.('*') || []) if (reportSources.has(node)) return reportSources.get(node);
+    return null;
+  }
+  function bindControls({ show, copy, output, getReport, notify = () => {}, onShow = () => {}, onCopy = () => {} }) {
+    let timer, generation = 0;
+    reportSources.set(output, getReport); reportSources.set(copy, getReport);
+    output.hidden = true; output.setAttribute('role', 'region');
+    output.setAttribute('aria-label', 'Page, technical, console, and plugin diagnostics'); output.tabIndex = 0;
+    show.setAttribute('aria-expanded', 'false');
+    // Short visible labels beside a Diagnostics row label; the full action stays in the accessible name.
+    const name = (node, text, label) => { node.textContent = text; node.setAttribute('aria-label', label); };
+    name(show, 'Show', 'Show Diagnostics'); name(copy, 'Copy', 'Copy Diagnostics');
+    const showClick = async () => {
+      const opening = output.hidden, ticket = ++generation;
+      output.hidden = !opening; output.classList.toggle('open', opening);
+      if (opening) name(show, 'Hide', 'Hide Diagnostics'); else name(show, 'Show', 'Show Diagnostics');
+      show.setAttribute('aria-expanded', String(opening)); show.classList.toggle('last-opened', opening);
+      if (opening) {
+        try { const report = await getReport(); if (ticket === generation) output.textContent = JSON.stringify(report, null, 2); }
+        catch { if (ticket === generation) output.textContent = 'Diagnostics unavailable.'; notify('Could not generate diagnostics.'); }
+      }
+      onShow(opening);
+    };
+    const copyClick = async () => {
+      copy.disabled = true; clearTimeout(timer);
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(await getReport(), null, 2));
+        name(copy, 'Copied', 'Diagnostics copied'); onCopy();
+      } catch { name(copy, 'Failed', 'Copy failed'); notify('Could not copy diagnostics. Use Show.'); }
+      finally { copy.disabled = false; timer = setTimeout(() => { name(copy, 'Copy', 'Copy Diagnostics'); }, 1600); }
+    };
+    show.addEventListener('click', showClick); copy.addEventListener('click', copyClick);
+    return () => { ++generation; clearTimeout(timer); show.removeEventListener('click', showClick); copy.removeEventListener('click', copyClick); };
+  }
+  function createControls(getReport, notify) {
+    const wrapper = document.createElement('div'); wrapper.className = 'diagnostics-controls';
+    const actions = document.createElement('div'); actions.className = 'action-pair';
+    const show = document.createElement('button'), copy = document.createElement('button'), output = document.createElement('pre');
+    for (const button of [show, copy]) { button.type = 'button'; button.className = 'life-btn action'; }
+    output.className = 'diag';
+    bindControls({ show, copy, output, getReport, notify });
+    actions.append(show, copy); wrapper.append(actions, output); return wrapper;
+  }
+  return Object.freeze({ createReport, readabilityScan, registerProduct, compatibility, bindControls, createControls, reportSource, dispose });
+})();
+
+/* Canonical ExtraPotions shared lifecycle runtime. */
+function createProductLifecycle(shared) {
+  const VERSION = shared.version;
+  const PROTOCOL = 'exp-core-coordination-v1';
+  const CAPABILITIES = new Set(['lifecycle', 'settings', 'diagnostics', 'dom-scheduler', 'navigation', 'launcher', 'ui']);
+  const products = new Map();
+  const cleanups = new Set();
+  const errors = [];
+  const metrics = { batches: 0, roots: 0, startedAt: Date.now() };
+  let coordinator;
+  const navigationSubscribers = new Set();
+  let stopNavigationHooks;
+  let suiteControlCleanup;
+
+  function compareVersions(left, right) {
+    const a = String(left).split(/[.-]/).slice(0, 3).map((part) => Number(part) || 0);
+    const b = String(right).split(/[.-]/).slice(0, 3).map((part) => Number(part) || 0);
+    for (let index = 0; index < 3; index += 1) if (a[index] !== b[index]) return a[index] > b[index] ? 1 : -1;
+    return 0;
+  }
+
+  function negotiate(peerVersion, peerProtocol = PROTOCOL) {
+    if (peerProtocol !== PROTOCOL || !/^\d+\.\d+\.\d+/.test(peerVersion || '')) return { compatible: false, selection: 'isolated', reason: 'PROTOCOL_INCOMPATIBLE' };
+    const comparison = compareVersions(VERSION, peerVersion);
+    return { compatible: true, selection: comparison < 0 ? 'peer-newer' : comparison > 0 ? 'local-newer' : 'equal', reason: 'COMPATIBLE' };
+  }
+
+  const safeError = (error, source = 'core') => {
+    const message = String(error && error.message || error || 'Unknown error').replace(/https?:\/\/\S+/g, '[url]').slice(0, 180);
+    errors.push({ source, code: error && error.code || 'UNEXPECTED', message, at: Date.now() });
+    if (errors.length > 12) errors.shift();
+  };
+
+  function ensureCoordinator() {
+    if (!document.documentElement) return null;
+    coordinator = document.querySelector('[data-exp-core-coordinator="1"]');
+    if (!coordinator) {
+      coordinator = document.createElement('meta');
+      coordinator.dataset.expCoreCoordinator = '1';
+      coordinator.dataset.protocol = PROTOCOL;
+      coordinator.dataset.protocolVersion = '1';
+      document.documentElement.append(coordinator);
+    }
+    const selected = coordinator.dataset.activeCoreVersion;
+    if (!selected || compareVersions(VERSION, selected) > 0) coordinator.dataset.activeCoreVersion = VERSION;
+    return coordinator;
+  }
+
+  function announce(type, detail = {}) {
+    const node = ensureCoordinator();
+    if (!node) return;
+    const payload = { protocol: PROTOCOL, protocolVersion: 1, coreVersion: VERSION, type, ...detail };
+    document.dispatchEvent(new CustomEvent('exp-core:coordination', { detail: payload }));
+  }
+
+  function publishProduct(manifest, state) {
+    const node = ensureCoordinator();
+    if (!node) return;
+    const key = `product${manifest.id.replace(/[^a-z0-9]/gi, '')}`;
+    node.dataset[key] = JSON.stringify({ id: manifest.id, version: manifest.version, state, capabilities: manifest.capabilities });
+    announce('product-state', { productId: manifest.id, productVersion: manifest.version, state });
+  }
+
+  function validateManifest(manifest) {
+    if (!manifest || !/^[a-z][a-z0-9-]+$/.test(manifest.id || '')) throw Object.assign(new Error('Invalid product ID'), { code: 'MANIFEST_ID' });
+    if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(manifest.version || '')) throw Object.assign(new Error('Invalid product version'), { code: 'MANIFEST_VERSION' });
+    if (!Array.isArray(manifest.capabilities)) throw Object.assign(new Error('Capabilities must be an array'), { code: 'MANIFEST_CAPABILITIES' });
+    const missing = manifest.capabilities.filter((item) => !CAPABILITIES.has(item));
+    if (missing.length) throw Object.assign(new Error(`Missing Core capability: ${missing.join(', ')}`), { code: 'CAPABILITY_MISSING' });
+  }
+
+  function register(manifest, hooks) {
+    validateManifest(manifest);
+    if (products.has(manifest.id)) return products.get(manifest.id).public;
+    const record = { manifest: Object.freeze({ ...manifest }), hooks, state: 'registered', queue: Promise.resolve(), desiredEnabled: false };
+    const transition = (allowed, next, action) => {
+      record.queue = record.queue.catch(() => {}).then(async () => {
+        if (!allowed.includes(record.state)) return;
+        try {
+          if(next==='enabled'&&shared.suiteSitePaused?.()){record.state='disabled';publishProduct(record.manifest,'disabled');return;}
+          await action?.();
+          record.state = next;
+          publishProduct(record.manifest, next);
+        } catch (error) {
+          record.state = 'failed';
+          safeError(error, manifest.id);
+          publishProduct(record.manifest, 'failed');
+          throw error;
+        }
+      });
+      return record.queue;
+    };
+    const enable = () => {
+      record.desiredEnabled = true;
+      if (shared.suiteSitePaused?.()) return transition(['initialized'], 'disabled');
+      return transition(['initialized', 'disabled'], 'enabled', hooks.enable);
+    };
+    const disable = () => { record.desiredEnabled = false; return transition(['enabled'], 'disabled', hooks.disable); };
+    record.public = Object.freeze({
+      manifest: record.manifest,
+      get state() { return record.state; },
+      initialize: () => transition(['registered', 'failed'], 'initialized', hooks.initialize),
+      enable,
+      disable,
+      cleanup: () => transition(['registered', 'initialized', 'enabled', 'disabled', 'failed'], 'cleaned', hooks.cleanup)
+    });
+    products.set(manifest.id, record);
+    if (!suiteControlCleanup && typeof shared.onSuiteEvent === 'function') {
+      suiteControlCleanup = shared.onSuiteEvent((event) => {
+        if (event.type !== 'suite.site-control' || event.detail?.hostname !== String(location.hostname || 'local-document').toLowerCase()) return;
+        for (const item of products.values()) {
+          item.queue=item.queue.catch(()=>{}).then(async()=>{const paused=shared.suiteSitePaused?.();try{if(paused&&item.state==='enabled'){await item.hooks.disable?.();item.state='disabled';publishProduct(item.manifest,'disabled');}else if(!paused&&item.desiredEnabled&&item.state==='disabled'){await item.hooks.enable?.();item.state='enabled';publishProduct(item.manifest,'enabled');}}catch(error){item.state='failed';safeError(error,item.manifest.id);publishProduct(item.manifest,'failed');}});
+        }
+      }, { type: 'suite.site-control' });
+      cleanups.add(() => { suiteControlCleanup?.(); suiteControlCleanup = null; });
+    }
+    publishProduct(record.manifest, 'registered');
+    return record.public;
+  }
+
+  function createScheduler(callback, options = {}) {
+    let observer;
+    let sharedObserverCleanup;
+    let frame = 0;
+    let active = false;
+    const roots = new Set();
+    const flush = () => {
+      frame = 0;
+      if (!active || !roots.size) return;
+      const batch = [...roots];
+      roots.clear();
+      metrics.batches += 1;
+      metrics.roots += batch.length;
+      try { callback(batch); } catch (error) { safeError(error, options.source || 'scheduler'); }
+    };
+    const queueRoot = (root) => {
+      if (!active || !root || root.closest?.('[data-exp-owned="1"]')) return false;
+      const target = root.nodeType === Node.TEXT_NODE ? root.parentElement : root;
+      if (!target) return false;
+      roots.add(target);
+      return true;
+    };
+    const schedule = (root) => {
+      if (!queueRoot(root)) return;
+      if (!frame) frame = requestAnimationFrame(flush);
+    };
+    const startDedicatedObserver = () => {
+      observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          const target = mutation.target?.nodeType === Node.TEXT_NODE ? mutation.target.parentElement : mutation.target;
+          if (!target) continue;
+          if (target.closest?.('[data-exp-owned="1"]')) continue;
+          if (mutation.type === 'childList') {
+            const changed = [...mutation.addedNodes, ...mutation.removedNodes];
+            if (changed.length && changed.every((node) => node.nodeType === 1 && (node.matches?.('[data-exp-owned="1"]') || node.closest?.('[data-exp-owned="1"]')))) continue;
+          }
+          schedule(target);
+        }
+      });
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: Boolean(options.attributes),
+        characterData: Boolean(options.characterData),
+        attributeFilter: options.attributeFilter
+      });
+    };
+    return Object.freeze({
+      start() {
+        if (active) return;
+        active = true;
+        if (!options.attributes && typeof shared.observePageBatch === 'function') {
+          const productId = options.source || 'scheduler';
+          const phase = options.phase || shared.suiteContract?.(productId)?.presentationPhases?.[0] || 'observe';
+          sharedObserverCleanup = shared.observePageBatch((batch, batchRoots, details) => {
+            for (let index = 0; index < batchRoots.length; index += 1) {
+              const types = Array.isArray(details?.[index]?.types) ? details[index].types : [];
+              if (!options.characterData && types.length && types.every(type => type === 'characterData')) continue;
+              queueRoot(batchRoots[index]);
+            }
+            if (roots.size) {
+              if (frame) { cancelAnimationFrame(frame); frame = 0; }
+              flush();
+            }
+          }, { productId, phase });
+        } else if (!options.attributes && typeof shared.observePage === 'function') {
+          sharedObserverCleanup = shared.observePage((batch, root) => {
+            const types = Array.isArray(batch?.types) ? batch.types : [];
+            if (!options.characterData && types.length && types.every(type => type === 'characterData')) return;
+            schedule(root);
+          }, { productId: options.source || 'scheduler' });
+        } else {
+          startDedicatedObserver();
+        }
+        schedule(document.documentElement);
+      },
+      stop() {
+        active = false;
+        sharedObserverCleanup?.();
+        sharedObserverCleanup = null;
+        observer?.disconnect();
+        observer = null;
+        roots.clear();
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0;
+      },
+      schedule,
+      flush
+    });
+  }
+
+  function onNavigation(callback) {
+    if (typeof callback !== 'function') throw new TypeError('Navigation callback must be a function');
+    if (typeof shared.observeNavigation === 'function') {
+      let disposed = false;
+      const stop = shared.observeNavigation(event => callback({
+        href: event.href,
+        kind: event.kind,
+        epoch: event.epoch,
+      }), { owner: 'lifecycle' });
+      const cleanup = () => {
+        if (disposed) return;
+        disposed = true;
+        stop();
+        cleanups.delete(cleanup);
+      };
+      cleanups.add(cleanup);
+      return cleanup;
+    }
+    let previous=location.href;
+    const subscriber=({href})=>{if(href!==previous){previous=href;callback({href});}};
+    if (!stopNavigationHooks) {
+      const originals={},wrappers={};
+      const check=()=>{const href=location.href;for(const notify of [...navigationSubscribers])notify({href});};
+      for(const name of ['pushState','replaceState']){const original=history[name];originals[name]=original;const wrapped=function(...args){const result=Reflect.apply(original,this,args);check();return result;};wrappers[name]=wrapped;history[name]=wrapped;}
+      addEventListener('popstate',check);addEventListener('hashchange',check);globalThis.navigation?.addEventListener('currententrychange',check);
+      stopNavigationHooks=()=>{for(const name of Object.keys(wrappers))if(history[name]===wrappers[name])history[name]=originals[name];removeEventListener('popstate',check);removeEventListener('hashchange',check);globalThis.navigation?.removeEventListener('currententrychange',check);stopNavigationHooks=null;};
+    }
+    navigationSubscribers.add(subscriber);
+    let disposed=false;
+    const cleanup=()=>{if(disposed)return;disposed=true;navigationSubscribers.delete(subscriber);cleanups.delete(cleanup);if(!navigationSubscribers.size)stopNavigationHooks?.();};
+    cleanups.add(cleanup);return cleanup;
+  }
+
+
+  function protectLauncherHost(host) { return shared.reference.protectLauncherHost(host); }
+
+  function registerLauncher(host, options) { const cleanup = shared.registerLauncher(host, options); cleanups.add(cleanup); return cleanup; }
+
+  function pageView() {
+    try { if (typeof unsafeWindow !== 'undefined' && unsafeWindow?.document) return unsafeWindow; } catch {}
+    return window;
+  }
+
+  function isShadowRoot(node) {
+    return Boolean(node && node.nodeType === 11 && node.host);
+  }
+
+  // Every stylesheet Core injects begins with an empty marker rule. A constructed sheet
+  // has no owner node, and a theming tool cannot see a JavaScript flag across
+  // userscript sandboxes, but it can always read the first rule through the CSSOM.
+  const OWNED_SHEET_MARKER = '.exp-owned-sheet-marker{}';
+  const ensureMarker = (text) => { const value = String(text || ''); return value.startsWith(OWNED_SHEET_MARKER) ? value : OWNED_SHEET_MARKER + value; };
+
+  function appendShadowStyle(root, css, data) {
+    const node = document.createElement('style');
+    try { node.textContent = ensureMarker(css); } catch (error) { safeError(error, 'core.style'); }
+    node.dataset.expOwned = '1';
+    for (const [key, value] of Object.entries(data || {})) node.dataset[key] = String(value);
+    root.append(node);
+    return node;
+  }
+
+  function paintToken() {
+    return `expink${Math.random().toString(36).slice(2, 10)}`;
+  }
+
+  function withPaintProbe(css, token) {
+    css = ensureMarker(css);
+    return `${css}\n[data-${token}]{color:rgb(1, 2, 3)!important}`;
+  }
+
+  function isConnectedNode(node) {
+    try { return Boolean(node && (node.isConnected || node.host?.isConnected)); } catch { return false; }
+  }
+
+  function sheetHasRules(sheet) {
+    try { return sheet.cssRules.length > 0; } catch { return null; }
+  }
+
+  function sawPaint(token, parent) {
+    if (!parent || !isConnectedNode(parent)) return false;
+    const probe = document.createElement('span');
+    probe.setAttribute(`data-${token}`, '');
+    parent.append(probe);
+    let painted = false;
+    try { painted = getComputedStyle(probe).color === 'rgb(1, 2, 3)'; } catch {}
+    try { probe.remove(); } catch { probe.parentNode?.removeChild(probe); }
+    return painted;
+  }
+
+  function writeSheet(sheet, text, view) {
+    const source = ensureMarker(text);
+    try { sheet.replaceSync(source); return; } catch {}
+    view.Function('sheet', 'css', 'sheet.replaceSync(css)')(sheet, source);
+  }
+
+  function setAdopted(host, sheets) {
+    try { host.adoptedStyleSheets = sheets; return; } catch {}
+    const view = pageView();
+    const proto = isShadowRoot(host) ? (view.ShadowRoot || ShadowRoot).prototype : (view.Document || Document).prototype;
+    const desc = Object.getOwnPropertyDescriptor(proto, 'adoptedStyleSheets');
+    if (!desc?.set) throw new Error('adoptedStyleSheets unavailable');
+    desc.set.call(host, sheets);
+  }
+
+  function adoptConstructable(host, css, shadow) {
+    const view = pageView();
+    const Ctor = view.CSSStyleSheet || (typeof CSSStyleSheet === 'function' ? CSSStyleSheet : null);
+    if (typeof Ctor !== 'function' || !Ctor.prototype.replaceSync) return null;
+    const current = host.adoptedStyleSheets;
+    if (!current || typeof current[Symbol.iterator] !== 'function') return null;
+    const sheet = new Ctor();
+    const token = paintToken();
+    writeSheet(sheet, withPaintProbe(css, token), view);
+    const before = current.length;
+    setAdopted(host, [...current, sheet]);
+    const sample = shadow || host.documentElement || host;
+    if (host.adoptedStyleSheets.length !== before + 1) {
+      try { setAdopted(host, [...host.adoptedStyleSheets].filter((item) => item !== sheet)); } catch {}
+      throw new Error('adoptedStyleSheets ignored');
+    }
+    const painted = isConnectedNode(sample) ? sawPaint(token, sample) : sheetHasRules(sheet) !== false;
+    if (!painted) {
+      try { setAdopted(host, [...host.adoptedStyleSheets].filter((item) => item !== sheet)); } catch {}
+      throw new Error('adoptedStyleSheets did not paint');
+    }
+    writeSheet(sheet, css, view);
+    return {
+      sheet,
+      write: (text) => writeSheet(sheet, text, view),
+      detach() {
+        try { setAdopted(host, [...host.adoptedStyleSheets].filter((item) => item !== sheet)); } catch {}
+      }
+    };
+  }
+
+  // Shadow roots share one constructed sheet per stylesheet text. Paint is probed once per
+  // page: every probe forces a style recalculation of the whole page, which on a site with
+  // thousands of components (Reddit) cost seconds. Later roots only check that their adopted
+  // list took the sheet. A root that edits its style gets its own copy first.
+  const sharedShadowSheets = new Map();
+  // null until the first connected root answers; false sends every later root to the fallback.
+  let shadowAdoptionPaints = null;
+
+  function withoutOne(list, sheet, replacement) {
+    const next = [...list];
+    const index = next.lastIndexOf(sheet);
+    if (index >= 0) { if (replacement) next[index] = replacement; else next.splice(index, 1); }
+    return next;
+  }
+
+  function adoptionPaints(root, Ctor, view) {
+    const token = paintToken();
+    const probe = new Ctor();
+    writeSheet(probe, withPaintProbe('', token), view);
+    setAdopted(root, [...root.adoptedStyleSheets, probe]);
+    try { return sawPaint(token, root); } finally { try { setAdopted(root, withoutOne(root.adoptedStyleSheets, probe)); } catch {} }
+  }
+
+  function adoptShared(root, css) {
+    const view = pageView();
+    const Ctor = view.CSSStyleSheet || (typeof CSSStyleSheet === 'function' ? CSSStyleSheet : null);
+    if (typeof Ctor !== 'function' || !Ctor.prototype.replaceSync) return null;
+    const current = root.adoptedStyleSheets;
+    if (!current || typeof current[Symbol.iterator] !== 'function') return null;
+    if (shadowAdoptionPaints === false) throw new Error('adoptedStyleSheets did not paint');
+    let entry = sharedShadowSheets.get(css);
+    if (!entry) {
+      const created = new Ctor();
+      writeSheet(created, css, view);
+      entry = { sheet: created, users: 0 };
+    }
+    let sheet = entry.sheet;
+    const before = current.length;
+    setAdopted(root, [...current, sheet]);
+    if (root.adoptedStyleSheets.length !== before + 1) {
+      try { setAdopted(root, withoutOne(root.adoptedStyleSheets, sheet)); } catch {}
+      throw new Error('adoptedStyleSheets ignored');
+    }
+    if (shadowAdoptionPaints === null && isConnectedNode(root)) {
+      let painted = false;
+      try { painted = adoptionPaints(root, Ctor, view); } catch {}
+      shadowAdoptionPaints = painted;
+      if (!painted) {
+        try { setAdopted(root, withoutOne(root.adoptedStyleSheets, sheet)); } catch {}
+        throw new Error('adoptedStyleSheets did not paint');
+      }
+    }
+    entry.users += 1;
+    sharedShadowSheets.set(css, entry);
+    let shared = true;
+    const release = () => {
+      if (!shared) return;
+      shared = false;
+      entry.users -= 1;
+      if (entry.users <= 0 && sharedShadowSheets.get(css) === entry) sharedShadowSheets.delete(css);
+    };
+    return {
+      write(text) {
+        if (!shared) { writeSheet(sheet, text, view); return; }
+        const own = new Ctor();
+        writeSheet(own, text, view);
+        const list = [...root.adoptedStyleSheets];
+        // A component that reassigned its list dropped the shared copy; the edit still lands.
+        setAdopted(root, list.includes(sheet) ? withoutOne(list, sheet, own) : [...list, own]);
+        release();
+        sheet = own;
+      },
+      detach() {
+        try { setAdopted(root, withoutOne(root.adoptedStyleSheets, sheet)); } catch {}
+        release();
+      }
+    };
+  }
+
+  function injectShadowStyle(root, css, data) {
+    const mark = (node) => {
+      node.dataset.expOwned = '1';
+      for (const [key, value] of Object.entries(data || {})) node.dataset[key] = String(value);
+      return node;
+    };
+    const fail = (error) => safeError(Object.assign(error || new Error('Style injection failed'), { code: 'STYLE_INJECTION' }), 'core.style');
+    // Adopted sheets stay inside the shadow and still apply when the page CSP
+    // blocks <style>. GM_addElement / GM_addStyle are not used here: managers
+    // attach those to the document and leak header/nav/button/* onto the site.
+    try {
+      const adopted = adoptShared(root, css);
+      if (adopted) {
+        const node = document.createElement('style');
+        let current = css;
+        Object.defineProperty(node, 'textContent', {
+          configurable: true,
+          enumerable: true,
+          get() { return current; },
+          set(value) {
+            current = String(value || '');
+            try { adopted.write(current); } catch (error) { fail(error); }
+          }
+        });
+        node.remove = () => {
+          try { adopted.detach(); } catch {}
+          if (node.parentNode) node.parentNode.removeChild(node);
+        };
+        try { root.append(node); } catch {}
+        return mark(node);
+      }
+    } catch (error) { fail(error); }
+    return appendShadowStyle(root, css, data);
+  }
+
+  function injectStyle(root, cssText, data = {}) {
+    const css = String(cssText || '');
+    if (isShadowRoot(root)) return injectShadowStyle(root, css, data);
+    const isShadow = false;
+    const view = pageView();
+    const doc = view.document || document;
+    const parent = isShadow ? root : (doc.documentElement || doc.head || doc.body);
+    const host = isShadow ? root : doc;
+    const sample = isShadow ? root : (doc.body || doc.documentElement);
+    const mark = (node) => {
+      node.dataset.expOwned = '1';
+      for (const [key, value] of Object.entries(data || {})) node.dataset[key] = String(value);
+      return node;
+    };
+    const fail = (error) => safeError(Object.assign(error || new Error('Style injection failed'), { code: 'STYLE_INJECTION' }), 'core.style');
+    const handle = (write, detach) => {
+      const node = document.createElement('style');
+      let current = css;
+      Object.defineProperty(node, 'textContent', {
+        configurable: true,
+        enumerable: true,
+        get() { return current; },
+        set(value) {
+          current = String(value || '');
+          try { write(current); } catch (error) { fail(error); }
+        }
+      });
+      node.remove = () => {
+        try { detach(); } catch {}
+        if (node.parentNode) node.parentNode.removeChild(node);
+      };
+      parent.append(node);
+      return mark(node);
+    };
+    try {
+      if (typeof GM_addElement === 'function') {
+        const token = paintToken();
+        let live = GM_addElement(parent, 'style', { textContent: withPaintProbe(css, token) });
+        if (live && sawPaint(token, sample)) {
+          try { live.textContent = ensureMarker(css); } catch {}
+          return handle(
+            (text) => {
+              try { live.textContent = ensureMarker(text); } catch {
+                const next = GM_addElement(parent, 'style', { textContent: ensureMarker(text) });
+                try { live.remove(); } catch {}
+                live = next;
+              }
+            },
+            () => { try { live.remove(); } catch {} }
+          );
+        }
+        try { live?.remove(); } catch {}
+      }
+    } catch (error) { fail(error); }
+    try {
+      if (!isShadow && typeof GM_addStyle === 'function') {
+        const token = paintToken();
+        let live = GM_addStyle(withPaintProbe(css, token));
+        if (live && sawPaint(token, sample)) {
+          try { live.textContent = ensureMarker(css); } catch {}
+          return handle(
+            (text) => {
+              try { live.textContent = ensureMarker(text); } catch { live = GM_addStyle(ensureMarker(text)); }
+            },
+            () => { try { live.remove(); } catch {} }
+          );
+        }
+        try { live?.remove(); } catch {}
+      }
+    } catch (error) { fail(error); }
+    try {
+      const adopted = adoptConstructable(host, css, sample);
+      if (adopted) return handle((text) => adopted.write(text), () => adopted.detach());
+    } catch (error) { fail(error); }
+    const node = document.createElement('style');
+    try { node.textContent = ensureMarker(css); } catch (error) { fail(error); }
+    parent.append(node);
+    return mark(node);
+  }
+
+  function diagnosticSnapshot() {
+    return {
+      core: { version: VERSION, protocol: PROTOCOL, capabilities: [...CAPABILITIES] },
+      products: [...products.values()].map(({ manifest, state }) => ({ id: manifest.id, version: manifest.version, state })),
+      metrics: { ...metrics, uptimeMs: Date.now() - metrics.startedAt },
+      errors: errors.map(({ source, code, message }) => ({ source, code, message }))
+    };
+  }
+
+  function focusMenuSurface(surface) { if (!(surface instanceof HTMLElement)) return false; if (!surface.hasAttribute('tabindex')) surface.setAttribute('tabindex', '-1'); surface.style.outline='none'; surface.focus({ preventScroll: true }); return true; }
+
+  // A cached document keeps its JS/DOM and resumes these same registrations on return.
+  addEventListener('pagehide', event => { if(event.persisted)return;for (const cleanup of [...cleanups]) { try { cleanup(); } catch {} } });
+  return Object.freeze({
+    VERSION, PROTOCOL, register, createScheduler, onNavigation, registerLauncher, announce, negotiate, safeError,
+    diagnosticSnapshot, diagnostics: diagnosticSnapshot, focusMenuSurface, injectStyle,
+    registerFloatingNotice: shared.registerFloatingNotice,
+    layoutFloatingNotices: shared.layoutFloatingNotices,
+    claimNotice: shared.claimNotice,
+    consumeVersionChange: shared.consumeVersionChange,
+  });
+}
+
+// Shared, local-only compatibility controls.
+const ExtraPotionsTools = (() => {
+  const PRODUCT_ROOT_IDS = {"thread":"exp-thread-root","dropper":"tdh-root","ward":"exp-ward-root"};
+  function placeDonationPanel(panel, trigger){
+    trigger.closest('.menu-head,header')?.after(panel);
+    panel.style.cssText='position:static!important;width:100%!important;max-width:100%!important;margin:7px 0;box-shadow:none';
+  }
+  function createBitcoinDonation(){
+    const address='bc1qg4xq63mwu63qc5dnqugk3qtxvulv5p3frjayna8ey8tu8ey4wpxsg92hv3';
+    const details=document.createElement('details');details.className='exp-bitcoin-donation';details.style.cssText='margin-top:7px;min-width:0';
+    const summary=document.createElement('summary');summary.textContent='₿ Bitcoin';summary.style.cssText='cursor:pointer;font-weight:700;padding:6px;border:1px solid var(--theme-line);border-radius:7px';
+    const code=document.createElement('code');code.textContent=address;code.setAttribute('aria-label','Bitcoin Donation Address');code.style.cssText='display:block;overflow-wrap:anywhere;word-break:break-all;user-select:all;margin:7px 0;font-size:var(--exp-font-size-body,13px);line-height:1.4';
+    const status=document.createElement('p');status.setAttribute('role','status');status.style.cssText='margin:5px 0 0;font-size:var(--exp-font-size-small,11px)';
+    const copy=button('Copy Bitcoin Address',async()=>{try{await navigator.clipboard.writeText(address);status.textContent='Bitcoin address copied.';}catch{status.textContent='Select and copy the address above.';}});copy.style.cssText='width:100%;min-width:0;white-space:normal;border-radius:7px';
+    const wallet=document.createElement('a');wallet.href='bitcoin:'+address;wallet.textContent='Open Bitcoin Wallet';
+    details.append(summary,code,copy,wallet,status);return details;
+  }
+  function compatibilitySnapshot(){
+    const rows=[];const warnings=[];const versions=new Set();
+    for(const [id,rootId] of Object.entries(PRODUCT_ROOT_IDS)){
+      const markers=[...document.querySelectorAll('[data-exp-diagnostics-product]')].filter(n=>n.dataset.expDiagnosticsProduct===id);
+      if(!markers.length)continue;
+      const productVersions=[...new Set(markers.map(n=>n.dataset.expProductVersion||'unknown'))];
+      const host=document.getElementById(rootId);
+      const core=host?.dataset.coreVersion||null;if(core)versions.add(core);
+      rows.push({id,versions:productVersions,core,instances:markers.length});
+      if(markers.length>1)warnings.push(`More than one ${id.toUpperCase()} instance is active.`);
+    }
+    if(versions.size>1)warnings.push('Different core versions are active. Update the products and reload this page.');
+    return {products:rows,warnings};
+  }
+  const button=(label,fn)=>{const b=document.createElement('button');b.type='button';b.className='life-btn action';b.textContent=label;b.addEventListener('click',fn);return b;};
+  function card(title){const d=document.createElement('details');d.className='exp-tools-card';d.style.cssText='border:1px solid var(--theme-line,var(--line,#777));border-radius:7px;padding:7px;margin-top:8px';const s=document.createElement('summary');s.textContent=title;d.append(s);return d;}
+  function createCompatibilityControls(){const d=card('Product Compatibility'),out=document.createElement('div');out.setAttribute('aria-live','polite');function refresh(){out.replaceChildren();const value=compatibilitySnapshot();for(const p of value.products){const line=document.createElement('p');line.textContent=`${p.id.toUpperCase()} ${p.versions.join(', ')} · ${p.core?'core '+p.core:'native product UI'}`;out.append(line);}const status=document.createElement('p');status.textContent=value.warnings.join(' ')||'No mixed core versions or duplicate instances detected on this page.';out.append(status);const note=document.createElement('small');note.textContent='Only products running on this page are visible. This is not an online update check.';out.append(note);}d.addEventListener('toggle',()=>{if(d.open)refresh();});d.append(out,button('Refresh Compatibility',refresh));return d;}
+  function createSuiteSiteControls(){
+    const d=card('Site Control'),out=document.createElement('div');out.setAttribute('aria-live','polite');
+    const toggle=document.createElement('button');toggle.type='button';toggle.className='switch';toggle.setAttribute('role','switch');toggle.setAttribute('aria-label','Pause all ExtraPotions products on this site');toggle.append(document.createElement('span'));
+    const row=document.createElement('div');row.className='row';const copy=document.createElement('div');copy.className='copy';const label=document.createElement('strong');label.textContent='Pause All on This Site';const help=document.createElement('small');help.className='help';help.textContent='Stops page changes from every active ExtraPotions product while keeping launchers and System recovery menus available.';copy.append(label,help);row.append(copy,toggle);
+    function refresh(){const core=ExtraPotionsCore;const paused=Boolean(core.suiteSitePaused());toggle.setAttribute('aria-checked',String(paused));out.replaceChildren();const status=document.createElement('p');status.textContent=core.suiteSitePausePersisted?.()===false?(paused?'Paused for this page. Storage is unavailable.':'Active for this page. Storage is unavailable.'):(paused?'ExtraPotions page features are paused on this site.':'ExtraPotions page features are active on this site.');out.append(status);for(const product of core.suiteSnapshot().products){const line=document.createElement('p'),state=core.latestSuiteState(product.id)?.state;line.textContent=`${product.id.toUpperCase()} · ${paused?'Site Paused':state?.status|| (state?.active===false?'Inactive':'Active')}`;out.append(line);}}
+    toggle.addEventListener('click',()=>{const core=ExtraPotionsCore;core.setSuiteSitePaused(!core.suiteSitePaused());refresh();});
+    const duration=document.createElement('select');duration.setAttribute('aria-label','Temporary Suite Pause Duration');for(const [value,label] of [['15','15 minutes'],['60','1 hour'],['240','4 hours']]){const option=document.createElement('option');option.value=value;option.textContent=label;duration.append(option);}const temporary=button('Pause Temporarily',()=>{ExtraPotionsCore.setSuiteSitePaused(true,location.hostname,Number(duration.value));refresh();});
+    d.addEventListener('toggle',()=>{if(d.open)refresh();});d.append(row,duration,temporary,out);refresh();return d;
+  }
+  const productRepositories = Object.freeze({dropper:'Dropper',ward:'WARD',thread:'THREAD'});
+  // GitHub prefills an issue from the link; longer links fail, so a large report goes by clipboard.
+  const ISSUE_URL_LIMIT=8000;
+  const plain=(value,limit=200)=>String(value||'').replace(/https?:\/\/\S+/gi,'[link]').replace(/\S+@\S+/g,'[address]').replace(/\s+/g,' ').trim().slice(0,limit);
+  function browserName(agent=''){
+    const version=pattern=>(agent.match(pattern)||[])[1];
+    const name=version(/Edg\/(\d+)/)?'Edge '+version(/Edg\/(\d+)/):version(/OPR\/(\d+)/)?'Opera '+version(/OPR\/(\d+)/):version(/Firefox\/(\d+)/)?'Firefox '+version(/Firefox\/(\d+)/):version(/Chrome\/(\d+)/)?'Chrome '+version(/Chrome\/(\d+)/):version(/Version\/(\d+)[^ ]* Safari/)?'Safari '+version(/Version\/(\d+)[^ ]* Safari/):'Unknown browser';
+    const os=/Windows/.test(agent)?'Windows':/Android/.test(agent)?'Android':/iPhone|iPad/.test(agent)?'iOS':/Mac OS X/.test(agent)?'macOS':/CrOS/.test(agent)?'ChromeOS':/Linux/.test(agent)?'Linux':'Unknown OS';
+    return name+' · '+os;
+  }
+  // The minimum a maintainer needs to triage, small enough to always fit in the issue link.
+  // Only settings that differ from the product's defaults are listed.
+  function issueSummary(report={},{settings,activity=[]}={}){
+    const lines=[],add=(label,value)=>{if(value)lines.push(`- ${label}: ${value}`);};
+    const self=report.plugin?.id;
+    add('Product',[productRepositories[self]||self,report.plugin?.version].filter(Boolean).join(' ')+(report.technical?.core?.version?' · Core '+report.technical.core.version:''));
+    add('Other products on page',(report.plugin?.compatibility?.products||[]).filter(p=>p.id!==self&&p.status==='observed').map(p=>(productRepositories[p.id]||p.id)+' '+(p.versions||[]).join('/')).join(', '));
+    const manager=report.technical?.manager;add('Userscript manager',manager?.name?plain(manager.name+' '+(manager.version||''),60):'');
+    const env=report.environment||{};add('Browser',env.userAgent?browserName(env.userAgent):'');add('Site',plain(env.hostname,100));
+    if(env.viewport)add('Viewport',`${env.viewport.width}×${env.viewport.height} @${env.viewport.pixelRatio}x`);
+    if(settings?.current&&settings?.defaults){
+      const changed=Object.keys(settings.current).filter(key=>JSON.stringify(settings.current[key])!==JSON.stringify(settings.defaults[key])).slice(0,25);
+      add('Settings changed from defaults',changed.map(key=>`${key}: ${plain(JSON.stringify(settings.current[key]),60)}`).join(', ')||'none');
+    }
+    const errors=[...(report.core?.errors||[]).map(e=>[e.source,e.code,e.message].filter(Boolean).join(' ')),...(report.console?.entries||[]).filter(e=>/error|warn/.test(e.level)).map(e=>e.message||e.text||'')].filter(Boolean).slice(-5);
+    if(errors.length)lines.push('- Recent errors:',...errors.map(e=>'  - '+plain(e,200)));
+    const recent=activity.map(entry=>plain(entry,120)).filter(Boolean).slice(-5);
+    if(recent.length)lines.push('- Recent activity:',...recent.map(e=>'  - '+e));
+    return lines.join('\n');
+  }
+  function productIssueUrl(id, version, {health,diagnostics,copied=false,summary=''}={}) {
+    if (!Object.hasOwn(productRepositories,id)) throw new Error('Unknown product');
+    const product=productRepositories[id];
+    const safeVersion=/^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/.test(String(version))?String(version):'unknown';
+    // Status is the product's own plain-language health text with links and addresses removed.
+    // Diagnostics are the product's own redacted report, attached only when the person reports.
+    const status=health&&plain(health.label)?`\nStatus: ${plain(health.label)}${plain(health.reason)?' - '+plain(health.reason):''}\n`:'';
+    const template=`Product: ${product} v${safeVersion}\n${status}\nWhat happened?\n\nSteps to reproduce\n1. \n\nExpected behavior\n\nActual behavior\n\n`+(summary?`Summary (review and remove anything private before submitting)\n${summary}\n\n`:'Browser and userscript manager\n\n');
+    const link=body=>'https://github.com/ExtraPotions/'+product+'/issues/new?title='+encodeURIComponent('['+product+' '+safeVersion+'] Issue')+'&body='+encodeURIComponent(body);
+    if(diagnostics&&typeof diagnostics==='object'){
+      const review='Full diagnostics\n';
+      for(const text of [JSON.stringify(diagnostics,null,2),JSON.stringify(diagnostics)]){const url=link(template+review+'```json\n'+text+'\n```\n');if(url.length<=ISSUE_URL_LIMIT)return url;}
+      const url=link(template+review+(copied?'The full diagnostics were copied to your clipboard when you selected Report a Problem. Paste them here if asked.\n':'Select Copy diagnostics and paste the full diagnostics here if asked.\n'));
+      if(url.length<=ISSUE_URL_LIMIT||summary.length<=1500)return url;
+      return productIssueUrl(id,version,{health,diagnostics,copied,summary:summary.slice(0,1500)});
+    }
+    return link(template+'Diagnostics (optional)\nSelect Copy diagnostics, paste them here, and remove anything private.\n');
+  }
+  const productTimelines=new Map(),resettingProducts=new Set();
+  const productDataResetting=id=>resettingProducts.has(id);
+  function clearProductData(id, {legacyKeys=[]} = {}) {
+    if (!Object.hasOwn(productRepositories,id)) throw new Error('Unknown product');
+    resettingProducts.add(id);
+    try {
+    const owns=key=>key.startsWith(`exp:v3:${id}:`)||legacyKeys.some(base=>key===base||key.startsWith(base+':account:'));
+    const known=new Set([`exp:v3:${id}:settings`,`exp:v3:${id}:update-cache`,`exp:v3:${id}:installed-version`,`exp:v3:${id}:last-version-v2`,...legacyKeys]);
+    for(const storageName of ['localStorage','sessionStorage']) {
+      let storage;try{storage=globalThis[storageName];}catch{throw new Error('Could not access product storage.');}if(!storage)continue;
+      for(let i=0;i<storage.length;i++){const key=storage.key(i);if(key&&owns(key))known.add(key);}
+      for(const key of known) { try{storage.removeItem(key);}catch{throw new Error('Could not clear '+id+' data. Check browser storage permissions.');} }
+    }
+    try{if(typeof GM_listValues==='function')for(const key of GM_listValues())if(owns(key))known.add(key);}catch{throw new Error('Could not list product storage.');}
+    for(const key of known){if(typeof GM_deleteValue==='function')GM_deleteValue(key);else if(typeof GM_setValue==='function')GM_setValue(key,undefined);}
+    productTimelines.delete(id);
+    return [...known];
+    } catch(error){resettingProducts.delete(id);throw error;}
+  }
+  // Groups consecutive entries that share a key, keeping the newest time and a count.
+  function groupTimelineEntries(entries,key=entry=>entry.reason){
+    const groups=[];for(const entry of entries||[]){const k=key(entry),last=groups.at(-1);
+      if(last&&last.key===k){last.count++;last.at=Math.max(last.at,Number(entry.at)||0);}else groups.push({...entry,key:k,count:1,at:Number(entry.at)||0});}
+    return groups;
+  }
+  function createProductTimeline(id,getHealth,notify=()=>{},{layout='classic',showActivity=true}={}) {
+    if(!Object.hasOwn(productRepositories,id))throw new Error('Unknown product');
+    const rows=document.createElement('div');rows.dataset.expProductTimeline='1';
+    let disposed=false;
+    function render(){rows.replaceChildren();for(const entry of (productTimelines.get(id)||[]).slice().reverse()){
+      const line=document.createElement('p');line.textContent=new Date(entry.at).toLocaleTimeString()+' · '+entry.state+' · '+entry.reason;
+      line.style.cssText='margin:6px 0;overflow-wrap:anywhere';rows.append(line);
+    }}
+    async function observedHealth(){const value=await getHealth();if(!disposed&&showActivity){
+      const history=productTimelines.get(id)||[];
+      const state=String(value?.state||'waiting').slice(0,30),reason=String(value?.reason||'Status unavailable.').replace(/https?:\/\/\S+/gi,'[page]').slice(0,500),last=history.at(-1);
+      if(!last||last.state!==state||last.reason!==reason){history.push({at:Date.now(),state,reason});if(history.length>30)history.shift();productTimelines.set(id,history);}
+      render();
+    }return value;}
+    const health=ExtraPotionsCore.createHealthControls(observedHealth,notify);
+    if(layout==='grouped'){
+      if(!showActivity){
+        const status=ExtraPotionsCore.createDisclosure('Status',health.element);status.open=true;
+        status.addEventListener('toggle',()=>{if(status.open)health.refresh();});
+        return {element:status,dispose(){disposed=true;health.dispose();},refresh:health.refresh};
+      }
+      // Status stays open so its recovery action is visible; history is one tap away.
+      const activity=document.createElement('div');activity.dataset.expProductActivity='1';
+      const log=ExtraPotionsCore.createDisclosure('Recent Activity',activity,rows);log.dataset.expSystemActivity='1';
+      const status=ExtraPotionsCore.createDisclosure('Status',health.element,log);status.open=true;
+      status.addEventListener('toggle',()=>{if(status.open)health.refresh();});
+      log.addEventListener('toggle',()=>{if(log.open)health.refresh();});
+      return {element:status,activity,log,dispose(){disposed=true;health.dispose();},refresh:health.refresh};
+    }
+    const timeline=ExtraPotionsCore.createDisclosure(id==='dropper'?'Dropper Status':'Product Timeline',health.element,rows);
+    timeline.addEventListener('toggle',()=>{if(timeline.open)health.refresh();});
+    return {element:timeline,dispose(){disposed=true;health.dispose();},refresh:health.refresh};
+  }
+  const RESET_ARM_MS=4000;
+  function groupedProductSystem({id,version,timeline,diagnostics,preferences,onReset,notify,issueSettings}) {
+    const product=productRepositories[id];
+    const system=document.createElement('div');system.dataset.expProductSystem=id;system.dataset.expSystemLayout='grouped';
+    system.style.cssText='display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0;max-width:100%;overflow-wrap:anywhere';
+    const wide=node=>{node.style.cssText+=';width:100%;min-width:0;white-space:normal;border-radius:7px';return node;};
+    const note=text=>{const p=document.createElement('p');p.textContent=text;p.style.cssText='margin:6px 0;font-size:var(--exp-font-size-small,11px);line-height:1.4';return p;};
+    // Support: Copy is the everyday action; Show stays available for review.
+    const pair=diagnostics.querySelector?.('.action-pair'),buttons=pair?[...pair.querySelectorAll(':scope > button')]:[];
+    const copy=buttons.find(b=>/^Copy/.test(b.textContent)),show=buttons.find(b=>/^(Show|Hide)/.test(b.textContent));
+    if(copy&&show){pair.insertBefore(show,copy);if(!pair.querySelector(':scope > [data-exp-diagnostics-label]')){const label=document.createElement('span');label.dataset.expDiagnosticsLabel='1';label.textContent='Diagnostics';pair.prepend(label);}pair.style.cssText='display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px';ExpMenuHelp.setMenuHelp(copy,'Copy a fresh diagnostic snapshot for troubleshooting. Review it for private data before sharing.');}
+    const output=diagnostics.querySelector?.('pre');if(output)output.style.cssText+=';max-height:240px;overflow:auto';
+    const health=()=>({label:timeline.querySelector?.('[data-exp-health-state]')?.textContent||'',reason:timeline.querySelector?.('[data-exp-health-reason]')?.textContent||''});
+    // Each report takes a fresh diagnostics report, copies it, and attaches it to the issue when it fits.
+    const report=wide(button('Report a Problem',async()=>{
+      if(report.disabled)return;report.disabled=true;
+      let data=null,copied=false;
+      try{const source=typeof ExtraPotionsDiagnostics==='object'?ExtraPotionsDiagnostics.reportSource?.(diagnostics):null;if(source)data=await source();}catch{}
+      if(data){try{await navigator.clipboard.writeText(JSON.stringify(data,null,2));copied=true;}catch{}}
+      let summary='';
+      if(data){try{let settings=null;try{settings=issueSettings?.()||null;}catch{}
+        const reason=health().reason.trim(),activity=[...(timeline.querySelectorAll?.('p')||[])].map(p=>p.textContent.trim()).filter(text=>text&&text!==reason).slice(-5);
+        summary=issueSummary(data,{settings,activity});}catch{}}
+      try{const link=document.createElement('a');link.href=productIssueUrl(id,version,{health:health(),diagnostics:data,copied,summary});link.target='_blank';link.rel='noopener noreferrer';link.click();}
+      finally{report.disabled=false;}
+    }));
+    report.dataset.expSystemReport='1';
+    ExpMenuHelp.setMenuHelp(report,'Attaches fresh diagnostics to a GitHub issue. GitHub issues are public; remove private data before submitting.');
+    const support=document.createElement('section');support.setAttribute('aria-label','Diagnostics and Support');support.append(diagnostics,report);
+    // Reset: one tap arms, a second tap within a few seconds confirms. No browser dialogs.
+    const resetStatus=note('');resetStatus.setAttribute('role','status');resetStatus.setAttribute('aria-live','polite');
+    let armedUntil=0,armTimer=0;
+    const reset=wide(button('Reset All Settings',async()=>{
+      if(reset.disabled)return;
+      if(Date.now()>=armedUntil){
+        armedUntil=Date.now()+RESET_ARM_MS;reset.textContent='Tap Again to Reset';reset.dataset.expResetArmed='1';
+        resetStatus.textContent=`Tap again within ${RESET_ARM_MS/1000} seconds to permanently reset ${product}.`;
+        clearTimeout(armTimer);armTimer=setTimeout(disarm,RESET_ARM_MS);return;
+      }
+      disarm();reset.disabled=true;
+      try{await onReset();notify(product+' reset complete.');}catch{notify('Reset did not complete. Check storage permissions and try again.');}finally{reset.disabled=false;}
+    }));
+    reset.dataset.expDestructive='1';
+    function disarm(){clearTimeout(armTimer);armedUntil=0;reset.textContent='Reset All Settings';delete reset.dataset.expResetArmed;resetStatus.textContent='';}
+    reset.style.cssText+=';font-weight:600';
+    ExpMenuHelp.setMenuHelp(reset,`Clears ${product} settings and stored data on this browser. This cannot be undone. Tap twice within 4 seconds to confirm.`);
+    const resetCard=document.createElement('section');resetCard.setAttribute('aria-label','Reset Settings');resetCard.style.cssText='margin-block-start:12px;padding-block-start:8px';resetCard.append(reset,resetStatus);
+    reset.addEventListener('blur',disarm);
+    for(const [key,node] of [['status',timeline],['support',support],['preferences',preferences],['reset',resetCard]]){
+      if(!node)continue;node.dataset.expSystemItem=key;node.style.minWidth='0';node.style.maxWidth='100%';
+      const summary=node.tagName==='DETAILS'?node.querySelector(':scope > summary'):null;if(summary)summary.style.cssText+=';min-height:28px;padding:4px 0;box-sizing:border-box;cursor:pointer';system.append(node);
+    }
+    return system;
+  }
+  function createProductSystem({id,version,timeline,diagnostics,preferences,onReset,notify=()=>{},layout='grouped',issueSettings}) {
+    if(!Object.hasOwn(productRepositories,id))throw new Error('Unknown product');
+    if(layout==='grouped')return groupedProductSystem({id,version,timeline,diagnostics,preferences,onReset,notify,issueSettings});
+    const system=document.createElement('div');system.dataset.expProductSystem=id;
+    system.style.cssText='display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0;max-width:100%;overflow-wrap:anywhere';
+    const issue=button('Create GitHub Issue',()=>{const link=document.createElement('a');link.href=productIssueUrl(id,version);link.target='_blank';link.rel='noopener noreferrer';link.click();});
+    issue.style.cssText='width:100%;min-width:0;white-space:normal;border-radius:7px';
+    const reset=button('Reset All Settings',async()=>{
+      if(!confirm(`Reset all ${productRepositories[id]} settings and stored product data?`))return;
+      if(!confirm(`Confirm permanent reset of ${productRepositories[id]} data. This cannot be undone.`))return;
+      reset.disabled=true;
+      try{await onReset();notify(productRepositories[id]+' reset complete.');}catch{notify('Reset did not complete. Check storage permissions and try again.');}finally{reset.disabled=false;}
+    });
+    reset.style.cssText='width:100%;min-width:0;white-space:normal;border:1px solid #ff2438;border-radius:7px;background:#e11428;color:#fff;font-weight:700';
+    for(const [key,node] of [['timeline',timeline],['diagnostics',diagnostics],['issue',issue],['preferences',preferences],['reset',reset]]){node.dataset.expSystemItem=key;node.style.minWidth='0';node.style.maxWidth='100%';const summary=node.tagName==='DETAILS'?node.querySelector(':scope > summary'):null;if(summary)summary.style.cssText+=';min-height:28px;padding:4px 0;box-sizing:border-box;cursor:pointer';system.append(node);}
+    return system;
+  }
+  return Object.freeze({issueSummary,productIssueUrl,productDataResetting,clearProductData,groupTimelineEntries,createProductTimeline,createProductSystem,placeDonationPanel,createBitcoinDonation,compatibilitySnapshot,createCompatibilityControls,createSuiteSiteControls});
+})();
+
+/* Product sections as a filing cabinet: each section header is a drawer front. The product's own header
+   click opens its section and closes the others, so each product keeps its section code and lazy rendering.
+   Core reopens the last drawer when the menu opens and keeps one inner drawer (details) open per level. */
+const ExpMenuTabs = (() => {
+  const read = key => { try { return localStorage.getItem(key); } catch { return null; } };
+  const write = (key, value) => { try { localStorage.setItem(key, value); } catch {} };
+  // Drawer fronts use the short names the menus have always shown.
+  const shortLabels = Object.freeze({ appearance: 'Look', protection: 'Protect' });
+  const isOpen = entry => !entry.body.hidden && !entry.body.classList.contains('fl-tool-hidden');
+
+  function mount({ panel, id, entries }) {
+    const document = panel.ownerDocument, view = document.defaultView;
+    const storageKey = 'exp:suite:menu-tab:' + id;
+    let disposed = false, queued = false, wasVisible = false, reopened = false;
+    const visible = () => !panel.hidden && panel.getClientRects().length > 0;
+    // The sections sit in one scrolling column; the open drawer's front stays pinned at its top.
+    const content = document.createElement('div');
+    content.className = 'exp-menu-content';
+    const renamed = [];
+    for (const entry of entries) {
+      const title = entry.header.querySelector('.fl-tool-title'), short = shortLabels[entry.label.toLowerCase()];
+      if (title && short) { renamed.push([title, title.textContent]); title.textContent = short; }
+    }
+    function place() {
+      if (content.parentNode) return;
+      const parent = entries[0].section.parentElement; if (!parent) return;
+      parent.insertBefore(content, entries[0].section);
+      content.append(...entries.map(entry => entry.section));
+    }
+    function open(index) { if (entries[index] && !isOpen(entries[index])) entries[index].header.click(); }
+    function sync() {
+      if (disposed) return;
+      place();
+      const now = visible();
+      // Products close their sections as the menu opens, so the remembered drawer is restored then.
+      if (now && (!wasVisible || reopened) && !entries.some(isOpen)) {
+        const remembered = entries.findIndex(entry => entry.key === read(storageKey));
+        open(remembered >= 0 ? remembered : 0);
+      }
+      wasVisible = now; reopened = false;
+    }
+    const remember = event => {
+      const entry = entries.find(item => item.header.contains(event.target));
+      // Capture runs before the header's own handler: a click on a closed front is the drawer being opened.
+      if (entry && !isOpen(entry)) write(storageKey, entry.key);
+    };
+    // One inner drawer open per level: a level is the nearest enclosing drawer, so wrapped groups count too.
+    const level = node => node.parentElement?.closest('details,.fl-tool-body,.route-body');
+    // Attribute records arrive in order, unlike toggle events, so walking them newest first lets the last drawer opened win.
+    const exclusive = new view.MutationObserver(records => {
+      const done = new Set();
+      for (const record of records.reverse()) {
+        const details = record.target;
+        if (details.tagName !== 'DETAILS' || record.oldValue !== null || !details.open || done.has(details)) continue;
+        const home = level(details); if (!home) continue;
+        done.add(details);
+        for (const other of home.querySelectorAll('details[open]')) if (other !== details && level(other) === home) { other.open = false; done.add(other); }
+      }
+    });
+    panel.addEventListener('click', remember, true);
+    exclusive.observe(panel, { subtree: true, attributes: true, attributeOldValue: true, attributeFilter: ['open'] });
+    // A close and reopen in one task leaves the panel visible throughout; the old hidden or class value still shows it.
+    const observer = new view.MutationObserver(records => { if (records.some(record => record.attributeName === 'hidden' ? record.oldValue !== null : record.attributeName === 'class' && record.oldValue !== panel.getAttribute('class'))) reopened = true; if (!queued && !disposed) { queued = true; queueMicrotask(() => { queued = false; sync(); }); } });
+    observer.observe(panel, { attributes: true, attributeOldValue: true, attributeFilter: ['hidden', 'class', 'style'] });
+    const resize = new view.ResizeObserver(sync); resize.observe(panel);
+    sync();
+    return {
+      update: sync,
+      select(key) { const index = entries.findIndex(entry => entry.key === key); if (index >= 0) { write(storageKey, key); open(index); } },
+      destroy() {
+        disposed = true; observer.disconnect(); resize.disconnect();
+        panel.removeEventListener('click', remember, true); exclusive.disconnect();
+        for (const entry of entries) content.before(entry.section);
+        content.remove();
+        for (const [title, text] of renamed) title.textContent = text;
+      },
+    };
+  }
+  return Object.freeze({ mount });
+})();
+
+// Shared ExtraPotions menu categories, submenu behavior, reordering, and visibility.
+const ExpMenuArrangement = (() => {
+  const CATEGORY_ORDER = Object.freeze(['main', 'appearance', 'advanced', 'system']);
+  const CATEGORY_META = Object.freeze({
+    main: Object.freeze({ id: 'main', label: 'Main', order: 0 }),
+    appearance: Object.freeze({ id: 'appearance', label: 'Appearance', order: 1 }),
+    advanced: Object.freeze({ id: 'advanced', label: 'Advanced', order: 2 }),
+    system: Object.freeze({ id: 'system', label: 'System', order: 3 }),
+  });
+  const PRODUCT_SECTIONS = {"thread":{"main":["feed","read"],"appearance":["look"],"advanced":["filters","people"],"system":["system"]},"dropper":{"main":["drops","streams","campaigns","settings"],"appearance":["appearance"],"advanced":["advanced"],"system":["system"]},"ward":{"main":["protection","amazon","tools"],"appearance":["appearance"],"advanced":["advanced","patterns","advanced-amazon"],"system":["system"]}};
+  const GENERIC_SECTIONS = Object.freeze({
+    appearance: Object.freeze(['appearance', 'readability', 'style', 'highlight-style', 'look', 'theme', 'themes']),
+    advanced: Object.freeze(['advanced', 'effects', 'integrations', 'profiles', 'sites', 'language', 'patterns', 'routing', 'playback']),
+    system: Object.freeze(['system', 'settings', 'diagnostics', 'maintenance', 'recovery']),
+  });
+  const slug = value => String(value || '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  const categoryList = Object.freeze(CATEGORY_ORDER.map(id => CATEGORY_META[id]));
+
+  function categoryFor(productId, section = {}, index = 0) {
+    const product = slug(productId);
+    const key = slug(section.key || section.id || section.route);
+    const label = slug(section.label || section.name || section.title);
+    const tokens = new Set([key, label].filter(Boolean));
+    const profile = PRODUCT_SECTIONS[product] || {};
+    for (const category of CATEGORY_ORDER) {
+      const aliases = profile[category] || [];
+      if (aliases.some(alias => tokens.has(slug(alias)))) return category;
+    }
+    for (const category of ['system', 'appearance', 'advanced']) {
+      if (GENERIC_SECTIONS[category].some(alias => tokens.has(slug(alias)))) return category;
+    }
+    if (index === 0) return 'main';
+    return 'main';
+  }
+
+  function describe(productId, sections = []) {
+    const groups = new Map(CATEGORY_ORDER.map(id => [id, {
+      ...CATEGORY_META[id],
+      sections: [],
+    }]));
+    sections.forEach((section, index) => {
+      const category = categoryFor(productId, section, index);
+      groups.get(category).sections.push(section);
+    });
+    return CATEGORY_ORDER.map(id => groups.get(id)).filter(group => group.sections.length);
+  }
+
+  function createDisclosure({ document, label, category = 'advanced', key = '', contents = [], className = 'exp-system-card' } = {}) {
+    if (!document?.createElement) throw new Error('Menu disclosure requires a document');
+    const details = document.createElement('details');
+    details.className = className;
+    details.dataset.expMenuSubmenu = '1';
+    details.dataset.expMenuCategory = CATEGORY_META[category] ? category : 'advanced';
+    if (key) details.dataset.expMenuKey = slug(key);
+    details.open = false;
+    // Core created this submenu in its canonical collapsed state. Mark it initialized
+    // immediately so a later arrangement refresh cannot re-collapse a user-opened
+    // disclosure during the same interaction.
+    details.dataset.expMenuInitialized = '1';
+    const summary = document.createElement('summary');
+    summary.textContent = String(label || CATEGORY_META[category]?.label || 'Advanced');
+    details.append(summary, ...contents);
+    return details;
+  }
+
+  function collapseSubmenus(root) {
+    if (!root?.querySelectorAll) return;
+    for (const details of root.querySelectorAll('details[data-exp-menu-submenu]')) {
+      if (details.dataset.expMenuInitialized === '1') continue;
+      details.open = false;
+      details.dataset.expMenuInitialized = '1';
+    }
+  }
+
+  const css = `
+    [data-exp-menu-submenu]{box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere}
+    [data-exp-menu-submenu]>summary{cursor:pointer}
+  `;
+
+  let tabSerial = 0;
+  const tabCss = `
+    [data-exp-submenu-tabs]{min-width:0;grid-column:1/-1}
+    .exp-submenu-home,.exp-submenu-detail{min-width:0;max-width:100%}
+    .exp-submenu-home[hidden],.exp-submenu-detail[hidden]{display:none!important}
+    .exp-submenu-nav{display:grid;min-width:0}
+    .exp-submenu-home>.exp-submenu-tabpanel+.exp-submenu-nav{margin-top:8px;border-top:1px solid var(--theme-line)}
+    .exp-submenu-row{display:grid;grid-template-columns:minmax(0,1fr) 14px;align-items:center;gap:10px;width:100%;min-width:0;min-height:40px;margin:0!important;padding:8px 2px!important;text-align:left;font:600 var(--exp-font-size-body,13px)/1.4 "Segoe UI",system-ui,sans-serif!important;color:var(--theme-text);background:transparent!important;border:0!important;border-top:1px solid var(--theme-line)!important;border-radius:0!important;box-shadow:none!important;cursor:pointer;overflow-wrap:anywhere}
+    .exp-submenu-nav>.exp-submenu-row:first-child{border-top:0!important}
+    .exp-submenu-row:hover>span{color:var(--theme-accent)}
+    .exp-submenu-row>svg,.exp-submenu-back>svg{width:14px;height:14px;color:var(--theme-muted);flex:none}
+    .exp-submenu-back{display:flex;align-items:center;gap:6px;min-height:36px;margin:0!important;padding:4px 4px 4px 0!important;font:600 var(--exp-font-size-body,13px)/1.4 "Segoe UI",system-ui,sans-serif!important;color:var(--theme-muted);background:transparent!important;border:0!important;box-shadow:none!important;cursor:pointer}
+    .exp-submenu-back:hover{color:var(--theme-text)}
+    .exp-submenu-title{margin:2px 0 8px;font:700 14px/1.35 "Segoe UI",system-ui,sans-serif;color:var(--theme-text);overflow-wrap:anywhere}
+    .exp-submenu-row:focus-visible,.exp-submenu-back:focus-visible{outline:2px solid var(--theme-accent2,var(--theme-accent));outline-offset:2px}
+    .exp-submenu-tabpanel{min-width:0;max-width:100%}
+    .exp-submenu-tabpanel[hidden]{display:none!important}
+    .exp-submenu-tabpanel>[data-exp-tab-item]{margin-top:0!important}
+    .exp-submenu-tabpanel>details[data-exp-tab-item]{border:0!important;padding:0!important;background:transparent!important}
+    .exp-submenu-tabpanel>details[data-exp-tab-item]>summary{display:none!important}
+    @media(pointer:coarse){.exp-submenu-row,.exp-submenu-back{min-height:44px}}
+  `;
+  const chevron = (document, back) => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 16 16');svg.setAttribute('aria-hidden', 'true');svg.setAttribute('focusable', 'false');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    line.setAttribute('d', back ? 'M10 3 5 8l5 5' : 'm6 3 5 5-5 5');line.setAttribute('fill', 'none');line.setAttribute('stroke', 'currentColor');line.setAttribute('stroke-width', '1.8');line.setAttribute('stroke-linecap', 'round');line.setAttribute('stroke-linejoin', 'round');
+    svg.append(line);return svg;
+  };
+  const shortLabels = Object.freeze({
+    'highlight-style':'Style', 'menu-preferences':'Menu', 'settings-transfer':'Transfer',
+    'effects-and-integrations':'Effects', 'profiles-and-sites':'Profiles', 'page-tools':'Page',
+    'retailer-modules':'Retailers', 'protection-review':'Review', 'page-activity':'Activity',
+  });
+  function tabLabel(node) {
+    // Existing primary sections stay together in Overview. Only submenu
+    // disclosures become tabs; status chips and inline explanations stay local.
+    if(node.tagName!=='DETAILS'||node.matches('.eligibility-chip,[data-shift-appearance-explanation]'))return null;
+    const title = node.querySelector(':scope>summary,:scope>h3,:scope>h2');
+    const label = (title?.querySelector('.campaign-manager-title')||title)?.textContent.trim();
+    if (!label) return null;
+    return shortLabels[slug(label)] || label;
+  }
+  function mountTabs({panel,id,onChange=()=>{}}) {
+    // The approved menu keeps original disclosures inline, with no secondary navigation.
+    if(panel.matches('[data-exp-menu-layout="lean"]'))return {update(){},destroy(){}};
+    const document=panel.ownerDocument,view=document.defaultView;
+    const style=document.createElement('style');style.textContent=tabCss;
+    const styleRoot=panel.getRootNode();
+    (styleRoot instanceof view.ShadowRoot?styleRoot:(document.head||document.documentElement)).append(style);
+    const mounted=new Map(),selection=new Map();let disposed=false,queued=false;
+    function groupsFor(container) {
+      const groups=new Map(),home=[];
+      const add=(label,node)=>{if(!groups.has(label))groups.set(label,[]);groups.get(label).push(node);};
+      const stream=id==='dropper'&&container.id==='tdh-streams-body';
+      const drops=id==='dropper'&&container.id==='tdh-drops-body';
+      const retailer=id==='ward'&&container.id==='exp-ward-view-tools';
+      for(const node of [...container.children]) {
+        if(node.matches('style,script,[data-exp-submenu-tabs],.badge-only-progress-slot'))continue;
+        // Everyday controls stay on the home view; each submenu disclosure becomes
+        // a row that opens its own detail view.
+        if(drops&&node.id==='tdh-open-campaigns'){home.push(node);continue;}
+        let label=tabLabel(node);
+        // System status stays open on the home view so recovery actions remain in sight.
+        if(!label||(id!=='dropper'&&node.matches('[data-exp-system-item="status"]'))){home.push(node);continue;}
+        if(stream){
+          const key=slug(node.querySelector(':scope>summary')?.textContent);
+          label=key==='playback-options'?'Playback':key==='notifications'?'Alerts':node.id==='tdh-routing-history-panel'||['routing-and-backup','interruption-rules','why-did-it-switch'].includes(key)?'Routing':label;
+        } else if(drops){
+          label=node.id==='tdh-open-campaigns'?'Campaigns':node.id==='tdh-claim-history-panel'?'History':label;
+        } else if(retailer){
+          label=label.startsWith('Advanced ')?'Patterns':['Page','Transfer'].includes(label)?'Tools':label;
+        }
+        add(label,node);
+      }
+      const order=stream?['Stream Health','Playback','Routing','Alerts']:drops?['Campaigns','History']:retailer?['Seller Clarity','Coverage','Retailers','Patterns','Tools']:['Page'];
+      const rows=[...new Set([...order,...groups.keys()])].filter(label=>groups.has(label)).map(label=>({label,nodes:groups.get(label)}));
+      return {home,rows};
+    }
+    function mountContainer(container,key) {
+      const {home,rows}=groupsFor(container);if(!rows.length||rows.length+(home.length?1:0)<2)return false;
+      const original=[...container.childNodes];
+      const root=document.createElement('div');root.dataset.expSubmenuTabs='1';
+      const homeView=document.createElement('div');homeView.className='exp-submenu-home';
+      const nav=document.createElement('div');nav.className='exp-submenu-nav';
+      const detail=document.createElement('div');detail.className='exp-submenu-detail';
+      const backButton=document.createElement('button');backButton.type='button';backButton.className='exp-submenu-back';backButton.append(chevron(document,true),'Back');
+      const title=document.createElement('div');title.className='exp-submenu-title';title.setAttribute('role','heading');title.setAttribute('aria-level','3');
+      detail.append(backButton,title);
+      const panel=label=>{const body=document.createElement('div');body.id='exp-submenu-panel-'+(++tabSerial);body.className='exp-submenu-tabpanel';body.setAttribute('role','region');body.setAttribute('aria-label',label+' settings');return body;};
+      const homePanel=panel('Overview'),navRows=[],panels=[],detailsState=new Map();
+      for(const node of home){if(tabLabel(node)){node.dataset.expTabItem='1';detailsState.set(node,node.open);}homePanel.append(node);}
+      // Back owns the home panel so a product can reveal any control by clicking
+      // the element whose aria-controls names the panel that holds it.
+      backButton.setAttribute('aria-controls',homePanel.id);
+      homeView.append(...(home.length?[homePanel,nav]:[nav]));
+      for(const {label,nodes} of rows){
+        const body=panel(label),button=document.createElement('button'),text=document.createElement('span');
+        button.type='button';button.className='exp-submenu-row';button.setAttribute('aria-controls',body.id);button.setAttribute('aria-expanded','false');
+        text.textContent=label;button.append(text,chevron(document,false));
+        for(const node of nodes){node.dataset.expTabItem='1';detailsState.set(node,node.open);body.append(node);}
+        body.hidden=true;navRows.push(button);panels.push(body);nav.append(button);detail.append(body);
+      }
+      root.append(homeView,detail);
+      let active=-1;
+      function show(index,focus=null){
+        active=index;selection.set(key,index<0?null:rows[index].label);
+        homeView.hidden=index>=0;detail.hidden=index<0;
+        panels.forEach((body,i)=>{body.hidden=i!==index;navRows[i].setAttribute('aria-expanded',String(i===index));});
+        title.textContent=index<0?'':rows[index].label;
+        syncOpen();
+        focus?.focus();onChange();
+      }
+      function syncOpen(){const visible=container.getClientRects().length>0&&!container.closest('[hidden],.fl-tool-hidden')&&view.getComputedStyle(container).visibility!=='hidden';[homePanel,...panels].forEach(body=>{const shown=body===homePanel?!homeView.hidden:!body.hidden;for(const node of body.children)if(detailsState.has(node)){const open=visible&&shown;if(node.open!==open)node.open=open;}});}
+      function goBack(){const from=navRows[active];show(-1,from);}
+      function click(event){
+        const button=event.target.closest('button');
+        if(button===backButton){if(active>=0)goBack();return;}
+        const index=navRows.indexOf(button);if(index>=0)show(index,backButton);
+      }
+      function keydown(event){
+        if(event.key!=='Escape'||active<0||event.defaultPrevented||event.target.closest?.('select'))return;
+        // Leave the detail view instead of letting the menu's own Escape close it.
+        event.preventDefault();event.stopPropagation();goBack();
+      }
+      root.addEventListener('click',click);root.addEventListener('keydown',keydown);
+      const progressSlot=container.querySelector(':scope>.badge-only-progress-slot');
+      container.replaceChildren(...(progressSlot?[progressSlot,root]:[root]));
+      show(rows.findIndex(row=>row.label===selection.get(key)));
+      mounted.set(container,{root,syncOpen,destroy(restore){root.removeEventListener('click',click);root.removeEventListener('keydown',keydown);for(const node of detailsState.keys())delete node.dataset.expTabItem;if(restore){for(const [node,open]of detailsState)node.open=open;container.replaceChildren(...original);}}});
+      return true;
+    }
+    function update(){
+      if(disposed)return;
+      for(const [container,controller]of mounted)if(!panel.contains(container)||controller.root.parentElement!==container){controller.destroy(false);mounted.delete(container);}
+      for(const container of panel.querySelectorAll('.fl-tool-body,.route-body,[data-exp-product-system]')){
+        // System's grouped contents own their tabs rather than its outer wrapper.
+        if(container.querySelector(':scope>[data-exp-product-system]')||mounted.has(container))continue;
+        const key=container.id||container.dataset.expProductSystem||container.closest('section')?.querySelector('.fl-tool-title')?.textContent||'submenu';
+        mountContainer(container,key);
+      }
+      for(const controller of mounted.values())controller.syncOpen();
+    }
+    const observer=new view.MutationObserver(()=>{if(!queued&&!disposed){queued=true;queueMicrotask(()=>{queued=false;update();});}});
+    update();observer.observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','aria-expanded']});
+    return {update,destroy(){disposed=true;observer.disconnect();for(const [container,controller]of mounted)controller.destroy(controller.root.parentElement===container);mounted.clear();selection.clear();style.remove();}};
+  }
+
+  // Tags each menu section with its category and keeps sections in category
+  // order (Main, Appearance, Advanced, System). Sections keep their own order
+  // inside a category; there is nothing for the user to arrange or hide.
+  function mount({ panel, id, onChange = () => {} }) {
+    const document = panel.ownerDocument, view = document.defaultView;
+    collapseSubmenus(panel);
+    const entries = [...panel.querySelectorAll(':scope .fl-tool-panel')].filter(section => section.parentElement === panel || section.parentElement?.closest('.fl-tool-panel') === null).map(section => {
+      const header = section.querySelector(':scope>.fl-tool-header');
+      const body = section.querySelector(':scope>.fl-tool-body');
+      if (!header || !body) return null;
+      const label = (header.querySelector('.fl-tool-title') || header).textContent.replace(/[▸▾›]/g, '').trim();
+      const key = header.dataset.route || header.dataset.section || header.dataset.panel || body.id;
+      return { section, header, body, label, key };
+    }).filter(entry => entry?.key);
+    // Compact menus retain the product's native inline disclosures and lazy toggle handlers.
+    const tabs={update(){},destroy(){}};
+    const none = { update() { collapseSubmenus(panel);tabs.update(); }, select() {}, describe: () => [], destroy() {tabs.destroy();} };
+    if (entries.length < 2) return none;
+    const parent = entries[0].section.parentElement;
+    if (entries.some(entry => entry.section.parentElement !== parent)) return none;
+    entries.forEach((entry, index) => {
+      entry.category = categoryFor(id, entry, index);
+      entry.section.dataset.expMenuCategory = entry.category;
+    });
+    const style = document.createElement('style'); style.textContent = css;
+    const styleRoot = panel.getRootNode();
+    (styleRoot instanceof view.ShadowRoot ? styleRoot : (document.head || document.documentElement)).append(style);
+    // Keep feature sections together, followed by the shared Look/System utilities.
+    const nativeUtilities=panel.matches('[data-exp-menu-layout="lean"]');
+    const rank = entry => nativeUtilities ? entry.category==='system'?3:/^(look|appearance)$/i.test(entry.label)?2:0 : CATEGORY_ORDER.indexOf(entry.category);
+    const desired = [...entries].sort((a, b) => rank(a) - rank(b));
+    function apply() {
+      const present = entries.filter(entry => entry.section.parentElement === parent);
+      const wanted = desired.filter(entry => present.includes(entry));
+      const current = [...parent.children].filter(node => wanted.some(entry => entry.section === node));
+      const after = current.length ? current.at(-1).nextSibling : null;
+      for (const entry of wanted) parent.insertBefore(entry.section, after);
+      onChange();
+    }
+    apply();
+    const sectionTabs = ExpMenuTabs.mount({ panel, id, entries: desired });
+    return {
+      update() { collapseSubmenus(panel); tabs.update(); sectionTabs.update(); },
+      select: key => sectionTabs.select(key),
+      describe: () => describe(id, entries.map(({ key, label, category }) => ({ key, label, category }))),
+      destroy() {
+        sectionTabs.destroy();
+        tabs.destroy();
+        style.remove();
+        entries.forEach(entry => { delete entry.section.dataset.expMenuCategory; });
+      }
+    };
+  }
+
+  return Object.freeze({
+    categories: categoryList,
+    categoryFor,
+    describe,
+    createDisclosure,
+    collapseSubmenus,
+    mount,
+    mountTabs,
+  });
+})();
+
+/* Plain health facts and safe, product-owned actions. */
+const ExpHealthSummary = (() => {
+  const labels = Object.freeze({working:'Working',waiting:'Waiting',paused:'Paused',attention:'Needs Attention'});
+  function normalizeHealth(value) {
+    const valid = value && Object.hasOwn(labels, value.state);
+    const state = valid ? value.state : 'waiting';
+    const checkedAt = Number(value?.checkedAt);
+    return {state,label:labels[state],reason:valid && typeof value.reason === 'string' ? value.reason.slice(0,500) : 'Status information is not available yet.',
+      checkedAt:Number.isFinite(checkedAt) && checkedAt > 0 ? checkedAt : null,
+      action:valid && typeof value.action?.label === 'string' && typeof value.action.run === 'function' ? {label:value.action.label.slice(0,80),run:value.action.run} : null};
+  }
+  function createHealthControls(getHealth, notify = () => {}) {
+    const element=document.createElement('section');element.className='exp-health';element.dataset.expHealth='1';
+    element.style.cssText='margin:0 0 10px;padding:8px;border:1px solid var(--theme-line);border-radius:7px;background:var(--theme-inset);min-width:0;overflow-wrap:anywhere';
+    const state=document.createElement('strong'),reason=document.createElement('p'),checked=document.createElement('small'),action=document.createElement('button');
+    state.dataset.expHealthState='1';reason.dataset.expHealthReason='1';reason.style.cssText='margin:5px 0;line-height:1.4';checked.style.cssText='display:block;margin-bottom:4px';
+    action.type='button';action.className='life-btn action';action.hidden=true;
+    element.append(state,reason,action);
+    let generation=0,disposed=false,pending=false,current=null;
+    function render(value) {current=normalizeHealth(value);state.textContent=current.label;reason.textContent=current.reason;reason.hidden=current.state==='working';element.dataset.state=current.state;action.textContent=current.action?.label||'';action.hidden=!current.action;action.disabled=pending;}
+    async function refresh() {
+      if(disposed)return;const ticket=++generation;
+      try {const value=await getHealth();if(!disposed&&ticket===generation)render(value);}
+      catch {if(!disposed&&ticket===generation)render(null);}
+    }
+    const click=async()=>{
+      if(disposed||pending||!current?.action)return;
+      const run=current.action.run;pending=true;action.disabled=true;
+      try {await run();}catch {if(!disposed)notify('The recovery action did not complete. Open diagnostics for details.');}
+      finally {pending=false;if(!disposed){action.disabled=false;await refresh();}}
+    };
+    element.refreshHealth=refresh;state.setAttribute('role','status');
+    action.addEventListener('click',click);render(null);refresh();
+    return {element,refresh,dispose(){disposed=true;++generation;action.removeEventListener('click',click);}};
+  }
+  return Object.freeze({normalizeHealth,createHealthControls});
+})();
+
+/* Feature/context isolation and bounded single-flight recovery. */
+const ExpRecoveryControl = (() => {
+  function createRecoveryGuard({limit=3,windowMs=120000,now=Date.now}={}) {
+    const contexts=new Map();let disposed=false;
+    const record=(feature,context)=>{let features=contexts.get(context);if(!features){features=new Map();contexts.set(context,features);}let value=features.get(feature);if(!value){value={times:[],suspended:false,retryPending:false,lastFailureAt:null};features.set(feature,value);}return value;};
+    const view=value=>({suspended:value.suspended,consecutiveFailures:value.times.length,retryPending:value.retryPending,lastFailureAt:value.lastFailureAt});
+    function failed(feature,context){const value=record(feature,context),time=now();value.times=value.times.filter(at=>time-at<=windowMs);value.times.push(time);value.times=value.times.slice(-limit);value.lastFailureAt=time;if(value.times.length>=limit)value.suspended=true;return view(value);}
+    function succeeded(feature,context){const value=record(feature,context);value.times=[];value.suspended=false;return view(value);}
+    async function retry(feature,context,run){
+      if(disposed||typeof run!=='function')return false;const value=record(feature,context);if(value.retryPending)return false;value.retryPending=true;
+      const isCurrent=()=>!disposed&&contexts.get(context)?.get(feature)===value;
+      try {const result=await run();if(!isCurrent()||result===false)return false;succeeded(feature,context);return true;}
+      catch(error){if(isCurrent())failed(feature,context);throw error;}
+      finally {value.retryPending=false;}
+    }
+    return Object.freeze({failed,succeeded,snapshot:(feature,context)=>view(record(feature,context)),retry,clearContext:context=>contexts.delete(context),dispose(){disposed=true;contexts.clear();}});
+  }
+  return Object.freeze({createRecoveryGuard});
+})();
+
+// Approved dense web menu. Product engines, palettes and original control nodes stay owned by products.
+const ExpMenuLayout = (() => {
+  const S=':host :is(#tdh-tools-dock,[data-exp-menu-layout="lean"])[data-exp-menu-layout="lean"]';
+  const C=S+' .exp-menu-content';
+  const css=`
+    ${S}{box-sizing:border-box!important;padding:0!important;border:1px solid color-mix(in srgb,var(--theme-text) 18%,transparent)!important;border-radius:12px!important;background:var(--theme-bg)!important;background-image:none!important;box-shadow:0 16px 40px #0004!important;color:var(--theme-text)!important;font:400 13px/1.4 "Segoe UI",system-ui,sans-serif!important;text-align:start!important;letter-spacing:0!important;transition:none!important;overflow:hidden!important;max-height:calc(100dvh - 16px)!important;height:auto!important;flex-direction:column!important}
+    ${S}.fl-rail-open:not([hidden]){display:flex!important}
+    ${S} *{box-sizing:border-box}
+    ${S} .menu-head{display:flex!important;align-items:center!important;gap:4px!important;width:100%!important;min-height:48px!important;margin:0!important;padding:2px 4px 2px 10px!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--theme-text) 8%,transparent)!important;background:color-mix(in srgb,var(--theme-panel) 60%,var(--theme-bg))!important;flex:none!important}
+    ${S} .header-brand{display:flex!important;align-items:center!important;gap:7px!important;flex:1!important;min-width:0!important}
+    ${S} .header-icon{flex:0 0 24px!important;width:24px!important;height:26px!important;border:0!important;background:transparent!important;overflow:hidden!important}
+    ${S} .header-icon .menu-icon{width:24px!important;height:26px!important;object-fit:contain!important}
+    ${S} .header-copy{min-width:0!important;overflow:visible!important}
+    ${S} .header-title-row{display:flex!important;align-items:center!important;gap:0!important;flex-wrap:wrap!important}
+    ${S} :is(.header-title-row h2,[data-exp-part=title],#tdh-rail-title){margin:0!important;font-size:14px!important;font-weight:600!important;line-height:1.2!important}
+    ${S} :is([data-exp-part=subtitle],#tdh-rail-subtitle,.header-divider,.exp-menu-tagline){display:none!important}
+    ${S} .header-actions{display:flex!important;align-items:center!important;gap:0!important;flex:none!important}
+    ${S} :is(.support-button,[data-exp-part=close],[data-exp-part=version],#tdh-header-version,#tdh-rail-close){display:grid!important;place-items:center!important;flex:none!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;margin:0 1px!important;padding:0!important;border:0!important;border-radius:6px!important;background:transparent!important;color:var(--theme-muted)!important;box-shadow:none!important}
+    ${S} :is(.support-button,[data-exp-part=close],[data-exp-part=version],#tdh-header-version,#tdh-rail-close):hover{background:color-mix(in srgb,var(--theme-text) 9%,transparent)!important;color:var(--theme-text)!important}
+    @media(pointer:coarse){${S} :is(.support-button,[data-exp-part=close],[data-exp-part=version],#tdh-header-version,#tdh-rail-close){width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}}
+    ${S} :is([data-exp-part=version],#tdh-header-version){position:relative!important;display:block!important;font-size:13px!important;line-height:1.4!important}
+    ${S} .exp-changelog-icon{display:block;position:absolute;inset:0;margin:auto;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7}
+    ${S} [data-exp-part=status]{font-size:12px!important;margin-top:2px!important}
+    ${S}>nav{padding:0!important;margin:0!important}
+    ${S} .exp-section-icon{display:block!important;width:15px!important;height:15px!important;flex:none!important;transform:none!important;background:none!important;color:var(--theme-accent)!important}
+    ${S} .exp-section-icon svg{display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7}
+    ${C}{display:flex!important;flex-direction:column!important;gap:6px!important;padding:8px!important;min-width:0!important;min-height:0!important;max-height:calc(100dvh - 72px)!important;overflow:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--theme-text) 25%,transparent) transparent;background:var(--theme-bg)!important}
+    /* Filing cabinet: each section is a drawer; its header is the drawer front with a finger pull on the right. */
+    ${C} .fl-tool-panel{flex:none!important;margin:0!important;padding:0!important;border:1px solid color-mix(in srgb,var(--theme-line) 40%,transparent)!important;border-radius:8px!important;background:var(--theme-panel)!important;box-shadow:none!important;overflow:clip!important;min-width:0!important}
+    ${C} .fl-tool-panel>.fl-tool-header{position:relative!important;display:flex!important;align-items:center!important;gap:8px!important;width:100%!important;min-height:38px!important;margin:0!important;padding:8px 46px 8px 10px!important;border:0!important;border-radius:0!important;background:var(--theme-panel)!important;color:var(--theme-text)!important;font:600 13px/1.3 "Segoe UI",system-ui,sans-serif!important;text-align:start!important;box-shadow:none!important;cursor:pointer}
+    ${C} .fl-tool-panel>.fl-tool-header::after{content:'';position:absolute;right:9px;top:50%;width:28px;height:14px;transform:translateY(-50%);border-radius:7px 7px 4px 4px;background:var(--theme-inset);box-shadow:inset 0 2px 3px #0004}
+    ${C} .fl-tool-panel>.fl-tool-header :is(.fl-tool-chevron,.chevron){display:none!important}
+    /* Where the header is not itself a button (Dropper), its chevron button stays the keyboard control, stretched invisibly across the front. */
+    ${C} .fl-tool-panel>.fl-tool-header:not(button)>button.fl-tool-chevron{display:block!important;position:absolute!important;inset:0!important;z-index:1!important;width:auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;font-size:0!important;box-shadow:none!important;cursor:pointer}
+    ${C} .fl-tool-panel>.fl-tool-header:not(button)>button.fl-tool-chevron:focus-visible{outline:2px solid var(--theme-focus,var(--theme-accent))!important;outline-offset:-2px!important}
+    ${C} .fl-tool-panel>.fl-tool-header .fl-tool-title{flex:1;min-width:0;font:inherit!important;color:inherit!important}
+    ${C} .fl-tool-panel>.fl-tool-header[aria-expanded=true]{position:sticky!important;top:-8px;z-index:2;color:var(--theme-accent)!important;border-bottom:1px solid color-mix(in srgb,var(--theme-line) 30%,transparent)!important;box-shadow:0 2px 4px -2px #0004!important}
+    ${C} .fl-tool-panel>.fl-tool-header[aria-expanded=true]::after{background:color-mix(in srgb,var(--theme-accent) 22%,var(--theme-inset))}
+    ${C} :is(.route-body,.fl-tool-body){margin:0!important;padding:7px!important;border:0!important;border-radius:0!important;min-width:0!important;background:var(--theme-inset)!important;box-shadow:inset 0 4px 6px -3px #0003!important}
+    ${C} :is(.route-body,.fl-tool-body):is([hidden],.fl-tool-hidden){display:none!important}
+    ${C} :is(.exp-settings-group,.section,.group){min-width:0!important;border:0!important;border-radius:7px!important;margin:0 0 6px!important;padding:0!important;background:var(--theme-panel)!important;box-shadow:none!important;overflow:hidden}
+    ${C} :is(.route-body,.fl-tool-body)>:last-child{margin-bottom:0!important}
+    /* An inner group is a smaller drawer inside the open one. */
+    ${C} details{min-width:0!important;margin:0 0 6px!important;padding:0!important;border:1px solid color-mix(in srgb,var(--theme-line) 40%,transparent)!important;border-radius:7px!important;background:var(--theme-panel)!important;box-shadow:none!important;overflow:clip}
+    ${C} details[open]>:not(summary){margin-inline:7px}
+    ${C} details[open]>:not(summary):first-of-type{margin-top:7px}
+    ${C} details[open]{padding-bottom:7px!important;background:color-mix(in srgb,var(--theme-inset) 60%,var(--theme-panel))!important}
+    ${C} :is(.row,.mini-row,.fl-switch,.setting-row){display:flex!important;align-items:center!important;min-width:0!important;min-height:26px!important;gap:4px!important;padding:2px 8px!important;margin:0!important;border:0!important;border-bottom:1px solid color-mix(in srgb,var(--theme-text) 8%,transparent)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;font-size:13px!important;line-height:1.4!important}
+    ${C} :is(.row,.mini-row,.fl-switch,.setting-row):last-child{border-bottom:0!important}
+    ${C} :is(.copy,.row-copy,.fl-switch-text,.setting-row>span,.mini-row>span){flex:1;min-width:0!important}
+    ${C} :is(.label,.setting-label,.fl-switch-text,.copy>strong,.row-copy>strong,.mini-row>span,.row>span){font-size:13px!important;line-height:1.4!important;font-weight:400!important;white-space:normal!important;overflow-wrap:break-word!important}
+    ${C} :is(.copy>.help,.row-copy>small,.row-help,.setting-help){display:none!important}
+    ${C} :is(.row,.mini-row,.setting-row):has(>.exp-native-popup),${C} :is(.row,.mini-row,.setting-row):has(>input:not([type=range])){display:grid!important;grid-template-columns:minmax(0,1fr) fit-content(58%)!important;gap:4px!important}
+    ${C} :is(button,input,select,textarea){font-family:inherit!important;font-size:13px!important;line-height:1.4!important;max-width:100%!important;min-width:0!important;color:var(--theme-text)!important;box-shadow:none!important}
+    ${C} button:not([role=switch]),${C} :is(input:not([type=range]),textarea){min-height:26px!important;height:auto!important;margin:0!important;padding:2px 8px!important;border:1px solid color-mix(in srgb,var(--theme-text) 23%,transparent)!important;border-radius:6px!important;background:color-mix(in srgb,var(--theme-text) 7%,var(--theme-panel))!important;font-weight:400!important;white-space:normal!important;text-align:center!important}
+    ${C} :is(input:not([type=range]),textarea){width:100%!important;text-align:start!important}
+    ${C} button[role=switch]{position:relative!important;flex:0 0 34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:24px!important;min-height:24px!important;max-height:24px!important;padding:0!important;border:0!important;border-radius:4px!important;background:transparent!important;box-shadow:none!important}
+    ${C} button[role=switch]::before{content:'';position:absolute;inset:4px 1px;border:0!important;border-radius:4px!important;background:color-mix(in srgb,var(--theme-text) 18%,var(--theme-panel))!important}
+    ${C} button[role=switch]::after{content:'';position:absolute!important;top:6px!important;left:3px!important;width:12px!important;height:12px!important;border:0!important;border-radius:2px!important;background:var(--theme-text)!important;transform:none!important}
+    ${C} button[role=switch][aria-checked=true]::before{background:var(--theme-accent2)!important}
+    ${C} button[role=switch][aria-checked=true]::after{left:19px!important;background:var(--theme-bg)!important}
+    ${C} button[role=switch]>span{display:none!important}
+    ${C} .mini-row:has(#tdh-switch-policy){grid-template-columns:minmax(0,1fr) fit-content(70%)!important}
+    ${C} .exp-native-popup{position:relative!important;display:block!important;min-width:0!important;width:100%!important;max-width:100%!important;border-radius:6px!important;flex:none!important}
+    ${C} .exp-native-popup>select{position:absolute!important;inset:0!important;opacity:0!important;width:100%!important;height:100%!important;min-height:0!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;z-index:1;cursor:pointer}
+    ${C} .exp-select-face{position:relative;display:block;align-content:center;min-height:26px;width:auto;padding:2px 22px 2px 4px;font-size:13px!important;line-height:1.4!important;white-space:normal!important;overflow-wrap:anywhere!important;color:var(--theme-text)!important;pointer-events:none}
+    ${C} .exp-select-face::after{content:'';position:absolute;right:6px;top:calc(50% - 5px);width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg)}
+    ${C} .exp-native-popup:focus-within{outline:2px solid var(--theme-focus,var(--theme-accent2));outline-offset:1px}
+    ${C} .exp-native-popup:has(select:disabled){opacity:.45}
+    ${C} option{background:var(--theme-panel)!important;color:var(--theme-text)!important}
+    ${C} details>summary{position:relative!important;display:flex!important;align-items:center!important;gap:4px!important;min-height:32px!important;padding:6px 40px 6px 9px!important;margin:0!important;font-size:12.5px!important;line-height:1.4!important;font-weight:600!important;list-style:none!important;background:var(--theme-panel)!important;color:var(--theme-text)!important;cursor:pointer}
+    ${C} details>summary::-webkit-details-marker{display:none}
+    ${C} details>summary::before{display:none!important}
+    ${C} details>summary::after{content:'';position:absolute;right:8px;top:50%;width:22px;height:11px;transform:translateY(-50%);border-radius:6px 6px 3px 3px;background:var(--theme-inset);box-shadow:inset 0 2px 3px #0004}
+    ${C} details[open]>summary{color:var(--theme-accent)!important;border-bottom:1px solid color-mix(in srgb,var(--theme-line) 30%,transparent)!important}
+    ${C} details[open]>summary::after{background:color-mix(in srgb,var(--theme-accent) 22%,var(--theme-inset))}
+    ${C} details>summary:has(>.campaign-manager-title),${C} details>summary:has(>#tdh-eligibility-summary){display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;column-gap:4px!important;row-gap:0!important;align-items:center!important}
+    ${C} details>summary>:is(.campaign-manager-title,#tdh-eligibility-summary){grid-column:1!important;grid-row:1!important}
+    ${C} details>summary>:is(.campaign-manager-summary,.eligibility-checklist-count,.unclaimed-badge){grid-column:1!important;justify-self:start!important;text-align:left!important}
+    ${C} details>summary:is(:has(>.campaign-manager-title),:has(>#tdh-eligibility-summary))::after{grid-column:2!important;grid-row:1/span 3!important;align-self:center!important;margin-left:0!important}
+    ${C} details .exp-settings-group{margin:0!important;background:transparent!important}
+    ${C} :is(.actions,.button-grid,.action-pair,.settings-transfer,.rc-menu-actions,.profile-actions){display:flex!important;gap:4px!important;flex-wrap:wrap!important;padding:4px 8px!important;margin:0!important}
+    ${C} :is(.actions,.button-grid,.action-pair)>*{flex:1;min-width:0}
+    ${C} :is(h2,h3){font-size:13px!important;line-height:1.4!important;margin:0!important;padding:8px 8px 2px!important;color:var(--theme-text)!important}
+    ${C} :is(p,.empty,.note){font-size:13px!important;line-height:1.5!important;white-space:normal!important;overflow-wrap:anywhere!important;margin:6px 0!important;padding-inline:8px!important;color:var(--theme-text)!important}
+    ${C} :is(form,.identity,.exp-health){padding:8px!important;gap:4px!important}
+    ${C} form label:has(>.exp-native-popup){display:grid!important;grid-template-columns:minmax(0,1fr) fit-content(58%)!important;gap:4px!important;align-items:center!important}
+    ${C} :is(.row,.mini-row,.setting-row):has(>input[type=number]){grid-template-columns:minmax(0,1fr) 64px!important}
+    ${C} :is(.row,.mini-row,.setting-row):has(>input:not([type=number],[type=range],[type=time],[type=color],[hidden])){grid-template-columns:minmax(0,1fr)!important}
+    ${C} .action-stack{flex-direction:column!important;align-items:stretch!important}
+    ${C} .action-stack>*{width:100%!important}
+    ${C} .exp-native-popup:has(select[data-exp-full-width]){width:100%!important}
+    ${C} .queue-switches{display:block!important}
+    ${C} [data-exp-system-item=support] .action-pair{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;align-items:center!important;gap:4px!important;padding:4px 0 4px 8px!important}
+    ${C} [data-exp-system-item=support] .action-pair>button{flex:none!important;padding:2px 10px!important;overflow-wrap:normal!important;word-break:normal!important}
+    ${C} [data-exp-system-report]{display:block!important;width:100%!important;text-align:center!important;justify-content:center!important}
+    ${C} [data-exp-system-item=preferences]{margin-top:8px!important}
+    ${C} [data-exp-system-item=reset]{margin-top:12px!important;padding-top:0!important}
+    ${C} [data-exp-system-item=reset]>button{display:block!important;width:100%!important;min-height:32px!important;padding:4px 8px!important;background:transparent!important;color:color-mix(in srgb,#d0222d 60%,var(--theme-text))!important;border:1px solid color-mix(in srgb,#d0222d 50%,transparent)!important}
+    ${C} [data-exp-system-item=reset]>button[data-exp-reset-armed]{background:#b4232a!important;color:#fff!important;border-color:#971b21!important}
+    ${C} [data-exp-diagnostics-label]{flex:none!important;font-size:13px!important;line-height:1.4!important;color:var(--theme-text)!important}
+    ${C} [data-exp-system-item=reset]>p:empty{display:none!important}
+    ${C} .setting-row:has(>input[aria-label="Content width (px)"]),${C} .setting-row:has(select[aria-label=Names]){grid-template-columns:minmax(0,1fr) 56px!important}
+    ${S} :is(button,input,select,textarea,summary):focus-visible{outline:2px solid var(--theme-focus,var(--theme-accent2))!important;outline-offset:2px!important}
+    ${S} ::selection{background:var(--theme-accent)!important;color:var(--theme-text)!important}
+    .exp-floating-update,.update-notice[data-placement="menu"]{max-height:calc(100dvh - 16px)!important;overflow:auto;overscroll-behavior:contain;background:var(--exp-notice-top,var(--theme-bg))!important;background-image:none!important;border-color:var(--exp-notice-border,var(--theme-muted))!important;border-radius:7px!important;box-shadow:0 4px 10px #0003!important;font-size:12px!important}
+    .update-notice :is(.update-text,.update-list){overflow-wrap:anywhere;line-height:1.5}
+    ${C} .row:has([data-exp-adapter-health=healthy]){display:none!important}
+    ${S} [hidden]{display:none!important}
+    @media(forced-colors:active){${S} :is(button,input,select,textarea,summary){forced-color-adjust:auto!important;border-color:ButtonText!important}${C} button[role=switch]::before{background:ButtonFace!important;border:1px solid ButtonText!important}${C} button[role=switch][aria-checked=true]::before{background:Highlight!important}${C} button[role=switch]::after{background:ButtonText!important}${C} [data-exp-system-item=reset]>button{background:ButtonFace!important;color:ButtonText!important}}
+  `;
+  const paths={gift:'M3 7h14v4H3Zm2 4v7h10v-7M10 7v11M10 7C4 7 4 1 7 2c3 0 3 5 3 5Zm0 0c6 0 6-6 3-5-3 0-3 5-3 5Z',sliders:'M3 5h14M3 10h14M3 15h14M7 3v4m6 1v4m-8 1v4',system:'M10 4.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Zm0 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0-6v2.5m0 11V18M2 10h2.5m11 0H18M4.34 4.34l1.77 1.77m7.78 7.78 1.77 1.77m0-11.32-1.77 1.77m-7.78 7.78-1.77 1.77',brush:'m4 15 9-11 3 3-9 10H3v-3',shield:'M10 2 3 5v5c0 4 7 8 7 8s7-4 7-8V5Z',bag:'M4 6h12v12H4ZM7 6V4a3 3 0 0 1 6 0v2',sparkle:'m10 2 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z',feed:'M3 3h14v14H3ZM6 6h8M6 10h8m-8 4h5',read:'M3 3h6l1 2 1-2h6v14h-6l-1 1-1-1H3Zm7 2v13',filter:'M3 4h14l-5 6v7l-4-2v-5Z',screen:'M2 4h16v10H2Zm5 13h6m-3-3v3',globe:'M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16ZM2 10h16M10 2c3 3 3 13 0 16M10 2c-3 3-3 13 0 16',people:'M7 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5 8v-3a5 5 0 0 1 10 0v3m1-9a3 3 0 0 0 0-6m1 9a4 4 0 0 1 4 4v2'};
+  const iconFor={campaigns:'gift',drops:'gift',settings:'sliders',advanced:'sliders',look:'brush',appearance:'brush',system:'system',protect:'shield',protection:'shield',amazon:'bag',walmart:'bag',ebay:'bag',etsy:'bag',target:'bag','best buy':'bag',retailer:'bag',highlights:'sparkle',feed:'feed',read:'read',filters:'filter',people:'people',streams:'screen','current site':'globe',site:'globe'};
+  function mount({panel}){
+    const doc=panel.ownerDocument,view=doc.defaultView,wrapped=new Map(),groups=new Set(),icons=new Set(),moves=[];
+    const updateFace=select=>{const face=wrapped.get(select)?.face;if(face){const original=select.selectedOptions[0]?.textContent||'',text=({automatic:'Auto','follow system':'System','inherit global':'Global','original text':'Original','announce on focus':'On Focus','follow campaign order':'Campaign Order','keep an earning stream':'Keep Earning','manual stream protected':'Manual Hold'})[original.toLowerCase()]||original;if(face.textContent!==text)face.textContent=text;}};
+    function decorate(){
+      const version=panel.querySelector('[data-exp-part=version],#tdh-header-version'),actions=panel.querySelector('.header-actions');
+      if(version&&!/changelog/i.test(version.getAttribute('aria-label')||'')){const name=panel.querySelector('[data-exp-part=title],#tdh-rail-title')?.textContent.trim()||'';version.setAttribute('aria-label',('View '+name+' '+version.textContent.trim()+' Changelog').trim());}
+      if(version&&actions&&!actions.contains(version)){moves.push([version,version.parentNode,version.nextSibling]);actions.prepend(version);}
+      if(version&&actions&&actions.firstElementChild!==version)actions.prepend(version);
+      if(version)for(const node of [...version.childNodes])if(node.nodeType===3&&node.textContent.trim()){const label=doc.createElement('span');label.hidden=true;label.dataset.expVersionLabel='1';node.before(label);label.append(node);}
+      if(version&&!version.querySelector('.exp-changelog-icon')){const svg=doc.createElementNS('http://www.w3.org/2000/svg','svg'),p=doc.createElementNS('http://www.w3.org/2000/svg','path');svg.classList.add('exp-changelog-icon');svg.setAttribute('viewBox','0 0 20 20');svg.setAttribute('aria-hidden','true');p.setAttribute('d','M4 3h12v14H4ZM7 7h6m-6 3h6m-6 3h4');svg.append(p);version.prepend(svg);}
+      // Drawer fronts carry the section's icon in the product accent.
+      for(const header of panel.querySelectorAll('.exp-menu-content>.fl-tool-panel>.fl-tool-header')){
+        if(header.querySelector('[data-exp-layout-icon]'))continue;const name=iconFor[(header.querySelector('.fl-tool-title')||header).textContent.trim().toLowerCase()]||'system';
+        let span=header.querySelector('.exp-section-icon');if(!span){span=doc.createElement('span');icons.add(span);}const svg=doc.createElementNS('http://www.w3.org/2000/svg','svg'),p=doc.createElementNS('http://www.w3.org/2000/svg','path');span.className='exp-section-icon';span.setAttribute('aria-hidden','true');span.dataset.expLayoutIcon='1';svg.setAttribute('viewBox','0 0 20 20');p.setAttribute('d',paths[name]);p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');svg.append(p);span.replaceChildren(svg);if(!header.contains(span))header.prepend(span);
+      }
+      const content=panel.querySelector('.exp-menu-content');if(!content)return;
+      for(const select of content.querySelectorAll('select')){
+        if(!wrapped.has(select)){const focused=select.getRootNode().activeElement===select,wrap=doc.createElement('span'),face=doc.createElement('span');wrap.className='exp-native-popup';face.className='exp-select-face';face.setAttribute('aria-hidden','true');select.before(wrap);wrap.append(select,face);wrapped.set(select,{wrap,face});if(focused)select.focus({preventScroll:true});}updateFace(select);
+      }
+      for(const [select]of wrapped)if(!panel.contains(select))wrapped.delete(select);
+      const rowSelector='.row,.mini-row,.fl-switch,.setting-row';
+      const parents=new Set([...content.querySelectorAll(rowSelector)].map(n=>n.parentElement));
+      for(const parent of parents){if(parent.classList.contains('exp-settings-group'))continue;let group=null;for(const child of [...parent.children]){if(child.matches(rowSelector)){const focused=panel.getRootNode().activeElement;if(!group){group=doc.createElement('div');group.className='exp-settings-group';child.before(group);groups.add(group);}group.append(child);if(focused&&child.contains(focused))focused.focus({preventScroll:true});}else group=null;}}
+      for(const group of groups)if(!panel.contains(group))groups.delete(group);
+    }
+    const changed=e=>{if(e.target.tagName==='SELECT')updateFace(e.target);};panel.addEventListener('change',changed);panel.addEventListener('input',changed);
+    decorate();const observer=new view.MutationObserver(decorate);observer.observe(panel,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['disabled','selected']});
+    return()=>{observer.disconnect();icons.forEach(icon=>icon.remove());panel.removeEventListener('change',changed);panel.removeEventListener('input',changed);for(const [select,{wrap}]of wrapped){if(wrap.contains(select))wrap.replaceWith(select);}for(const group of groups)group.replaceWith(...group.childNodes);for(const [node,parent,next]of moves)if(parent.isConnected)parent.insertBefore(node,next?.parentNode===parent?next:null);};
+  }
+  return Object.freeze({css,mount});
+})();
+
+// Layout and surfaces from the approved Lean menu, with the shared Slate Blue palette.
+const ExpLeanMenu = (() => {
+  // The shell is shared by existing products and new createProduct/createMenuController consumers.
+  const template=Object.freeze({id:'extrapotions-menu',version:1,layout:'sidebar',systemLayout:'grouped',supportNavigation:'system',resetNavigation:'system',donations:'header-heart'});
+  const sectionIcons = Object.freeze({campaigns:'gift',settings:'sliders',drops:'gift',streams:'screen',appearance:'brush',advanced:'sliders',system:'system',highlights:'sparkle',protection:'shield',amazon:'bag'});
+  const css = ExpMenuLayout.css;
+  // Healthy operation needs no narration; abnormal state remains visible in the open menu.
+  const statusSources=new Map(),statusPanels=new Map();
+  function setMenuStatus(id,getHealth){
+    if(typeof getHealth!=='function')throw new TypeError('Menu status needs a health function');
+    statusSources.set(String(id).toLowerCase(),getHealth);
+    for(const refresh of statusPanels.get(String(id).toLowerCase())||[])refresh();
+  }
+  function mount({shadow,panel}) {
+    const document=panel.ownerDocument,host=shadow.host;
+    const id=host?.dataset.productId||host?.id.replace(/^(exp-)|(\-root)$/g,'').replace(/^tdh$/,'dropper');
+    const saved=new Map();panel.dataset.expMenuLayout='lean';panel.dataset.expMenuTemplate=template.id+'-v'+template.version;
+    const properties=['--exp-menu-hover','background-image'];
+    for(const property of properties)saved.set(property,[panel.style.getPropertyValue(property),panel.style.getPropertyPriority(property)]);
+    function applyPalette(){
+      for(const[key,[value,priority]]of saved){if(value)panel.style.setProperty(key,value,priority);else panel.style.removeProperty(key);}
+      panel.style.setProperty('background-image','none','important');
+      panel.style.setProperty('--exp-menu-hover','color-mix(in srgb,var(--theme-accent) 12%,var(--theme-panel))');
+
+    }
+    applyPalette();
+    const style=document.createElement('style');style.dataset.expLeanMenu='1';style.textContent=css;shadow.append(style);const disposeLayout=ExpMenuLayout.mount({panel});
+    const status=document.createElement('div');status.dataset.expPart='status';status.setAttribute('role','status');
+    const dot=document.createElement('span');dot.className='exp-status-dot';const statusText=document.createElement('span');statusText.className='exp-status-text';status.append(dot,statusText);
+    let statusTicket=0,statusTimer=0;
+    async function refreshStatus(){
+      const source=statusSources.get(id);
+      if(!source){delete panel.dataset.expMenuStatus;status.remove();return;}
+      const copy=panel.querySelector('.header-copy');
+      if(!copy){delete panel.dataset.expMenuStatus;status.remove();return;}
+      if(!copy.contains(status))copy.append(status);
+      if(panel.dataset.expMenuStatus!=='1')panel.dataset.expMenuStatus='1';const ticket=++statusTicket;
+      let value=null;try{value=await source();}catch{}
+      if(ticket!==statusTicket)return;
+      const health=ExpHealthSummary.normalizeHealth(value);
+      status.hidden=health.state==='working'||(id==='dropper'&&health.state==='waiting');
+      status.setAttribute('aria-description',health.reason);
+      // Unchanged values are not written again, so observers and screen readers are not woken every poll.
+      if(dot.dataset.state!==health.state)dot.dataset.state=health.state;
+      if(statusText.textContent!==health.label)statusText.textContent=health.label;
+    }
+    if(!statusPanels.has(id))statusPanels.set(id,new Set());statusPanels.get(id).add(refreshStatus);
+    // Polls only while the menu is on screen. Products show it by the hidden attribute, a class (Dropper's
+    // dock, WARD's shell) or an ancestor; the resize observer sees the panel gain or lose its box.
+    const shown=()=>!panel.hidden&&panel.getClientRects().length>0;
+    let statusShown=shown();
+    // A product that hides and shows the panel in one task leaves no hidden state to observe;
+    // the hidden attribute's old value still says the menu was reopened.
+    function followVisibility(reopened=false){
+      const now=shown();if(now===statusShown&&!(now&&reopened))return;statusShown=now;
+      clearInterval(statusTimer);statusTimer=0;
+      if(now){refreshStatus();statusTimer=setInterval(refreshStatus,10000);}
+    }
+    const visibility=new MutationObserver(records=>followVisibility(records.some(record=>record.attributeName==='hidden'&&record.oldValue!==null)));
+    visibility.observe(panel,{attributes:true,attributeOldValue:true,attributeFilter:['hidden','class','style']});
+    const visibilityResize=new ResizeObserver(()=>followVisibility());visibilityResize.observe(panel);
+    refreshStatus();if(statusShown)statusTimer=setInterval(refreshStatus,10000);
+    const icons=new Set();
+    function decorate(){
+      for(const header of panel.querySelectorAll('.fl-tool-header')){
+        if(header.querySelector('.exp-section-icon'))continue;
+        const title=header.querySelector('.fl-tool-title');if(!title)continue;
+        const name=sectionIcons[title.textContent.trim().toLowerCase()];if(!name)continue;
+        const icon=document.createElement('span');icon.className='exp-section-icon';icon.setAttribute('aria-hidden','true');
+        icon.dataset.icon=name;header.prepend(icon);icons.add(icon);
+      }
+    }
+    decorate();const observer=new MutationObserver(decorate);observer.observe(panel,{childList:true,subtree:true});
+    return ()=>{disposeLayout();visibility.disconnect();visibilityResize.disconnect();clearInterval(statusTimer);statusPanels.get(id)?.delete(refreshStatus);status.remove();delete panel.dataset.expMenuStatus;observer.disconnect();icons.forEach(icon=>icon.remove());style.remove();for(const[key,[value,priority]]of saved){if(value)panel.style.setProperty(key,value,priority);else panel.style.removeProperty(key);}delete panel.dataset.expMenuLayout;delete panel.dataset.expMenuTemplate;};
+  }
+  return Object.freeze({mount,setMenuStatus,template});
+})();
+
+// Descriptions belong to settings and consequential actions, not ordinary navigation.
+const ExpMenuHelp = (() => {
+  let serial=0;
+  function setMenuHelp(node,text){
+    if(!node||!String(text||'').trim())return node;
+    node.dataset.expHelp=String(text).trim();
+    node.setAttribute('aria-description',node.dataset.expHelp);
+    // Native labels must not become competing help buttons on touch.
+    if(!node.closest('label')&&!node.matches('button,input,select,a[href],summary')){node.tabIndex=0;node.setAttribute('role','button');}
+    return node;
+  }
+  function mount({shadow,panel}){
+    const doc=panel.ownerDocument,view=doc.defaultView;
+    const tip=doc.createElement('div');tip.id='exp-menu-help-'+(++serial);tip.className='exp-menu-help';tip.role='tooltip';tip.hidden=true;
+    const style=doc.createElement('style');style.dataset.expMenuHelp='1';
+    style.textContent='.exp-menu-help{position:fixed;z-index:2147483647;box-sizing:border-box;max-width:260px;padding:8px 10px;border:1px solid var(--theme-line,#938f99);border-radius:7px;background:var(--theme-panel,#211f26);color:var(--theme-text,#e6e0e9);font:400 12px/1.5 "Segoe UI",system-ui,sans-serif;overflow:auto;overflow-wrap:anywhere;pointer-events:none}.exp-menu-help[hidden]{display:none!important}.exp-menu-help[data-scrollable=true]{pointer-events:auto}.has-tooltip::after{display:none!important}';
+    shadow.append(style,tip);
+    let target=null,timer=0,frame=0,pointer={x:-1,y:-1};
+    const inside=()=>{if(tip.hidden)return false;const r=tip.getBoundingClientRect();return pointer.x>=r.left&&pointer.x<=r.right&&pointer.y>=r.top&&pointer.y<=r.bottom;};
+    function hide(){clearTimeout(timer);if(target?.getAttribute('aria-describedby')===tip.id)target.removeAttribute('aria-describedby');target=null;tip.hidden=true;}
+    function show(node){
+      if(!node?.isConnected)return hide();
+      const text=node.dataset.expHelp||node.dataset.tip;if(!text)return;
+      const owner=node.closest('[data-exp-part="dock"],[data-exp-part="progress-card"]')||panel;
+      const b=owner.getBoundingClientRect(),left=Math.max(8,b.left+6),right=Math.min(view.innerWidth-8,b.right-6),top=Math.max(8,b.top+6),bottom=Math.min(view.innerHeight-8,b.bottom-6);
+      if(right<=left||bottom<=top)return hide();
+      clearTimeout(timer);if(target&&target!==node)target.removeAttribute('aria-describedby');target=node;target.setAttribute('aria-describedby',tip.id);
+      const colors=view.getComputedStyle(owner);for(const key of ['panel','line','text'])tip.style.setProperty('--theme-'+key,colors.getPropertyValue('--theme-'+key));
+      // Fixed auto width depends on the previous left offset after resize. Measure
+      // intrinsic width first, bounded by the owner, so the final position cannot grow it.
+      tip.textContent=text;tip.style.width='max-content';tip.style.maxWidth=(right-left)+'px';tip.style.maxHeight=(bottom-top)+'px';tip.hidden=false;
+      const r=node.getBoundingClientRect(),t=tip.getBoundingClientRect();
+      tip.style.left=Math.max(left,Math.min(r.left,right-t.width))+'px';
+      tip.style.top=Math.max(top,Math.min(r.bottom+t.height+6<=bottom?r.bottom+6:r.top-t.height-6,bottom-t.height))+'px';
+      tip.dataset.scrollable=String(tip.scrollHeight>tip.clientHeight);
+    }
+    const help=node=>node?.closest?.('[data-exp-help],[data-tip]');
+    const defer=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(shadow.activeElement!==target&&!inside())hide();},150);};
+    const over=e=>{pointer={x:e.clientX,y:e.clientY};const node=help(e.target);if(node&&e.pointerType!=='touch'&&(!inside()||node===target))show(node);};
+    const move=e=>{pointer={x:e.clientX,y:e.clientY};if(target&&!inside()&&!target.contains(e.target))defer();};
+    const out=e=>{if(help(e.target))defer();};
+    const focus=e=>{const node=help(e.target);if(node)show(node);else hide();};
+    const click=e=>{const node=help(e.target);if(node){show(node);if(node.matches('[role=button]:not(button)'))e.preventDefault();}else if(!tip.contains(e.target))hide();};
+    const key=e=>{if(e.key==='Escape'&&!tip.hidden){hide();e.preventDefault();e.stopImmediatePropagation();return;}const node=help(e.target);if(node?.matches('[role=button]:not(button)')&&['Enter',' '].includes(e.key)){e.preventDefault();show(node);}};
+    const layout=e=>{if(target&&!(e?.target instanceof view.Node&&tip.contains(e.target)))show(target);};
+    // Menu positioning settles on the next frame after a submenu changes its height.
+    const resize=new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>layout());});resize.observe(panel);
+    for(const [name,fn,capture] of [['pointerover',over],['pointermove',move],['pointerout',out],['focusin',focus],['click',click],['keydown',key,true],['scroll',layout,true]])shadow.addEventListener(name,fn,capture);
+    view.addEventListener('resize',layout);view.addEventListener('scroll',layout,true);
+    return ()=>{hide();resize.disconnect();cancelAnimationFrame(frame);for(const [name,fn,capture] of [['pointerover',over],['pointermove',move],['pointerout',out],['focusin',focus],['click',click],['keydown',key,true],['scroll',layout,true]])shadow.removeEventListener(name,fn,capture);view.removeEventListener('resize',layout);view.removeEventListener('scroll',layout,true);tip.remove();style.remove();};
+  }
+  return Object.freeze({setMenuHelp,mount});
+})();
+
+// Shared type and alignment for product menus, including custom shells.
+const ExpMenuTypography = (() => {
+  const css = `
+    [data-exp-menu-typography]{font:400 var(--exp-font-size-body,14px)/1.45 "Segoe UI",system-ui,sans-serif!important;text-align:start;letter-spacing:normal}
+    [data-exp-menu-typography] :is(button,input,select,textarea){font-family:inherit!important;letter-spacing:normal}
+    [data-exp-menu-typography] :is(.row,.mini-row,.fl-switch,.setting-row){gap:12px!important;padding-block:8px!important;align-items:center!important;font-size:var(--exp-font-size-body,14px);line-height:1.4}
+    [data-exp-menu-typography] :is(.label,.setting-label,.fl-switch-text,.copy>strong,.row-copy>strong,.mini-row>span){font-size:var(--exp-font-size-body,14px)!important;font-weight:500!important;line-height:1.4!important;letter-spacing:normal;min-width:0}
+    [data-exp-menu-typography] :is(.copy>.help,.row-copy>small,.help,.row-help,.note,.empty,.meta){font-size:var(--exp-font-size-small,12px)!important;font-weight:400!important;line-height:1.5!important}
+    [data-exp-menu-typography] :is(.copy>.help,.row-copy>small,.row-help){display:block;margin-top:4px}
+    [data-exp-menu-typography] :is(.row,.mini-row,.setting-row):has(>select){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(104px,.95fr)!important;column-gap:12px!important}
+    [data-exp-menu-typography] :is(.row,.mini-row,.setting-row)>select{width:100%!important;max-width:100%!important;min-width:0!important;justify-self:end}
+    [data-exp-menu-typography] select{box-sizing:border-box;min-height:32px!important;padding:5px 8px!important;font-size:var(--exp-font-size-body,14px)!important;line-height:1.4!important;font-weight:400}
+    [data-exp-menu-typography] :is(input:not([type=range]):not([type=color]),textarea){font-size:var(--exp-font-size-body,14px)!important;line-height:1.45;min-height:32px}
+    [data-exp-menu-typography] .fl-tool-header{align-items:center!important;padding:9px 10px!important;gap:10px}
+    [data-exp-menu-typography] .fl-tool-title{font-size:var(--exp-font-size-body,14px)!important;font-weight:600!important;line-height:1.4!important}
+    [data-exp-menu-typography] .fl-tool-chevron{flex:none;display:grid;place-items:center;align-self:center;padding:0;width:14px;line-height:1.4}
+    [data-exp-menu-typography] .fl-tool-body{padding-inline:10px!important;padding-bottom:10px!important}
+    [data-exp-menu-typography] :is(.group>h3,.section>h3,.section>h2,.stream-subsection-label){margin:12px 0 4px!important;font-size:var(--exp-font-size-small,12px)!important;font-weight:600!important;line-height:1.5!important;letter-spacing:normal!important;text-transform:none!important}
+    [data-exp-menu-typography] :is(.group,.section):first-child>h3{margin-top:6px!important}
+    [data-exp-menu-typography] :is(.fl-tool-body,.route-body) :is(.life-btn,.action,.secondary,.primary,.compact){min-height:32px!important;padding:6px 8px!important;font-size:var(--exp-font-size-body,14px)!important;font-weight:500!important;line-height:1.4!important;text-align:center}
+    [data-exp-menu-typography] :is(.button-grid,.actions,.profile-actions,.menu-footer,.diagnostics-controls>div,.rules-transfer){gap:8px!important;align-items:stretch}
+    [data-exp-menu-typography] :is(.button-grid,.actions,.profile-actions,.diagnostics-controls)>:is(button,a),[data-exp-menu-typography] .diagnostics-controls>div>button{margin-top:0!important}
+    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])>summary{display:flex;align-items:center;gap:8px;padding-block:7px;list-style:none;font-size:var(--exp-font-size-body,14px)!important;font-weight:500!important;line-height:1.4!important}
+    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])>summary::-webkit-details-marker{display:none}
+    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])>summary::before{content:"▸";flex:0 0 10px;text-align:center}
+    [data-exp-menu-typography] :is(.appearance-group,.exp-system-card,[data-exp-menu-submenu])[open]>summary::before{content:"▾"}
+    [data-exp-menu-typography] :is(.header-title-row h2,[data-exp-part="title"],#tdh-rail-title){font-size:calc(var(--exp-font-size-body,14px) + 2px)!important;font-weight:700!important;line-height:1.25!important}
+    [data-exp-menu-typography] :is([data-exp-part="subtitle"],#tdh-rail-subtitle){font-size:var(--exp-font-size-small,12px)!important;line-height:1.4!important}
+    [data-exp-menu-typography] :is([data-exp-part="version"],#tdh-header-version){font-weight:600!important;line-height:1.2!important;font-variant-numeric:tabular-nums}
+    [data-exp-menu-typography] :is(output,.status-value,.step-value,.status-check-value){font-variant-numeric:tabular-nums}
+  `;
+  function mount({shadow,panel}) {
+    panel.dataset.expMenuTypography='1';
+    const style=document.createElement('style');style.dataset.expMenuTypography='1';style.textContent=css;shadow.append(style);
+    const disposeLean=ExpLeanMenu.mount({shadow,panel});
+    const disposeHelp=ExpMenuHelp.mount({shadow,panel});
+    return ()=>{disposeHelp();disposeLean();style.remove();delete panel.dataset.expMenuTypography;};
+  }
+  return Object.freeze({mount});
+})();
+
+/* Same-origin preferences for product-owned menu surfaces only. */
+const ExpMenuPreferences = (() => {
+  const key='exp:suite:menu-size',eventName='exp-core:menu-size';
+  const sizes=Object.freeze({standard:{body:14,small:12,width:324,cardWidth:272,padding:8,row:7,control:32},compact:{body:14,small:12,width:304,cardWidth:252,padding:7,row:6,control:30},mini:{body:14,small:12,width:280,cardWidth:232,padding:6,row:4,control:28}});
+  let memory='compact';
+  const valid=value=>Object.hasOwn(sizes,value)?value:'compact';
+  function menuSizePreference(){try {const stored=localStorage.getItem(key);memory=valid(stored);}catch {}return memory;}
+  function setMenuSizePreference(size){memory=valid(size);try{localStorage.setItem(key,memory);}catch{}document.dispatchEvent(new CustomEvent(eventName,{detail:memory}));return memory;}
+  function bindMenuSize({host,shadow,panel,onLayout=()=>{}}){
+    const disposeTypography=ExpMenuTypography.mount({shadow,panel});
+    function apply(size){
+      memory=valid(size);const value=sizes[memory];host.dataset.expMenuSize=memory;
+      for(const token of ['padding','row','control'])host.style.setProperty('--exp-menu-'+token,value[token]+'px');
+      host.style.setProperty('--exp-font-size-body',value.body+'px');host.style.setProperty('--exp-font-size-small',value.small+'px');host.style.setProperty('--exp-menu-width',value.width+'px');
+      for(const select of shadow.querySelectorAll('[data-exp-menu-size-select]')){select.value=memory;select.dispatchEvent(new Event('input',{bubbles:true}));}
+      onLayout();
+    }
+    const changed=event=>apply(event.detail),storage=event=>{if(event.key===key||event.key===null)apply(menuSizePreference());};
+    document.addEventListener(eventName,changed);addEventListener('storage',storage);apply(menuSizePreference());
+    return ()=>{document.removeEventListener(eventName,changed);removeEventListener('storage',storage);disposeTypography();};
+  }
+  function createMenuSizeControls(){
+    const row=document.createElement('label');row.className='row exp-menu-size';const copy=document.createElement('span');copy.className='copy';
+    const title=document.createElement('strong');title.textContent='Menu Size';copy.append(title);
+    const select=document.createElement('select');select.setAttribute('aria-label','Menu Size');select.dataset.expMenuSizeSelect='1';
+    
+    for(const [value,label] of [['standard','Standard'],['compact','Compact'],['mini','Mini']]){const option=document.createElement('option');option.value=value;option.textContent=label;select.append(option);}
+    select.value=menuSizePreference();select.addEventListener('change',()=>setMenuSizePreference(select.value));row.append(copy,select);return row;
+  }
+  return Object.freeze({menuSizePreference,setMenuSizePreference,bindMenuSize,createMenuSizeControls,menuSizeTokens:()=>sizes[menuSizePreference()]});
+})();
+
+// Slate Blue site paint shares the menu palette and device-mode resolver.
+const ExpSiteColors = (() => {
+  const {THEME_MODES,normalizeThemeMode,resolveTheme}=CoreFoundation;
+  const sitePalettes=Object.freeze(THEME_MODES.map(id=>Object.freeze({id,name:id[0].toUpperCase()+id.slice(1)})));
+  const sitePalette = id => resolveTheme(id);
+  function watchSystem(callback){const query=matchMedia('(prefers-color-scheme: dark)');query.addEventListener('change',callback);return ()=>query.removeEventListener('change',callback);}
+  function createSiteColors({product,css,inject}){
+    const attribute='data-exp-site-colors',scope=`html[${attribute}="${product}"]`,id='exp-site-colors-'+product;
+    let current='system',active=false,stopWatching=null,style=null;
+    function render(){
+      if(!active)return;
+      const palette=resolveTheme(current),text=css(palette,scope);
+      if(!style?.isConnected){
+        style?.remove();
+        style=document.getElementById(id)||(inject?inject(text,{expSiteColors:product}):document.createElement('style'));
+        style.id=id;style.dataset.expOwned='1';style.dataset.expSiteColors=product;
+        if(!style.isConnected)(document.head||document.documentElement).append(style);
+      }
+      if(style.textContent!==text)style.textContent=text;
+      if(document.documentElement.getAttribute(attribute)!==product)document.documentElement.setAttribute(attribute,product);
+      document.documentElement.dataset.expSitePalette='slate-blue-'+palette.mode;
+    }
+    function apply(next){current=normalizeThemeMode(next);active=true;stopWatching??=watchSystem(()=>{if(current==='system')render();});render();}
+    function clear(){active=false;stopWatching?.();stopWatching=null;style?.remove();document.getElementById(id)?.remove();style=null;
+      if(document.documentElement.getAttribute(attribute)===product){document.documentElement.removeAttribute(attribute);delete document.documentElement.dataset.expSitePalette;}}
+    return Object.freeze({apply,clear,refresh:render,palette:()=>active?resolveTheme(current):null});
+  }
+  function createThemeModeControl({value='system',onChange,label='Menu Theme'}){
+    const row=document.createElement('label');row.className='row exp-site-colors';const copy=document.createElement('span');copy.className='copy';
+    const title=document.createElement('strong');title.textContent=label;copy.append(title);
+    const select=document.createElement('select');select.setAttribute('aria-label',label);select.dataset.expThemeMode='1';
+    if(label==='Site Theme')select.dataset.expSiteColorsSelect='1';
+    for(const {id,name} of sitePalettes){const option=document.createElement('option');option.value=id;option.textContent=name;select.append(option);}
+    
+    select.value=normalizeThemeMode(value);select.addEventListener('change',()=>onChange?.(select.value));row.append(copy,select);return row;
+  }
+  const createSiteColorControl = options => createThemeModeControl({...options,label:'Site Theme'});
+  return Object.freeze({sitePalettes,sitePalette,createSiteColors,createSiteColorControl,createThemeModeControl,normalizeThemeMode,resolveTheme});
+})();
+
+// Flyout launcher rules shared by every Core copy on a page. Each copy computes the same answer from the
+// launcher hosts' attributes alone, so products agree on one launcher without messaging each other.
+const ExpLauncherFlyout = (() => {
+  // 3: away from a site's own slot every product is a tab on the window's right edge, and the flyout is used only
+  // inside a site slot. Copies on an older protocol keep the grid for everyone.
+  const PROTOCOL = '3';
+  const SUITE_ORDER = Object.freeze(['dropper','ward','thread']);
+  // Products that only run on their own sites (Dropper on Twitch, WARD on retailers) lead there.
+  const SITE_PRODUCTS = Object.freeze(['dropper','ward','thread']);
+  const idOf = host => String(host?.dataset?.productId || '');
+  const rank = id => { const index = SUITE_ORDER.indexOf(id); return index < 0 ? SUITE_ORDER.length : index; };
+  function isSiteProduct(productId) { return SITE_PRODUCTS.includes(String(productId || '')); }
+  function flyoutOrder(hosts = []) {
+    return [...new Set([...hosts].map(idOf).filter(Boolean))].sort((a,b) => rank(a) - rank(b) || a.localeCompare(b));
+  }
+  // An older Core on the page cannot draw tiles, so one launcher without the protocol keeps the grid for everyone.
+  function flyoutActive(hosts = []) {
+    const list = [...hosts];
+    return list.length >= 2 && list.every(host => host?.dataset?.expFlyout === PROTOCOL);
+  }
+  // Edge tabs need every launcher on the page to know them; one older copy keeps the grid.
+  function tabsReady(hosts = []) {
+    const list = [...hosts];
+    return list.length >= 1 && list.every(host => host?.dataset?.expFlyout === PROTOCOL);
+  }
+  function leadProduct(hosts = []) {
+    const list = [...hosts];
+    const site = flyoutOrder(list.filter(host => host?.dataset?.expSiteProduct === '1'));
+    return site[0] || flyoutOrder(list)[0] || '';
+  }
+  return Object.freeze({ PROTOCOL, SUITE_ORDER, SITE_PRODUCTS, isSiteProduct, flyoutOrder, flyoutActive, tabsReady, leadProduct });
+})();
+
+// Product-neutral shared runtime. Product engines own their settings, content, and actions.
+// exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
+const ExtraPotionsCore = (() => {
+  'use strict';
+  const version = '3.18.1';
+  const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
+  const SUPPORT_URL = 'https://ko-fi.com/expdare';
+  const protocol = 'exp-core-coordination-v1';
+  const gridProtocol = 'exp-launcher-grid-v3';
+  const GRID_ORDER = 'exp:v3:launcher-order';
+  const GRID_DELTA = 'exp:v3:launcher-grid-delta';
+  // Product importance, launcher placement, and theme ownership are separate
+  // coordination policies backed by the same canonical suite manifest.
+  const freezeSuiteContract = values => Object.freeze(Object.fromEntries(
+    Object.entries(values || {}).map(([id, value]) => [id, Object.freeze({
+      role: String(value?.role || 'product'),
+      repository: String(value?.repository || ''),
+      rootId: String(value?.rootId || ''),
+      priority: Number(value?.priority || 0),
+      launcherPriority: Number(value?.launcherPriority || 0),
+      themePriority: Number(value?.themePriority || 0),
+      capabilities: Object.freeze([...(value?.capabilities || [])]),
+      presentationPhases: Object.freeze([...(value?.presentationPhases || [])]),
+      menuSections: Object.freeze(Object.fromEntries(
+        Object.entries(value?.menuSections || {}).map(([category, sections]) => [category, Object.freeze([...(sections || [])])])
+      )),
+      state: value?.state ? Object.freeze({
+        type: String(value.state.type || ''),
+        fields: Object.freeze({ ...(value.state.fields || {}) }),
+      }) : null,
+    })])
+  ));
+  const SUITE_PRODUCTS = freezeSuiteContract({"thread":{"role":"product","priority":0,"launcherPriority":90,"themePriority":0,"capabilities":["reddit.reading","reddit.local-context","reddit.local-filtering"],"presentationPhases":["visibility","annotate"],"state":{"type":"thread.state-changed","fields":{"active":"boolean","loaded":"count"}},"menuSections":{"main":["feed","read"],"appearance":["look"],"advanced":["filters","people"],"system":["system"]},"repository":"THREAD","rootId":"exp-thread-root"},"dropper":{"role":"flagship","priority":4,"launcherPriority":110,"themePriority":4,"capabilities":["twitch.drops","twitch.campaigns","twitch.progress","twitch.claims","twitch.stream-management"],"presentationPhases":[],"state":{"type":"dropper.state-changed","fields":{"activeReward":"boolean","progressPercent":"percent-nullable","routingState":"token"}},"menuSections":{"main":["drops","streams","campaigns","settings"],"appearance":["appearance"],"advanced":["advanced"],"system":["system"]},"repository":"Dropper","rootId":"tdh-root"},"ward":{"role":"product","priority":2,"launcherPriority":60,"themePriority":1,"capabilities":["retail.classification","retail.cleanup","retail.coupons"],"presentationPhases":["classify","visibility"],"state":{"type":"ward.state-changed","fields":{"active":"boolean","pageType":"token","interventions":"count","hide":"count","dim":"count","collapse":"count","annotate":"count"}},"menuSections":{"main":["protection","amazon","tools"],"appearance":["appearance"],"advanced":["advanced","patterns","advanced-amazon"],"system":["system"]},"repository":"WARD","rootId":"exp-ward-root"}});
+  const SUITE_PRIORITY = Object.freeze(Object.fromEntries(
+    Object.entries(SUITE_PRODUCTS).map(([id, value]) => [id, value.priority])
+  ));
+  const LAUNCHER_PRIORITY = Object.freeze(Object.fromEntries(
+    Object.entries(SUITE_PRODUCTS).map(([id, value]) => [id, value.launcherPriority])
+  ));
+  const THEME_PRIORITY = Object.freeze(Object.fromEntries(
+    Object.entries(SUITE_PRODUCTS).map(([id, value]) => [id, value.themePriority])
+  ));
+  const SUITE_EVENT = 'exp-core:suite';
+  const SUITE_SITE_PAUSE_PREFIX = 'exp:v3:suite-site-pause:';
+  let suitePauseTimer;
+  // Suite events/state cross userscript realms through shared DOM metadata.
+  // They are advisory coordination signals, never an authorization boundary.
+  const SUITE_TRUST = 'shared-dom-advisory';
+  const PAGE_BATCH_EVENT = 'exp-core:page-batch';
+  const NAVIGATION_EVENT = 'exp-core:navigation';
+  const NAVIGATION_CONTROL_EVENT = 'exp-core:navigation-control';
+  const PAGE_PHASE_EVENT = 'exp-core:page-phase';
+  const PAGE_PHASE_END_EVENT = 'exp-core:page-phase-end';
+  const PRESENTATION_STATE_EVENT = 'exp-core:presentation-state';
+  const PRESENTATION_PHASES = Object.freeze({
+    observe: 10,
+    classify: 20,
+    visibility: 30,
+    theme: 40,
+    annotate: 50,
+    ui: 60,
+  });
+  const PRESENTATION_CHANNELS = Object.freeze(['classification', 'visibility', 'surface', 'annotation']);
+  const suiteStateFingerprints = new Map();
+  const registrations = new WeakMap();
+  const floatingNoticeRegistrations = new WeakMap();
+  const controllers = new WeakMap();
+  const menuControllers = new WeakMap();
+  let noticeSerial = 0;
+  const baseTokenNames = ['bg', 'panel', 'line', 'text', 'muted', 'accent', 'accent2'];
+  const tokenNames = [...baseTokenNames, 'raised', 'inset', 'link', 'focus', 'onAccent'];
+  const hex = value => /^#[0-9a-f]{6}$/i.test(value || '') ? value : '#000000';
+  const rgb = value => [1, 3, 5].map(index => parseInt(hex(value).slice(index, index + 2), 16));
+  const blend = (from, to, amount) => '#' + rgb(from).map((part, index) => Math.round(part + (rgb(to)[index] - part) * amount).toString(16).padStart(2, '0')).join('');
+  const luminance = value => {
+    const parts = rgb(value).map(part => { const channel = part / 255; return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4; });
+    return .2126 * parts[0] + .7152 * parts[1] + .0722 * parts[2];
+  };
+  const contrast = (one, two) => { const [light, dark] = [luminance(one), luminance(two)].sort((a, b) => b - a); return (light + .05) / (dark + .05); };
+  function readable(candidate, background, fallback) {
+    if (contrast(candidate, background) >= 4.5) return candidate;
+    for (let amount = .15; amount <= 1; amount += .05) {
+      const lighter = blend(candidate, '#ffffff', amount);
+      if (contrast(lighter, background) >= 4.5) return lighter;
+      const darker = blend(candidate, '#000000', amount);
+      if (contrast(darker, background) >= 4.5) return darker;
+    }
+    return fallback;
+  }
+  function semanticTheme(theme = {}) {
+    const panel = hex(theme.panel);
+    const background = hex(theme.bg);
+    const onAccent = [hex(theme.text), background, '#ffffff', '#000000'].sort((a, b) => contrast(b, theme.accent) - contrast(a, theme.accent))[0];
+    return {
+      ...theme,
+      raised: hex(theme.raised) !== '#000000' || theme.raised === '#000000' ? theme.raised : blend(panel, theme.text, .08),
+      inset: hex(theme.inset) !== '#000000' || theme.inset === '#000000' ? theme.inset : blend(background, '#000000', .18),
+      link: theme.link && contrast(theme.link, panel) >= 4.5 ? theme.link : readable(theme.accent2, panel, theme.text),
+      focus: theme.focus && contrast(theme.focus, panel) >= 3 ? theme.focus : readable(theme.accent2, panel, theme.text),
+      onAccent: theme.onAccent && contrast(theme.onAccent, theme.accent) >= 4.5 ? theme.onAccent : onAccent,
+    };
+  }
+  // Callers own foreground, accessibility fallbacks, and removing these inline properties.
+  // Settings use the persisted JSON schema. Parse in the caller's userscript realm
+  // instead of returning a native structuredClone page-realm Xray wrapper.
+  function cloneSettings(value) { return JSON.parse(JSON.stringify(value)); }
+  function applyTextGradient(element, backgroundImage) {
+    const properties = {'background-color':'transparent','background-image':backgroundImage,'background-clip':'text','-webkit-background-clip':'text','background-size':'auto','background-position':'0% 0%','background-repeat':'repeat'};
+    for (const [property,value] of Object.entries(properties)) element.style.setProperty(property,value,'important');
+  }
+  function replaceMenuContent(container, content) {
+    const summary = node => node.querySelector(':scope > summary')?.textContent.trim();
+    const expanded = new Set([...container.querySelectorAll('details[open]')].map(summary));
+    container.replaceChildren(content);
+    for (const node of container.querySelectorAll('details')) if (expanded.has(summary(node))) node.open = true;
+  }
+  function createDisclosure(label, ...contents) {
+    return ExpMenuArrangement.createDisclosure({
+      document,
+      label,
+      category: 'advanced',
+      contents,
+      className: 'exp-system-card',
+    });
+  }
+  function createSystemGrid(...contents) {
+    const grid = document.createElement('div'); grid.dataset.expSystemTools = '1';
+    grid.append(...contents); return grid;
+  }
+  // One suite size. Placement clamps this preferred width to the viewport.
+  function menuWidth() { return ExpMenuPreferences.menuSizeTokens().width; }
+  const canonicalCss = CoreFoundation.css();
+  const compositionCss = `
+    [data-exp-part="dock"]{box-sizing:border-box;overflow-x:hidden;overscroll-behavior:contain}
+    [data-exp-part="dock"] :is(.row,.group,.section,.fl-tool-body,.route-body,.fl-tool-title){min-width:0;max-width:100%;overflow-wrap:anywhere!important}
+    [data-exp-part="dock"] :is(input,select,textarea){min-width:0;max-width:100%}
+    .update-notice,.changelog{max-height:calc(100vh - 24px)!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;overflow-wrap:anywhere}
+
+    [data-exp-system-tools]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;align-items:stretch;grid-column:1/-1!important;min-width:0}
+    [data-exp-system-tools]>details{box-sizing:border-box;min-width:0;margin:0!important;padding:7px!important;border:1px solid var(--theme-line);border-radius:7px;grid-column:auto!important;overflow-wrap:anywhere}
+    [data-exp-system-tools]>details[open]{grid-column:1/-1!important}
+    [data-exp-system-tools]>details>summary{cursor:pointer;font-weight:600}
+    .exp-system-card>summary{cursor:pointer}
+    .exp-system-card>summary+*{margin-top:6px}
+    :host{color-scheme:dark}
+    [data-exp-part="launcher"]{box-sizing:border-box!important;width:48px!important;min-width:48px!important;max-width:48px!important;height:48px!important;min-height:48px!important;max-height:48px!important}
+    [data-exp-part="launcher"] .launcher-icon{width:40px!important;height:40px!important}
+    .header-icon{width:38px!important;height:38px!important}
+    .header-icon .menu-icon{width:38px!important;height:38px!important}
+    :host([data-exp-theme-deprioritized="1"]) .theme-row:has(.exp-theme-swatches),:host([data-exp-theme-deprioritized="1"]) #mb-theme-dots{display:none!important}
+    :host([data-exp-theme-deprioritized="1"]) #mb-cluster{--mb-bg:var(--theme-bg)!important;--mb-surface:var(--theme-panel)!important;--mb-chip:var(--theme-raised)!important;--mb-ink:var(--theme-text)!important;--mb-muted:var(--theme-muted)!important;--mb-line:var(--theme-line)!important;--mb-brand:var(--theme-accent)!important;--mb-brand-ink:var(--theme-onAccent)!important;--mb-hover:var(--theme-raised)!important;--mb-track:var(--theme-line)!important}
+    [hidden]{display:none!important}
+    .exp-core-theme{position:static;display:contents;color:var(--theme-text);font:13px/1.42 ui-sans-serif,system-ui,"Segoe UI",sans-serif}
+    [data-exp-part="dock"],[data-exp-part="launcher"]{position:fixed}
+    [data-exp-part="dock"]{color:var(--theme-text);scrollbar-width:thin}
+    [data-exp-part="dock"] [data-exp-part="title"]{color:var(--theme-text)}
+    .exp-core-theme a{color:var(--theme-link)}
+    button,input,select,textarea{font-family:inherit}
+    button{color:inherit}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--theme-focus);outline-offset:2px}
+    button.fl-tool-header{width:100%;border:0;background:transparent;color:var(--theme-text);text-align:left;font:inherit}
+    .fl-tool-header .fl-tool-chevron{font:var(--exp-font-size-body,13px)/1.42 system-ui}
+    .fl-tool-body[hidden]{display:none!important}
+    .fl-tool-body>.group,.fl-tool-body>.section,.fl-tool-body>.flat-group{grid-column:1/-1;min-width:0}
+    .fl-tool-body :is(.group,.section,.flat-group){display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+    .fl-tool-body :is(.group,.section,.flat-group)>*{grid-column:1/-1!important;min-width:0}
+    .group,.section,.flat-group{margin:0;padding:0;border:0;background:transparent}
+    .group>h3,.section>h3,.section>h2{margin:8px 0 3px;font-size:var(--exp-font-size-small,11px);font-weight:800;color:var(--theme-muted)}
+    .group:first-child>h3,.section:first-child>h3{margin-top:6px}
+    .group>.row,.section>.row,.flat-group>.row{min-width:0}
+    .row>.copy,.row>.row-copy,.row>.setting-label,.row>div:first-child{min-width:0;flex:1}
+    .label,.copy>strong,.row-copy>strong,.setting-label{font-size:var(--exp-font-size-body,13px);font-weight:500;line-height:1.25}
+    .copy>.help,.row-copy>small,.help,.empty,.note,.meta{font-size:var(--exp-font-size-small,11px);line-height:1.4;color:var(--theme-muted)}
+    .copy>.help,.row-copy>small{display:block;margin-top:3px}
+    .toggleSwitch{padding:0;min-width:34px;max-width:34px;min-height:20px;max-height:20px}
+    .toggleSwitch>span{display:none}
+    .row>.life-btn,.mini-row>.life-btn{width:auto;min-width:50px;margin:0;padding:3px 7px}
+    .row>select,.mini-row>select{max-width:55%}
+    .button-grid,.actions,.profile-actions,.menu-footer,.diagnostics-controls>div,.rules-transfer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;min-width:0}
+    .button-grid>*{min-width:0}
+    .life-btn.warn{border-color:#cb6868!important;background:#402020!important;color:#ffd7d7!important}
+    input:not([type=file]),textarea{box-sizing:border-box;max-width:100%;min-width:0;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-inset);color:var(--theme-text);padding:5px 6px;font-size:var(--exp-font-size-body,13px)}
+    input[type=search],textarea{width:100%}
+    .identity{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--theme-line)}
+    .identity>.copy{flex:1;min-width:0}
+    .identity-actions{display:flex;gap:6px;align-items:center}
+    .identity-actions>.life-btn{width:auto;margin:0;padding:3px 6px}
+    .theme-row{flex-wrap:wrap}
+    .exp-theme-swatches{min-width:0}
+    .appearance-group,.auth-advanced,.rule-card,.stat-card{grid-column:1/-1;min-width:0;border:1px solid var(--theme-line);border-radius:7px;margin-top:6px;padding:6px;background:var(--theme-inset)}
+    summary{cursor:pointer;font-size:var(--exp-font-size-body,13px)}
+    .feature-pair,.category-grid{display:block}
+    .status-value,output{font-size:var(--exp-font-size-small,11px);color:var(--theme-muted)}
+    .live,.sr-only,.status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+    .toast{position:fixed;z-index:2147483647;right:12px;max-width:calc(100vw - 24px)}
+    .update-notice{position:fixed;z-index:2147483647}
+    .diag{margin:6px 0 0}
+    .diag[hidden]{display:none!important}
+    .diag:not([hidden]){display:block}
+    .utility-grid,.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    .workspace-actions{grid-column:1/-1}
+    .setting-arrow,.step-btn{width:25px;min-height:25px;border:1px solid var(--theme-line);border-radius:6px;background:var(--theme-raised);color:var(--theme-text)}
+    .step-value{flex:1;text-align:center;font-size:var(--exp-font-size-small,11px)}
+    .stepper{display:flex;align-items:center;gap:5px}
+  `;
+  const TOGGLE = ':is(.toggleSwitch,.switch,[role="switch"])';
+  const TOGGLE_BG = 'var(--theme-bg,var(--bg,#111114))';
+  const TOGGLE_PANEL = 'var(--theme-panel,var(--panel,var(--surface,#18181d)))';
+  const TOGGLE_LINE = 'var(--theme-line,var(--line,var(--border,#41434d)))';
+  const TOGGLE_MUTED = 'var(--theme-muted,var(--muted,#9aa0a6))';
+  const TOGGLE_TEXT = 'var(--theme-text,var(--text,#f4f4f6))';
+  const TOGGLE_ACCENT = 'var(--theme-accent,var(--accent,var(--teal,#8b5cf6)))';
+  const MATTE_TOGGLE_CHROME_CSS = `${TOGGLE}{position:relative!important;box-sizing:border-box!important;flex:none!important;width:34px!important;height:20px!important;min-width:34px!important;min-height:20px!important;padding:0!important;border:1px solid color-mix(in srgb,${TOGGLE_LINE} 88%,${TOGGLE_MUTED} 12%)!important;border-radius:6px!important;background:color-mix(in srgb,${TOGGLE_BG} 84%,${TOGGLE_PANEL} 16%)!important;background-image:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important;cursor:pointer!important}${TOGGLE}:not(:has(> span))::after{content:""!important;position:absolute!important;top:2px!important;left:2px!important;width:14px!important;height:14px!important;box-sizing:border-box!important;border:0!important;border-radius:4px!important;background:color-mix(in srgb,${TOGGLE_MUTED} 82%,${TOGGLE_TEXT} 18%)!important;box-shadow:none!important}${TOGGLE}>span{display:block!important;position:absolute!important;top:2px!important;left:2px!important;width:14px!important;height:14px!important;box-sizing:border-box!important;border:0!important;border-radius:4px!important;background:color-mix(in srgb,${TOGGLE_MUTED} 82%,${TOGGLE_TEXT} 18%)!important;box-shadow:none!important}${TOGGLE}[aria-checked="true"]{border-color:color-mix(in srgb,${TOGGLE_LINE} 52%,${TOGGLE_ACCENT} 48%)!important;background:color-mix(in srgb,${TOGGLE_PANEL} 72%,${TOGGLE_ACCENT} 28%)!important;background-image:none!important}${TOGGLE}[aria-checked="true"]:not(:has(> span))::after{transform:translateX(14px)!important;background:${TOGGLE_TEXT}!important}${TOGGLE}[aria-checked="true"]>span{transform:translateX(14px)!important;background:${TOGGLE_TEXT}!important}:host([data-ui-theme="pride"]) ${TOGGLE}[aria-checked="true"],.exp-core-theme[data-ui-theme="pride"] ${TOGGLE}[aria-checked="true"],:host([data-theme-skin="gradient"]) ${TOGGLE}[aria-checked="true"],.exp-core-theme[data-theme-skin="gradient"]:not([data-ui-theme="contrast"]) ${TOGGLE}[aria-checked="true"]{background-image:none!important;border-color:color-mix(in srgb,${TOGGLE_LINE} 52%,${TOGGLE_ACCENT} 48%)!important;background:color-mix(in srgb,${TOGGLE_PANEL} 72%,${TOGGLE_ACCENT} 28%)!important}:host([data-ui-theme="contrast"]) ${TOGGLE},:host([data-ui-theme="obsidian"]) ${TOGGLE},.exp-core-theme[data-ui-theme="contrast"] ${TOGGLE},.exp-core-theme[data-ui-theme="obsidian"] ${TOGGLE}{border:2px solid #fff!important;background:#050505!important;background-image:none!important}:host([data-ui-theme="contrast"]) ${TOGGLE}:not(:has(> span))::after,:host([data-ui-theme="obsidian"]) ${TOGGLE}:not(:has(> span))::after,.exp-core-theme[data-ui-theme="contrast"] ${TOGGLE}:not(:has(> span))::after,.exp-core-theme[data-ui-theme="obsidian"] ${TOGGLE}:not(:has(> span))::after{top:0!important;left:0!important;border:1px solid #050505!important;background:#fff!important}:host([data-ui-theme="contrast"]) ${TOGGLE}>span,:host([data-ui-theme="obsidian"]) ${TOGGLE}>span,.exp-core-theme[data-ui-theme="contrast"] ${TOGGLE}>span,.exp-core-theme[data-ui-theme="obsidian"] ${TOGGLE}>span{top:0!important;left:0!important;border:1px solid #050505!important;background:#fff!important}:host([data-ui-theme="contrast"]) ${TOGGLE}[aria-checked="true"],:host([data-ui-theme="obsidian"]) ${TOGGLE}[aria-checked="true"],.exp-core-theme[data-ui-theme="contrast"] ${TOGGLE}[aria-checked="true"],.exp-core-theme[data-ui-theme="obsidian"] ${TOGGLE}[aria-checked="true"]{background:#fff!important;border-color:#fff!important;background-image:none!important}:host([data-ui-theme="contrast"]) ${TOGGLE}[aria-checked="true"]:not(:has(> span))::after,:host([data-ui-theme="obsidian"]) ${TOGGLE}[aria-checked="true"]:not(:has(> span))::after,.exp-core-theme[data-ui-theme="contrast"] ${TOGGLE}[aria-checked="true"]:not(:has(> span))::after,.exp-core-theme[data-ui-theme="obsidian"] ${TOGGLE}[aria-checked="true"]:not(:has(> span))::after{background:#050505!important;border-color:#fff!important;transform:translateX(14px)!important}:host([data-ui-theme="contrast"]) ${TOGGLE}[aria-checked="true"]>span,:host([data-ui-theme="obsidian"]) ${TOGGLE}[aria-checked="true"]>span,.exp-core-theme[data-ui-theme="contrast"] ${TOGGLE}[aria-checked="true"]>span,.exp-core-theme[data-ui-theme="obsidian"] ${TOGGLE}[aria-checked="true"]>span{background:#050505!important;border-color:#fff!important;transform:translateX(14px)!important}@media (forced-colors: active){${TOGGLE}{forced-color-adjust:none;border:1px solid CanvasText!important;background:Canvas!important;background-image:none!important}${TOGGLE}:not(:has(> span))::after{border-color:CanvasText!important;background:CanvasText!important}${TOGGLE}>span{border-color:CanvasText!important;background:CanvasText!important}${TOGGLE}[aria-checked="true"]{border-color:Highlight!important;background:Highlight!important;background-image:none!important}${TOGGLE}[aria-checked="true"]:not(:has(> span))::after{border-color:HighlightText!important;background:HighlightText!important}${TOGGLE}[aria-checked="true"]>span{border-color:HighlightText!important;background:HighlightText!important}}`;
+  const read = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
+  const write = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
+  const emit = (type, productId) => document.dispatchEvent(new CustomEvent('exp-core:coordination', { detail: { protocol, type, productId } }));
+
+  function normalizeSuiteCapabilities(values = []) {
+    if (!Array.isArray(values)) return [];
+    return [...new Set(values.map(value => String(value || '').trim().toLowerCase()).filter(value => /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(value)))];
+  }
+
+  function suiteContract(productId) {
+    const id = String(productId || '').toLowerCase();
+    const known = SUITE_PRODUCTS[id];
+    if (!known) return null;
+    return Object.freeze({
+      id,
+      role: known.role || 'product',
+      repository: known.repository || '',
+      rootId: known.rootId || '',
+      priority: Number(known.priority || SUITE_PRIORITY[id] || 0),
+      launcherPriority: Number(known.launcherPriority || LAUNCHER_PRIORITY[id] || 0),
+      themePriority: Number(known.themePriority || THEME_PRIORITY[id] || 0),
+      capabilities: Object.freeze(normalizeSuiteCapabilities(known.capabilities)),
+      presentationPhases: Object.freeze(normalizePresentationPhases(known.presentationPhases || [])),
+      menuSections: Object.freeze(Object.fromEntries(
+        Object.entries(known.menuSections || {}).map(([category, sections]) => [category, Object.freeze([...sections])])
+      )),
+      state: known.state ? Object.freeze({
+        type: known.state.type,
+        fields: Object.freeze({ ...known.state.fields }),
+      }) : null,
+    });
+  }
+
+  function suiteProductNode(productId) {
+    const id = String(productId || '').toLowerCase();
+    if (!/^[a-z][a-z0-9-]+$/.test(id)) return null;
+    return [...document.querySelectorAll('[data-exp-suite-product]')]
+      .find(node => node.dataset.expSuiteProduct === id) || null;
+  }
+
+  function registerSuiteProduct(options = {}) {
+    const id = String(options.id || options.productId || '').toLowerCase();
+    const productVersion = String(options.version || options.productVersion || 'unknown');
+    if (!/^[a-z][a-z0-9-]+$/.test(id)) throw new Error('Invalid suite product ID');
+    const contract = suiteContract(id);
+    const capabilities = normalizeSuiteCapabilities(contract ? contract.capabilities : options.capabilities);
+    const priority = Number(contract?.priority ?? options.priority ?? 0);
+    const role = String(contract?.role ?? options.role ?? 'product');
+    let node = suiteProductNode(id);
+    const previous = node ? JSON.stringify({
+      version: node.dataset.expSuiteVersion || '',
+      coreVersion: node.dataset.expSuiteCoreVersion || '',
+      role: node.dataset.expSuiteRole || '',
+      priority: node.dataset.expSuitePriority || '',
+      capabilities: node.dataset.expSuiteCapabilities || '[]',
+    }) : null;
+    if (!node) {
+      node = document.createElement('meta');
+      node.dataset.expSuiteProduct = id;
+      (document.documentElement || document.head || document.body)?.append(node);
+    }
+    node.dataset.expSuiteVersion = productVersion;
+    node.dataset.expSuiteCoreVersion = version;
+    node.dataset.expSuiteRole = role;
+    node.dataset.expSuitePriority = String(Number.isFinite(priority) ? priority : 0);
+    node.dataset.expSuiteCapabilities = JSON.stringify(capabilities);
+    const current = JSON.stringify({
+      version: node.dataset.expSuiteVersion,
+      coreVersion: node.dataset.expSuiteCoreVersion,
+      role: node.dataset.expSuiteRole,
+      priority: node.dataset.expSuitePriority,
+      capabilities: node.dataset.expSuiteCapabilities,
+    });
+    if (previous !== current) emitSuiteEvent(id, 'product.registered', { capabilities, role, version: productVersion });
+    return Object.freeze({
+      id,
+      update(next = {}) { return registerSuiteProduct({ id, version: productVersion, role, priority, capabilities, ...next }); },
+      dispose() {
+        const current = suiteProductNode(id);
+        if (current === node) current.remove();
+        emitSuiteEvent(id, 'product.unregistered', {});
+      },
+    });
+  }
+
+  function suiteSnapshot() {
+    const products = [...document.querySelectorAll('[data-exp-suite-product]')].map(node => {
+      let capabilities = [];
+      try { capabilities = normalizeSuiteCapabilities(JSON.parse(node.dataset.expSuiteCapabilities || '[]')); } catch {}
+      return Object.freeze({
+        id: node.dataset.expSuiteProduct,
+        version: node.dataset.expSuiteVersion || 'unknown',
+        coreVersion: node.dataset.expSuiteCoreVersion || 'unknown',
+        role: node.dataset.expSuiteRole || 'product',
+        priority: Number(node.dataset.expSuitePriority || 0),
+        capabilities: Object.freeze(capabilities),
+      });
+    }).filter(product => product.id)
+      .sort((left, right) => right.priority - left.priority || left.id.localeCompare(right.id));
+    return Object.freeze({
+      protocol: 'exp-suite-interoperability-v1',
+      coreVersion: version,
+      trust: SUITE_TRUST,
+      products: Object.freeze(products),
+    });
+  }
+
+  function capabilityProviders(capability) {
+    const name = String(capability || '').trim().toLowerCase();
+    return Object.freeze(suiteSnapshot().products.filter(product => product.capabilities.includes(name)));
+  }
+
+  function hasProductCapability(capability) {
+    return capabilityProviders(capability).length > 0;
+  }
+
+  function pageContext() {
+    return Object.freeze({
+      href: location.href,
+      origin: location.origin,
+      hostname: location.hostname,
+      pathname: location.pathname,
+      topLevel: window.top === window.self,
+    });
+  }
+
+  function navigationObserverMarker() {
+    return document.querySelector('meta[data-exp-navigation-observer]');
+  }
+
+  function ensureSharedNavigationObserver(owner = 'core') {
+    let marker = navigationObserverMarker();
+    if (marker) return Object.freeze({ leader: false, owner: marker.dataset.expNavigationObserver || 'unknown' });
+    marker = document.createElement('meta');
+    marker.dataset.expOwned = '1';
+    marker.dataset.expNavigationObserver = String(owner || 'core').toLowerCase();
+    marker.dataset.expNavigationProtocol = 'exp-navigation-observer-v1';
+    marker.dataset.expNavigationEpoch = '0';
+    marker.dataset.expNavigationSubscribers = '0';
+    (document.head || document.documentElement || document.body)?.append(marker);
+
+    let previous = location.href;
+    let epoch = 0;
+    let pendingHistoryKind = '';
+    let disposed = false;
+    const publish = kind => {
+      if (disposed) return false;
+      const href = location.href;
+      if (href === previous) return false;
+      previous = href;
+      epoch += 1;
+      marker.dataset.expNavigationEpoch = String(epoch);
+      const payload = JSON.stringify({
+        protocol: 'exp-navigation-observer-v1',
+        owner: marker.dataset.expNavigationObserver,
+        epoch,
+        kind: String(kind || 'navigation'),
+        href,
+        at: Date.now(),
+      });
+      document.dispatchEvent(new CustomEvent(NAVIGATION_EVENT, { detail: payload }));
+      return true;
+    };
+    const originals = {};
+    const wrappers = {};
+    for (const name of ['pushState', 'replaceState']) {
+      const original = history[name];
+      originals[name] = original;
+      const wrapped = function (...args) {
+        const priorKind = pendingHistoryKind;
+        pendingHistoryKind = name;
+        try {
+          const result = Reflect.apply(original, this, args);
+          publish(name);
+          return result;
+        } finally {
+          pendingHistoryKind = priorKind;
+        }
+      };
+      wrappers[name] = wrapped;
+      history[name] = wrapped;
+    }
+    const onPopState = () => publish('popstate');
+    const onHashChange = () => publish('hashchange');
+    const onCurrentEntryChange = () => publish(pendingHistoryKind || 'currententrychange');
+    addEventListener('popstate', onPopState);
+    addEventListener('hashchange', onHashChange);
+    globalThis.navigation?.addEventListener('currententrychange', onCurrentEntryChange);
+    const teardown = () => {
+      if (disposed || Number(marker.dataset.expNavigationSubscribers || 0) > 0) return false;
+      disposed = true;
+      for (const name of Object.keys(wrappers)) if (history[name] === wrappers[name]) history[name] = originals[name];
+      removeEventListener('popstate', onPopState);
+      removeEventListener('hashchange', onHashChange);
+      globalThis.navigation?.removeEventListener('currententrychange', onCurrentEntryChange);
+      document.removeEventListener(NAVIGATION_CONTROL_EVENT, onControl);
+      if (marker.isConnected) marker.remove();
+      return true;
+    };
+    const onControl = event => {
+      let payload;
+      try { payload = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail; } catch { return; }
+      if (!payload || payload.protocol !== 'exp-navigation-observer-v1' || payload.type !== 'release-if-idle') return;
+      teardown();
+    };
+    document.addEventListener(NAVIGATION_CONTROL_EVENT, onControl);
+    return Object.freeze({ leader: true, owner: marker.dataset.expNavigationObserver });
+  }
+
+  function observeNavigation(callback, options = {}) {
+    if (typeof callback !== 'function') throw new TypeError('Navigation callback must be a function');
+    ensureSharedNavigationObserver(options.productId || options.owner || 'core');
+    let marker = navigationObserverMarker();
+    if (marker) marker.dataset.expNavigationSubscribers = String(Number(marker.dataset.expNavigationSubscribers || 0) + 1);
+    const listener = event => {
+      let payload;
+      try { payload = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail; } catch { return; }
+      if (!payload || payload.protocol !== 'exp-navigation-observer-v1') return;
+      callback(Object.freeze({ ...payload }));
+    };
+    document.addEventListener(NAVIGATION_EVENT, listener);
+    let disposed = false;
+    return () => {
+      if (disposed) return;
+      disposed = true;
+      document.removeEventListener(NAVIGATION_EVENT, listener);
+      marker = navigationObserverMarker();
+      if (!marker) return;
+      const next = Math.max(0, Number(marker.dataset.expNavigationSubscribers || 0) - 1);
+      marker.dataset.expNavigationSubscribers = String(next);
+      if (!next) document.dispatchEvent(new CustomEvent(NAVIGATION_CONTROL_EVENT, {
+        detail: JSON.stringify({ protocol: 'exp-navigation-observer-v1', type: 'release-if-idle' }),
+      }));
+    };
+  }
+
+  function navigationObserverState() {
+    const marker = navigationObserverMarker();
+    return Object.freeze({
+      active: Boolean(marker),
+      owner: marker?.dataset.expNavigationObserver || null,
+      protocol: marker?.dataset.expNavigationProtocol || null,
+      epoch: Number(marker?.dataset.expNavigationEpoch || 0),
+      subscribers: Number(marker?.dataset.expNavigationSubscribers || 0),
+    });
+  }
+
+  function emitSuiteEvent(productId, type, detail = {}) {
+    const source = String(productId || 'core').toLowerCase();
+    const eventType = String(type || '').trim().toLowerCase();
+    if (!/^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(eventType)) throw new Error('Invalid suite event type');
+    let safeDetail = {};
+    try { safeDetail = JSON.parse(JSON.stringify(detail || {})); } catch {}
+    const payload = JSON.stringify({
+      protocol: 'exp-suite-interoperability-v1',
+      coreVersion: version,
+      trust: SUITE_TRUST,
+      source,
+      type: eventType,
+      detail: safeDetail,
+      at: Date.now(),
+    });
+    document.dispatchEvent(new CustomEvent(SUITE_EVENT, { detail: payload }));
+  }
+
+  function suiteSiteKey(hostname = location.hostname) {
+    return `${SUITE_SITE_PAUSE_PREFIX}${String(hostname || 'local-document').trim().toLowerCase()}`;
+  }
+
+  // A DOM marker shares a failed persistence write across isolated Core copies on this page.
+  function suitePauseFallback(hostname = location.hostname) {
+    return [...document.querySelectorAll('meta[data-exp-suite-pause-fallback]')].find(node=>node.dataset.expSuitePauseFallback===suiteSiteKey(hostname));
+  }
+  function suitePauseValue(hostname = location.hostname) {
+    const fallback=suitePauseFallback(hostname);
+    if(fallback)return Number(fallback.dataset.until)||0;
+    try{return Number(localStorage.getItem(suiteSiteKey(hostname)))||0;}catch{return 0;}
+  }
+  function suiteSitePausePersisted(hostname = location.hostname) {return !suitePauseFallback(hostname);}
+  function suiteSitePaused(hostname = location.hostname) {
+    const value=suitePauseValue(hostname);return value===1||value>Date.now();
+  }
+
+  function setSuiteSitePaused(paused, hostname = location.hostname, minutes = 0) {
+    const host = String(hostname || 'local-document').trim().toLowerCase();
+    const value = Boolean(paused);
+    const until=value?(Number(minutes)>0?Date.now()+Math.min(1440,Number(minutes))*60000:1):0;
+    const fallback=suitePauseFallback(host)||document.createElement('meta');
+    fallback.dataset.expOwned='1';fallback.dataset.expSuitePauseFallback=suiteSiteKey(host);fallback.dataset.until=String(until);
+    if(!fallback.isConnected)(document.head||document.documentElement).append(fallback);
+    try {
+      if (value) localStorage.setItem(suiteSiteKey(host),String(until));
+      else localStorage.removeItem(suiteSiteKey(host));
+      if((Number(localStorage.getItem(suiteSiteKey(host)))||0)===until)fallback.remove();
+    } catch {}
+    emitSuiteEvent('core', 'suite.site-control', { hostname: host, paused: value });
+    scheduleSuitePauseExpiry();
+    return value;
+  }
+  function scheduleSuitePauseExpiry(){clearTimeout(suitePauseTimer);const until=suitePauseValue();if(until>1){suitePauseTimer=setTimeout(()=>{if(suitePauseValue()===until)setSuiteSitePaused(false);else scheduleSuitePauseExpiry();},Math.max(0,until-Date.now()));}}
+  addEventListener('storage',event=>{if(event.key!==suiteSiteKey())return;suitePauseFallback()?.remove();emitSuiteEvent('core','suite.site-control',{hostname:String(location.hostname||'local-document').toLowerCase(),paused:suiteSitePaused()});scheduleSuitePauseExpiry();});
+  scheduleSuitePauseExpiry();
+
+  function stableSuiteValue(value) {
+    if (Array.isArray(value)) return value.map(stableSuiteValue);
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(Object.keys(value).sort().map(key => [key, stableSuiteValue(value[key])]));
+  }
+
+  function normalizeSuiteStateForContract(productId, type, state = {}) {
+    const source = String(productId || '').toLowerCase();
+    const eventType = String(type || '').trim().toLowerCase();
+    const contract = suiteContract(source);
+    const schema = contract?.state;
+    const input = state && typeof state === 'object' && !Array.isArray(state) ? state : {};
+    if (!schema || schema.type !== eventType) return stableSuiteValue(input);
+    const keys = Object.keys(input);
+    const expected = Object.keys(schema.fields);
+    const unknown = keys.filter(key => !Object.hasOwn(schema.fields, key));
+    if (unknown.length) throw new Error(`Unknown suite state field: ${unknown[0]}`);
+    const missing = expected.filter(key => !Object.hasOwn(input, key));
+    if (missing.length) throw new Error(`Missing suite state field: ${missing[0]}`);
+    const output = {};
+    for (const [key, kind] of Object.entries(schema.fields)) {
+      const value = input[key];
+      if (kind === 'boolean') {
+        if (typeof value !== 'boolean') throw new Error(`Invalid boolean suite state field: ${key}`);
+        output[key] = value;
+      } else if (kind === 'token') {
+        const token = String(value ?? '').trim().toLowerCase();
+        if (!/^[a-z0-9][a-z0-9._:-]{0,79}$/.test(token)) throw new Error(`Invalid token suite state field: ${key}`);
+        output[key] = token;
+      } else if (kind === 'count') {
+        const count = Number(value);
+        if (!Number.isSafeInteger(count) || count < 0) throw new Error(`Invalid count suite state field: ${key}`);
+        output[key] = count;
+      } else if (kind === 'percent-nullable') {
+        if (value === null) output[key] = null;
+        else {
+          const percent = Number(value);
+          if (!Number.isFinite(percent) || percent < 0 || percent > 100) throw new Error(`Invalid percent suite state field: ${key}`);
+          output[key] = percent;
+        }
+      } else {
+        throw new Error(`Unsupported suite state schema kind: ${kind}`);
+      }
+    }
+    return stableSuiteValue(output);
+  }
+
+  function suiteStateNode(productId, type) {
+    const source = String(productId || '').toLowerCase();
+    const eventType = String(type || '').trim().toLowerCase();
+    return [...document.querySelectorAll('meta[data-exp-suite-state-product][data-exp-suite-state-type]')]
+      .find(node => node.dataset.expSuiteStateProduct === source && node.dataset.expSuiteStateType === eventType) || null;
+  }
+
+  function readSuiteStateNode(node) {
+    if (!(node instanceof Element)) return null;
+    let state = {};
+    try { state = JSON.parse(node.dataset.expSuiteStatePayload || '{}'); } catch {}
+    return Object.freeze({
+      productId: node.dataset.expSuiteStateProduct || '',
+      type: node.dataset.expSuiteStateType || '',
+      coreVersion: node.dataset.expSuiteStateCoreVersion || 'unknown',
+      trust: node.dataset.expSuiteStateTrust || SUITE_TRUST,
+      at: Number(node.dataset.expSuiteStateAt || 0),
+      state: Object.freeze(stableSuiteValue(state && typeof state === 'object' ? state : {})),
+    });
+  }
+
+  function suiteStateSnapshot(productId = '') {
+    const source = String(productId || '').toLowerCase();
+    return Object.freeze(
+      [...document.querySelectorAll('meta[data-exp-suite-state-product][data-exp-suite-state-type]')]
+        .filter(node => !source || node.dataset.expSuiteStateProduct === source)
+        .map(readSuiteStateNode)
+        .filter(Boolean)
+        .sort((left, right) => left.productId.localeCompare(right.productId) || left.type.localeCompare(right.type))
+    );
+  }
+
+  function latestSuiteState(productId, type = '') {
+    const source = String(productId || '').toLowerCase();
+    const eventType = String(type || '').trim().toLowerCase();
+    const states = suiteStateSnapshot(source).filter(entry => !eventType || entry.type === eventType);
+    return states.sort((left, right) => right.at - left.at)[0] || null;
+  }
+
+  function publishSuiteState(productId, type, state = {}) {
+    const source = String(productId || '').toLowerCase();
+    const eventType = String(type || '').trim().toLowerCase();
+    if (!/^[a-z][a-z0-9-]+$/.test(source)) throw new Error('Invalid suite state product ID');
+    if (!/^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(eventType)) throw new Error('Invalid suite state event type');
+    let safeState = {};
+    try {
+      safeState = normalizeSuiteStateForContract(source, eventType, JSON.parse(JSON.stringify(state || {})));
+    } catch (error) {
+      throw error;
+    }
+    const serialized = JSON.stringify(safeState);
+    if (serialized.length > 4096) throw new Error('Suite state payload exceeds 4096 bytes');
+    const key = `${source}:${eventType}`;
+    let node = suiteStateNode(source, eventType);
+    const sharedFingerprint = node?.dataset.expSuiteStatePayload || '';
+    if (sharedFingerprint === serialized || suiteStateFingerprints.get(key) === serialized) return false;
+    suiteStateFingerprints.set(key, serialized);
+    if (!node) {
+      node = document.createElement('meta');
+      node.dataset.expOwned = '1';
+      node.dataset.expSuiteStateProduct = source;
+      node.dataset.expSuiteStateType = eventType;
+      (document.head || document.documentElement || document.body)?.append(node);
+    }
+    node.dataset.expSuiteStatePayload = serialized;
+    node.dataset.expSuiteStateCoreVersion = version;
+    node.dataset.expSuiteStateTrust = SUITE_TRUST;
+    node.dataset.expSuiteStateAt = String(Date.now());
+    emitSuiteEvent(source, eventType, safeState);
+    return true;
+  }
+
+  function onSuiteEvent(callback, options = {}) {
+    if (typeof callback !== 'function') throw new TypeError('Suite event callback must be a function');
+    const expectedType = options.type ? String(options.type).toLowerCase() : null;
+    const listener = event => {
+      let payload;
+      try { payload = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail; } catch { return; }
+      if (!payload || payload.protocol !== 'exp-suite-interoperability-v1') return;
+      if (expectedType && payload.type !== expectedType) return;
+      callback(payload);
+    };
+    document.addEventListener(SUITE_EVENT, listener);
+    return () => document.removeEventListener(SUITE_EVENT, listener);
+  }
+
+  function subscribeSuiteState(productId, callback, options = {}) {
+    if (typeof callback !== 'function') throw new TypeError('Suite state callback must be a function');
+    const source = String(productId || '').toLowerCase();
+    if (!/^[a-z][a-z0-9-]+$/.test(source)) throw new Error('Invalid suite state product ID');
+    const contractType = suiteContract(source)?.state?.type || '';
+    const eventType = String(options.type || contractType).trim().toLowerCase();
+    if (eventType && !/^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/.test(eventType)) throw new Error('Invalid suite state event type');
+    let disposed = false;
+    const deliver = entry => {
+      if (disposed || !entry) return;
+      callback(Object.freeze({ ...entry, state: Object.freeze(stableSuiteValue(entry.state || {})) }));
+    };
+    if (options.immediate !== false) deliver(latestSuiteState(source, eventType));
+    const stop = onSuiteEvent(event => {
+      if (event.source !== source) return;
+      if (eventType && event.type !== eventType) return;
+      deliver(latestSuiteState(source, eventType));
+    }, eventType ? { type: eventType } : {});
+    return () => {
+      if (disposed) return;
+      disposed = true;
+      stop();
+    };
+  }
+
+  function normalizePresentationPhases(values = []) {
+    const list = Array.isArray(values) ? values : [values];
+    return [...new Set(list.map(value => String(value || '').trim().toLowerCase()).filter(value => PRESENTATION_PHASES[value]))]
+      .sort((left, right) => PRESENTATION_PHASES[left] - PRESENTATION_PHASES[right]);
+  }
+
+  function presentationProviderNode(productId) {
+    const id = String(productId || '').toLowerCase();
+    if (!/^[a-z][a-z0-9-]+$/.test(id)) return null;
+    return [...document.querySelectorAll('[data-exp-presentation-provider]')]
+      .find(node => node.dataset.expPresentationProvider === id) || null;
+  }
+
+  function registerPresentationProvider(options = {}) {
+    const id = String(options.id || options.productId || '').toLowerCase();
+    if (!/^[a-z][a-z0-9-]+$/.test(id)) throw new Error('Invalid presentation product ID');
+    const contract = suiteContract(id);
+    if (contract && !contract.presentationPhases.length) throw new Error('Presentation provider is not declared for this suite product');
+    const phases = normalizePresentationPhases(contract ? contract.presentationPhases : options.phases || options.phase);
+    if (!phases.length) throw new Error('Presentation provider requires at least one valid phase');
+    let node = presentationProviderNode(id);
+    const previous = node ? JSON.stringify({
+      phases: node.dataset.expPresentationPhases || '[]',
+      priority: node.dataset.expPresentationPriority || '',
+    }) : null;
+    if (!node) {
+      node = document.createElement('meta');
+      node.dataset.expPresentationProvider = id;
+      (document.documentElement || document.head || document.body)?.append(node);
+    }
+    node.dataset.expPresentationPhases = JSON.stringify(phases);
+    node.dataset.expPresentationPriority = String(Number(contract?.priority ?? options.priority ?? 0) || 0);
+    const current = JSON.stringify({
+      phases: node.dataset.expPresentationPhases,
+      priority: node.dataset.expPresentationPriority,
+    });
+    if (previous !== current) emitSuiteEvent(id, 'presentation.provider-registered', { phases });
+    return Object.freeze({
+      id,
+      phases: Object.freeze([...phases]),
+      dispose() {
+        const current = presentationProviderNode(id);
+        if (current === node) current.remove();
+        emitSuiteEvent(id, 'presentation.provider-unregistered', {});
+      },
+    });
+  }
+
+  function presentationProviders() {
+    return Object.freeze([...document.querySelectorAll('[data-exp-presentation-provider]')].map(node => {
+      let phases = [];
+      try { phases = normalizePresentationPhases(JSON.parse(node.dataset.expPresentationPhases || '[]')); } catch {}
+      return Object.freeze({
+        id: node.dataset.expPresentationProvider,
+        phases: Object.freeze(phases),
+        priority: Number(node.dataset.expPresentationPriority || 0),
+      });
+    }).filter(provider => provider.id)
+      .sort((left, right) => {
+        const leftPhase = Math.min(...left.phases.map(phase => PRESENTATION_PHASES[phase]));
+        const rightPhase = Math.min(...right.phases.map(phase => PRESENTATION_PHASES[phase]));
+        return leftPhase - rightPhase || right.priority - left.priority || left.id.localeCompare(right.id);
+      }));
+  }
+
+  function suiteHealth() {
+    const suite = suiteSnapshot();
+    const providers = presentationProviders();
+    const providerMap = new Map(providers.map(provider => [provider.id, provider]));
+    const conflicts = [];
+    const sameList = (left = [], right = []) => left.length === right.length && left.every((value, index) => value === right[index]);
+    const products = suite.products.map(product => {
+      const contract = suiteContract(product.id);
+      if (!contract) {
+        conflicts.push({ type: 'unknown-suite-product', products: [product.id] });
+        return Object.freeze({ id: product.id, status: 'unknown-product' });
+      }
+      const expectedCapabilities = [...contract.capabilities].sort();
+      const actualCapabilities = [...product.capabilities].sort();
+      const provider = providerMap.get(product.id) || null;
+      const expectedPhases = [...contract.presentationPhases];
+      const actualPhases = provider ? [...provider.phases] : [];
+      if (product.role !== contract.role) conflicts.push({ type: 'suite-role-mismatch', products: [product.id], expected: contract.role, actual: product.role });
+      if (product.priority !== contract.priority) conflicts.push({ type: 'suite-priority-mismatch', products: [product.id], expected: contract.priority, actual: product.priority });
+      if (!sameList(actualCapabilities, expectedCapabilities)) conflicts.push({ type: 'suite-capability-mismatch', products: [product.id], expected: expectedCapabilities, actual: actualCapabilities });
+      if (expectedPhases.length && !provider) conflicts.push({ type: 'missing-presentation-provider', products: [product.id], expected: expectedPhases });
+      if (!expectedPhases.length && provider) conflicts.push({ type: 'unexpected-presentation-provider', products: [product.id], actual: actualPhases });
+      if (provider && !sameList(actualPhases, expectedPhases)) conflicts.push({ type: 'presentation-phase-mismatch', products: [product.id], expected: expectedPhases, actual: actualPhases });
+      const latestState = latestSuiteState(product.id);
+      return Object.freeze({
+        id: product.id,
+        status: conflicts.some(conflict => conflict.products?.includes(product.id)) ? 'conflict' : 'healthy',
+        coreVersion: product.coreVersion,
+        capabilities: Object.freeze(actualCapabilities),
+        presentationPhases: Object.freeze(actualPhases),
+        stateType: latestState?.type || null,
+        stateAt: latestState?.at || 0,
+        stateAgeMs: latestState?.at ? Math.max(0, Date.now() - latestState.at) : null,
+        state: latestState?.state || null,
+      });
+    });
+    const coreVersions = [...new Set(
+      [...document.querySelectorAll('meta[data-exp-diagnostics-product]')]
+        .map(node => node.dataset.expCoreVersion)
+        .filter(Boolean)
+    )].sort();
+    if (coreVersions.length > 1) conflicts.push({ type: 'mixed-core-versions', coreVersions });
+    const observerCount = document.querySelectorAll('meta[data-exp-page-observer]').length;
+    if (observerCount > 1) conflicts.push({ type: 'duplicate-page-observer', instances: observerCount });
+    return Object.freeze({
+      status: conflicts.length ? 'conflicts-detected' : 'healthy',
+      coreVersions: Object.freeze(coreVersions),
+      observerCount,
+      products: Object.freeze(products),
+      conflicts: Object.freeze(conflicts.map(conflict => Object.freeze({ ...conflict }))),
+    });
+  }
+
+  function readPresentationState(target) {
+    if (!(target instanceof Element)) return Object.freeze({});
+    try {
+      const value = JSON.parse(target.getAttribute('data-exp-presentation-state') || '{}');
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return Object.freeze({});
+      return Object.freeze(Object.fromEntries(Object.entries(value).map(([productId, state]) => [
+        productId,
+        Object.freeze({ ...(state && typeof state === 'object' && !Array.isArray(state) ? state : {}) }),
+      ])));
+    } catch {
+      return Object.freeze({});
+    }
+  }
+
+  function setPresentationState(target, productId, patch = {}) {
+    if (!(target instanceof Element)) throw new TypeError('Presentation target must be an Element');
+    const id = String(productId || '').toLowerCase();
+    if (!/^[a-z][a-z0-9-]+$/.test(id)) throw new Error('Invalid presentation product ID');
+    const previous = target.getAttribute('data-exp-presentation-state') || '';
+    const current = JSON.parse(JSON.stringify(readPresentationState(target)));
+    const next = { ...(current[id] || {}) };
+    for (const [channel, raw] of Object.entries(patch || {})) {
+      if (!PRESENTATION_CHANNELS.includes(channel)) continue;
+      if (raw === null || raw === undefined || raw === '') delete next[channel];
+      else {
+        const value = String(raw).trim().toLowerCase();
+        if (!/^[a-z0-9][a-z0-9._:-]{0,79}$/.test(value)) throw new Error('Invalid presentation state value');
+        next[channel] = value;
+      }
+    }
+    if (Object.keys(next).length) current[id] = next;
+    else delete current[id];
+    const serialized = Object.keys(current).length ? JSON.stringify(current) : '';
+    if (serialized === previous) return readPresentationState(target);
+    if (serialized) target.setAttribute('data-exp-presentation-state', serialized);
+    else target.removeAttribute('data-exp-presentation-state');
+    const phase = pageObserverMarker()?.dataset.expPageObserverPhase || null;
+    const detail = JSON.stringify({
+      protocol: 'exp-presentation-state-v1',
+      source: id,
+      channels: Object.keys(next),
+      phase,
+      at: Date.now(),
+    });
+    target.dispatchEvent(new CustomEvent(PRESENTATION_STATE_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail,
+    }));
+    emitSuiteEvent(id, 'presentation.state-changed', { channels: Object.keys(next), phase });
+    return readPresentationState(target);
+  }
+
+  function clearPresentationState(target, productId) {
+    return setPresentationState(target, productId, Object.fromEntries(PRESENTATION_CHANNELS.map(channel => [channel, null])));
+  }
+
+  // Only elements carrying the attribute are parsed; closest() skips the rest natively.
+  // Visibility checks call this for every candidate element, so an ancestor-by-ancestor
+  // JSON walk cost seconds on deep pages.
+  function presentationStateChain(target) {
+    const chain = [];
+    let node = target instanceof Element ? target : target?.parentElement;
+    while (node instanceof Element) {
+      node = node.closest(PRESENTATION_STATE_SELECTOR);
+      if (!node) break;
+      const state = readPresentationState(node);
+      if (Object.keys(state).length) chain.push(Object.freeze({ node, state }));
+      node = node.parentElement;
+    }
+    return Object.freeze(chain);
+  }
+
+  const PRESENTATION_STATE_SELECTOR = '[data-exp-presentation-state]';
+  function isPresentationSuppressed(target) {
+    for (const entry of presentationStateChain(target)) {
+      for (const state of Object.values(entry.state)) {
+        if (state?.visibility === 'hide' || state?.visibility === 'collapse') return true;
+      }
+    }
+    return false;
+  }
+
+  function pageObserverMarker() {
+    return document.querySelector('meta[data-exp-page-observer]');
+  }
+
+  function ensureSharedPageObserver(owner = 'core', options = {}) {
+    let marker = pageObserverMarker();
+    if (marker) return Object.freeze({ leader: false, owner: marker.dataset.expPageObserver || 'unknown' });
+    marker = document.createElement('meta');
+    marker.dataset.expPageObserver = String(owner || 'core').toLowerCase();
+    marker.dataset.expPageObserverProtocol = 'exp-page-observer-v1';
+    marker.dataset.expPageObserverEpoch = '0';
+    (document.documentElement || document.head || document.body)?.append(marker);
+
+    const delay = Math.max(16, Math.min(500, Number(options.delayMs || 60) || 60));
+    let timer = 0;
+    let epoch = 0;
+    const pending = new Map();
+    const queue = (target, record) => {
+      if (!(target instanceof Element)) return;
+      if (target.closest?.('[data-exp-owned="1"]')) return;
+      const state = pending.get(target) || { types: new Set(), added: 0, removed: 0 };
+      state.types.add(record.type);
+      state.added += record.addedNodes?.length || 0;
+      state.removed += record.removedNodes?.length || 0;
+      pending.set(target, state);
+    };
+    // Roots are delivered in chunks, each a complete epoch through every phase, and the
+    // event loop gets a turn whenever a task has run past its budget: listeners do real
+    // work per root, and one task holding a whole page's batch froze Reddit for seconds.
+    const CHUNK_ROOTS = 32;
+    const TASK_BUDGET_MS = 8;
+    const flush = () => {
+      timer = 0;
+      const started = performance.now();
+      while (pending.size) {
+        const chunk = [];
+        for (const entry of pending) {
+          pending.delete(entry[0]);
+          if (entry[0].isConnected) chunk.push(entry);
+          if (chunk.length >= CHUNK_ROOTS) break;
+        }
+        if (chunk.length) deliver(chunk);
+        if (pending.size && performance.now() - started >= TASK_BUDGET_MS) {
+          timer = setTimeout(flush, 0);
+          return;
+        }
+      }
+    };
+    const deliver = (entries) => {
+      epoch += 1;
+      marker.dataset.expPageObserverEpoch = String(epoch);
+      const payloads = entries.map(([target, state], index) => [target, JSON.stringify({
+        protocol: 'exp-page-observer-v1',
+        owner: marker.dataset.expPageObserver,
+        epoch,
+        rootIndex: index,
+        rootCount: entries.length,
+        types: [...state.types].sort(),
+        added: state.added,
+        removed: state.removed,
+        href: location.href,
+        at: Date.now(),
+      })]);
+      payloads.forEach(([target, payload]) => {
+        target.dispatchEvent(new CustomEvent(PAGE_BATCH_EVENT, { bubbles: true, composed: true, detail: payload }));
+      });
+      for (const phase of Object.keys(PRESENTATION_PHASES).sort((left, right) => PRESENTATION_PHASES[left] - PRESENTATION_PHASES[right])) {
+        marker.dataset.expPageObserverPhase = phase;
+        for (const [target, payload] of payloads) {
+          target.dispatchEvent(new CustomEvent(`${PAGE_PHASE_EVENT}:${phase}`, { bubbles: true, composed: true, detail: payload }));
+        }
+        document.dispatchEvent(new CustomEvent(`${PAGE_PHASE_END_EVENT}:${phase}`, {
+          detail: JSON.stringify({
+            protocol: 'exp-page-observer-v1',
+            owner: marker.dataset.expPageObserver,
+            epoch,
+            phase,
+            rootCount: entries.length,
+            href: location.href,
+            at: Date.now(),
+          }),
+        }));
+        delete marker.dataset.expPageObserverPhase;
+      }
+    };
+    const observer = new MutationObserver(records => {
+      for (const record of records) {
+        const target = record.target?.nodeType === Node.TEXT_NODE ? record.target.parentElement : record.target;
+        queue(target, record);
+      }
+      if (!timer && pending.size) timer = setTimeout(flush, delay);
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    return Object.freeze({ leader: true, owner: marker.dataset.expPageObserver });
+  }
+
+  function observePage(callback, options = {}) {
+    if (typeof callback !== 'function') throw new TypeError('Page observer callback must be a function');
+    ensureSharedPageObserver(options.productId || options.owner || 'core', options);
+    const listener = event => {
+      let payload;
+      try { payload = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail; } catch { return; }
+      if (!payload || payload.protocol !== 'exp-page-observer-v1') return;
+      callback(payload, event.target instanceof Element ? event.target : document.documentElement);
+    };
+    document.addEventListener(PAGE_BATCH_EVENT, listener);
+    return () => document.removeEventListener(PAGE_BATCH_EVENT, listener);
+  }
+
+  function observePageBatch(callback, options = {}) {
+    if (typeof callback !== 'function') throw new TypeError('Page batch callback must be a function');
+    const productId = String(options.productId || options.owner || 'core').toLowerCase();
+    const contract = suiteContract(productId);
+    const requested = options.phase || contract?.presentationPhases?.[0] || 'observe';
+    const phase = normalizePresentationPhases([requested])[0] || 'observe';
+    ensureSharedPageObserver(productId, options);
+    const roots = new Map();
+    const rootEvent = `${PAGE_PHASE_EVENT}:${phase}`;
+    const endEvent = `${PAGE_PHASE_END_EVENT}:${phase}`;
+    const onRoot = event => {
+      let payload;
+      try { payload = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail; } catch { return; }
+      if (!payload || payload.protocol !== 'exp-page-observer-v1') return;
+      const root = event.target instanceof Element ? event.target : null;
+      if (root) roots.set(root, payload);
+    };
+    const onEnd = event => {
+      let payload;
+      try { payload = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail; } catch { return; }
+      if (!payload || payload.protocol !== 'exp-page-observer-v1' || payload.phase !== phase) return;
+      const entries = [...roots.entries()];
+      roots.clear();
+      callback(
+        Object.freeze({ ...payload }),
+        Object.freeze(entries.map(([root]) => root)),
+        Object.freeze(entries.map(([, detail]) => Object.freeze({ ...detail }))),
+      );
+    };
+    document.addEventListener(rootEvent, onRoot);
+    document.addEventListener(endEvent, onEnd);
+    return () => {
+      document.removeEventListener(rootEvent, onRoot);
+      document.removeEventListener(endEvent, onEnd);
+      roots.clear();
+    };
+  }
+
+  function observePresentationState(callback, options = {}) {
+    if (typeof callback !== 'function') throw new TypeError('Presentation state callback must be a function');
+    const source = options.source ? String(options.source).toLowerCase() : '';
+    const channel = options.channel ? String(options.channel).toLowerCase() : '';
+    const listener = event => {
+      let payload;
+      try { payload = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail; } catch { return; }
+      if (!payload || payload.protocol !== 'exp-presentation-state-v1') return;
+      if (source && payload.source !== source) return;
+      if (channel && !payload.channels?.includes(channel)) return;
+      const target = event.target instanceof Element ? event.target : null;
+      if (target) callback(Object.freeze({ ...payload }), target);
+    };
+    document.addEventListener(PRESENTATION_STATE_EVENT, listener);
+    return () => document.removeEventListener(PRESENTATION_STATE_EVENT, listener);
+  }
+
+  function pageObserverState() {
+    const marker = pageObserverMarker();
+    return Object.freeze({
+      active: Boolean(marker),
+      owner: marker?.dataset.expPageObserver || null,
+      protocol: marker?.dataset.expPageObserverProtocol || null,
+      epoch: Number(marker?.dataset.expPageObserverEpoch || 0),
+      phase: marker?.dataset.expPageObserverPhase || null,
+    });
+  }
+
+  function registerDiagnosticsProduct(productId, productVersion, host) {
+    const result = ExtraPotionsDiagnostics.registerProduct(productId, productVersion, host);
+    if (result) result.dataset.expCoreVersion = version;
+    const contract = suiteContract(productId);
+    registerSuiteProduct({ productId, productVersion });
+    if (contract?.presentationPhases?.length) registerPresentationProvider({ productId });
+    return result;
+  }
+  function publishMenuPalette(host, theme) {
+    if (!host || !theme) return;
+    const palette = Object.fromEntries([...tokenNames,'id','skin','skinVertical','skinMode'].map(key => [key, theme[key]]));
+    const serialized = JSON.stringify(palette);
+    if (host.dataset.expMenuPalette === serialized) return;
+    host.dataset.expMenuPalette = serialized;
+    emit('menu-theme', host.dataset.productId);
+  }
+  // Every stylesheet Core injects is marked as owned by ExtraPotions so theming tools
+  // leave it alone. A <style> node carries data-exp-owned; a constructed
+  // sheet has no node, so it starts with an empty marker rule that any script on the
+  // page can read through the CSSOM.
+  const OWNED_SHEET_MARKER = '.exp-owned-sheet-marker{}';
+  function isOwnedSheet(sheet) {
+    try { return sheet?.ownerNode?.dataset?.expOwned === '1' || sheet?.cssRules?.[0]?.selectorText === '.exp-owned-sheet-marker'; } catch { return false; }
+  }
+  function injectStyle(shadow, css, data = {}) {
+    const node = document.createElement('style');
+    Object.assign(node.dataset, data);
+    node.dataset.expOwned = '1';
+    // Keep the editable handle without parsing a second copy of the adopted CSS.
+    node.type = 'text/plain';
+    node.textContent = css;
+    let sheet;
+    try {
+      sheet = new CSSStyleSheet(); sheet.replaceSync(OWNED_SHEET_MARKER + css);
+      shadow.adoptedStyleSheets = [...shadow.adoptedStyleSheets, sheet];
+      if (!shadow.adoptedStyleSheets.includes(sheet)) throw new Error('Style adoption ignored');
+    } catch {
+      if (sheet) { try { shadow.adoptedStyleSheets = [...shadow.adoptedStyleSheets].filter(item => item !== sheet); } catch {} }
+      sheet = undefined; node.type = 'text/css';
+    }
+    shadow.append(node);
+    const observe = sheet ? new MutationObserver(() => { try { sheet.replaceSync(OWNED_SHEET_MARKER + node.textContent); } catch {} }) : null;
+    observe?.observe(node, { childList: true, characterData: true, subtree: true });
+    node.dispose = () => { observe?.disconnect(); if (sheet) shadow.adoptedStyleSheets = [...shadow.adoptedStyleSheets].filter(item => item !== sheet); node.remove(); };
+    node.expSheet = sheet;
+    return node;
+  }
+  function resolveShadowRoot(target) {
+    if (target instanceof ShadowRoot) return target;
+    if (target instanceof Element) {
+      if (target.shadowRoot instanceof ShadowRoot) return target.shadowRoot;
+      const root = target.getRootNode?.();
+      if (root instanceof ShadowRoot) return root;
+    }
+    return null;
+  }
+  function applyMatteToggleChrome(target) {
+    const shadow = resolveShadowRoot(target);
+    if (!shadow) return false;
+    if (shadow.querySelector('style[data-exp-matte-toggle-chrome]')) return true;
+    injectStyle(shadow, MATTE_TOGGLE_CHROME_CSS, { expMatteToggleChrome: '1' });
+    return true;
+  }
+  function applyTwoColumnSettingsGrid(container) {
+    if (!(container instanceof HTMLElement)) return false;
+    const root = resolveShadowRoot(container);
+    if (root && !root.querySelector('style[data-exp-settings-grid]')) {
+      injectStyle(root, '[data-exp-settings-grid="two-column"]{display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-items:stretch!important;column-gap:0!important}[data-exp-settings-grid="two-column"]>*{grid-column:1/-1!important;min-width:0!important}[data-exp-settings-grid="two-column"]>[data-exp-grid-cell="compact"]{grid-column:1/-1!important}', { expSettingsGrid: '1' });
+    }
+    container.dataset.expSettingsGrid = 'two-column';
+    if (root) applyMatteToggleChrome(root);
+    return true;
+  }
+  function applyContentDrivenMenuLayout(shadow) {
+    if (!(shadow instanceof ShadowRoot)) return false;
+    shadow.host.dataset.expContentDrivenMenu = '1';
+    if (!shadow.querySelector('style[data-exp-content-driven-menu]')) {
+      injectStyle(shadow, '.fl-tool-body .action.warn{border-color:#cb6868!important;background:#402020!important;color:#ffd7d7!important}.fl-tool-body .action.warn:hover{background:#582828!important;color:#fff!important}:host([data-exp-content-driven-menu="1"]) :is(.panel,#mb-dock,[data-exp-part="dock"]){height:auto!important;min-height:0!important}:host([data-exp-content-driven-menu="1"]) :is(.fl-tool-body,.panel-body,.route-body){height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}:host([data-exp-content-driven-menu="1"]) :is(.fl-tool-header,.panel-head,.route,.nav-item,.group>summary){height:auto!important;min-height:0!important;white-space:normal!important}:host([data-exp-content-driven-menu="1"]) :is(.fl-tool-title,.label,.setting-label,.setting-value,.copy strong,.copy .label){overflow:visible!important;text-overflow:clip!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important}:host([data-exp-content-driven-menu="1"]) :is(.row,.mini-row,.setting-row){height:auto!important;min-height:0!important;align-items:center!important}:host([data-exp-content-driven-menu="1"]) :is(.group,.section,.panel-body:not(.hidden)){grid-template-columns:minmax(0,1fr)!important}:host([data-exp-content-driven-menu="1"]) :is(.group,.section,.panel-body:not(.hidden))>*{grid-column:1/-1!important}.fl-tool-body .row:has(>select){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)!important;min-width:0!important}.fl-tool-body .row>select{width:100%!important;min-width:0!important;max-width:100%!important}', { expContentDrivenMenu: '1' });
+    }
+    applyMatteToggleChrome(shadow);
+    return true;
+  }
+  function edgeTabs() { return flyoutState().tabs; }
+  function layoutGrid() {
+    const order = read(GRID_ORDER, []);
+    const sorted = [...document.querySelectorAll('[data-exp-product-launcher="1"]')].sort((a,b) => {
+      const ai = Array.isArray(order) ? order.indexOf(a.dataset.productId) : -1;
+      const bi = Array.isArray(order) ? order.indexOf(b.dataset.productId) : -1;
+      if (ai !== bi) return ai < 0 ? 1 : bi < 0 ? -1 : ai - bi;
+      const ap = Number(a.dataset.launcherPriority || 0);
+      const bp = Number(b.dataset.launcherPriority || 0);
+      return bp - ap || a.dataset.productId.localeCompare(b.dataset.productId);
+    });
+    // Edge tabs are one column, a tab and its gap apart; the older grid is three 56px columns.
+    const tabs = edgeTabs(), pitch = tabs ? TAB_PITCH : 56;
+    const assign = (node, slot, span = 1) => {
+      const row = Math.floor(slot / 3), column = slot % 3;
+      Object.assign(node.dataset, { launcherSlot:String(slot), launcherRow:String(row), launcherColumn:String(column), launcherSpan:String(span) });
+      node.style.setProperty('--exp-launcher-x', column * 56 + 'px');
+      node.style.setProperty('--exp-launcher-y', row * pitch + 'px');
+      node.style.setProperty('--exp-launcher-offset', row * pitch + 'px');
+    };
+    // Dropper's progress card spans the space to the left of the launchers, so while any launcher
+    // reserves rows, every launcher stacks in the right-hand column where nothing can cover it.
+    const stacked = tabs || sorted.some(node => Number(node.dataset.launcherReservedRows) > 0);
+    sorted.forEach((node, index) => assign(node, stacked ? index * 3 : index));
+    const ids = sorted.map(node => node.dataset.productId);
+    const known = new Set(Object.keys(SUITE_PRODUCTS));
+    const completeSuite = ids.filter(id => known.has(id)).length === known.size;
+    // Do not turn userscript injection timing into a saved preference. A fresh
+    // install stays priority-sorted until either the complete suite is present
+    // or the user explicitly reorders the visible launchers.
+    // Products that have not loaded yet, or are switched off in the userscript manager, keep their place.
+    const kept = Array.isArray(order) ? order.filter(id => typeof id === 'string') : [];
+    const next = [...kept, ...ids.filter(id => !kept.includes(id))];
+    if ((kept.length || completeSuite) && JSON.stringify(next) !== JSON.stringify(order)) write(GRID_ORDER, next);
+  }
+  // The single source of launcher coordinates for every product: the saved group position
+  // (GRID_DELTA) plus the launcher's grid cell. Products position their launcher from this.
+  function launcherPlacement(host) {
+    const state = flyoutState();
+    if (state.active) {
+      // Every product launcher is a tile: hidden while the flyout is closed, in the flyout row while it is open.
+      const { hub, panel } = flyoutBand(state);
+      const index = Math.max(0, state.order.indexOf(host?.dataset?.productId));
+      const left = panel.left + 1 + FLYOUT_PAD + index * (FLYOUT_TILE + FLYOUT_GAP);
+      document.documentElement.dataset.expLauncherAnchor = hub.anchor;
+      return { top: panel.top + 1 + FLYOUT_PAD, right: viewWidth() - left - FLYOUT_TILE, anchor: hub.anchor, delta: savedDelta(), flyout: true, size: FLYOUT_TILE };
+    }
+    const single = singleSlot(state);
+    if (single) {
+      document.documentElement.dataset.expLauncherAnchor = 'top';
+      const left = state.row ? state.row.left + Math.max(0, state.order.indexOf(host?.dataset?.productId)) * (state.row.size + state.row.gap) : single.hub.left;
+      return { top: single.hub.top, right: viewWidth() - left - single.hub.size, anchor: 'top', delta: savedDelta(), site: true, size: single.hub.size };
+    }
+    const { offset, x } = launcherCell(host);
+    const delta = savedDelta();
+    const origin = innerHeight-60+delta, anchor = origin <= (innerHeight-48)/2 ? 'top':'bottom';
+    document.documentElement.dataset.expLauncherAnchor = anchor;
+    if (state.tabs) {
+      // A tab on the window's right edge. The bottom-anchored stack keeps the older launcher's bottom line.
+      const base = anchor === 'top' ? origin + offset : origin + 48 - TAB_HEIGHT - offset;
+      return { top: Math.max(8, Math.min(innerHeight-TAB_HEIGHT-8, base)) + siteControlShift(origin, anchor), right: 0, anchor, delta, tab: true, width: TAB_WIDTH, height: TAB_HEIGHT };
+    }
+    const top = Math.max(8, Math.min(innerHeight-56, anchor === 'top' ? origin+offset : origin-offset));
+    return { top: top + siteControlShift(origin, anchor), right: 12+x, anchor, delta };
+  }
+  function launcherCell(host) {
+    const style = getComputedStyle(host);
+    return { offset: parseFloat(style.getPropertyValue('--exp-launcher-offset')) || 0, x: parseFloat(style.getPropertyValue('--exp-launcher-x')) || 0 };
+  }
+  // Site controls the launchers must not cover: controls that stay put while the page scrolls (a fixed chat
+  // button) and the controls in the page's header. Content that scrolls under the launchers is not avoided,
+  // or the group would jump around while scrolling.
+  const SITE_CONTROL = 'a[href],button,input,select,textarea,summary,iframe,[role=button],[role=link],[role=menuitem],[role=tab]';
+  const SITE_CONTROL_CLEARANCE = 8;
+  let shiftMemo = null, groupDragging = false;
+  function pinnedControlAt(x, y) {
+    let hit = document.elementsFromPoint(x, y).find(node => node !== document.documentElement && node !== document.body && !registrations.has(node) && !node.closest('[data-exp-product-launcher]'));
+    // A site widget drawn in an open shadow root (Allbirds' "Shop Deals") hit-tests as its host; look inside.
+    for (let depth = 0, inner; hit?.shadowRoot && depth < 4 && (inner = hit.shadowRoot.elementsFromPoint(x, y).find(node => node.getRootNode() === hit.shadowRoot)); depth++) hit = inner;
+    const up = node => node.parentElement || (node.parentNode instanceof ShadowRoot ? node.parentNode.host : null);
+    let control = null;
+    for (let node = hit; node; node = up(node)) {
+      if (registrations.has(node) || node.matches('[data-exp-product-launcher]')) return null;
+      if (!control && node.matches(SITE_CONTROL)) control = node;
+    }
+    if (!control) return null;
+    let scrolls = false;
+    for (let node = control; node && node !== document.body && node !== document.documentElement; node = up(node)) {
+      if (node.matches('[role=banner]') || (node.matches('header') && !node.parentElement?.closest('article,aside,main,nav,section'))) return control;
+      const style = getComputedStyle(node);
+      const scroller = node !== control && /auto|scroll/.test(style.overflowY) && node.scrollHeight > node.clientHeight;
+      // An app that scrolls inside a container covering the whole window: its content is the page.
+      if (scroller && node.clientWidth >= innerWidth * .9 && node.clientHeight >= innerHeight * .9) return null;
+      scrolls ||= scroller;
+      if (style.position === 'fixed') return control;
+      // A sticky bar (a header, a toolbar) stays put; a tall sticky column (Reddit's sidebar) is page content.
+      if (style.position === 'sticky') return node.getBoundingClientRect().height <= innerHeight * .25 ? control : null;
+    }
+    // A window that never scrolls (Twitch signed out) keeps everything outside its scrolling containers in place.
+    const page = document.scrollingElement || document.documentElement;
+    return !scrolls && page.scrollHeight <= page.clientHeight + 1 ? control : null;
+  }
+  function controlsUnder(box) {
+    // Each sample is a full hit test, so the grid is as coarse as the smallest control worth avoiding allows.
+    const found = new Set(), step = 16;
+    for (let y = box.top; y <= box.bottom; y += step) for (let x = box.left; x <= box.right; x += step) {
+      if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) continue;
+      const control = pinnedControlAt(x, y);
+      if (control) found.add(control);
+    }
+    return [...found].map(node => node.getBoundingClientRect()).filter(r => r.width && r.height);
+  }
+  // One vertical shift for the whole group, so order and spacing stay as the user arranged them.
+  // It is never written to the saved position, and it is recomputed when the page changes.
+  function siteControlShift(origin, anchor) {
+    if (groupDragging) return 0;
+    const now = performance.now();
+    if (shiftMemo && shiftMemo.origin === origin && now - shiftMemo.at < 1000) return shiftMemo.value;
+    // Every launcher cell: a column of tabs on the edge, or the older grid 12px in from it.
+    const cells = [...document.querySelectorAll('[data-exp-product-launcher="1"]')].map(launcherCell);
+    if (!cells.length) return 0;
+    const tabs = flyoutState().tabs, c = SITE_CONTROL_CLEARANCE;
+    const tops = cells.map(cell => tabs ? Math.max(8, Math.min(innerHeight-TAB_HEIGHT-8, anchor === 'top' ? origin+cell.offset : origin+48-TAB_HEIGHT-cell.offset)) : Math.max(8, Math.min(innerHeight-56, anchor === 'top' ? origin+cell.offset : origin-cell.offset)));
+    const group = tabs
+      ? { top: Math.min(...tops) - c, bottom: Math.max(...tops) + TAB_HEIGHT + c, right: innerWidth, left: innerWidth - TAB_REACH - c }
+      : { top: Math.min(...tops) - c, bottom: Math.max(...tops) + 48 + c, right: innerWidth - 12 + c, left: innerWidth - 12 - 48 - Math.max(...cells.map(cell => cell.x)) - c };
+    const at = s => ({ ...group, top: group.top + s, bottom: group.bottom + s });
+    const fits = s => at(s).top >= 8 - c && at(s).bottom <= innerHeight - 8 + c;
+    const hits = (s, blockers) => blockers.some(b => b.left < group.right && b.right > group.left && b.top < at(s).bottom && b.bottom > at(s).top);
+    let blockers = [], value = 0;
+    for (let round = 0; round < 4; round++) {
+      const more = controlsUnder(at(value));
+      if (!more.length) break;
+      blockers = blockers.concat(more);
+      const candidates = [0, ...blockers.flatMap(b => [b.top - group.bottom, b.bottom - group.top])].filter(s => fits(s) && !hits(s, blockers));
+      if (!candidates.length) { value = 0; break; }
+      value = candidates.reduce((best, s) => Math.abs(s) < Math.abs(best) ? s : best);
+    }
+    shiftMemo = { origin, at: now, value };
+    return value;
+  }
+  // Chat buttons and sticky headers come and go after load, so the shift is rechecked once page changes and
+  // scrolling pause, and at most every 2s while they go on (an infinite feed never pauses). Each check hit-tests a
+  // grid of points, so rechecking on every change made scrolling a long page slow. Launchers move only when the
+  // shift changes.
+  const SITE_CHECK_PAUSE = 300, SITE_CHECK_MAX_WAIT = 2000;
+  // A page that keeps changing (rotating adverts, tickers) but gives the same answer each time is checked less and
+  // less often, up to every 4s; the first check that finds a different answer returns to the normal pace. A hidden
+  // tab is not checked at all: the next change after it is shown again checks it.
+  const SITE_CHECK_GAP_MAX = 4000;
+  let siteCheckTimer = 0, siteCheckDue = 0, siteCheckLast = 0, siteCheckGap = 0;
+  function recheckSiteControls() {
+    const now = performance.now();
+    if (!siteCheckTimer) siteCheckDue = now + SITE_CHECK_MAX_WAIT;
+    clearTimeout(siteCheckTimer);
+    siteCheckTimer = setTimeout(() => {
+      siteCheckTimer = 0;
+      const host = document.querySelector('[data-exp-product-launcher="1"]');
+      if (!host || groupDragging || document.hidden) return;
+      const before = shiftMemo ? shiftMemo.value : 0;
+      shiftMemo = null;
+      const delta = savedDelta();
+      const origin = innerHeight-60+delta, value = siteControlShift(origin, origin <= (innerHeight-48)/2 ? 'top':'bottom');
+      siteCheckLast = performance.now();
+      siteCheckGap = value !== before ? 0 : Math.min(SITE_CHECK_GAP_MAX, Math.max(1000, siteCheckGap * 2));
+      if (value !== before) emit('launcher-site-controls', 'core');
+    }, Math.max(0, Math.min(SITE_CHECK_PAUSE, siteCheckDue - now), siteCheckLast + siteCheckGap - now));
+  }
+  // Restores the default launcher order and group position for every product.
+  // Shared geometry for menus and notices: the launcher that owns them, the left edge of the launcher grid,
+  // and any visible surface a product marks with data-exp-reserved (Dropper's progress card).
+  function surfaceGeometry(host, ignoredSurface = null) {
+    const launcherOf = node => node?.shadowRoot?.querySelector('[data-exp-part="launcher"],.launcher');
+    const own = launcherOf(host)?.getBoundingClientRect();
+    if (!own || !own.width) return null;
+    const hosts = [...document.querySelectorAll('[data-exp-product-launcher="1"]')];
+    const launchers = hosts.map(node => launcherOf(node)?.getBoundingClientRect()).filter(box => box?.width && box?.height);
+    // A reserved surface never reaches into the launcher column: a product that marks a whole row holding
+    // its launcher gets the same geometry as one that marks only the card beside it.
+    const columnLeft = Math.min(...launchers.map(box => box.left));
+    const reservedBoxes = hosts.flatMap(node => [...(node.shadowRoot?.querySelectorAll('[data-exp-reserved]') || [])]).filter(node=>node!==ignoredSurface&&!ignoredSurface?.contains(node))
+      .map(node => node.getBoundingClientRect()).filter(box => box.width && box.height)
+      .map(box => ({ top:box.top, bottom:box.bottom, left:box.left, right:box.left < columnLeft ? Math.min(box.right, columnLeft - 8) : box.right }))
+      .filter(box => box.right > box.left);
+    const reserved = reservedBoxes.length ? reservedBoxes.reduce((all, box) => ({ top:Math.min(all.top, box.top), bottom:Math.max(all.bottom, box.bottom), left:Math.min(all.left, box.left), right:Math.max(all.right, box.right) })) : null;
+    const gridLeft = Math.min(own.left, ...launchers.map(box => box.left), ...reservedBoxes.map(box => box.left));
+    const anchorTop = document.documentElement.dataset.expLauncherAnchor === 'top';
+    return { own, launchers, reserved, gridLeft, anchorTop };
+  }
+  // The single menu placement for every product, in order of preference:
+  // 1. Directly above a reserved surface such as Dropper's progress card (below it when the launchers are
+  //    anchored at the top), sharing its right edge, so the menu covers neither it nor any launcher.
+  // 2. Beside the launcher grid, lined up with the launcher that opened it.
+  // 3. Above or below the grid when the window is too narrow for either.
+  function placeMenu(host, panel, preferredWidth = 312) {
+    // An embedded progress card moves with this menu; it is not an external obstacle.
+    const geometry = surfaceGeometry(host, panel);
+    if (!geometry) return null;
+    const { own, reserved, gridLeft, anchorTop } = geometry;
+    // A product stylesheet may still size its menu; decide using the width the menu actually renders at.
+    panel.style.width = Math.max(0, Math.min(preferredWidth, innerWidth - 24)) + 'px';
+    const width = panel.offsetWidth || preferredWidth;
+    Object.assign(panel.style, { left:'auto', bottom:'auto' });
+    // Shared chrome has an !important viewport cap. The available space beside
+    // the launcher can be smaller, so placement must own the winning height limit.
+    const limitHeight = height => panel.style.setProperty('max-height', Math.max(0, height) + 'px', 'important');
+    const finish = (side, right, top, h) => {
+      top = Math.round(Math.max(8, Math.min(innerHeight - h - 8, top)));
+      Object.assign(panel.style, { right:Math.round(right)+'px', top:top+'px' });
+      host.dataset.menuSide = side;
+      return { top, right:Math.round(right), width, side };
+    };
+    const slot = slotBand();
+    if (slot) {
+      // From the flyout or a site slot: right-aligned 8px from the window edge, beyond the launcher and its open flyout.
+      const blocks=reserved&&reserved.left<innerWidth-8&&reserved.right>innerWidth-8-width;
+      const edge=blocks?(slot.down?Math.max(slot.bottom,reserved.bottom):Math.min(slot.top,reserved.top)):(slot.down?slot.bottom:slot.top);
+      const room = slot.down ? innerHeight - edge - 16 : edge - 16;
+      // In very short windows the open menu takes the viewport; Close/Escape restores the card and flyout.
+      if(room<160){limitHeight(innerHeight-16);return finish('viewport',8,8,panel.offsetHeight);}
+      limitHeight(room);
+      const h = panel.offsetHeight;
+      host.dataset.openDirection = slot.down ? 'down' : 'up';
+      return finish('flyout', 8, slot.down ? edge + 8 : edge - 8 - h, h);
+    }
+    if (reserved) {
+      const blockers=geometry.launchers.filter(box=>box.left<reserved.right&&box.right>reserved.right-width);
+      const edge=anchorTop?Math.max(reserved.bottom,...blockers.map(box=>box.bottom)):Math.min(reserved.top,...blockers.map(box=>box.top));
+      const room = anchorTop ? innerHeight - edge - 16 : edge - 16;
+      if (room >= 200 && reserved.right - 8 >= width) {
+        limitHeight(room);
+        const h = panel.offsetHeight;
+        host.dataset.openDirection = anchorTop ? 'down' : 'up';
+        return finish('reserved', innerWidth - reserved.right, anchorTop ? edge + 8 : edge - 8 - h, h);
+      }
+    }
+    if (gridLeft - 16 >= width) {
+      limitHeight(innerHeight - 16);
+      const h = panel.offsetHeight;
+      host.dataset.openDirection = 'down';
+      return finish('beside', innerWidth - gridLeft + 8, anchorTop ? own.top : own.bottom - h, h);
+    }
+    // Stacked menus clear the launcher and any reserved surface in its row.
+    const band = [...geometry.launchers, ...(reserved ? [reserved] : [])].filter(box => box.left < innerWidth - 12 && box.right > innerWidth - 12 - width)
+      .reduce((all, box) => ({ top:Math.min(all.top, box.top), bottom:Math.max(all.bottom, box.bottom) }), { top:own.top, bottom:own.bottom });
+    const below = innerHeight - band.bottom - 16, above = band.top - 16;
+    // In a very short window neither side has room: the open menu takes the viewport, as it does from a site slot.
+    if (Math.max(above, below) < 160) { limitHeight(innerHeight - 16); host.dataset.openDirection = 'down'; return finish('viewport', 8, 8, panel.offsetHeight); }
+    const up = anchorTop ? below < 160 && above > below : !(above < 160 && below > above);
+    limitHeight(up ? above : below);
+    const h = panel.offsetHeight;
+    host.dataset.openDirection = up ? 'up' : 'down';
+    return finish('stacked', 12, up ? band.top - h - 8 : band.bottom + 8, h);
+  }
+  // The single placement for update and changelog notices. With a menu open, the notice stacks beyond it
+  // (above it, or below it when the launchers are anchored at the top) and shares its right edge; when the
+  // window is too short for that, it sits beside the menu, on its left, instead of overlapping it. With no
+  // menu open it takes the menu's place: above a reserved surface, or beside the launcher grid.
+  function placeNotice(host, notice, panel = null) {
+    const geometry = surfaceGeometry(host, notice);
+    if (!geometry) return null;
+    const { own, reserved, gridLeft, anchorTop } = geometry;
+    const width = notice.offsetWidth || 260;
+    const height = notice.offsetHeight || notice.scrollHeight || 72;
+    const menu = panel && !panel.hidden && panel.getClientRects().length ? panel.getBoundingClientRect() : null;
+    let right, top;
+    if (menu?.width && menu?.height) {
+      const beyond = anchorTop ? menu.bottom + 8 : menu.top - height - 8;
+      const fits = anchorTop ? beyond + height <= innerHeight - 8 : beyond >= 8;
+      if (fits) {
+        right = menu.right;
+        top = beyond;
+      } else if (menu.left - 8 - width >= 8) {
+        // A short window leaves no room beyond the menu: sit beside it instead, on the side away from the
+        // launchers, lined up with the menu's edge nearest them, so nothing overlaps.
+        right = menu.left - 8;
+        top = anchorTop ? menu.top : menu.bottom - height;
+      } else {
+        right = menu.right;
+        top = anchorTop ? menu.top - height - 8 : menu.bottom + 8;
+      }
+    } else if (slotBand()) {
+      const band = slotBand();
+      right = viewWidth() - 8;
+      top = clearReserved(band.down ? band.bottom + 8 : band.top - height - 8, height, right - width, right, band.down, notice);
+    } else if (reserved && reserved.right - 8 >= width) {
+      right = reserved.right;
+      top = anchorTop ? reserved.bottom + 8 : reserved.top - height - 8;
+    } else if (gridLeft - 16 >= width) {
+      right = gridLeft - 8;
+      top = anchorTop ? own.top : own.bottom - height;
+    } else {
+      right = own.right;
+      top = anchorTop ? own.bottom + 8 : own.top - height - 8;
+    }
+    const left = Math.round(Math.max(8, Math.min(innerWidth - width - 8, right - width)));
+    top = Math.round(Math.max(8, Math.min(innerHeight - height - 8, top)));
+    notice.style.setProperty('left', left + 'px', 'important');
+    notice.style.setProperty('right', 'auto', 'important');
+    notice.style.setProperty('top', top + 'px', 'important');
+    notice.style.setProperty('bottom', 'auto', 'important');
+    return { left, top };
+  }
+  // Every launcher host is its own top-layer popover, and the top layer stacks in the order popovers were
+  // shown (product load order), not by z-index. Whenever a menu opens, re-show its host so the open menu
+  // sits above every other launcher. Any product that announces exp-core:menu-open gets this for free.
+  function raiseOpenMenuHost() {
+    // With several products a menu belongs to the flyout: opening one any way (a tile, a shortcut, a product
+    // call) shows the flyout with that product selected.
+    if (flyoutState().active) { if (!setFlyoutOpen(true)) restackFlyout(); return; }
+    const id = document.documentElement.getAttribute('data-exp-open-menu');
+    const host = [...document.querySelectorAll('[data-exp-product-launcher="1"]')].find(node => node.dataset.productId === id);
+    if (!host || typeof host.hidePopover !== 'function') return;
+    try { if (host.matches(':popover-open')) host.hidePopover(); host.showPopover(); } catch {}
+  }
+  // Flyout launcher: with two or more products on a page, one shared launcher (the hub, owned by the lead
+  // product's host) opens a row of tiles, and each tile is that product's own launcher. Every Core copy derives
+  // the same state from host attributes; the open state lives on <html> as data-exp-flyout-open.
+  const FLYOUT_ACCENTS = Object.freeze({ dropper:'#bc94f5', ward:'#5fd9a0', thread:'#ff7636' });
+  const FLYOUT_NAMES = Object.freeze({ dropper:'Dropper', ward:'WARD', thread:'THREAD' });
+  const FLYOUT_TILE = 40, FLYOUT_GAP = 6, FLYOUT_PAD = 7;
+  // Edge tab: 34x44 drawn, 44px of reach from the edge for touch, 4px between stacked tabs.
+  const TAB_WIDTH = 34, TAB_HEIGHT = 44, TAB_REACH = 44, TAB_PITCH = 48;
+  const launcherHosts = () => [...document.querySelectorAll('[data-exp-product-launcher="1"]')];
+  const hostLauncher = host => host?.shadowRoot?.querySelector('[data-exp-part="launcher"],.launcher') || null;
+  function flyoutState() {
+    const hosts = launcherHosts();
+    const row = hosts.length === 1 || (hosts.length > 1 && hosts.every(host => host.dataset.expFlyout === ExpLauncherFlyout.PROTOCOL)) ? siteRow(hosts.length) : null;
+    // Away from a site's own slot the products are edge tabs; the flyout serves a slot too small for a row of icons.
+    const slot = row ? null : siteSlot();
+    const active = !row && Boolean(slot) && ExpLauncherFlyout.flyoutActive(hosts);
+    const tabs = !row && !slot && ExpLauncherFlyout.tabsReady(hosts);
+    return { hosts, active, tabs, row, lead: active ? ExpLauncherFlyout.leadProduct(hosts) : '', order: active || row ? ExpLauncherFlyout.flyoutOrder(hosts) : [], open: active && document.documentElement.dataset.expFlyoutOpen === '1' };
+  }
+  // A top bar with room for every product's icon side by side (Twitch); otherwise null and the flyout is used.
+  function siteRow(count) {
+    const row = siteSlot()?.row;
+    if (!row || !count) return null;
+    const left = row.right - count * row.size - (count - 1) * row.gap;
+    return left >= row.minLeft ? { left, top: row.top, size: row.size, gap: row.gap } : null;
+  }
+  // innerWidth counts a classic page scrollbar (or a reserved gutter); fixed-position parts live in the
+  // narrower area beside it, so the flyout measures that area with a fixed probe inside a launcher host.
+  let viewProbe = null;
+  function viewWidth() {
+    if (!viewProbe?.isConnected) {
+      const root = document.querySelector('[data-exp-product-launcher="1"]')?.shadowRoot;
+      if (!root) return innerWidth;
+      viewProbe = document.createElement('div'); viewProbe.className = 'exp-view-probe'; viewProbe.setAttribute('aria-hidden', 'true');
+      viewProbe.style.cssText = 'position:fixed;inset:0;visibility:hidden;pointer-events:none';
+      root.append(viewProbe);
+    }
+    return viewProbe.getBoundingClientRect().width || innerWidth;
+  }
+  // Visible surfaces a product marks reserved (Dropper's progress strip under the top bar): a notice in the
+  // slot's column moves past them instead of covering them. A hidden strip takes no room.
+  function clearReserved(top, height, left, right, down, ignoredSurface = null) {
+    const boxes = [...document.querySelectorAll('[data-exp-product-launcher="1"]')]
+      .flatMap(host => [...(host.shadowRoot?.querySelectorAll('[data-exp-reserved]') || [])])
+      .filter(node => node !== ignoredSurface && getComputedStyle(node).visibility !== 'hidden')
+      .map(node => node.getBoundingClientRect()).filter(box => box.width && box.height && box.left < right && box.right > left)
+      .sort((a, b) => down ? a.top - b.top : b.bottom - a.bottom);
+    for (const box of boxes) if (box.top < top + height && box.bottom > top) top = down ? box.bottom + 8 : box.top - height - 8;
+    return top;
+  }
+  // The saved group position, measured from the bottom corner. Tabs that were never moved start a fifth of the
+  // way down the window, below a site's header.
+  function savedDelta() {
+    const saved = Number(read(GRID_DELTA,0)) || 0;
+    const value = !saved && flyoutState().tabs ? Math.max(64, Math.round(innerHeight * .2)) - (innerHeight-60) : saved;
+    return Math.max(8-(innerHeight-60), Math.min(4, value));
+  }
+  // The shared launcher sits in the site's slot when it has one, otherwise in the bottom-right corner.
+  function flyoutHubBox() {
+    const slot = siteSlot();
+    if (slot) return { left:slot.left, top:slot.top, size:FLYOUT_TILE, anchor:'top', site:true };
+    const origin = innerHeight-60+savedDelta(), anchor = origin <= (innerHeight-48)/2 ? 'top' : 'bottom';
+    return { left:viewWidth()-12-48, top:Math.max(8, Math.min(innerHeight-56, origin)) + siteControlShift(origin, anchor), size:48, anchor, site:false };
+  }
+  function flyoutPanelBox(hub, count) {
+    const width = 2 + FLYOUT_PAD*2 + FLYOUT_TILE*count + FLYOUT_GAP*Math.max(0, count-1), height = 2 + FLYOUT_PAD*2 + FLYOUT_TILE;
+    const left = Math.max(8, Math.min(viewWidth() - 8 - width, hub.left + hub.size - width));
+    const top = hub.anchor === 'top' ? hub.top + hub.size + 6 : hub.top - 6 - height;
+    return { left, top, width, height, right:left+width, bottom:top+height };
+  }
+  function flyoutBand(state = flyoutState()) {
+    const hub = flyoutHubBox(), panel = flyoutPanelBox(hub, state.order.length);
+    // A closed flyout takes no room: menus and notices line up with the launcher alone.
+    const room = state.open ? panel : { top:hub.top, bottom:hub.top + hub.size };
+    return { hub, panel, top:Math.min(hub.top, room.top), bottom:Math.max(hub.top+hub.size, room.bottom), down:hub.anchor === 'top' };
+  }
+  // Sites with a better home for the launcher than the corner, one row per site. A slot that is missing, hidden
+  // (theater mode, fullscreen) or too narrow returns null and the launcher uses the corner.
+  const visibleBox = node => { const box = node.getBoundingClientRect(); if (box.width < 1 || box.height < 1) return null; const style = getComputedStyle(node); return style.visibility === 'hidden' || style.display === 'none' ? null : box; };
+  // Twitch: the top bar between the search box and the first icon of the right-hand group. Twitch keeps a
+  // zero-size Search button in that group and collapses search to an icon on narrow windows; both are ignored.
+  // Theater mode and fullscreen hide the bar with style changes the page observer does not watch, so the slot's
+  // container is watched for size changes instead (hiding it resizes it to zero).
+  let slotWatch = null, watchedSlotNode = null;
+  function watchSlotNode(node) {
+    if (node === watchedSlotNode || typeof ResizeObserver !== 'function') return;
+    slotWatch ??= new ResizeObserver(() => { slotMemo = null; scheduleGrid(); });
+    if (watchedSlotNode) slotWatch.unobserve(watchedSlotNode);
+    watchedSlotNode = node; if (node) slotWatch.observe(node);
+  }
+  function twitchSlot() {
+    const bar = document.querySelector('nav[data-a-target="top-nav-container"] .top-nav__menu');
+    if (bar) watchSlotNode(bar);
+    return bar && bar.children.length >= 3 ? topBarSlot(bar, bar.children[1], bar.children[2], 'input[type="search"],input[data-a-target="tw-input"]') : null;
+  }
+  // Kick: the same place in its wide-window top bar (collapse and logo, centred search, then its icons last).
+  // Narrow windows swap in a different bar, and theater mode hides it; both leave the launcher in the corner.
+  function kickSlot() {
+    const search = 'input[data-testid="search"]';
+    const bar = [...document.querySelectorAll('nav')].find(node => node.querySelector(search) && visibleBox(node)) || null;
+    if (bar) watchSlotNode(bar);
+    const middle = bar && [...bar.children].find(child => child.querySelector(search)), right = bar?.lastElementChild;
+    return middle && right && right !== middle ? topBarSlot(bar, middle, right, search) : null;
+  }
+  // The slot sits between the search box (in `middle`) and the first icon in `iconGroup`.
+  function topBarSlot(bar, middle, iconGroup, searchSelector) {
+    const barBox = visibleBox(bar);
+    if (!barBox || barBox.height < 40 || barBox.top < -1 || barBox.top > 8) return null;
+    const search = [...middle.querySelectorAll(searchSelector)].map(visibleBox).filter(Boolean);
+    if (!search.length) return null;
+    // Theater mode draws the player over the bar, which keeps its size: the bar must be on top where search is.
+    const probe = document.elementFromPoint(search[0].left + search[0].width / 2, search[0].top + search[0].height / 2);
+    if (!probe || !bar.contains(probe)) return null;
+    const searchEnd = Math.max(...[...middle.querySelectorAll('input,button,a')].map(visibleBox).filter(Boolean).map(box => box.right));
+    const icons = [...iconGroup.querySelectorAll('button,a,input')].map(visibleBox).filter(Boolean);
+    if (!icons.length) return null;
+    const right = Math.min(...icons.map(box => box.left)) - 16, left = right - FLYOUT_TILE;
+    if (left < searchEnd + 8) return null;
+    // Product icons in a row match the size of Twitch's own first icon button.
+    const first = icons.reduce((a, b) => a.left <= b.left ? a : b), size = Math.round(Math.max(28, Math.min(40, first.height)));
+    return { left, top: Math.round(barBox.top + (barBox.height - FLYOUT_TILE) / 2), row: { right, minLeft: searchEnd + 8, size, gap: 8, top: Math.round(barBox.top + (barBox.height - size) / 2) } };
+  }
+  const SITE_SLOTS = Object.freeze([{ host:/(^|\.)twitch\.tv$/, find:twitchSlot },{ host:/(^|\.)kick\.com$/, find:kickSlot }]);
+  let slotMemo = null, frozenSlot;
+  function siteSlot() {
+    // While the flyout is open the launcher stays put, so the open flyout never jumps under the pointer.
+    if (frozenSlot !== undefined && document.documentElement.dataset.expFlyoutOpen === '1') return frozenSlot;
+    const now = performance.now();
+    if (!slotMemo || now - slotMemo.at > 150 || slotMemo.width !== innerWidth || slotMemo.height !== innerHeight) {
+      const row = SITE_SLOTS.find(entry => entry.host.test(location.hostname));
+      let slot = null;
+      try { slot = row ? row.find() : null; } catch {}
+      slotMemo = { at:now, width:innerWidth, height:innerHeight, slot };
+    }
+    frozenSlot = document.documentElement.dataset.expFlyoutOpen === '1' ? slotMemo.slot : undefined;
+    return slotMemo.slot;
+  }
+  // One product in a site slot: its own launcher sits there at tile size and its menu drops below it.
+  function singleSlot(state = flyoutState()) {
+    if (state.active) return null;
+    const row = state.row;
+    if (row) { const width = state.hosts.length * row.size + (state.hosts.length - 1) * row.gap; return { hub:{ left:row.left, top:row.top, size:row.size, width, anchor:'top', site:true, row:true }, panel:null, top:row.top, bottom:row.top + row.size, down:true }; }
+    if (state.hosts.length !== 1) return null;
+    const slot = siteSlot();
+    return slot ? { hub:{ ...slot, size:FLYOUT_TILE, anchor:'top', site:true }, panel:null, top:slot.top, bottom:slot.top + FLYOUT_TILE, down:true } : null;
+  }
+  function slotBand(state = flyoutState()) { return state.active ? flyoutBand(state) : singleSlot(state); }
+  function setFlyoutOpen(value) {
+    const root = document.documentElement, was = root.dataset.expFlyoutOpen === '1';
+    value = Boolean(value) && flyoutState().active;
+    if (was === value) return false;
+    if (value) { frozenSlot = undefined; siteSlot(); root.dataset.expFlyoutOpen = '1'; frozenSlot = slotMemo?.slot ?? null; } else { delete root.dataset.expFlyoutOpen; frozenSlot = undefined; slotMemo = null; }
+    syncFlyout();
+    if (value) restackFlyout(); else document.dispatchEvent(new Event('exp-core:flyout-close'));
+    emit('flyout', 'core');
+    return true;
+  }
+  // Every host is its own top-layer popover, stacked in show order. Re-show the lead host first so its flyout
+  // panel sits under every tile, and an open menu's host last so the menu sits above everything. Focus inside a
+  // re-shown host is restored, so keyboard users keep their place.
+  function restackFlyout() {
+    const state = flyoutState();
+    if (!state.active) return;
+    const deepActive = () => { let node = document.activeElement; while (node?.shadowRoot?.activeElement) node = node.shadowRoot.activeElement; return node; };
+    const focused = deepActive(), menu = document.documentElement.getAttribute('data-exp-open-menu') || '';
+    const byId = id => state.hosts.find(host => host.dataset.productId === id);
+    const sequence = [state.lead, ...state.order.filter(id => id !== state.lead && id !== menu), ...(menu && menu !== state.lead ? [menu] : [])].map(byId).filter(Boolean);
+    // data-exp-restack marks these re-shows as Core's own for every Core copy, so their toggle events do not restack again.
+    for (const host of sequence) { if (typeof host.showPopover !== 'function') continue; try { host.dataset.expRestack = '1'; if (host.matches(':popover-open')) host.hidePopover(); host.showPopover(); } catch { delete host.dataset.expRestack; } }
+    if (focused?.isConnected && deepActive() !== focused) try { focused.focus({ preventScroll:true }); } catch {}
+  }
+  function focusFlyout(target) {
+    document.documentElement.dataset.expFlyoutFocus = target;
+    document.dispatchEvent(new Event('exp-core:flyout-focus'));
+  }
+  function onFlyoutFocus() {
+    const target = document.documentElement.dataset.expFlyoutFocus || '';
+    const state = flyoutState();
+    if (!target || !state.active) return;
+    syncFlyout();
+    for (const host of state.hosts) {
+      if (!registrations.has(host)) continue;
+      const node = target === 'hub' ? (host.dataset.productId === state.lead ? host.shadowRoot?.querySelector('[data-exp-part="flyout-hub"]') : null) : (host.dataset.productId === target ? hostLauncher(host) : null);
+      if (node) { delete document.documentElement.dataset.expFlyoutFocus; node.focus({ preventScroll:true }); }
+    }
+  }
+  function onTileKey(event) {
+    const host = event.currentTarget?.host, state = flyoutState();
+    if (!state.open || !host || event.target !== hostLauncher(host) || event.altKey || event.ctrlKey || event.metaKey) return;
+    const index = state.order.indexOf(host.dataset.productId), last = state.order.length - 1;
+    const next = { ArrowRight:index+1, ArrowDown:index+1, ArrowLeft:index-1, ArrowUp:index-1, Home:0, End:last }[event.key];
+    if (next === undefined) return;
+    event.preventDefault(); event.stopPropagation();
+    focusFlyout(state.order[Math.max(0, Math.min(last, next))]);
+  }
+  function onHubKey(event) {
+    const state = flyoutState();
+    if (!state.open || !['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)) return;
+    event.preventDefault();
+    focusFlyout(['ArrowLeft','ArrowUp','End'].includes(event.key) ? state.order.at(-1) : state.order[0]);
+  }
+  // Host protection and page scripts can re-show a launcher while the flyout is open, which lifts it above the
+  // others (the lead's would cover every tile with its panel). Any re-show Core did not make restacks once a frame.
+  let restackFrame = 0;
+  function onHostToggle(event) {
+    const host = event.currentTarget;
+    if (host.dataset.expRestack) { delete host.dataset.expRestack; return; }
+    if (event.newState !== 'open' || restackFrame || !flyoutState().open) return;
+    restackFrame = requestAnimationFrame(() => { restackFrame = 0; if (flyoutState().open) restackFlyout(); });
+  }
+  function onFlyoutEscape(event) {
+    if (event.key !== 'Escape' || !flyoutState().open) return;
+    setFlyoutOpen(false);
+    focusFlyout('hub');
+  }
+  function onFlyoutOutside(event) {
+    if (!event.isTrusted || !flyoutState().open) return;
+    const path = event.composedPath();
+    if (launcherHosts().some(host => path.includes(host))) return;
+    setFlyoutOpen(false);
+  }
+  function flyoutCss(productId) {
+    const accent = FLYOUT_ACCENTS[productId] || '#a1a1aa', launcherPart = ':is([data-exp-part="launcher"],.launcher)';
+    return `:host([data-exp-flyout-role]) ${launcherPart}{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;border-radius:10px!important;box-sizing:border-box!important}
+:host([data-exp-flyout-role]) ${launcherPart} > :is(img,svg,.icon):not(.launcher-ring):not(.ring){width:26px!important;height:26px!important}
+:host([data-exp-flyout-role="hidden"]) ${launcherPart}{visibility:hidden!important;pointer-events:none!important}
+:host([data-exp-flyout-selected="1"]) ${launcherPart}{border-color:${accent}!important;box-shadow:inset 0 0 0 1px ${accent}!important}
+:host([data-exp-edge-tab]) ${launcherPart}{width:${TAB_WIDTH}px!important;height:${TAB_HEIGHT}px!important;min-width:${TAB_WIDTH}px!important;min-height:${TAB_HEIGHT}px!important;max-width:${TAB_WIDTH}px!important;max-height:${TAB_HEIGHT}px!important;border-radius:10px 0 0 10px!important;border-right-width:0!important;box-sizing:border-box!important;overflow:visible!important;transform:none!important}
+:host([data-exp-edge-tab]) ${launcherPart} > :is(img,svg,.icon):not(.launcher-ring):not(.ring){width:24px!important;height:24px!important}
+:host([data-exp-edge-tab]) ${launcherPart} :is(.ring,.launcher-ring,.launcher-badge,.update-badge){display:none!important}
+:host([data-exp-edge-tab]) ${launcherPart}::before{content:'';position:absolute;top:0;bottom:0;right:0;left:${TAB_WIDTH - TAB_REACH}px}
+:host([data-exp-edge-tab][data-exp-update="1"]) ${launcherPart}::after{content:'';position:absolute;top:3px;left:3px;width:7px;height:7px;border-radius:2px;background:${accent};pointer-events:none}
+:host([data-exp-edge-tab][data-exp-flyout-selected="1"]) ${launcherPart}{border-color:${accent}!important;box-shadow:inset 3px 0 0 ${accent}!important}
+.exp-flyout-hub{all:initial;position:fixed;z-index:2147483601;box-sizing:border-box;display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:radial-gradient(circle at 50% 35%,#1d1a24,#0c0b10 70%);border:1px solid color-mix(in srgb,${accent} 50%,#3f3f46);box-shadow:inset 0 1px 0 #ffffff12;cursor:pointer;pointer-events:auto}
+.exp-flyout-hub[data-size="40"]{border-radius:10px}
+:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher){width:var(--exp-site-icon-size)!important;height:var(--exp-site-icon-size)!important;min-width:var(--exp-site-icon-size)!important;min-height:var(--exp-site-icon-size)!important;max-width:var(--exp-site-icon-size)!important;max-height:var(--exp-site-icon-size)!important;padding:0!important;border:0!important;border-radius:6px!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;transition:none!important}
+:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher):hover{background:color-mix(in srgb,currentColor 16%,transparent)!important}
+:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher):focus-visible{outline:2px solid ${accent}!important;outline-offset:1px!important}
+:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher)>:is(img,svg,.icon):not(.launcher-ring):not(.ring){width:22px!important;height:22px!important}
+:host([data-exp-flyout-role="site"][data-exp-site-icon]) :is([data-exp-part="launcher"],.launcher) :is(.ring,.launcher-ring,.launcher-badge,.update-badge){display:none!important}
+:host([data-exp-flyout-role="site"][data-exp-site-icon][data-exp-update="1"]) :is([data-exp-part="launcher"],.launcher)::after{content:'';position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:2px;background:${accent};pointer-events:none}
+.exp-flyout-hub.has-ring{border-color:transparent}
+.exp-flyout-ring{position:absolute;left:-6px;top:-6px;pointer-events:none;overflow:visible}
+.exp-flyout-ring[hidden]{display:none}
+.exp-flyout-hub:focus-visible{outline:2px solid ${accent};outline-offset:3px}
+.exp-flyout-icon{display:grid;place-items:center;width:32px;height:32px;pointer-events:none}
+.exp-flyout-hub[data-size="40"] .exp-flyout-icon{width:26px;height:26px}
+.exp-flyout-icon>*{display:block!important;position:static!important;width:100%!important;height:100%!important;margin:0!important}
+.exp-flyout-count{position:absolute;right:-6px;bottom:-6px;box-sizing:border-box;min-width:20px;height:16px;padding:0 4px;border-radius:4px;background:#27272a;border:1px solid #3f3f46;outline:2px solid #0e0e10;color:#fafafa;font:600 10px/14px Inter,"Segoe UI",system-ui,sans-serif;text-align:center;pointer-events:none}
+.exp-flyout-mark{position:absolute;top:-5px;right:-5px;width:10px;height:10px;box-sizing:border-box;border-radius:3px;background:var(--exp-flyout-mark,#a1a1aa);outline:2px solid #0e0e10;pointer-events:none}
+.exp-flyout-mark[hidden]{display:none}
+.exp-flyout-panel{position:fixed;z-index:2147483590;box-sizing:border-box;background:#09090b;border:1px solid #27272a;border-radius:12px;box-shadow:0 12px 32px #0008;pointer-events:auto}
+.exp-flyout-panel[hidden]{display:none!important}`;
+  }
+  // A product with an update marks its own host; the launcher corner shows the first marked product's colour.
+  function setLauncherUpdate(productId, available) {
+    const host = launcherHosts().find(node => node.dataset.productId === String(productId || ''));
+    if (!host) return false;
+    if (available) host.dataset.expUpdate = '1'; else delete host.dataset.expUpdate;
+    syncFlyout(); emit('launcher-update', productId);
+    return true;
+  }
+  // Progress (Dropper's drop progress) shows as a ring on the shared launcher. fraction is 0..1, or null to clear.
+  function setLauncherProgress(productId, fraction) {
+    const host = launcherHosts().find(node => node.dataset.productId === String(productId || ''));
+    if (!host) return false;
+    const value = Number(fraction);
+    if (fraction === null || fraction === undefined || !Number.isFinite(value)) delete host.dataset.expProgress;
+    else host.dataset.expProgress = String(Math.max(0, Math.min(1, value)));
+    syncFlyout(); emit('launcher-progress', productId);
+    return true;
+  }
+  // The ring is concentric with the launcher: its stroke centre is 3px outside the launcher edge (corner radius
+  // + 3, stroke 2), which leaves an even 2px gap. It starts at the top centre, fills clockwise, and breaks with
+  // 3px clearance around the count and the update marker.
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function ringPath(size, radius) {
+    // The ring runs along the launcher outline (1px inside its edge), so it reads as one border, not a second line.
+    const a = 6, b = size + 4, r = radius - 1, c = (size + 10) / 2;
+    return `M${c} ${a}H${b-r}A${r} ${r} 0 0 1 ${b} ${a+r}V${b-r}A${r} ${r} 0 0 1 ${b-r} ${b}H${a+r}A${r} ${r} 0 0 1 ${a} ${b-r}V${a+r}A${r} ${r} 0 0 1 ${a+r} ${a}Z`;
+  }
+  function renderRing(hub, size, radius, progress, mark) {
+    let svg = hub.querySelector('[data-exp-part="flyout-ring"]');
+    if (!progress) { svg?.setAttribute('hidden', ''); hub.classList.remove('has-ring'); return; }
+    const s = size + 10;
+    if (!svg) { svg = document.createElementNS(SVG_NS, 'svg'); svg.dataset.expPart = 'flyout-ring'; svg.setAttribute('class', 'exp-flyout-ring'); svg.setAttribute('aria-hidden', 'true'); hub.prepend(svg); }
+    const key = [size, radius, progress.fraction, progress.color, mark].join('|');
+    svg.removeAttribute('hidden'); hub.classList.add('has-ring');
+    if (svg.dataset.key === key) return;
+    svg.dataset.key = key;
+    svg.setAttribute('width', s); svg.setAttribute('height', s); svg.setAttribute('viewBox', `0 0 ${s} ${s}`);
+    const id = 'exp-flyout-ring-mask';
+    const cuts = [`<rect x="${size-17}" y="${size-9}" width="${s-(size-17)}" height="${s-(size-9)}" fill="black"/>`].concat(mark ? [`<rect x="${size-4}" y="0" width="${s-(size-4)}" height="14" fill="black"/>`] : []);
+    const d = ringPath(size, radius), pct = Math.round(progress.fraction * 1000) / 10;
+    // The dark edge under the ring matches the count and marker outlines: the accent stays at 3:1 or better on light pages.
+    svg.innerHTML = `<mask id="${id}"><rect width="${s}" height="${s}" fill="white"/>${cuts.join('')}</mask><g mask="url(#${id})"><path d="${d}" fill="none" stroke="#0e0e10" stroke-width="4"/><path d="${d}" fill="none" stroke="#3f3f46" stroke-width="2"/><path d="${d}" fill="none" stroke="${progress.color}" stroke-width="2" pathLength="100" stroke-dasharray="${pct} 200"/></g>`;
+  }
+  function removeHub(host) { host.shadowRoot?.querySelectorAll('[data-exp-part="flyout-hub"],[data-exp-part="flyout-panel"]').forEach(node => { node.expDragCleanup?.(); node.remove(); }); }
+  function renderHub(host, state) {
+    const shadow = host.shadowRoot;
+    if (!shadow) return;
+    let hub = shadow.querySelector('[data-exp-part="flyout-hub"]'), panel = shadow.querySelector('[data-exp-part="flyout-panel"]');
+    if (!hub || !panel) {
+      removeHub(host);
+      panel = document.createElement('div'); panel.dataset.expPart = 'flyout-panel'; panel.className = 'exp-flyout-panel'; panel.hidden = true;
+      hub = document.createElement('button'); hub.type = 'button'; hub.dataset.expPart = 'flyout-hub'; hub.className = 'exp-flyout-hub'; hub.setAttribute('aria-haspopup', 'true');
+      const icon = document.createElement('span'); icon.className = 'exp-flyout-icon';
+      const count = document.createElement('span'); count.dataset.expPart = 'flyout-count'; count.className = 'exp-flyout-count'; count.setAttribute('aria-hidden', 'true');
+      const mark = document.createElement('span'); mark.dataset.expPart = 'flyout-mark'; mark.className = 'exp-flyout-mark'; mark.hidden = true;
+      hub.append(icon, count, mark);
+      hub.addEventListener('click', event => { const opening = document.documentElement.dataset.expFlyoutOpen !== '1'; setFlyoutOpen(opening); if (opening && event.detail === 0) focusFlyout(flyoutState().order[0]); });
+      hub.addEventListener('keydown', onHubKey);
+      // The corner launcher keeps vertical drag and its saved position; a site slot cannot be dragged.
+      hub.expDragCleanup = bindLauncherDrag(hub, host.dataset.productId, { reorder:false, canDrag:() => !flyoutHubBox().site, title:'Drag to move the launcher.', layout:syncFlyout });
+      shadow.append(panel, hub);
+    }
+    const icon = hub.querySelector('.exp-flyout-icon');
+    if (!icon.firstElementChild) {
+      const art = hostLauncher(host)?.querySelector('img,svg:not(.launcher-ring):not(.ring),.icon');
+      if (art) { const copy = art.cloneNode(true); copy.removeAttribute('id'); copy.removeAttribute('style'); copy.setAttribute('aria-hidden', 'true'); icon.append(copy); }
+    }
+    const { hub:box, panel:panelBox } = flyoutBand(state);
+    const others = state.order.length - 1;
+    hub.querySelector('[data-exp-part="flyout-count"]').textContent = '+' + others;
+    const updating = state.order.find(id => state.hosts.some(node => node.dataset.productId === id && node.dataset.expUpdate === '1'));
+    const mark = hub.querySelector('[data-exp-part="flyout-mark"]');
+    mark.hidden = !updating;
+    if (updating) mark.style.setProperty('--exp-flyout-mark', FLYOUT_ACCENTS[updating] || '#a1a1aa');
+    const progressHost = state.order.map(id => state.hosts.find(node => node.dataset.productId === id)).find(node => node?.dataset.expProgress !== undefined);
+    renderRing(hub, box.size, box.size === FLYOUT_TILE ? 10 : 12, progressHost ? { fraction:Number(progressHost.dataset.expProgress), color:FLYOUT_ACCENTS[progressHost.dataset.productId] || '#a1a1aa' } : null, Boolean(updating));
+    hub.dataset.size = String(box.size);
+    hub.setAttribute('aria-expanded', String(state.open));
+    // The marker and ring are visual; the name carries the same news for screen readers.
+    const notes = [];
+    if (updating) notes.push(`${FLYOUT_NAMES[updating] || updating} update available`);
+    if (progressHost) notes.push(`${FLYOUT_NAMES[progressHost.dataset.productId] || progressHost.dataset.productId} ${Math.round(Number(progressHost.dataset.expProgress) * 100)}%`);
+    hub.setAttribute('aria-label', ['ExtraPotions: ' + state.order.map(id => FLYOUT_NAMES[id] || id).join(', '), ...notes].join('. '));
+    Object.assign(hub.style, { left:Math.round(box.left)+'px', top:Math.round(box.top)+'px', width:box.size+'px', height:box.size+'px' });
+    panel.hidden = !state.open;
+    Object.assign(panel.style, { left:Math.round(panelBox.left)+'px', top:Math.round(panelBox.top)+'px', width:panelBox.width+'px', height:panelBox.height+'px' });
+  }
+  // Applies the flyout state to the hosts this Core copy registered. Safe to run any number of times.
+  function syncFlyout() {
+    const state = flyoutState(), root = document.documentElement;
+    if (!state.active && root.dataset.expFlyoutOpen) delete root.dataset.expFlyoutOpen;
+    const menu = root.getAttribute('data-exp-open-menu') || '';
+    for (const host of state.hosts) {
+      if (!registrations.has(host)) continue;
+      const id = host.dataset.productId;
+      if (!state.active) {
+        if (singleSlot(state)) host.dataset.expFlyoutRole = 'site'; else delete host.dataset.expFlyoutRole;
+        if (state.row) { host.dataset.expSiteIcon = '1'; host.style.setProperty('--exp-site-icon-size', state.row.size + 'px'); } else { delete host.dataset.expSiteIcon; host.style.removeProperty('--exp-site-icon-size'); }
+        if (state.tabs) host.dataset.expEdgeTab = '1'; else delete host.dataset.expEdgeTab;
+        if (state.tabs && menu === id) host.dataset.expFlyoutSelected = '1'; else delete host.dataset.expFlyoutSelected;
+        removeHub(host); continue;
+      }
+      delete host.dataset.expEdgeTab;
+      delete host.dataset.expSiteIcon; host.style.removeProperty('--exp-site-icon-size');
+      const role = state.open ? 'tile' : 'hidden';
+      if (host.dataset.expFlyoutRole !== role) host.dataset.expFlyoutRole = role;
+      if (state.open && menu === id) host.dataset.expFlyoutSelected = '1'; else delete host.dataset.expFlyoutSelected;
+      if (id === state.lead) renderHub(host, state); else removeHub(host);
+    }
+  }
+  function resetLauncherGrid(productId) { write(GRID_ORDER,[]); write(GRID_DELTA,0); layoutGrid(); emit('launcher-grid-moved', productId); }
+  // Shared launcher drag for every product: drag moves the launcher group along the right edge;
+  // Shift+drag and Alt+Arrow keys reorder. Listens on window in the capture phase so host pages
+  // that stop pointer events (Twitch's player) cannot stall a drag. Returns a cleanup function.
+  // reorder:false (the flyout launcher) moves the group only; canDrag() can refuse a drag (a site slot).
+  function bindLauncherDrag(launcher, id, { layout = () => {}, reorder = true, canDrag = () => true, title = '' } = {}) {
+    const removers = [];
+    const on = (node,type,fn,opts) => { node.addEventListener(type,fn,opts); removers.push(() => node.removeEventListener(type,fn,opts)); };
+    let startX=0,startY=0,startDelta=0,pointer=null,dragged=false,mode='',axis='',order=[];
+    launcher.title = launcher.title || title || 'Drag to move the launchers. Shift+drag or Alt+Arrow keys reorder.';
+    on(launcher,'pointerdown',e=>{if(e.button!==0||(reorder&&(flyoutState().active||singleSlot()))||(!reorder&&e.shiftKey)||!canDrag())return;pointer=e.pointerId;startX=e.clientX;startY=e.clientY;startDelta=savedDelta();mode=e.shiftKey?'order':'group';order=interactionGridOrder();if(!order.includes(id))order.push(id);dragged=false;axis='';e.preventDefault();try{launcher.setPointerCapture(e.pointerId);}catch{}});
+    // Listen on window in the capture phase so host pages that stop pointer events (Twitch's player) cannot stall a drag.
+    on(launcher,'dragstart',e=>e.preventDefault());
+    on(window,'pointermove',e=>{if(e.pointerId!==pointer)return;const dx=e.clientX-startX,dy=e.clientY-startY;if(!axis&&Math.max(Math.abs(dx),Math.abs(dy))>4)axis=mode;if(!axis)return;dragged=true;groupDragging=true;e.preventDefault();launcher.classList.add('is-dragging');if(axis==='group')write(GRID_DELTA,Math.round(Math.max(8-(innerHeight-60),Math.min(4,startDelta+dy))));else{const from=order.indexOf(id),offset=flyoutState().tabs?Math.round(dy/TAB_PITCH)*(document.documentElement.dataset.expLauncherAnchor==='top'?1:-1):Math.abs(dx)>Math.abs(dy)?Math.round(-dx/56):Math.round(dy/56)*3,to=Math.max(0,Math.min(order.length-1,from+offset)),next=[...order];next.splice(from,1);next.splice(to,0,id);write(GRID_ORDER,next);}layoutGrid();emit('launcher-grid-moved',id);layout();},{passive:false,capture:true});
+    const end=e=>{if(e.pointerId===pointer){pointer=null;if(groupDragging){groupDragging=false;shiftMemo=null;layoutGrid();emit('launcher-grid-moved',id);layout();}launcher.classList.remove('is-dragging');try{launcher.releasePointerCapture(e.pointerId);}catch{}}};
+    on(window,'pointerup',end,true);on(window,'pointercancel',end,true);on(launcher,'lostpointercapture',end);
+    on(launcher,'click',e=>{if(dragged){e.preventDefault();e.stopImmediatePropagation();dragged=false;}},true);
+    on(launcher,'keydown',e=>{if(!reorder||flyoutState().active||!e.altKey||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();let next=interactionGridOrder();if(!next.includes(id))next.push(id);const from=next.indexOf(id),up=document.documentElement.dataset.expLauncherAnchor==='top'?-1:1,offset=flyoutState().tabs?{ArrowLeft:0,ArrowRight:0,ArrowUp:up,ArrowDown:-up}[e.key]:{ArrowLeft:1,ArrowRight:-1,ArrowUp:-3,ArrowDown:3}[e.key],to=Math.max(0,Math.min(next.length-1,from+offset));next=[...next];next.splice(from,1);next.splice(to,0,id);write(GRID_ORDER,next);layoutGrid();emit('launcher-grid-moved',id);layout();launcher.focus();});
+    return () => { while (removers.length) removers.pop()(); };
+  }
+  function interactionGridOrder() {
+    let order = read(GRID_ORDER, []);
+    if (!Array.isArray(order)) order = [];
+    const visible = [...document.querySelectorAll('[data-exp-product-launcher="1"]')]
+      .sort((a,b) => Number(a.dataset.launcherSlot || 0) - Number(b.dataset.launcherSlot || 0))
+      .map(node => node.dataset.productId);
+    if (!order.length) return visible;
+    const seen = new Set(order);
+    return [...order, ...visible.filter(id => !seen.has(id))];
+  }
+  function storageRead(key, fallback = null) {
+    try { if (typeof GM_getValue === 'function') return GM_getValue(key, fallback); } catch {}
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+  }
+  function storageWrite(key, value) {
+    try { if (typeof GM_setValue === 'function') { GM_setValue(key, value); return; } } catch {}
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+  }
+  function claimNotice(productId, changeId) {
+    const key = `exp:v3:${String(productId || 'product')}:notice:${String(changeId || 'change')}`;
+    if (storageRead(key, false) === true) return false;
+    storageWrite(key, true);
+    return true;
+  }
+  function consumeVersionChange(productId, currentVersion, legacyKey = '') {
+    const key = `exp:v3:${String(productId || 'product')}:installed-version`;
+    let previous = String(storageRead(key, '') || '');
+    if (!previous && legacyKey) { try { previous = String(localStorage.getItem(legacyKey) || ''); } catch {} }
+    storageWrite(key, String(currentVersion || ''));
+    return previous && previous !== currentVersion && claimNotice(productId, `updated:${currentVersion}`) ? previous : '';
+  }
+  // True only when at least one released version lies in (previous, current], current among them,
+  // and every one of them is quiet. Anything unparseable is not quiet.
+  function isQuietUpgrade(previous, current, releasedVersions, quietVersions) {
+    const pattern = /^\d+\.\d+\.\d+$/;
+    previous = String(previous || '');
+    current = String(current || '');
+    if (!pattern.test(previous) || !pattern.test(current) || CoreFoundation.compareVersions(current, previous) <= 0) return false;
+    const quiet = new Set(Array.from(quietVersions || [], String));
+    const skipped = Array.from(releasedVersions || [], String).filter(version => pattern.test(version)
+      && CoreFoundation.compareVersions(version, previous) > 0 && CoreFoundation.compareVersions(version, current) <= 0);
+    return skipped.includes(current) && skipped.every(version => quiet.has(version));
+  }
+  function visibleFloatingNotices() {
+    return [...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')]
+      .flatMap(host => [...(host.shadowRoot?.querySelectorAll('[data-exp-floating-notice="1"]') || [])].map(notice => ({ host, notice })))
+      .filter(({ notice }) => !notice.hidden && notice.getClientRects().length)
+      .sort((a,b) => Number(a.host.dataset.launcherSlot || 0) - Number(b.host.dataset.launcherSlot || 0) || a.host.dataset.productId.localeCompare(b.host.dataset.productId));
+  }
+  function layoutFloatingNotices() {
+    const launchers = [...document.querySelectorAll('[data-exp-product-launcher="1"][data-product-id]')]
+      .map(host => host.shadowRoot?.querySelector('[data-exp-part="launcher"]'))
+      .filter(Boolean).map(node => node.getBoundingClientRect()).filter(box => box.width && box.height);
+    const notices = visibleFloatingNotices();
+    if (!launchers.length || !notices.length) return;
+    let anchor = document.documentElement.dataset.expLauncherAnchor === 'top' ? 'top' : 'bottom';
+    let gridTop = Math.min(...launchers.map(box => box.top));
+    let gridBottom = Math.max(...launchers.map(box => box.bottom));
+    let gridRight = Math.max(...launchers.map(box => box.right));
+    const band = slotBand();
+    if (band) { anchor = band.down ? 'top' : 'bottom'; gridTop = band.top; gridBottom = band.bottom; gridRight = viewWidth() - 8; }
+    let cursor = anchor === 'top' ? gridBottom + 8 : gridTop - 8;
+    for (const { notice } of notices) {
+      const width = Math.min(notice.offsetWidth || notice.scrollWidth || 260, Math.max(0, innerWidth - 24));
+      const height = notice.offsetHeight || notice.scrollHeight || 72;
+      const left = Math.max(8, Math.min(innerWidth - width - 8, gridRight - width));
+      let top = anchor === 'top' ? cursor : cursor - height;
+      if (band) top = clearReserved(top, height, left, left + width, anchor === 'top', notice);
+      notice.style.setProperty('width', `${width}px`, 'important');
+      notice.style.setProperty('left', `${left}px`, 'important');
+      notice.style.setProperty('right', 'auto', 'important');
+      notice.style.setProperty('top', `${Math.max(8, Math.min(innerHeight - height - 8, top))}px`, 'important');
+      notice.style.setProperty('bottom', 'auto', 'important');
+      cursor = anchor === 'top' ? top + height + 8 : top - 8;
+    }
+  }
+  function registerFloatingNotice(host, notice) {
+    if (!(host instanceof Element) || !(notice instanceof Element)) return () => {};
+    if (floatingNoticeRegistrations.has(notice)) return floatingNoticeRegistrations.get(notice);
+    notice.dataset.expFloatingNotice = '1';
+    const refresh = () => requestAnimationFrame(layoutFloatingNotices);
+    const mutation = new MutationObserver(refresh); mutation.observe(notice, { attributes:true, attributeFilter:['hidden','class'] });
+    const resize = new ResizeObserver(refresh); resize.observe(notice);
+    addEventListener('resize', refresh, { passive:true }); document.addEventListener('exp-core:coordination', refresh);
+    const dispose = () => { mutation.disconnect(); resize.disconnect(); removeEventListener('resize', refresh); document.removeEventListener('exp-core:coordination', refresh); floatingNoticeRegistrations.delete(notice); };
+    floatingNoticeRegistrations.set(notice, dispose); refresh(); return dispose;
+  }
+  function registerLauncher(host, options = {}) {
+    if (registrations.has(host)) return registrations.get(host);
+    const id = options.productId || options.id || host.dataset.productId;
+    const contract = suiteContract(id);
+    const launcherPriority = contract ? contract.launcherPriority : options.priority ?? 0;
+    Object.assign(host.dataset, { expProductLauncher:'1', productId:id, launcherPriority:String(launcherPriority) });
+    // Advertises the flyout protocol; every Core copy reads the lead and the mode from these attributes only.
+    host.dataset.expFlyout = ExpLauncherFlyout.PROTOCOL;
+    if (ExpLauncherFlyout.isSiteProduct(id)) host.dataset.expSiteProduct = '1'; else delete host.dataset.expSiteProduct;
+    applyMatteToggleChrome(host);
+    // The launcher is non-modal: site-wide dialog backdrop styles must never
+    // paint over the page when the reference opens its manual popover.
+    const backdropStyle = host.shadowRoot ? injectStyle(host.shadowRoot,
+      ':host::backdrop{all:initial!important;display:none!important;background:transparent!important;pointer-events:none!important}',
+      { expLauncherBackdrop: '1' }) : null;
+    const stopProtect = CoreFoundation.protectLauncherHost(host);
+    const flyoutStyle = host.shadowRoot ? injectStyle(host.shadowRoot, flyoutCss(id), { expFlyoutStyle: '1' }) : null;
+    host.shadowRoot?.addEventListener('keydown', onTileKey);
+    host.addEventListener('toggle', onHostToggle);
+    let frame = 0;
+    const refresh = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; layoutGrid(); syncFlyout(); controllers.get(host)?.layout(); }); };
+    document.addEventListener('exp-core:coordination', refresh);
+    addEventListener('resize', refresh);
+    layoutGrid(); syncFlyout(); emit('launcher-added', id);
+    const dispose = () => { stopProtect(); backdropStyle?.dispose(); flyoutStyle?.dispose(); host.shadowRoot?.removeEventListener('keydown', onTileKey); host.removeEventListener('toggle', onHostToggle); removeHub(host); delete host.dataset.expFlyoutRole; delete host.dataset.expFlyoutSelected; delete host.dataset.expEdgeTab; cancelAnimationFrame(frame); document.removeEventListener('exp-core:coordination', refresh); removeEventListener('resize', refresh); delete host.dataset.expProductLauncher; delete host.dataset.expFlyout; delete host.dataset.expSiteProduct; registrations.delete(host); layoutGrid(); emit('launcher-removed', id); };
+    registrations.set(host, dispose);
+    return dispose;
+  }
+  function themes() {
+    return Object.freeze(CoreFoundation.THEME_MODES.map(id => Object.freeze(semanticTheme(CoreFoundation.resolveTheme(id)))));
+  }
+  function focusMenuSurface(panel) { if (!(panel instanceof HTMLElement)) return false; panel.tabIndex = -1; panel.style.outline = 'none'; panel.focus({ preventScroll: true }); return true; }
+  const FLOATING_NOTICE_CSS = '.exp-floating-update{position:fixed;z-index:2147483647;box-sizing:border-box;width:min(312px,calc(100vw - 24px));max-width:calc(100vw - 24px);margin:0;padding:10px 32px 10px 10px;border:1px solid var(--exp-notice-border,#6f42b4);border-radius:10px;background:linear-gradient(180deg,var(--exp-notice-top,#251a35),var(--exp-notice-bottom,#18181d) 70%);color:var(--exp-notice-text,#f4f4f6);box-shadow:0 10px 28px #0008;font:500 var(--exp-font-size-small,11px)/1.45 system-ui,sans-serif}.exp-floating-update[hidden]{display:none!important}.exp-floating-update[data-exp-update-notice]{padding:10px;font:400 var(--exp-font-size-small,11px)/1.42 ui-sans-serif,system-ui,"Segoe UI",sans-serif}.exp-floating-update-dismiss{position:absolute;top:7px;right:7px;width:23px;height:23px;padding:0;border:1px solid transparent;border-radius:7px;background:transparent;color:inherit;cursor:pointer;font:15px/1 Arial,sans-serif}.exp-floating-update-dismiss:hover,.exp-floating-update-dismiss:focus-visible{border-color:var(--exp-notice-border,#6f42b4);outline:none}';
+  function ensureFloatingNoticeStyle(shadow) {
+    if (!shadow.querySelector('style[data-exp-floating-notice]')) {
+      injectStyle(shadow, FLOATING_NOTICE_CSS, { expFloatingNotice: '1' });
+    }
+  }
+  function syncNoticeTheme(notice, themeSource) {
+    const theme = getComputedStyle(themeSource);
+    const first = (names, fallback) => names.map(name => theme.getPropertyValue(name).trim()).find(Boolean) || fallback;
+    notice.style.setProperty('--exp-notice-border', first(['--exp-notice-border','--theme-muted','--theme-accent','--accent','--accent2','--teal','--mb-brand'], theme.borderTopColor || '#6f42b4'));
+    notice.style.setProperty('--exp-notice-top', first(['--exp-notice-top','--theme-bg','--theme-panel','--surface','--panel','--raised','--mb-surface','--bg','--mb-bg'], theme.backgroundColor || '#251a35'));
+    notice.style.setProperty('--exp-notice-bottom', first(['--exp-notice-bottom','--theme-bg','--bg','--mb-bg','--surface','--mb-surface'], theme.backgroundColor || '#18181d'));
+    notice.style.setProperty('--exp-notice-text', first(['--exp-notice-text','--theme-text','--text','--mb-ink'], theme.color || '#f4f4f6'));
+  }
+  // Core-owned update and changelog cards use the canonical menu-width notice
+  // geometry. The legacy floating-notice coordinator remains exported
+  // for compatibility, but it no longer owns these product notices.
+  // Cards that appear on their own (menu closed) show one at a time: the owner is recorded on <html> so every
+  // Core copy shares the queue, and a waiting card shows when the owner hides. The turn is taken even while a
+  // product is alone, so products that load later wait for a card already showing. Products that draw their
+  // own card (Dropper) take and give back a turn with the same calls.
+  function takeNoticeTurn(token) {
+    const root = document.documentElement, owner = root.dataset.expNoticeOwner || '';
+    if (owner && owner !== token) return false;
+    root.dataset.expNoticeOwner = String(token);
+    return true;
+  }
+  function releaseNoticeTurn(token) {
+    if (document.documentElement.dataset.expNoticeOwner !== String(token)) return;
+    delete document.documentElement.dataset.expNoticeOwner;
+    document.dispatchEvent(new Event('exp-core:notice-released'));
+  }
+  function createMenuNotice(options = {}) {
+    const { shadow, panel, notice, versionButton = null } = options;
+    const host = options.host || shadow?.host;
+    if (!(shadow instanceof ShadowRoot) || !(panel instanceof Element) || !(notice instanceof Element)) {
+      return Object.freeze({ show() {}, hide() {}, toggle() {}, layout() {}, setMenuOpen() {}, destroy() {} });
+    }
+    const durationMs = Math.max(0, Number(options.durationMs ?? 30000));
+    const manageVersion = options.manageVersion !== false;
+    let timer = 0, menuOpen = false, destroyed = false, frame = 0, waiting = false;
+    const token = String(host?.dataset?.productId || 'product') + ':' + (++noticeSerial);
+
+    ensureFloatingNoticeStyle(shadow);
+    applyMatteToggleChrome(shadow);
+    notice.classList.add('update-notice', 'exp-floating-update');
+    notice.dataset.placement = 'menu';
+    delete notice.dataset.expFloatingNotice;
+    notice.setAttribute('role', 'status');
+
+    let dismiss = notice.querySelector(':scope > .exp-floating-update-dismiss,.update-dismiss');
+    if (!dismiss) {
+      dismiss = document.createElement('button');
+      dismiss.type = 'button';
+      dismiss.className = 'exp-floating-update-dismiss';
+      dismiss.setAttribute('aria-label', 'Dismiss Changelog');
+      dismiss.textContent = '×';
+      notice.prepend(dismiss);
+    }
+
+    const themeSource = options.themeSource instanceof Element ? options.themeSource : panel;
+    const returnFocus=options.returnFocus||versionButton;
+    const syncTheme = () => syncNoticeTheme(notice, themeSource);
+    function clearTimer() { clearTimeout(timer); timer = 0; }
+    function queueLayout() {
+      if (destroyed || frame) return;
+      frame = requestAnimationFrame(() => { frame = 0; layout(); });
+    }
+    function layout() {
+      if (destroyed || notice.hidden) return;
+      syncTheme();
+      const width = Math.min(menuWidth(), Math.max(0, innerWidth - 24));
+      notice.style.setProperty('width', width + 'px', 'important');
+
+      placeNotice(host || shadow.host, notice, menuOpen ? panel : null);
+    }
+    function release() { releaseNoticeTurn(token); }
+    function retry() { if (waiting && !destroyed) show(); }
+    function hide() {
+      clearTimer();
+      waiting = false;
+      const focused=notice.contains(shadow.activeElement);notice.hidden = true;
+      returnFocus?.setAttribute('aria-expanded', 'false');
+      if(focused)returnFocus?.focus({preventScroll:true});
+      release();
+    }
+    function show() {
+      if (!menuOpen && !takeNoticeTurn(token)) { waiting = true; return; }
+      waiting = false;
+      notice.hidden = false;
+      returnFocus?.setAttribute('aria-expanded', 'true');
+      clearTimer();
+      if (durationMs) timer = setTimeout(hide, durationMs);
+      queueLayout();
+    }
+    function toggle() { if (notice.hidden) show(); else hide(); }
+    function versionClick() { if (manageVersion) toggle(); else if (!notice.hidden) show(); }
+    function setMenuOpen(value) {
+      menuOpen = Boolean(value);
+      // A notice shown inside the open menu needs the shared turn once it floats on its own; without it, it waits.
+      if (!menuOpen && !notice.hidden && !takeNoticeTurn(token)) {
+        clearTimer();
+        notice.hidden = true;
+        returnFocus?.setAttribute('aria-expanded', 'false');
+        waiting = true;
+      }
+      queueLayout();
+    }
+
+    const resize = new ResizeObserver(queueLayout);
+    resize.observe(panel);
+    resize.observe(notice);
+    const mutation = new MutationObserver(queueLayout);
+    mutation.observe(notice, { attributes:true, attributeFilter:['hidden'], childList:true, subtree:true });
+    const coordination = () => queueLayout();
+    const escape=event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();hide();}};notice.addEventListener('keydown',escape);
+    dismiss.addEventListener('click', hide);
+    versionButton?.addEventListener('click', versionClick);
+    addEventListener('resize', queueLayout, { passive:true });
+    document.addEventListener('exp-core:coordination', coordination);
+    document.addEventListener('exp-core:notice-released', retry);
+
+    return Object.freeze({
+      show, hide, toggle, layout, setMenuOpen,
+      destroy() {
+        destroyed = true;
+        cancelAnimationFrame(frame);
+        clearTimer();
+        resize.disconnect();
+        mutation.disconnect();
+        notice.removeEventListener('keydown',escape);dismiss.removeEventListener('click', hide);
+        versionButton?.removeEventListener('click', versionClick);
+        removeEventListener('resize', queueLayout);
+        document.removeEventListener('exp-core:coordination', coordination);
+        document.removeEventListener('exp-core:notice-released', retry);
+        release();
+      },
+    });
+  }
+
+  function applyTheme(host, value, choices) {
+    const controller = controllers.get(host) || menuControllers.get(host); if (!controller) return;
+    controller.setTheme(value, choices);
+  }
+  function normalizeControls(panel) {
+    panel.querySelectorAll('button[role="switch"],button.toggle').forEach(button => {
+      button.classList.add('toggleSwitch'); button.setAttribute('role', 'switch');
+      if (!button.hasAttribute('aria-checked')) button.setAttribute('aria-checked', 'false');
+      const row = button.closest('.row,.mini-row,.fl-switch,.setting-row');
+      if (row) { row.classList.add('fl-switch'); const label = row.querySelector('.label,.copy>strong,.row-copy>strong,.setting-label,span'); if (label) label.classList.add('fl-switch-text'); if (!button.hasAttribute('aria-label') && !button.hasAttribute('aria-labelledby')) button.setAttribute('aria-label', label?.textContent || row.textContent.trim()); }
+    });
+    panel.querySelectorAll('.row,.mini-row,.setting-row').forEach(row => { if (!row.classList.contains('fl-switch')) row.classList.add('mini-row'); });
+    panel.querySelectorAll('select').forEach(node => node.classList.add('select-lite'));
+    panel.querySelectorAll('button.action,button.secondary,button.primary,button.compact,.diagnostics-controls button,.button-grid button,.menu-footer button').forEach(node => { if (!node.dataset.expPart) node.classList.add('life-btn'); });
+    panel.querySelectorAll('.route-body').forEach(body => body.classList.toggle('fl-tool-hidden', body.hidden));
+    const active = panel.querySelector('.fl-tool-header[aria-expanded="true"]');
+    panel.querySelectorAll('.fl-tool-header').forEach(header => { if (active) header.classList.toggle('last-opened', header === active); const chevron = header.querySelector('.fl-tool-chevron'); if (chevron) { const text = header.getAttribute('aria-expanded') === 'true' ? '▾' : '▸'; if (chevron.textContent !== text) chevron.textContent = text; } });
+  }
+  function normalizeHeader(panel) {
+    const head = panel.querySelector('.menu-head,header,.head'); if (!head) return;
+    head.classList.add('menu-head');
+    const brand = head.querySelector('.header-brand,.identity,.brand'); if (!brand) return;
+    brand.classList.add('header-brand');
+    let icon = brand.firstElementChild;
+    if (icon?.tagName === 'IMG' || icon?.tagName.toLowerCase() === 'svg') { const frame = document.createElement('div'); frame.className = 'header-icon'; icon.before(frame); frame.append(icon); icon.classList.add('menu-icon'); icon = frame; }
+    if (icon) { icon.classList.add('header-icon'); icon.querySelector('img,svg')?.classList.add('menu-icon'); }
+    const copy = brand.children[1]; if (copy) copy.classList.add('header-copy');
+    const row = copy?.firstElementChild; row?.classList.add('header-title-row');
+    const title = row?.querySelector('h1,h2,h3,strong,.menu-title'); if (title) title.dataset.expPart = 'title';
+    const ver = head.querySelector('.version,.header-version,[id$="header-version"]'); if (ver) ver.dataset.expPart = 'version';
+    const subtitle = copy?.querySelector('small,.subtitle,.menu-subtitle,[id$="subtitle"]'); if (subtitle) subtitle.dataset.expPart = 'subtitle';
+    const close = head.querySelector('.close,.menu-close,[id$="rail-close"]'); if (close) close.dataset.expPart = 'close';
+    panel.querySelector('.divider')?.classList.add('header-divider');
+    for (const section of panel.querySelectorAll('nav>.tool-panel,nav>section')) {
+      section.classList.add('fl-tool-panel'); const control = section.querySelector(':scope>button'); const body = section.querySelector(':scope>div'); if (!control || !body) continue;
+      control.classList.add('fl-tool-header'); body.classList.add('fl-tool-body');
+      if (!control.querySelector('.fl-tool-title')) { let title = control.querySelector('span:not(.chevron)'); if (!title) { title = document.createElement('span'); title.textContent = control.textContent; control.replaceChildren(title); } title.classList.add('fl-tool-title'); }
+      let chevron = control.querySelector('.chevron,.fl-tool-chevron'); if (!chevron) { chevron = document.createElement('span'); chevron.textContent = '▸'; control.append(chevron); } chevron.classList.add('fl-tool-chevron');
+    }
+  }
+  function makeLauncher(launcher, launcherSrc) {
+    if (launcher.dataset.expCoreLauncher) return;
+    const image = launcher.querySelector('img,.launcher-gem svg,.icon,svg:not(.launcher-ring):not(.ring)');
+    if (!image) throw new Error('Core launcher requires the product launcher artwork');
+    const mark = image.cloneNode(true); mark.removeAttribute('style'); mark.removeAttribute('id'); mark.setAttribute('class','icon launcher-icon');
+    if (launcherSrc && mark.tagName === 'IMG') mark.src = launcherSrc;
+    launcher.replaceChildren(mark); launcher.dataset.expCoreLauncher = '1'; launcher.dataset.expPart = 'launcher';
+    launcher.removeAttribute('data-help');
+  }
+  // Behavior-only adapter for products with a custom progress surface. Full
+  // Core chrome and custom shells share these bindings; no styles or nodes move.
+  function createMenuController(options = {}) {
+    const { id, host, shadow, panel, setOpen, getSettings = () => ({}) } = options;
+    if (!id || !host || !shadow || !panel || typeof setOpen !== 'function') {
+      throw new Error('Incomplete menu controller configuration');
+    }
+    if (menuControllers.has(host)) return menuControllers.get(host);
+    // How long an untouched menu stays open; a product may ask for longer (Dropper: 60 seconds).
+    const idleTimeoutMs = Math.max(15000, Number(options.idleTimeoutMs) || 0);
+    let open = false, destroyed = false, timer = 0, deadline = 0;
+    const removers = [];
+    const on = (node, type, handler, opts) => {
+      node.addEventListener(type, handler, opts);
+      removers.push(() => node.removeEventListener(type, handler, opts));
+    };
+    const customThemeRoot = options.themeRoot;
+    let customThemeMode = 'system';
+    function setTheme(value) {
+      if (!customThemeRoot) return;
+      customThemeMode = CoreFoundation.normalizeThemeMode(value);
+      const theme = CoreFoundation.resolveTheme(customThemeMode, id);
+      for (const target of [customThemeRoot,panel]) {
+        for (const key of tokenNames) target.style.setProperty('--theme-'+key,theme[key]);
+        target.style.setProperty('--theme-skin',theme.accent);
+        target.style.setProperty('--theme-skin-vertical',theme.accent);
+        target.dataset.uiTheme=theme.id;target.dataset.themeSkin='flat';target.style.colorScheme=theme.mode;
+      }
+      host.dataset.uiTheme=theme.id;
+      publishMenuPalette(host,theme);
+    }
+    if(customThemeRoot){
+      const customSystemTheme = matchMedia('(prefers-color-scheme: dark)');
+      on(customSystemTheme,'change',()=>{if(customThemeMode==='system')setTheme(customThemeMode);});
+      setTheme(getSettings().uiTheme);
+    }
+    function cancelDismiss() {
+      clearTimeout(timer);
+      timer = 0;
+      deadline = 0;
+    }
+    function enforceDeadline(now = Date.now()) {
+      if (destroyed || !open || !deadline || now < deadline) return false;
+      cancelDismiss();
+      setOpen(false, false);
+      return true;
+    }
+    function scheduleDismiss() {
+      cancelDismiss();
+      if (destroyed || !open || getSettings().menuAutoClose === false) return;
+      deadline = Date.now() + idleTimeoutMs;
+      timer = setTimeout(() => enforceDeadline(), idleTimeoutMs + 20);
+    }
+    function clearOwner() {
+      if (document.documentElement.getAttribute('data-exp-open-menu') === id) {
+        document.documentElement.removeAttribute('data-exp-open-menu');
+      }
+    }
+    const keepOpen = typeof options.keepOpen === 'function' ? options.keepOpen : () => false;
+    for (const type of ['pointerdown', 'click', 'wheel', 'keydown', 'input', 'change']) {
+      on(panel, type, scheduleDismiss, { passive: type === 'wheel' });
+    }
+    on(document, 'exp-core:flyout-close', () => { if (open) setOpen(false, false); });
+    on(document, 'exp-core:menu-open', () => {
+      if (open && document.documentElement.getAttribute('data-exp-open-menu') !== id) setOpen(false, false);
+    });
+    if (options.closeOnOutsidePointer !== false) on(document, 'pointerdown', event => {
+      if (!open || !event.isTrusted || event.composedPath().includes(host)) return;
+      if (shadow.activeElement instanceof HTMLSelectElement) return;
+      try { if (keepOpen(event)) return; } catch {}
+      setOpen(false, false);
+    }, true);
+    const controller = Object.freeze({
+      state(value) {
+        if (destroyed) return;
+        open = Boolean(value);
+        if (open) {
+          document.documentElement.setAttribute('data-exp-open-menu', id);
+          document.dispatchEvent(new Event('exp-core:menu-open'));
+        } else clearOwner();
+        panel.classList.toggle('fl-rail-open', open);
+        if (open) scheduleDismiss(); else cancelDismiss();
+      },
+      setTheme, scheduleDismiss, cancelDismiss, enforceDeadline,
+      get isOpen() { return open; },
+      get dismissAt() { return deadline; },
+      get timerActive() { return Boolean(timer); },
+      idleTimeoutMs,
+      destroy() {
+        if (destroyed) return;
+        destroyed = true;
+        open = false;
+        cancelDismiss();
+        clearOwner();
+        removers.forEach(remove => remove());
+        menuControllers.delete(host);
+      },
+    });
+    removers.push(ExpMenuPreferences.bindMenuSize({host,shadow,panel,onLayout:options.onLayout}));
+    menuControllers.set(host, controller);
+    return controller;
+  }
+
+  function create(options) {
+    const { id, host, shadow, launcher, panel, getSettings = () => ({}), setOpen, shortcutKey = '', productTheme, launcherSrc } = options;
+    if (controllers.has(host)) return controllers.get(host);
+    // All styling comes from the reference and the composition adapter. Remove
+    // product copies and their constructed sheets before mounting the canonical UI. A product that registers its
+    // launcher first keeps the launcher's own styles (backdrop and flyout), which follow the canonical sheet.
+    const launcherStyles = [...shadow.querySelectorAll('style[data-exp-launcher-backdrop],style[data-exp-flyout-style]')];
+    shadow.querySelectorAll('style').forEach(node => { if (!launcherStyles.includes(node)) node.dispose ? node.dispose() : node.remove(); });
+    try { shadow.adoptedStyleSheets = []; } catch {}
+    const styles = injectStyle(shadow, canonicalCss + compositionCss, { expCoreStyle:version });
+    try { shadow.adoptedStyleSheets = [...shadow.adoptedStyleSheets, ...launcherStyles.map(node => node.expSheet).filter(Boolean)]; } catch {}
+    const themeRoot = document.createElement('div'); themeRoot.className = 'exp-core-theme';
+    [...shadow.childNodes].filter(node => node !== styles).forEach(node => themeRoot.append(node)); shadow.append(themeRoot);
+    panel.dataset.expPart = 'dock'; panel.classList.add('exp-menu-surface'); makeLauncher(launcher,launcherSrc); normalizeHeader(panel); normalizeControls(panel);
+    let defaultSupport = null;
+    const header = panel.querySelector('.menu-head');
+    if (header && !header.querySelector('.support-wrap') && options.supportUrl !== '') {
+      defaultSupport = createSupportControl({url:options.supportUrl || SUPPORT_URL,label:'Support '+id.toUpperCase()});
+      let actions = header.querySelector('.header-actions');
+      if (!actions) { actions=document.createElement('div');actions.className='header-actions';const close=header.querySelector('[data-exp-part="close"]');if(close)actions.append(close);header.append(actions); }
+      actions.prepend(defaultSupport.element);
+    }
+    applyContentDrivenMenuLayout(shadow);
+    applyMatteToggleChrome(shadow);
+    const versionButton=panel.querySelector('.version,[data-exp-part="version"]');
+    const menuNotices=[...themeRoot.querySelectorAll('.update-notice,.changelog')].map(notice=>createMenuNotice({host,shadow,panel,notice,versionButton:notice.classList.contains('changelog')?versionButton:null,manageVersion:false,durationMs:30000}));
+    if (launcherSrc) panel.querySelectorAll('.header-icon img').forEach(image => image.src = launcherSrc);
+    host.dataset.coreVersion = version; host.dataset.coreSource = 'exp-core';
+    let selected, requestedTheme = 'system', open = false, destroyed = false, frame = 0;
+    const removers = [];
+    const on = (node,type,fn,opts) => { node.addEventListener(type,fn,opts); removers.push(() => node.removeEventListener(type,fn,opts)); };
+    let localTheme = null;
+    function paintTheme(theme) {
+      selected = theme;
+      for (const key of tokenNames) { themeRoot.style.setProperty('--theme-' + key, selected[key]); host.style.setProperty('--' + key, selected[key]); }
+      themeRoot.style.setProperty('--theme-skin', selected.skin || selected.swatch || selected.accent);
+      themeRoot.style.setProperty('--theme-skin-vertical', selected.skinVertical || selected.skin || selected.swatch || selected.accent);
+      Object.assign(themeRoot.dataset, { uiTheme:selected.id, themeSkin:selected.skinMode === 'flat' ? 'flat' : 'gradient' });
+      host.dataset.uiTheme = selected.id;
+      themeRoot.style.colorScheme = selected.mode;
+      host.style.colorScheme = selected.mode;
+    }
+    function syncThemeOwner() {
+      host.dataset.expThemeDeprioritized = '0';
+      host.dataset.expThemeOwner = id;
+      paintTheme(localTheme);
+    }
+    function setTheme(value) {
+      requestedTheme = CoreFoundation.normalizeThemeMode(value);
+      localTheme = semanticTheme(CoreFoundation.resolveTheme(requestedTheme, id));
+      publishMenuPalette(host, localTheme);
+      syncThemeOwner();
+    }
+    const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+    const followSystemTheme = () => { if (requestedTheme === 'system') setTheme(requestedTheme); };
+    systemTheme.addEventListener('change', followSystemTheme);
+    removers.push(() => systemTheme.removeEventListener('change', followSystemTheme));
+    function layout() {
+      if (destroyed || !launcher.isConnected) return;
+      const state = getSettings();
+      themeRoot.style.setProperty('--exp-menu-width', menuWidth() + 'px');
+      const fontTokens=ExpMenuPreferences.menuSizeTokens();themeRoot.style.setProperty('--exp-font-size-body',fontTokens.body+'px');themeRoot.style.setProperty('--exp-font-size-small',fontTokens.small+'px');
+      themeRoot.classList.toggle('reduce-motion', state.reduceMotion === true || state.reduceMotion === 'on' || state.reducedMotion === 'reduce' || (state.reduceMotion === 'system' || state.reducedMotion === 'system') && matchMedia('(prefers-reduced-motion:reduce)').matches);
+      themeRoot.style.setProperty('--exp-ui-opacity','1');
+      const { top, right } = launcherPlacement(host);
+      Object.assign(launcher.style,{top:top+'px',right:right+'px',bottom:'auto',left:'auto',zIndex:open?'2147483647':'2147483600'});
+      Object.assign(panel.style,{overflowY:'auto',overflowX:'hidden',overscrollBehavior:'contain',zIndex:open?'2147483647':'2147483599'});
+      if (!open) return;
+      placeMenu(host, panel, menuWidth());
+      menuNotices.forEach(notice=>notice.layout());
+    }
+    let arrangement, resize, mutation;
+    const arrangementAnchor = document.createComment('menu arrangement styles'); shadow.append(arrangementAnchor);
+    function mountMenu() {
+      if (arrangement) return;
+      const existingStyles = new Set(shadow.querySelectorAll('style'));
+      arrangement = ExpMenuArrangement.mount({ panel, id, onChange: queueLayout, resetLaunchers() { resetLauncherGrid(id); queueLayout(); } });
+      // Deferred base styles must retain their original precedence below product styles.
+      for (const style of shadow.querySelectorAll('style')) if (!existingStyles.has(style)) shadow.insertBefore(style, arrangementAnchor);
+      arrangementAnchor.remove();
+      resize = new ResizeObserver(queueLayout); resize.observe(panel);
+      mutation = new MutationObserver(records=>{if(records.some(r=>r.type==='childList'||r.attributeName==='hidden'))queueLayout();}); mutation.observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+    }
+    function queueLayout() { if (!frame && !destroyed) frame = requestAnimationFrame(() => { frame = 0; normalizeControls(panel); arrangement?.update(); layout(); }); }
+    removers.push(bindLauncherDrag(launcher, id, { layout }));
+    const menuController = createMenuController({ ...options, id, host, shadow, panel, getSettings, setOpen, onLayout:queueLayout });
+    on(window,'keydown',e=>{if(shortcutKey&&e.altKey&&e.shiftKey&&e.key.toLowerCase()===shortcutKey.toLowerCase()&&!e.repeat){e.preventDefault();setOpen(!open,true);} });
+    on(window,'resize',queueLayout);on(document,'exp-core:coordination',queueLayout);
+    on(document,'exp-core:coordination',syncThemeOwner);
+    const controller = {
+      layout, setTheme,
+      state(value) {open=Boolean(value);if(open)mountMenu();menuController.state(open);menuNotices.forEach(notice=>notice.setMenuOpen(open));if(open)panel.querySelectorAll('[data-exp-health]').forEach(node=>node.refreshHealth?.());queueLayout();},
+      update(){normalizeControls(panel);if(open)panel.querySelectorAll('[data-exp-health]').forEach(node=>node.refreshHealth?.());queueLayout();},
+      get dismissAt(){return menuController.dismissAt;},
+      destroy(){destroyed=true;arrangement?.destroy();arrangementAnchor.remove();defaultSupport?.destroy();menuController.destroy();cancelAnimationFrame(frame);resize?.disconnect();mutation?.disconnect();menuNotices.forEach(notice=>notice.destroy());removers.forEach(f=>f());styles.dispose();controllers.delete(host);}
+    };
+    controllers.set(host,controller);setTheme(getSettings().uiTheme);
+    queueLayout();return controller;
+  }
+  function createReleaseUpdateChecker(options = {}) {
+    const productId = String(options.productId || '').toLowerCase();
+    const repository = String(options.repository || '');
+    const resolveCurrentVersion = typeof options.currentVersion === 'function'
+      ? () => String(options.currentVersion() || '')
+      : () => String(options.currentVersion || '');
+    const enabled = typeof options.enabled === 'function' ? options.enabled : () => true;
+    const onError = typeof options.onError === 'function' ? options.onError : () => {};
+    if (!productId || !repository) throw new Error('Incomplete update checker configuration');
+    function getCurrentVersion() {
+      const currentVersion = resolveCurrentVersion();
+      if (!currentVersion) throw new Error('Update checker current version unavailable');
+      return currentVersion;
+    }
+
+    const ENDPOINT = String(options.endpoint || ('https://api.github.com/repos/' + repository + '/releases/latest'));
+    // Installs and updates come only from published releases, never from the
+    // branch: GitHub serves the newest release's asset at this address.
+    const RELEASE_URL = 'https://github.com/' + repository + '/releases';
+    const INSTALL_URL = RELEASE_URL + '/latest/download/' + String(options.scriptAsset || (productId + '.user.js'));
+    const CACHE_KEY = 'exp:v3:' + productId + ':update-cache';
+    const CHECK_INTERVAL = 12 * 60 * 60 * 1000;
+    const CHECK_LEASE = 30 * 1000;
+    let memory = {};
+
+    function readState() {
+      try {
+        if (typeof GM_getValue === 'function') {
+          const value = GM_getValue(CACHE_KEY, null);
+          if (value && typeof value === 'object' && !Array.isArray(value)) return { ...value };
+        }
+      } catch {}
+      try {
+        const value = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (value && typeof value === 'object' && !Array.isArray(value)) return { ...value };
+      } catch {}
+      return { ...memory };
+    }
+    function writeState(value) {
+      if(ExtraPotionsTools.productDataResetting(productId))return;
+      memory = { ...(value || {}) };
+      try { if (typeof GM_setValue === 'function') GM_setValue(CACHE_KEY, memory); } catch {}
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(memory)); } catch {}
+    }
+    function releaseDetails(body) {
+      const details = [];
+      let section = false;
+      for (const line of String(body || '').split(/\r?\n/)) {
+        if (/^##\s+/.test(line)) { if (section) break; section = true; continue; }
+        if (!section) continue;
+        const match = line.match(/^\s*[-*]\s+(.+)/);
+        if (!match) continue;
+        const detail = match[1].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[`*_]/g, '').trim();
+        if (detail) details.push(detail.slice(0, 220));
+        if (details.length === 4) break;
+      }
+      return details;
+    }
+    // A release is quiet when the newest heading of its notes is that release, marked "(quiet)".
+    function releaseQuiet(body, latest) {
+      for (const line of String(body || '').split(/\r?\n/)) {
+        if (!/^##\s+/.test(line)) continue;
+        const heading = line.match(/^##\s+v?(\d+\.\d+\.\d+)\b(.*)$/);
+        return Boolean(heading && heading[1] === latest && /\(quiet\)\s*$/.test(heading[2]));
+      }
+      return false;
+    }
+    function normalize(state) {
+      const next = { ...(state || {}) };
+      if (!Object.hasOwn(next, 'lastCheckAt') && next.checkedAt) next.lastCheckAt = Number(next.checkedAt) || 0;
+      if (!Object.hasOwn(next, 'lastRemoteVersion') && next.latest) next.lastRemoteVersion = String(next.latest || '');
+      if (!Array.isArray(next.details)) next.details = [];
+      return next;
+    }
+    function snapshot(state, stateName) {
+      const currentVersion = getCurrentVersion();
+      const next = normalize(state);
+      const latest = String(next.lastRemoteVersion || '');
+      return {
+        checkedAt: Number(next.lastCheckAt || 0),
+        latest: latest || null,
+        state: stateName || next.state || 'idle',
+        current: currentVersion,
+        available: Boolean(latest && CoreFoundation.compareVersions(latest, currentVersion) > 0),
+        details: next.details.slice(0, 4),
+        quiet: Boolean(next.quiet && latest && CoreFoundation.compareVersions(latest, currentVersion) > 0),
+        checkedForVersion: next.checkedForVersion || null,
+        lastRemoteVersion: latest || null,
+        lastHttpStatus: Number(next.lastHttpStatus || 0),
+        lastError: String(next.lastError || ''),
+        installUrl: INSTALL_URL,
+        releaseUrl: RELEASE_URL,
+      };
+    }
+    function request() {
+      return new Promise((resolve, reject) => {
+        if (typeof GM_xmlhttpRequest !== 'function') return reject(Object.assign(new Error('Update request capability unavailable'), { code:'UPDATE_CAPABILITY' }));
+        GM_xmlhttpRequest({
+          method:'GET',
+          url:ENDPOINT,
+          timeout:10000,
+          headers:{ Accept:'application/vnd.github+json', 'Cache-Control':'no-cache', Pragma:'no-cache' },
+          onload(response) {
+            if (response.status >= 200 && response.status < 300) return resolve(response);
+            reject(Object.assign(new Error('Update metadata request failed'), { code:'UPDATE_HTTP_' + response.status, status:response.status }));
+          },
+          onerror:() => reject(Object.assign(new Error('Update metadata request failed'), { code:'UPDATE_NETWORK' })),
+          ontimeout:() => reject(Object.assign(new Error('Update metadata request timed out'), { code:'UPDATE_TIMEOUT' })),
+        });
+      });
+    }
+    async function check(force = false) {
+      const currentVersion = getCurrentVersion();
+      let state = normalize(readState());
+      if (!enabled() && !force) return snapshot(state, 'disabled');
+
+      const now = Date.now();
+      const checkedForCurrentVersion = state.checkedForVersion === currentVersion;
+      if (!checkedForCurrentVersion) {
+        state.checkedForVersion = currentVersion;
+        state.lastCheckAt = 0;
+        state.checkLeaseUntil = 0;
+        state.lastRemoteVersion = '';
+        state.lastHttpStatus = 0;
+        state.lastError = '';
+        state.details = [];
+        state.quiet = false;
+        state.availableVersion = '';
+        state.availableAt = 0;
+      }
+      writeState(state);
+
+      if (!force && Number(state.checkLeaseUntil || 0) > now) return snapshot(state, 'checking');
+      if (!force && checkedForCurrentVersion && now - Number(state.lastCheckAt || 0) < CHECK_INTERVAL) return snapshot(state, 'cached');
+
+      state.checkedForVersion = currentVersion;
+      state.lastCheckAt = now;
+      state.checkLeaseUntil = now + CHECK_LEASE;
+      state.lastError = '';
+      state.state = 'checking';
+      writeState(state);
+
+      try {
+        const response = await request();
+        const payload = JSON.parse(String(response.responseText || '{}'));
+        const latest = String(payload.tag_name || '').replace(/^v/, '');
+        if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(latest)) throw Object.assign(new Error('Invalid update metadata'), { code:'UPDATE_METADATA' });
+
+        state = normalize(readState());
+        state.checkedForVersion = currentVersion;
+        state.lastCheckAt = Date.now();
+        state.checkLeaseUntil = 0;
+        state.lastRemoteVersion = latest;
+        state.lastHttpStatus = Number(response.status || 0);
+        state.lastError = '';
+        state.details = releaseDetails(payload.body);
+        state.quiet = releaseQuiet(payload.body, latest);
+        state.state = 'checked';
+        if (CoreFoundation.compareVersions(latest, currentVersion) > 0) {
+          state.availableVersion = latest;
+          state.availableAt = Date.now();
+        } else {
+          state.availableVersion = '';
+          state.availableAt = 0;
+        }
+        writeState(state);
+        return snapshot(state, 'checked');
+      } catch (error) {
+        state = normalize(readState());
+        state.checkedForVersion = currentVersion;
+        state.lastCheckAt = Date.now();
+        state.checkLeaseUntil = 0;
+        state.lastError = String(error?.message || 'Update check failed');
+        state.state = 'failed';
+        writeState(state);
+        try { onError(error); } catch {}
+        return snapshot(state, 'failed');
+      }
+    }
+    function status() { return snapshot(readState()); }
+    return Object.freeze({
+      get CURRENT_VERSION() { return getCurrentVersion(); },
+      ENDPOINT,
+      INSTALL_URL,
+      RELEASE_URL,
+      CHECK_INTERVAL,
+      check,
+      status,
+      compare: CoreFoundation.compareVersions,
+    });
+  }
+
+  function createSupportControl({ url = SUPPORT_URL, label = 'Support' } = {}) {
+    if (!url) return null;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'support-wrap';
+    const style = document.createElement('style');
+    style.dataset.expSupportControl = '1';
+    style.dataset.expOwned = '1';
+    style.textContent = CoreFoundation.supportControlCss();
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.id = 'exp-support-button';
+    button.className = 'support-button';
+    button.setAttribute('aria-label', label);
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', 'exp-support-popover');
+    button.title = label;
+    button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.2-4.35-9.55-8.45C.42 9.02 2.3 5 6.25 5c2.15 0 3.56 1.21 4.33 2.3C11.36 6.21 12.77 5 14.92 5c3.95 0 5.83 4.02 3.8 7.55C16.36 16.65 12 21 12 21Z"/></svg>';
+    const popover = document.createElement('div');
+    popover.id = 'exp-support-popover';
+    popover.className = 'support-popover';
+    popover.setAttribute('role', 'dialog');
+    popover.setAttribute('aria-label', label);
+    popover.hidden = true;
+    const strong = document.createElement('strong');
+    strong.textContent = label;
+    const copy = document.createElement('span');
+    copy.textContent = 'Donations are optional. All features stay free.';
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.textContent = 'Open Ko-fi';
+    popover.append(strong, copy, anchor, ExtraPotionsTools.createBitcoinDonation());
+    wrapper.append(style, button, popover);
+    const toggle = event => {
+      event?.stopPropagation?.();
+      ExtraPotionsTools.placeDonationPanel(popover,button);
+      popover.hidden = !popover.hidden;
+      button.setAttribute('aria-expanded', String(!popover.hidden));
+    };
+    const outside = event => {
+      if (popover.hidden || event.composedPath().includes(wrapper) || event.composedPath().includes(popover)) return;
+      popover.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+    };
+    button.addEventListener('click', toggle);
+    document.addEventListener('pointerdown', outside, true);
+    return Object.freeze({
+      element: wrapper,
+      button,
+      popover,
+      hide() { popover.hidden = true; button.setAttribute('aria-expanded', 'false'); },
+      destroy() { button.removeEventListener('click', toggle); document.removeEventListener('pointerdown', outside, true); popover.remove(); wrapper.remove(); },
+    });
+  }
+
+  function createProductNotice(options = {}) {
+    const { host, shadow, panel, versionButton = null } = options;
+    if (!(host instanceof Element) || !(shadow instanceof ShadowRoot) || !(panel instanceof Element)) {
+      throw new Error('Product notice requires a mounted Core product');
+    }
+    const notice = document.createElement('div');
+    notice.className = 'update-notice';
+    notice.dataset.expUpdateNotice = '1';
+    notice.hidden = true;
+    notice.innerHTML = '<button type="button" class="update-dismiss" aria-label="Dismiss Update Notice">×</button><div class="update-head"><div class="update-heading"><div class="update-kicker">What\'s New</div><div class="update-title"></div></div><div class="update-version"></div></div><div class="update-text"></div><ul class="update-list"></ul><div class="update-footer"><a class="update-release" target="_blank" rel="noopener noreferrer">GitHub Release</a><a class="update-action" target="_blank" rel="noopener noreferrer">Install Update</a></div>';
+    (shadow.querySelector('.exp-core-theme') || shadow).append(notice);
+    const controller = createMenuNotice({
+      host,
+      shadow,
+      panel,
+      notice,
+      versionButton: null,returnFocus:options.returnFocus||versionButton,
+      manageVersion: false,
+      durationMs: options.durationMs ?? 30000,
+    });
+    function show(state = {}) {
+      notice.querySelector('.update-kicker').textContent = state.kicker || "What's New";
+      notice.querySelector('.update-title').textContent = state.title || '';
+      notice.querySelector('.update-version').textContent = state.version ? 'v' + state.version : '';
+      notice.querySelector('.update-text').textContent = state.text || '';
+      const list = notice.querySelector('.update-list');
+      list.replaceChildren();
+      const details = Array.isArray(state.details) ? state.details.slice(0, 4) : [];
+      for (const detail of details) {
+        const item = document.createElement('li');
+        item.textContent = detail;
+        list.append(item);
+      }
+      list.hidden = !details.length;
+      const release = notice.querySelector('.update-release');
+      const releaseUrl = state.releaseUrl || options.releaseUrl || '';
+      release.hidden = !releaseUrl;
+      if (releaseUrl) release.href = releaseUrl;
+      const action = notice.querySelector('.update-action');
+      const actionUrl = state.actionUrl || options.installUrl || '';
+      action.hidden = !actionUrl || state.showAction === false;
+      if (actionUrl) action.href = actionUrl;
+      action.textContent = state.actionText || 'Install Update';
+      notice.dataset.noticeKind = state.kind || 'current';
+      // Some products close the menu without marking the panel hidden; only a drawn panel counts as open.
+      controller.setMenuOpen(!panel.hidden && panel.getClientRects().length > 0);
+      controller.show();
+    }
+    const versionClick = () => {
+      if (typeof options.onVersion === 'function') options.onVersion();
+      else controller.toggle();
+    };
+    versionButton?.addEventListener('click', versionClick);
+    return Object.freeze({
+      element: notice,
+      show,
+      hide: controller.hide,
+      toggle: controller.toggle,
+      layout: controller.layout,
+      setMenuOpen: controller.setMenuOpen,
+      destroy() {
+        versionButton?.removeEventListener('click', versionClick);
+        controller.destroy();
+        notice.remove();
+      },
+    });
+  }
+
+  function productCompatibilityReport() {
+    const base = ExtraPotionsDiagnostics.compatibility();
+    const interoperability = suiteHealth();
+    const conflicts = [
+      ...(Array.isArray(base.conflicts) ? base.conflicts : []),
+      ...interoperability.conflicts,
+    ];
+    return Object.freeze({
+      ...base,
+      conflicts: Object.freeze(conflicts.map(conflict => Object.freeze({ ...conflict }))),
+      status: conflicts.length ? 'conflicts-detected' : 'no-conflicts-observed',
+      interoperability,
+    });
+  }
+
+  function createSuiteCompatibilityControls() {
+    const details = document.createElement('details');
+    details.className = 'exp-tools-card';
+    details.style.cssText = 'border:1px solid var(--theme-line,var(--line,#777));border-radius:7px;padding:7px;margin-top:8px';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Product Compatibility';
+    const output = document.createElement('div');
+    output.setAttribute('aria-live', 'polite');
+    const refreshButton = document.createElement('button');
+    refreshButton.type = 'button';
+    refreshButton.className = 'life-btn action';
+    refreshButton.textContent = 'Refresh Compatibility';
+
+    const refresh = () => {
+      output.replaceChildren();
+      const report = productCompatibilityReport();
+      const suite = suiteSnapshot();
+      const healthById = new Map(report.interoperability.products.map(product => [product.id, product]));
+      if (!suite.products.length) {
+        const empty = document.createElement('p');
+        empty.textContent = 'No ExtraPotions products are registered on this page yet.';
+        output.append(empty);
+      }
+      for (const product of suite.products) {
+        const health = healthById.get(product.id);
+        const line = document.createElement('p');
+        const stateAge = health?.stateAgeMs == null ? '' : ` · state ${Math.max(0, Math.round(health.stateAgeMs / 1000))}s ago`;
+        line.textContent = `${product.id.toUpperCase()} ${product.version} · Core ${product.coreVersion} · ${health?.status === 'healthy' ? 'Healthy' : 'Check Compatibility'}${stateAge}`;
+        output.append(line);
+      }
+
+      const observers = document.createElement('p');
+      const page = pageObserverState();
+      const navigation = navigationObserverState();
+      observers.textContent = `Shared observers · DOM: ${page.active ? page.owner || 'active' : 'idle'} · Navigation: ${navigation.active ? navigation.owner || 'active' : 'idle'}`;
+      output.append(observers);
+
+      const status = document.createElement('p');
+      status.textContent = report.conflicts.length
+        ? report.conflicts.map(conflict => conflict.type).join(', ')
+        : 'No interoperability conflicts detected on this page.';
+      output.append(status);
+
+      const note = document.createElement('small');
+      note.textContent = 'Only products running on this page are shown. Shared suite state is advisory coordination data, not an authorization signal.';
+      output.append(note);
+    };
+
+    details.addEventListener('toggle', () => { if (details.open) refresh(); });
+    refreshButton.addEventListener('click', refresh);
+    details.append(summary, output, refreshButton);
+    return details;
+  }
+
+  function createDiagnosticsReport(product, details = {}) {
+    const report = ExtraPotionsDiagnostics.createReport(product, details, { version, source: 'exp-core', sourceVersion });
+    return {
+      ...report,
+      interoperability: {
+        suite: suiteSnapshot(),
+        presentation: {
+          phases: { ...PRESENTATION_PHASES },
+          providers: presentationProviders(),
+        },
+        pageObserver: pageObserverState(),
+        navigationObserver: navigationObserverState(),
+        states: suiteStateSnapshot(),
+        health: suiteHealth(),
+      },
+    };
+  }
+  function downloadDiagnostics(report) {
+    const name=`${String(report.report||'Diagnostics').toLowerCase().replace(/[^a-z0-9]+/g,'-')}-${new Date().toISOString().replace(/[:.]/g,'-')}.json`;
+    const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+    const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function createDiagnosticsControls(getReport, notify = () => {}) { return ExtraPotionsDiagnostics.createControls(getReport, notify); }
+  const { normalizeHealth, createHealthControls } = ExpHealthSummary;
+  const { createRecoveryGuard } = ExpRecoveryControl;
+  function createProduct({id,name,version:productVersion,subtitle='',artwork,theme,sections=[],getSettings,onSettings=()=>{},priority,supportUrl=SUPPORT_URL,keepOpen}) {
+    const host=document.createElement('div');host.id='exp-'+id+'-root';host.dataset.expOwned='1';const shadow=host.attachShadow({mode:'open'});const panel=document.createElement('aside');panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label',name+' settings');
+    const header=document.createElement('header');header.className='menu-head';const brand=document.createElement('div');brand.className='header-brand';const image=document.createElement('img');image.src=artwork;image.alt='';const copy=document.createElement('div');const titleRow=document.createElement('div');const title=document.createElement('strong');title.textContent=name;const v=document.createElement('button');v.type='button';v.className='version';v.textContent='v'+productVersion;v.setAttribute('aria-label','View '+name+' v'+productVersion+' Changelog');titleRow.append(title,v);copy.append(titleRow);brand.append(image,copy);const close=document.createElement('button');close.className='close';close.textContent='×';close.setAttribute('aria-label','Close '+name);const actions=document.createElement('div');actions.className='header-actions';const support=createSupportControl({url:supportUrl,label:'Support '+name});if(support)actions.append(support.element);actions.append(close);header.append(brand,actions);const divider=document.createElement('div');divider.className='header-divider';const nav=document.createElement('nav');
+    let isOpen=false, activeId='';let chrome;
+    const sectionMap=new Map();
+    function renderSection(section,body){const content=section.render({core:api,onSettings});replaceMenuContent(body,content);chrome?.update();}
+    function renderActive(){if(!activeId)return false;const entry=sectionMap.get(activeId);if(!entry||entry.body.hidden)return false;renderSection(entry.section,entry.body);return true;}
+    function setOpen(value,focus=true){isOpen=Boolean(value);panel.hidden=!isOpen;launcher.setAttribute('aria-expanded',String(isOpen));if(isOpen){activeId='';nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);nav.querySelectorAll('button[data-section]').forEach(n=>n.setAttribute('aria-expanded','false'));}chrome.state(isOpen);if(focus)(isOpen?focusMenuSurface(panel):launcher.focus());}
+    for(const section of sections){const group=document.createElement('section');group.className='tool-panel';const button=document.createElement('button');button.type='button';button.textContent=section.label;button.dataset.section=section.id;const body=document.createElement('div');body.className='route-body';body.hidden=true;sectionMap.set(section.id,{section,body,button});button.addEventListener('click',()=>{const opening=body.hidden;nav.querySelectorAll('.route-body').forEach(n=>n.hidden=true);nav.querySelectorAll('button[data-section]').forEach(n=>{n.classList.toggle('last-opened',n===button);n.setAttribute('aria-expanded',String(opening&&n===button));});body.hidden=!opening;activeId=opening?section.id:'';if(opening)renderSection(section,body);chrome.update();});group.append(button,body);nav.append(group);}
+    const launcher=document.createElement('button');launcher.className='launcher';launcher.type='button';launcher.setAttribute('aria-label','Open '+name);const mark=image.cloneNode(true);launcher.append(mark);launcher.addEventListener('click',()=>setOpen(!isOpen));close.addEventListener('click',()=>setOpen(false));panel.append(header,divider,nav);shadow.append(panel,launcher);document.documentElement.append(host);chrome=create({id,host,shadow,panel,launcher,getSettings,setOpen,productTheme:theme,supportUrl,keepOpen});const unregister=registerLauncher(host,{productId:id,priority});
+    const key=e=>{if(e.key==='Escape'&&isOpen)setOpen(false);};document.addEventListener('keydown',key);
+    return {host,shadow,panel,launcher,versionButton:v,open:()=>setOpen(true),close:()=>setOpen(false),toggle:()=>setOpen(!isOpen),refresh:()=>chrome.update(),renderActive,get isOpen(){return isOpen;},destroy(){document.removeEventListener('keydown',key);support?.destroy();chrome.destroy();unregister();host.remove();}};
+  }
+  let gridFrame=0;
+  let lastSlotKey='';
+  const checkSlot=()=>{const slot=siteSlot();const key=slot?slot.left+','+slot.top:'';if(key!==lastSlotKey){lastSlotKey=key;emit('launcher-site-slot','core');}};
+  const scheduleGrid=()=>{if(!gridFrame)gridFrame=requestAnimationFrame(()=>{gridFrame=0;layoutGrid();syncFlyout();checkSlot();recheckSiteControls();});};
+  // Page changes can add, move or hide a site slot, so they also drop the remembered slot, at most once per
+  // 150ms: a busy page (Twitch chat) would otherwise re-measure the top bar on every change.
+  let slotStale=0;
+  const markSlotStale=()=>{if(!slotStale)slotStale=setTimeout(()=>{slotStale=0;slotMemo=null;scheduleGrid();},150);};
+  // Launcher attributes and launchers coming or going re-lay the grid on the next frame; any other page change
+  // waits for the 150ms gate above.
+  const launcherChange=record=>record.type==='attributes'||[...record.addedNodes,...record.removedNodes].some(node=>node.dataset?.expProductLauncher==='1');
+  const gridObserver=new MutationObserver(records=>{markSlotStale();if(records.some(launcherChange))scheduleGrid();});
+  const startGrid=()=>{if(!document.documentElement)return;gridObserver.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['data-exp-product-launcher','data-product-id','data-launcher-priority','data-launcher-reserved-rows','data-exp-flyout','data-exp-update','data-exp-progress','data-exp-open-menu','data-exp-flyout-open']});scheduleGrid();};
+  if(document.documentElement)startGrid();else addEventListener('DOMContentLoaded',startGrid,{once:true});
+  document.addEventListener('exp-core:coordination',scheduleGrid);
+  document.addEventListener('exp-core:menu-open', raiseOpenMenuHost);
+  document.addEventListener('exp-core:flyout-focus', onFlyoutFocus);
+  document.addEventListener('pointerdown', onFlyoutOutside, true);
+  addEventListener('keydown', onFlyoutEscape, true);
+  addEventListener('resize',scheduleGrid,{passive:true});
+  addEventListener('scroll',recheckSiteControls,{passive:true,capture:true});
+  // Core-owned product bootstrap for downstream consumers.
+  function createProductServices(options = {}) {
+    const productId = String(options.productId || '').toLowerCase();
+    const repository = String(options.repository || '');
+    const currentVersion = options.currentVersion;
+    if (!productId || !repository || (typeof currentVersion !== 'function' && !String(currentVersion || ''))) {
+      throw new Error('Incomplete product services configuration');
+    }
+    const lifecycle = createProductLifecycle(api);
+    const diagnostics = Object.freeze({
+      createDiagnosticsReport,
+      downloadDiagnostics,
+      createDiagnosticsControls,
+    });
+    const updates = createReleaseUpdateChecker({
+      productId,
+      repository,
+      currentVersion,
+      endpoint: options.endpoint,
+      scriptAsset: options.scriptAsset,
+      enabled: options.enabled,
+      onError: options.onError,
+    });
+    return Object.freeze({ lifecycle, diagnostics, updates });
+  }
+
+  const api = Object.freeze({...ExtraPotionsTools,setMenuHelp:ExpMenuHelp.setMenuHelp,...ExpMenuPreferences,...ExpSiteColors,normalizeHealth,createHealthControls,createRecoveryGuard,version,sourceVersion,protocol,gridProtocol,reference:CoreFoundation,css:canonicalCss,themes,create,createMenuController,createProduct,menuTemplate:ExpLeanMenu.template,setMenuStatus:ExpLeanMenu.setMenuStatus,createSupportControl,createProductNotice,createLifecycle:()=>createProductLifecycle(api),createProductServices,registerLauncher,setLauncherUpdate,setLauncherProgress,bindLauncherDrag,launcherPlacement,placeMenu,placeNotice,resetLauncherGrid,layout:layoutGrid,replaceMenuContent,createDisclosure,createSystemGrid,isOwnedSheet,menuWidth,cloneSettings,applyTextGradient,injectStyle,applyTheme,applyMatteToggleChrome,applyTwoColumnSettingsGrid,applyContentDrivenMenuLayout,publishMenuPalette,createMenuNotice,takeNoticeTurn,releaseNoticeTurn,createReleaseUpdateChecker,registerFloatingNotice,layoutFloatingNotices,claimNotice,consumeVersionChange,isQuietUpgrade,focusMenuSurface,registerDiagnosticsProduct,registerSuiteProduct,suiteContract,suiteSnapshot,hasProductCapability,capabilityProviders,emitSuiteEvent,publishSuiteState,suiteStateSnapshot,latestSuiteState,subscribeSuiteState,onSuiteEvent,suiteSitePaused,suiteSitePausePersisted,setSuiteSitePaused,pageContext,observeNavigation,navigationObserverState,suiteTrust:SUITE_TRUST,registerPresentationProvider,presentationProviders,suiteHealth,readPresentationState,setPresentationState,clearPresentationState,presentationStateChain,isPresentationSuppressed,presentationPhases:PRESENTATION_PHASES,presentationChannels:PRESENTATION_CHANNELS,observePresentationState,observePage,observePageBatch,pageObserverState,suiteProducts:SUITE_PRODUCTS,suitePriority:SUITE_PRIORITY,productCompatibility:productCompatibilityReport,createCompatibilityControls:createSuiteCompatibilityControls,bindDiagnosticsControls:ExtraPotionsDiagnostics.bindControls,createDiagnosticsReport,downloadDiagnostics,createDiagnosticsControls,mountMenuArrangement:ExpMenuArrangement.mount,mountSubmenuTabs:ExpMenuArrangement.mountTabs,menuCategories:ExpMenuArrangement.categories,categorizeMenuSections:ExpMenuArrangement.describe,createMenuCategoryDisclosure:(label,category,...contents)=>ExpMenuArrangement.createDisclosure({document,label,category,contents}),collapseMenuSubmenus:ExpMenuArrangement.collapseSubmenus,compareVersions:CoreFoundation.compareVersions});
+  return api;
+})();
+
+const services = ExtraPotionsCore.createProductServices({
+  productId: 'ward',
+  repository: 'ExtraPotions/WARD',
+  currentVersion: () => EXP.VERSION,
+  enabled: () => EXP.Settings.snapshot().updateNotifications,
+  onError: error => EXP.Core.safeError(Object.assign(error, { code: 'UPDATE_CHECK' }), 'ward.updates'),
+});
+EXP.Core = services.lifecycle;
+EXP.Diagnostics = services.diagnostics;
+EXP.Updates = services.updates;
+
+EXP.Settings = (() => {
+  const PREFIX = 'exp:v3:ward';
+  const SCHEMA = 1;
+  const memory = new Map();
+  const defaults = Object.freeze({
+    schema: SCHEMA,
+    enabled: true,
+    retailers: Object.freeze({ amazon: true, walmart: true, ebay: true, etsy: true, target:true, bestbuy:true, shopify:true }),
+    protectionReviews: [],
+    protectionLevel: 'balanced',
+    contentAction: 'automatic',
+    confidencePolicy: 'confirmed-supported',
+    defaultAction: 'collapse',
+    safeMode: false,
+    autoClipCoupons: true,
+    compactSearch: false,
+    siteColors: 'system',
+    recommendationCleanup: true,
+    sellerClarity: true,
+    sellerClaritySearch: true,
+    sellerClarityAlways: false,
+    trustedBrands: [],
+    reducedMotion: 'system',
+    nonColorIndicators: true,
+    explanationDetail: 'concise',
+    updateNotifications: true,
+    launcherPosition: 'automatic-end-bottom',
+    uiTheme: 'system',
+    menuAutoClose: true,
+    menuNotifications: true,
+    shortcut: '',
+    categories: {},
+    pageExceptions: [],
+    patterns: {}
+  });
+  let state;
+  const listeners = new Set();
+  const key = (name) => `${PREFIX}:${name}`;
+  let storageError='',invalidSaved,unsaved=false,readFailed=false;
+  const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  function managerWrite(storageKey,value) {
+    if(typeof GM_setValue!=='function'||typeof GM_getValue!=='function')throw Error('Manager storage is unavailable. Changes are temporary.');
+    GM_setValue(storageKey,ExtraPotionsCore.cloneSettings(value));
+    if(!same(GM_getValue(storageKey,undefined),value))throw Error('Settings were not saved. Retry saving.');
+  }
+  function pageCopy(storageKey){try{return localStorage.getItem(storageKey);}catch{return null;}}
+  // Preserve the exact legacy bytes in isolated storage before removing a page-readable copy.
+  function archivePageCopy(storageKey) {
+    const text=pageCopy(storageKey);if(text===null)return;
+    const backup=key('page-settings-backup:'+encodeURIComponent(location.origin||location.hostname));
+    const previous=typeof GM_getValue==='function'?GM_getValue(backup,[]):[];
+    const copies=Array.isArray(previous)?previous:[];
+    managerWrite(backup,copies.includes(text)?copies:[...copies,text]);
+    localStorage.removeItem(storageKey);
+  }
+  function read(name) {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return undefined;
+    const storageKey=key(name);
+    if(unsaved&&memory.has(storageKey))return memory.get(storageKey);
+    readFailed=false;
+    try {
+      if(typeof GM_getValue==='function'){
+        const value=GM_getValue(storageKey,undefined);
+        if(value!==undefined)return value;
+      }
+      const text=pageCopy(storageKey);
+      return text===null?memory.get(storageKey):JSON.parse(text);
+    } catch {readFailed=true;storageError='Saved data could not be read. Reload or export before retrying.';return memory.get(storageKey);}
+  }
+  function write(name,value) {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return false;
+    const storageKey=key(name);memory.set(storageKey,ExtraPotionsCore.cloneSettings(value));
+    try {managerWrite(storageKey,value);unsaved=false;storageError='';
+      try{archivePageCopy(storageKey);}catch{storageError='Settings saved. A legacy page copy could not be archived.';}
+      return true;
+    }catch{unsaved=true;storageError='Settings are temporary. Storage is unavailable; retry saving.';return false;}
+  }
+  function validate(candidate) {
+    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) throw Object.assign(new Error('Settings must be an object'), { code: 'SETTINGS_TYPE' });
+    const next = ExtraPotionsCore.cloneSettings(defaults);
+    for (const name of ['enabled', 'safeMode', 'autoClipCoupons', 'compactSearch', 'recommendationCleanup', 'sellerClarity', 'sellerClaritySearch', 'sellerClarityAlways', 'nonColorIndicators', 'updateNotifications', 'menuAutoClose', 'menuNotifications']) if (typeof candidate[name] === 'boolean') next[name] = candidate[name];
+    next.siteColors = ['light','dark','system'].includes(candidate.siteColors) ? candidate.siteColors : 'system';
+    // One switch per store. The earlier single amazonEnabled setting migrates into it.
+    const stores = { ...defaults.retailers };
+    if (typeof candidate.amazonEnabled === 'boolean') stores.amazon = candidate.amazonEnabled;
+    if (candidate.retailers && typeof candidate.retailers === 'object' && !Array.isArray(candidate.retailers)) {
+      for (const key of Object.keys(stores)) if (typeof candidate.retailers[key] === 'boolean') stores[key] = candidate.retailers[key];
+    }
+    next.retailers = stores;
+    const enums = { protectionLevel: ['essential', 'balanced', 'custom'], contentAction: ['automatic', 'hide', 'dim'], confidencePolicy: ['confirmed', 'confirmed-supported', 'custom'], defaultAction: ['hide', 'dim', 'collapse', 'annotate', 'allow'], reducedMotion: ['system', 'reduce', 'allow'], explanationDetail: ['concise', 'detailed'], launcherPosition: ['automatic-end-bottom', 'end-top', 'end-bottom', 'start-top', 'start-bottom'], uiTheme: ['light', 'dark', 'system'] };
+    for (const [name, values] of Object.entries(enums)) {
+	  const value = candidate[name];
+	  if (values.includes(value)) next[name] = value;
+	}
+    if (typeof candidate.shortcut === 'string' && candidate.shortcut.length <= 40) next.shortcut = candidate.shortcut;
+    for (const field of ['categories', 'patterns']) if (candidate[field] && typeof candidate[field] === 'object' && !Array.isArray(candidate[field])) next[field] = Object.fromEntries(Object.entries(candidate[field]).filter(([id, value]) => /^[a-z][a-z0-9.-]+$/.test(id) && ['inherit', 'on', 'off'].includes(value)));
+    next.pageExceptions=Array.isArray(candidate.pageExceptions)?candidate.pageExceptions.filter(v=>v&&typeof v.path==='string'&&v.path.length<=500&&typeof v.patternId==='string'&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)).slice(0,200).map(v=>({path:v.path,patternId:v.patternId})):[];
+    next.protectionReviews=Array.isArray(candidate.protectionReviews)?candidate.protectionReviews.filter(v=>v&&['correct','wrong','missed'].includes(v.verdict)&&/^[a-z][a-z0-9.-]+$/.test(v.patternId)&&Object.keys(stores).includes(v.retailer)).slice(-100).map(v=>({verdict:v.verdict,patternId:v.patternId,retailer:v.retailer,at:Number(v.at)||0})):[];
+    next.trustedBrands=Array.isArray(candidate.trustedBrands)?[...new Set(candidate.trustedBrands.filter(v=>typeof v==='string'&&/^[a-z0-9]{1,60}$/.test(v)))].slice(-200):[];
+    return next;
+  }
+  function load() {
+    const stored = read('settings');
+    if(unsaved&&state)return snapshot();
+    try{state = validate(stored ?? defaults);invalidSaved=undefined;}
+    catch{invalidSaved=ExtraPotionsCore.cloneSettings(stored);state=ExtraPotionsCore.cloneSettings(defaults);state.safeMode=true;storageError='Saved settings need recovery. Original data is preserved.';return snapshot();}
+    if(readFailed){state.safeMode=true;return snapshot();}
+    write('settings', state);
+    return snapshot();
+  }
+  function snapshot() { return ExtraPotionsCore.cloneSettings(state || defaults); }
+  function diagnosticSnapshot(value = snapshot()) {
+    const { trustedBrands, pageExceptions, ...settings } = value;
+    return { ...settings, trustedBrandCount: trustedBrands.length, pageExceptionCount: pageExceptions.length };
+  }
+  function replace(value,reason='replace') {
+    if(ExtraPotionsCore.productDataResetting?.('ward'))return snapshot();
+    if(readFailed){storageError='Saved data is unreadable. Retry before changing settings.';return snapshot();}
+    const next=validate(value);
+    if(invalidSaved!==undefined){
+      try{managerWrite(key('recovery:'+Date.now()),invalidSaved);}catch{storageError='Original data could not be backed up. Retry recovery.';return snapshot();}
+    }
+    state=next;invalidSaved=undefined;write('settings',next);
+    for(const listener of listeners)listener(snapshot(),reason);return snapshot();
+  }
+  function storageStatus(){return {error:storageError,unsaved,recovery:invalidSaved!==undefined};}
+  function recoveryData(){return {product:'ward',saved:invalidSaved===undefined?read('settings'):ExtraPotionsCore.cloneSettings(invalidSaved)};}
+  function retrySave(){if(readFailed){read('settings');if(readFailed)return snapshot();storageError='';return load();}if(invalidSaved!==undefined)return replace({...defaults,safeMode:true},'recover-settings');write('settings',snapshot());for(const listener of listeners)listener(snapshot(),'retry-save');return snapshot();}
+  function update(patch, reason = 'update') { return replace({ ...snapshot(), ...patch }, reason); }
+  function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
+  function exportData() { return { product: 'ward', generation: 3, schema: SCHEMA, settings: snapshot() }; }
+  function prepareImport(payload) { if (!payload || payload.product !== 'ward' || payload.generation !== 3 || payload.schema !== SCHEMA) throw Object.assign(new Error('Unsupported WARD export'), { code: 'IMPORT_SCHEMA' }); return validate(payload.settings); }
+  function resetAll() {
+    ExtraPotionsCore.clearProductData('ward');
+    memory.clear();storageError='';invalidSaved=undefined;unsaved=false;state = ExtraPotionsCore.cloneSettings(defaults);
+    for (const listener of listeners) listener(snapshot(), 'product-reset');
+    return snapshot();
+  }
+  return Object.freeze({storageStatus,recoveryData,retrySave,resetAll, PREFIX, SCHEMA, defaults, validate, load, snapshot, diagnosticSnapshot, replace, update, subscribe, exportData, prepareImport });
+})();
+
+EXP.Patterns = (() => {
+  const definitions = [
+    { id: 'upsell.membership.prime', category: 'upsell', label: 'Prime Membership Promotion', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'pressure.urgency', category: 'urgency', label: 'Urgency Message', defaultAction: 'dim', allowedActions: ['dim', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'pressure.scarcity', category: 'scarcity', label: 'Scarcity Message', defaultAction: 'annotate', allowedActions: ['dim', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'pressure.subscription', category: 'subscription', label: 'Subscription Promotion', defaultAction: 'collapse', allowedActions: ['dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'upsell.financial-product', category: 'upsell', label: 'Credit or Installment Promotion', defaultAction: 'collapse', allowedActions: ['dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'upsell.protection-plan', category: 'upsell', label: 'Protection-Plan Promotion', defaultAction: 'collapse', allowedActions: ['dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'upsell.business-membership', category: 'upsell', label: 'Amazon Business Promotion', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'sponsorship.placement', category: 'sponsored', label: 'Sponsored Placement', defaultAction: 'hide', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'complete-placement-only' },
+    { id: 'cross-sell.recommendation', category: 'cross-sell', label: 'Cross-Sell Recommendation', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'complete-placement-only' },
+    { id: 'upsell.amazon-service', category: 'upsell', label: 'Amazon Service Promotion', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'pressure.shopping-assistant', category: 'shopping-assistant', label: 'AI Shopping Assistant Prompt', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'complete-placement-only' },
+    { id: 'pressure.social-proof', category: 'social-proof', label: 'Popularity Claim', defaultAction: 'dim', allowedActions: ['dim', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'upsell.store-membership', category: 'upsell', label: 'Store Membership Promotion', defaultAction: 'collapse', allowedActions: ['hide', 'dim', 'collapse', 'annotate', 'allow'], essentialPolicy: 'mixed-annotate' },
+    { id: 'pressure.signup-popup', category: 'signup-popup', label: 'Email Sign-Up Pop-Up', defaultAction: 'hide', allowedActions: ['hide', 'dim', 'allow'], essentialPolicy: 'complete-placement-only' },
+    { id: 'promotion.announcement-bar', category: 'announcement', label: 'Announcement Bar', defaultAction: 'dim', allowedActions: ['hide', 'dim', 'collapse', 'allow'], essentialPolicy: 'complete-placement-only' },
+    { id: 'pricing.reference-price', category: 'pricing', label: 'Reference price, not verified', defaultAction: 'annotate', allowedActions: ['annotate', 'allow'], essentialPolicy: 'mixed-annotate' }
+  ].map((item) => Object.freeze({ ...item }));
+  const byId = new Map(definitions.map((item) => [item.id, item]));
+  function validate() {
+    if (byId.size !== definitions.length) throw Object.assign(new Error('Duplicate pattern ID'), { code: 'PATTERN_DUPLICATE' });
+    for (const item of definitions) if (!item.allowedActions.includes(item.defaultAction) || !item.essentialPolicy) throw Object.assign(new Error('Invalid pattern definition'), { code: 'PATTERN_INVALID' });
+    return true;
+  }
+  validate();
+  return Object.freeze({ all: () => definitions.slice(), get: (id) => byId.get(id), has: (id) => byId.has(id), validate });
+})();
+
+EXP.Audit = (() => {
+  let sequence = 0;
+  let nodeIds = new WeakMap();
+  let detections = new Set();
+  let decisions = new Set();
+  let revealedTargets = new Set();
+  const targets = new Map();
+
+  function idFor(node) {
+    let id = nodeIds.get(node);
+    if (!id) {
+      id = `target-${++sequence}`;
+      nodeIds.set(node, id);
+    }
+    return id;
+  }
+
+  function targetFor(node) {
+    const targetId = idFor(node);
+    let target = targets.get(targetId);
+    if (!target) {
+      target = {
+        targetId,
+        node,
+        detections: new Map(),
+        decisions: new Map(),
+        requestedAction: null,
+        appliedAction: null,
+        confidence: null,
+        structuralSafe: null,
+        reason: null,
+        revealed: false
+      };
+      targets.set(targetId, target);
+    }
+    return target;
+  }
+
+  function detected(node, data = {}) {
+    if (!(node instanceof Element)) return;
+    const target = targetFor(node);
+    const detectorId = String(data.detectorId || 'unknown');
+    const patternId = String(data.patternId || 'unknown');
+    const key = `${target.targetId}|${detectorId}|${patternId}`;
+    detections.add(key);
+    target.detections.set(`${detectorId}|${patternId}`, {
+      detectorId,
+      patternId,
+      confidence: String(data.confidence || 'unknown'),
+      structuralSafe: data.structuralSafe === true,
+      structuralReason: data.structuralReason ? String(data.structuralReason) : null
+    });
+  }
+
+  function decision(node, data = {}) {
+    if (!(node instanceof Element)) return;
+    const target = targetFor(node);
+    const detectorId = String(data.detectorId || 'unknown');
+    const patternId = String(data.patternId || 'unknown');
+    const key = `${target.targetId}|${detectorId}|${patternId}`;
+    decisions.add(key);
+    const current = {
+      detectorId,
+      patternId,
+      requestedAction: String(data.requestedAction || 'allow'),
+      appliedAction: String(data.appliedAction || 'allow'),
+      confidence: String(data.confidence || 'unknown'),
+      structuralSafe: data.structuralSafe === true,
+      reason: data.reason ? String(data.reason) : null
+    };
+    target.decisions.set(`${detectorId}|${patternId}`, current);
+    target.requestedAction = current.requestedAction;
+    target.appliedAction = current.appliedAction;
+    target.confidence = current.confidence;
+    target.structuralSafe = current.structuralSafe;
+    target.reason = current.reason;
+  }
+
+  function revealed(node) {
+    if (!(node instanceof Element)) return;
+    const target = targetFor(node);
+    revealedTargets.add(target.targetId);
+    target.revealed = true;
+  }
+
+  function concealed(node) {
+    if (!(node instanceof Element)) return;
+    const targetId = nodeIds.get(node);
+    if (!targetId) return;
+    revealedTargets.delete(targetId);
+    const target = targets.get(targetId);
+    if (target) target.revealed = false;
+  }
+
+  function prune() {
+    for (const [targetId, target] of targets) {
+      if (target.node?.isConnected) continue;
+      targets.delete(targetId);
+      revealedTargets.delete(targetId);
+      for (const key of [...detections]) if (key.startsWith(`${targetId}|`)) detections.delete(key);
+      for (const key of [...decisions]) if (key.startsWith(`${targetId}|`)) decisions.delete(key);
+    }
+  }
+
+  function snapshot() {
+    const rows = [...targets.values()].map((target) => {
+      const detectionsList = [...target.detections.values()];
+      return {
+        targetId: target.targetId,
+        duplicate: detectionsList.length > 1,
+        detections: detectionsList,
+        decisions: [...target.decisions.values()],
+        confidence: target.confidence,
+        requestedAction: target.requestedAction,
+        appliedAction: target.appliedAction,
+        structuralSafe: target.structuralSafe,
+        reason: target.reason,
+        revealed: target.revealed
+      };
+    });
+
+    const decided = rows.filter((item) => item.appliedAction !== null);
+    const counts = {
+      detected: detections.size,
+      acted: decided.filter((item) => item.appliedAction !== 'allow').length,
+      downgraded: decided.filter((item) => item.requestedAction !== item.appliedAction).length,
+      skipped: decided.filter((item) => item.appliedAction === 'allow').length,
+      revealed: revealedTargets.size,
+      duplicateTargets: rows.filter((item) => item.duplicate).length,
+      structuralCollapseSkipped: decided.filter((item) =>
+        (item.requestedAction === 'hide' || item.requestedAction === 'collapse') &&
+        item.appliedAction !== item.requestedAction &&
+        item.structuralSafe === false
+      ).length
+    };
+
+    return {
+      schemaVersion: 1,
+      privacy: 'Detector and action metadata only. Page text, form values, selectors, URLs, and DOM markup are excluded.',
+      counts,
+      targets: rows
+    };
+  }
+
+  function resetRoute() {
+    sequence = 0;
+    nodeIds = new WeakMap();
+    detections = new Set();
+    decisions = new Set();
+    revealedTargets = new Set();
+    targets.clear();
+  }
+
+  return Object.freeze({ detected, decision, revealed, concealed, prune, snapshot, resetRoute });
+})();
+
+// Store adapters register here. The engine, settings and menu talk to EXP.Retailer,
+// which forwards to whichever registered adapter matches the current site, so
+// supporting another store means adding an adapter and registering it.
+//
+// An adapter provides: key, label, patternIds, features, eligible(), classify(),
+// detect(roots), structuralSafety(node), diagnose(), nextEpoch(), cleanup().
+// Optional: couponCandidates(roots), verifyCouponTarget(control),
+// cosmeticRecommendationCandidates(roots), sellerFacts(root), listingBrands(roots).
+EXP.Retailers = (() => {
+  const adapters = new Map();
+  const REQUIRED = ['eligible', 'classify', 'detect', 'structuralSafety', 'diagnose', 'nextEpoch', 'cleanup'];
+
+  function register(adapter) {
+    if (!adapter || typeof adapter.key !== 'string' || !/^[a-z][a-z0-9-]*$/.test(adapter.key)) {
+      throw Object.assign(new Error('Retailer adapter needs a lowercase key'), { code: 'RETAILER_KEY' });
+    }
+    if (adapters.has(adapter.key)) throw Object.assign(new Error(`Duplicate retailer adapter: ${adapter.key}`), { code: 'RETAILER_DUPLICATE' });
+    for (const name of REQUIRED) {
+      if (typeof adapter[name] !== 'function') throw Object.assign(new Error(`Retailer adapter ${adapter.key} is missing ${name}()`), { code: 'RETAILER_INTERFACE' });
+    }
+    adapters.set(adapter.key, adapter);
+    return adapter;
+  }
+
+  function all() { return [...adapters.values()]; }
+  function get(key) { return adapters.get(key) || null; }
+  function keys() { return [...adapters.keys()]; }
+  // The adapter for the page being viewed, or null on an unsupported site.
+  function current() {
+    for (const adapter of adapters.values()) {
+      try { if (adapter.eligible()) return adapter; } catch { /* a broken adapter never claims a page */ }
+    }
+    return null;
+  }
+
+  return Object.freeze({ register, all, get, keys, current });
+})();
+
+// What the engine and menu call. Everything falls back to a safe answer on a page
+// that no adapter supports.
+EXP.Retailer = (() => {
+  const idle = Object.freeze({ id: 'none', key: 'none', label: 'Store', health: 'inactive', eligible: false, pageType: 'unsupported' });
+  const none = () => [];
+  function adapter() { return EXP.Retailers.current(); }
+  function coverage() {
+    const active=adapter(),patterns=active?.patterns?.(),ids=active?.patternIds||[],rows=Array.isArray(patterns)?patterns:[];
+    const supportedCategories=[...new Set(rows.filter(row=>row.complete===true).map(row=>row.patternId))];
+    const conservativeCategories=[...new Set(ids)].filter(id=>!supportedCategories.includes(id));
+    return {retailer:active?.key||'none',supportedCategories,conservativeCategories,unsupportedCategories:EXP.Patterns.all().map(row=>row.id).filter(id=>!ids.includes(id))};
+  }
+  function optional(name, fallback) {
+    return (...args) => {
+      const active = adapter();
+      return active && typeof active[name] === 'function' ? active[name](...args) : fallback(...args);
+    };
+  }
+
+  return Object.freeze({
+    coverage,
+    key: () => adapter()?.key || 'none',
+    label: () => adapter()?.label || 'Store',
+    features: () => adapter()?.features || Object.freeze({}),
+    patternIds: () => new Set(adapter()?.patternIds || []),
+    eligible: () => Boolean(adapter()),
+    // WARD acts on this page only if the master switch and this store's own switch are on.
+    enabled: (settings) => Boolean(settings?.enabled) && Boolean(adapter()) && settings.retailers?.[adapter().key] !== false,
+    classify: optional('classify', () => 'other'),
+    detect: optional('detect', none),
+    couponCandidates: optional('couponCandidates', none),
+    verifyCouponTarget: optional('verifyCouponTarget', () => ({ eligible: false, reason: 'unsupported-store' })),
+    cosmeticRecommendationCandidates: optional('cosmeticRecommendationCandidates', none),
+    structuralSafety: optional('structuralSafety', () => ({ safe: false, reason: 'unsupported-store' })),
+    supportsSellerClarity: () => typeof adapter()?.sellerFacts === 'function',
+    sellerFacts: optional('sellerFacts', () => null),
+    listingBrands: optional('listingBrands', none),
+    theme: optional('theme', () => null),
+    diagnose: () => adapter()?.diagnose() || idle,
+    nextEpoch: () => { for (const item of EXP.Retailers.all()) item.nextEpoch(); },
+    cleanup: () => { for (const item of EXP.Retailers.all()) item.cleanup(); },
+  });
+})();
+
+EXP.AmazonAdapter = (() => {
+  const ID = 'ward.retailer.amazon';
+  const VERSION = '3';
+  const errors = [];
+  let health = 'inactive';
+  let epoch = 0;
+  let lastScan = null;
+  let routeMatchedTargets = new WeakSet();
+  let routeMatchedTargetCount = 0;
+  const routeMatchedDetectors = new Set();
+  const supportedHosts = new Set(['www.amazon.com']);
+  // These identify complete ad units, not arbitrary containers with ad text.
+  // Their iframe/carousel children belong to the ad and can hide with the unit.
+  const heroWrapperSelector = '#hqpWrapper, #heroQuickPromoContainer, div.celwidget[data-feature-name="heroQuickPromo"]';
+  const sponsoredWrapperSelector = `div.ape-wrapper[id^="ape_"][id$="_wrapper"], ${heroWrapperSelector}`;
+  const sponsoredSearchSelector = '.s-result-item.AdHolder, .s-result-item:has(.sb-desktop)';
+  const completeSponsoredSelectors = [
+    '[data-component-type="s-sponsored-result"]',
+    sponsoredSearchSelector,
+    sponsoredWrapperSelector,
+    'div.ape-placement[id^="ape_"][id$="_placement"]',
+    'div.ape-feedback[id^="ape_"][id*="_placement_Feedback"]',
+    'div.a-carousel-container[id^="sp_detail"][data-a-carousel-options]',
+    'li.dpx-smidget-desktop-pill-list-item:has(button[data-action-id^="related_questions_sponsored_related_question_"])'
+  ];
+  const completeSponsoredSelector = completeSponsoredSelectors.join(',');
+  const primePlanPromotion = '.mobile-gateway-strategic_prime-retention-plan-switch-homepage-wd-widget-cx';
+  const ordersBusinessPromotion = '[data-card-metrics-id^="abxs-yo-dsk-dynamic-upsell_"]';
+  const essentialSelector = ['.order-card', '.js-order-card', '#searchOrdersInput', '#time-filter', 'form[action^="/your-orders/"]', '[data-buybox-component]', '#buybox', '#desktop_buybox', '#price', '#corePrice_feature_div', '#availability', '#deliveryBlockMessage', '#mir-layout-DELIVERY_BLOCK', '#addToCart', '#buyNow', '#checkout', '[name="placeYourOrder1"]', '[data-testid*="checkout"]'].join(',');
+  const structuralCollapseSelector = [primePlanPromotion, ordersBusinessPromotion, '#sims-fbt','#buyItWith','[data-feature-name="sims-fbt"]','#primeDPUpsellStaticContainerNPA','#primeDPUpsellStaticContainer','#businessPrimeDPUpsellStaticContainer','#businessSavings_feature_div','[data-feature-name="businessSavings"]','[data-csa-c-content-id*="business-savings" i]','#primeSavingsUpsellAccordionRow','#attach-warranty-pane','#protectionPlan_feature_div','#insuranceAndWarranty_feature_div','[data-feature-name="insuranceAndWarranty"]','[data-csa-c-content-id*="insurance-and-warranty" i]','#snsAccordionRowMiddle','#subscribeAndSaveAccordionRow','#creditCard_feature_div','#installmentCalculator_feature_div','#audible-promo'].join(',');
+  const structuralRiskSelector = ['#rufus-container','video','audio','iframe','.a-carousel','.a-carousel-container','[role="slider"]','[aria-live]','[data-testid*="rufus" i]','[data-testid*="video" i]','[data-testid*="follow" i]','[data-feature-name*="video" i]','[data-feature-name*="creator" i]','[data-feature-name*="follow" i]','[data-cel-widget*="video" i]','[data-cel-widget*="media" i]'].join(',');
+  const detectors = Object.freeze([
+    { id: 'amazon.prime.product', patternId: 'upsell.membership.prime', pages: ['product', 'search', 'cart', 'checkout', 'home', 'orders', 'other'], selectors: [primePlanPromotion, '[data-feature-name="desktop-dp-ilm"]', '#primeDPUpsellStaticContainerNPA', '#primeDPUpsellStaticContainer', '#nav-join-prime', '#osu-prime-recommendations', '#prime-spc-stripe-recommendations', '.isoa-wrapper-radio', '.udm-primary-delivery-message:has(.prime-signup-ingress)', 'span[data-csa-c-owner="PromotionsDiscovery"]:has(label[id^="greenBadge"])', '#businessPrimeDPUpsellStaticContainer', '#primeSavingsUpsellAccordionRow', '#pep_feature_div'] },
+    { id: 'amazon.urgency.deal', patternId: 'pressure.urgency', pages: ['product', 'search', 'cart'], selectors: ['.a-badge[data-a-badge-type="deal"]', '#dealBadge_feature_div', '#dealProgress_feature_div', '.sc-delight-pricing', '#delightPricingBadge_feature_div'] },
+    { id: 'amazon.scarcity.stock', patternId: 'pressure.scarcity', pages: ['product', 'search', 'cart'], selectors: ['.sc-product-scarcity', '[class*="_scarcityMessage_"]', 'span[aria-label*="left in stock" i]'] },
+    { id: 'amazon.subscription.sns', patternId: 'pressure.subscription', pages: ['product', 'cart'], selectors: ['.sc-subscribe-and-save-upsell-message', '#snsAccordionRowMiddle', '#subscribeAndSaveAccordionRow'] },
+    { id: 'amazon.financial.credit', patternId: 'upsell.financial-product', pages: ['product', 'cart', 'checkout', 'search'], selectors: ['#creditCard_feature_div', '#installmentCalculator_feature_div', '[data-feature-name*="creditCard" i]', '[data-csa-c-content-id*="credit" i]'] },
+    { id: 'amazon.plan.protection', patternId: 'upsell.protection-plan', pages: ['product', 'cart'], selectors: ['#attach-warranty-pane', '#protectionPlan_feature_div', '#insuranceAndWarranty_feature_div', '[data-feature-name*="protectionPlan" i]', '[data-feature-name="insuranceAndWarranty"]', '[data-csa-c-content-id*="insurance-and-warranty" i]'] },
+    { id: 'amazon.business.promo', patternId: 'upsell.business-membership', pages: ['product', 'search', 'cart', 'home', 'orders'], selectors: [ordersBusinessPromotion, '#businessPrimeDPUpsellStaticContainer', '#businessSavings_feature_div', '[data-feature-name="businessSavings"]', '[data-feature-name*="business" i][class*="promo" i]', '[data-csa-c-content-id*="business-savings" i]'] },
+    { id: 'amazon.sponsored.placement', patternId: 'sponsorship.placement', pages: ['product', 'search', 'home', 'orders'], selectors: [...completeSponsoredSelectors, '[data-ad-details]', '#sp_detail', '[data-cel-widget^="sp_"]'] },
+    { id: 'amazon.cross-sell.recommendation', patternId: 'cross-sell.recommendation', pages: ['product', 'cart', 'home'], selectors: ['#sims-fbt', '#desktop-dp-sims_session-similarities-sims-feature', '#buyItWith', '[data-feature-name="sims-fbt"]'] },
+    { id: 'amazon.service.promo', patternId: 'upsell.amazon-service', pages: ['product', 'home', 'orders', 'other'], selectors: ['#audible-promo', '[data-feature-name*="audible" i][class*="promo" i]', '[data-feature-name*="music" i][class*="promo" i]'] },
+    { id: 'amazon.ai.rufus', patternId: 'pressure.shopping-assistant', pages: ['product', 'search', 'home'], selectors: ['#rufus-container', '[data-testid*="rufus" i]'] }
+  ]);
+
+  // Urgency and scarcity wrappers render empty until Amazon fills them; only a shown message is evidence.
+  const MESSAGE_PATTERNS = new Set(['pressure.urgency', 'pressure.scarcity']);
+  function showsMessage(node) {
+    if (!node.textContent.trim() && !node.getAttribute('aria-label')?.trim() && !node.querySelector('img,svg,[aria-label]')) return false;
+    try { const box = node.getBoundingClientRect(); return box.width > 0 && box.height > 0; } catch { return false; }
+  }
+  function classify(pathname = location.pathname) {
+    if (/^\/(?:your-orders\/(?:orders|search)|gp\/(?:your-account|css)\/order-history)(?:\/|$)/.test(pathname)) return 'orders';
+    if (/\/dp\/|\/gp\/product\//.test(pathname)) return 'product';
+    if (/\/s(?:\/|$)/.test(pathname)) return 'search';
+    if (/\/cart|\/gp\/cart/.test(pathname)) return 'cart';
+    if (/\/checkout|\/gp\/buy/.test(pathname)) return 'checkout';
+    if (pathname === '/' || pathname === '') return 'home';
+    return 'other';
+  }
+
+  function eligible() { return supportedHosts.has(location.hostname); }
+  function isProtectedPageRoot(node) {
+    return !node ||
+      node === document.documentElement ||
+      node === document.head ||
+      node === document.body ||
+      node === document.scrollingElement ||
+      node.matches?.('#a-page, #pageContent, main, [role~="main"]') ||
+      Boolean(node.querySelector?.('#a-page, #pageContent, main, [role~="main"], [data-exp-owned="1"]'));
+  }
+  function safeQueryAll(root, selector) { try { return [...root.querySelectorAll(selector)]; } catch (error) { record(error, 'DETECTOR_SELECTOR'); return []; } }
+  function essentialOverlap(node) { return Boolean(node.matches?.(essentialSelector) || node.closest?.(essentialSelector) || safeQueryAll(node, essentialSelector).length); }
+  function structuralSafety(node) {
+    if (!node?.isConnected) return { safe: false, reason: 'detached' };
+    if (isProtectedPageRoot(node) || node.closest?.('[data-exp-owned="1"]')) return { safe: false, reason: 'protected-root' };
+    if (node.matches?.(completeSponsoredSelector) && !essentialOverlap(node)) return { safe: true, reason: 'complete-sponsored-placement' };
+    const risky = node.matches?.(structuralRiskSelector) || node.closest?.(structuralRiskSelector) || safeQueryAll(node, structuralRiskSelector).length;
+    if (risky) return { safe: false, reason: 'dynamic-widget' };
+    if (node.matches?.(structuralCollapseSelector)) return { safe: true, reason: 'known-static' };
+    return { safe: false, reason: 'unverified-container' };
+  }
+  function record(error, code) { errors.push({ code, at: Date.now() }); if (errors.length > 8) errors.shift(); health = 'degraded'; EXP.Core.safeError(Object.assign(error || new Error(code), { code }), ID); }
+  function resetCoverage() {
+    lastScan = null;
+    routeMatchedTargets = new WeakSet();
+    routeMatchedTargetCount = 0;
+    routeMatchedDetectors.clear();
+  }
+
+  function detect(roots = [document]) {
+    if (!eligible()) { health = 'inactive'; lastScan = null; return []; }
+    const pageType = classify();
+    if (lastScan && lastScan.pageType !== pageType) resetCoverage();
+    const found = new Map();
+    const eligibleDetectors = detectors.filter((detector) => detector.pages.includes(pageType));
+    health = 'healthy';
+    for (const detector of eligibleDetectors) {
+      try {
+        for (const root of roots) for (const selector of detector.selectors) for (const match of [...(root.matches?.(selector) ? [root] : []), ...safeQueryAll(root, selector)]) {
+          // Light ads put the disclosure beside the creative inside a wrapper.
+          // Treat that whole unit once, including on incremental child scans.
+          const node = detector.id === 'amazon.sponsored.placement'
+            ? match.closest('#hqpWrapper') || match.closest('#heroQuickPromoContainer') || match.closest(sponsoredSearchSelector) || match.closest(sponsoredWrapperSelector) || match
+            : match;
+          if (!node.isConnected || isProtectedPageRoot(node) || node.closest('[data-exp-owned="1"]')) continue;
+          if (MESSAGE_PATTERNS.has(detector.patternId) && !showsMessage(node)) continue;
+          routeMatchedDetectors.add(detector.id);
+          if (!routeMatchedTargets.has(node)) {
+            routeMatchedTargets.add(node);
+            routeMatchedTargetCount += 1;
+          }
+          const essential = essentialOverlap(node);
+          const structural = structuralSafety(node);
+          const confidence = essential ? 'ambiguous' : 'confirmed';
+          EXP.Audit?.detected?.(node, { detectorId: detector.id, patternId: detector.patternId, confidence, structuralSafe: structural.safe, structuralReason: structural.reason });
+          const key = `${detector.id}:${selector}:${node.dataset.wardInstance || ''}`;
+          if (!found.has(node)) found.set(node, Object.freeze({ evidenceId: key, detectorId: detector.id, patternId: detector.patternId, pageType, node, signals: ['adapter-selector'], exclusions: essential ? ['essential-overlap'] : [], essentialOverlap: essential, structuralSafe: structural.safe, structuralReason: structural.reason, confidence, epoch }));
+        }
+      } catch (error) { record(error, 'DETECTOR_FAILURE'); }
+    }
+    lastScan = {
+      pageType,
+      eligibleDetectors: eligibleDetectors.map(({ id }) => id),
+      matchedDetectors: [...routeMatchedDetectors],
+      matchedTargets: routeMatchedTargetCount
+    };
+    return [...found.values()];
+  }
+
+  function couponCandidates(roots = [document]) {
+    if (!eligible()) return [];
+    const selector = '[data-component-type="s-coupon-component"] .s-coupon-tile.unclaimed input[type="checkbox"]:not(:checked), .ct-coupon-tile.unclaimed input[type="checkbox"]:not(:checked)';
+    const controls = roots.flatMap((root) => safeQueryAll(root, selector));
+    if (classify() === 'product') controls.push(...roots.flatMap(root => safeQueryAll(root, '#ppd button, #ppd a, #ppd input[type="button"], #ppd [role="button"]')).filter(control => redeemComponent(control)));
+    return controls.filter((node, index, all) => all.indexOf(node) === index);
+  }
+
+  function redeemComponent(control) {
+    if (classify() !== 'product' || !control.closest('#ppd') || (control.value || control.textContent || '').trim().toLowerCase() !== 'redeem') return null;
+    if (control.matches('a[href]') && control.getAttribute('href') && !control.getAttribute('href').startsWith('#')) return null;
+    if (control.form && control.type === 'submit') return null;
+    for (let node = control.parentElement, depth = 0; node && node.id !== 'ppd' && depth < 5; node = node.parentElement, depth += 1) {
+      const text = (node.textContent || '').replace(/\s+/g, ' ').trim();
+      if (text.length > 700) return null;
+      if (/\bpromo\s*code\b/i.test(text) && /\d+(?:\.\d+)?\s*%\s*off\b/i.test(text)) {
+        if (node.querySelector('input[type="radio"], input[type="checkbox"], select, [name="placeYourOrder1"], #addToCart, #buyNow')) return null;
+        const controls = [...node.querySelectorAll('button, a, input[type="button"], [role="button"]')].filter(item => (item.value || item.textContent || '').trim().toLowerCase() === 'redeem');
+        return controls.length === 1 ? node : null;
+      }
+    }
+    return null;
+  }
+
+  function cosmeticRecommendationCandidates(roots = [document]) {
+    if (!eligible()) return [];
+    const selector = '#sims-fbt, #buyItWith, [data-feature-name="sims-fbt"]';
+    return roots.flatMap((root) => safeQueryAll(root, selector)).filter((node, index, all) => all.indexOf(node) === index && !essentialOverlap(node) && structuralSafety(node).safe);
+  }
+
+  function verifyCouponTarget(control) {
+    if (!control?.isConnected || control.disabled || control.checked || control.hidden || control.dataset.wardCouponAttempted === '1') return { eligible: false, reason: 'not-unclaimed' };
+    if (control.getAttribute('aria-disabled') === 'true' || control.closest('[inert], [hidden]')) return { eligible: false, reason: 'not-unclaimed' };
+    const promotion = redeemComponent(control);
+    const component = promotion || control.closest('[data-component-type="s-coupon-component"], .ct-coupon-tile');
+    if (!component) return { eligible: false, reason: 'ambiguous-control' };
+    if (component.closest('#addToCart, #buyNow, #checkout, [name="placeYourOrder1"], [data-testid*="checkout"]')) return { eligible: false, reason: 'unsafe-context' };
+    const tile=promotion?null:control.closest('.s-coupon-tile, .ct-coupon-tile');
+    return { eligible: true, component, tile, kind: promotion ? 'redeem' : 'checkbox' };
+  }
+
+  // Seller Clarity facts. Read-only: text the product page already shows.
+  const textOf = (node) => (node?.textContent || '').replace(/\s+/g, ' ').trim();
+  function firstText(root, selectors) {
+    for (const selector of selectors) { const value = textOf(safeQueryAll(root, selector)[0]); if (value) return value; }
+    return '';
+  }
+  function sellerFacts(root = document) {
+    if (!eligible() || classify() !== 'product') return null;
+    const byline = safeQueryAll(root, '#bylineInfo')[0];
+    let brand = firstText(root, ['#productOverview_feature_div tr.po-brand td.a-span9 span']);
+    if (!brand && byline) brand = textOf(byline).replace(/^Visit the\s+/i, '').replace(/\s+Store$/i, '').replace(/^Brand:\s*/i, '');
+    const seller = firstText(root, ['#sellerProfileTriggerId', '[offer-display-feature-name="desktop-merchant-info"] .offer-display-feature-text-message', '#merchantInfoFeature_feature_div .offer-display-feature-text-message']);
+    const shipsFrom = firstText(root, ['[offer-display-feature-name="desktop-fulfiller-info"] .offer-display-feature-text-message', '#fulfillerInfoFeature_feature_div .offer-display-feature-text-message']);
+    const ratingTitle = safeQueryAll(root, '#acrPopover')[0]?.getAttribute('title') || '';
+    const rating = Number((/([\d.]+)\s+out of 5/i.exec(ratingTitle) || [])[1]) || 0;
+    const ratingCount = Number(firstText(root, ['#acrCustomerReviewText']).replace(/[^\d]/g, '')) || 0;
+    const distribution = {};
+    for (const link of safeQueryAll(root, '#cm_cr_dp_d_rating_histogram a[aria-label], #histogramTable a[aria-label]')) {
+      const match = /(\d+)\s*percent of reviews have (\d) stars?/i.exec(link.getAttribute('aria-label') || '');
+      if (match) distribution[match[2]] = Number(match[1]);
+    }
+    // The newer product layout puts the byline and the star rating side by side in one row. A note placed inside
+    // that row becomes a third column and pushes the rating off, so it goes after the whole row.
+    const anchor = byline?.closest('#byline_ratings_container') || byline?.closest('#bylineInfo_feature_div') || byline || safeQueryAll(root, '#title_feature_div')[0] || null;
+    if (!brand && !seller) return null;
+    return { brand, seller, firstParty: /^amazon(?:\.com)?(?:\s+services(?:\s+llc)?)?$/i.test(seller), shipsFrom, rating, ratingCount, distribution, anchor };
+  }
+  function listingBrands(roots = [document]) {
+    if (!eligible() || classify() !== 'search') return [];
+    const selector = '[data-component-type="s-search-result"] [data-cy="title-recipe"] h2.a-size-mini > span.a-size-base-plus.a-color-base';
+    const nodes = roots.flatMap((root) => [...(root.matches?.(selector) ? [root] : []), ...safeQueryAll(root, selector)]);
+    return nodes.filter((node, index) => nodes.indexOf(node) === index && !node.closest('[data-exp-owned="1"]')).map((brandNode) => ({ brand: textOf(brandNode), brandNode }));
+  }
+
+  function diagnose() { return { id: ID, version: VERSION, health, eligible: eligible(), pageType: eligible() ? classify() : 'unsupported', detectorCount: detectors.length, coverage: lastScan ? { ...lastScan, eligibleDetectors:lastScan.eligibleDetectors.slice(), matchedDetectors:lastScan.matchedDetectors.slice() } : null, errors: errors.map(({ code }) => ({ code })) }; }
+  function nextEpoch() { epoch += 1; health = eligible() ? 'healthy' : 'inactive'; resetCoverage(); return epoch; }
+  function cleanup() { epoch += 1; health = 'inactive'; resetCoverage(); errors.length = 0; }
+  const patternIds = Object.freeze([...new Set(detectors.map((detector) => detector.patternId))]);
+  // Colour facts for the site palette. In Light, the header band keeps Amazon's own colours: its logo and search
+  // button are images and fixed colours drawn for that dark band. In Dark, dark drawings are inverted: small icons,
+  // and the department logo pictures in the bar under the header (dark lettering on a clear background).
+  const theme = Object.freeze({
+    keepInLight: /#nav(?:bar|-[\w-]+)\b|\.nav-[\w-]+/,
+    keepInLightRoot: '#navbar',
+    darkInvert: ['.ssf-share-trigger', 'i.a-icon-dropdown', 'i.a-icon-popover', 'i.a-icon-section-expand', 'i.a-icon-section-collapse', 'i.a-icon-map-marker'],
+    darkInvertPicture: ['img.nav-categ-image']
+  });
+  return Object.freeze({ key: 'amazon', label: 'Amazon', features: Object.freeze({ coupons: true, compactSearch: true, recommendationCleanup: true }), patternIds, ID, VERSION, classify, eligible, detect, couponCandidates, cosmeticRecommendationCandidates, structuralSafety, verifyCouponTarget, sellerFacts, listingBrands, diagnose, nextEpoch, cleanup, theme: () => theme, patterns: () => detectors.map(({ id, patternId, pages }) => ({ id, patternId, pages: pages.slice() })) });
+})();
+EXP.Retailers.register(EXP.AmazonAdapter);
+
+// Every store module is a config for this factory, which owns the safety contract: protected page roots, purchase
+// controls, structural safety and the evidence it reports. A match that touches a purchase control is always
+// "ambiguous" (labelled at most, never hidden).
+//
+// Config: key, label, hosts or eligible(), routes or classify(), detectors, and optionally
+//   essential        selector for the store's own purchase controls (replaces the generic one)
+//   purchaseWording  wording of buttons/links that count as purchase controls
+//   protectedRoots   selector for page roots that are never acted on, nor anything that contains one
+//   modules          selector for whole modules whose own item links are not the shopper's purchase controls
+//   safeUnits        [[selector, reason, test?], ...]: the only nodes known to be self-contained
+//   confidence       'confirmed' for exact store hooks (default 'supported')
+// Detector: id, patternId, pages, selectors, and optionally text (wording test), match(node), unit(node) (a containing
+// node to act on instead), complete (a self-contained unit, used for safety and Coverage).
+EXP.createRetailerModule = (config) => {
+  const ID = `ward.retailer.${config.key}`;
+  let epoch = 0, health = 'inactive', coverage = null;
+  const errors = [];
+  const owned = '[data-exp-owned="1"]';
+  const eligible = config.eligible || (() => config.hosts.includes(location.hostname));
+  const classify = config.classify || ((path = location.pathname) => config.routes.find(([expression]) => expression.test(path))?.[1] || (path === '/' ? 'home' : 'other'));
+  const essential = config.essential || 'button,input,select,textarea,form,[role="button"],[aria-live],video,audio,iframe,[data-exp-owned="1"]';
+  const purchaseWording = config.purchaseWording || /add to cart|buy now|checkout|place order/i;
+  function record(code, error) {
+    errors.push({ code, at: Date.now() }); if (errors.length > 8) errors.shift(); health = 'degraded';
+    if (error) EXP.Core.safeError(Object.assign(error, { code }), ID);
+  }
+  function query(root, selector) { try { return [...(root.matches?.(selector) ? [root] : []), ...root.querySelectorAll(selector)]; } catch (error) { record('DETECTOR_SELECTOR'); return []; } }
+  function protectedRoot(node) {
+    if (!node || node === document.body || node === document.documentElement || node === document.head || node.closest?.(owned)) return true;
+    if (config.protectedRoots) return Boolean(node.matches?.(config.protectedRoots) || node.querySelector?.(`${config.protectedRoots}, ${owned}`));
+    return Boolean(node.matches?.('main,header,nav,footer,[role="main"]'));
+  }
+  function hasPurchaseControl(node) {
+    const controls = config.purchaseWording ? [...(node.querySelectorAll?.('button, a, input[type="submit"]') || [])] : query(node, 'a');
+    return controls.some(control => purchaseWording.test(control.textContent || control.value || control.getAttribute('aria-label') || ''));
+  }
+  function essentialOverlap(node) {
+    if (config.modules && node.matches?.(config.modules)) return Boolean(node.querySelector?.(essential));
+    return hasPurchaseControl(node) || Boolean(node.matches?.(essential) || node.closest?.(config.essential ? essential : 'form') || node.querySelector?.(essential));
+  }
+  function matches(node, selector) { try { return Boolean(node.matches?.(selector)); } catch { return false; } }
+  function structuralSafety(node) {
+    if (!node?.isConnected) return { safe:false, reason:'detached' };
+    if (protectedRoot(node)) return { safe:false, reason:'protected-root' };
+    if (essentialOverlap(node)) return { safe:false, reason:'essential-overlap' };
+    if (config.safeUnits) {
+      const unit = config.safeUnits.find(([selector, , test]) => matches(node, selector) && (!test || test(node)));
+      return unit ? { safe:true, reason:unit[1] } : { safe:false, reason:'unverified-container' };
+    }
+    const detector = config.detectors.find(item => item.selectors.some(selector => matches(node, selector)));
+    return { safe:Boolean(detector?.complete), reason:detector?.complete ? 'known-static' : 'unverified-container' };
+  }
+  function detect(roots = [document]) {
+    if (!eligible()) { health = 'inactive'; coverage = null; return []; }
+    const pageType = classify(), found = new Map(), matched = new Set(); health = 'healthy';
+    const detectors = config.detectors.filter(item => item.pages.includes(pageType));
+    for (const item of detectors) {
+      const detectorId = `${config.key}.${item.id}`;
+      try {
+        for (const root of roots) for (const selector of item.selectors) for (const match of query(root, selector)) {
+          if (item.match && !item.match(match)) continue;
+          const node = (item.unit && item.unit(match)) || match;
+          if (!node.isConnected || protectedRoot(node) || (item.text && !item.text.test((node.textContent || '').trim()))) continue;
+          const essentialOverlapValue = essentialOverlap(node), structural = structuralSafety(node);
+          const confidence = essentialOverlapValue ? 'ambiguous' : (config.confidence || 'supported');
+          matched.add(detectorId);
+          EXP.Audit?.detected?.(node, { detectorId, patternId:item.patternId, confidence, structuralSafe:structural.safe, structuralReason:structural.reason });
+          if (!found.has(node)) found.set(node, Object.freeze({ detectorId, evidenceId:detectorId, patternId:item.patternId, pageType, node, signals:['retailer-selector'], exclusions:essentialOverlapValue ? ['essential-overlap'] : [], essentialOverlap:essentialOverlapValue, structuralSafe:structural.safe, structuralReason:structural.reason, confidence, epoch }));
+        }
+      } catch (error) { record('DETECTOR_FAILURE', error); }
+    }
+    coverage = { pageType, eligibleDetectors:detectors.map(item => `${config.key}.${item.id}`), matchedDetectors:[...matched], matchedTargets:found.size };
+    return [...found.values()];
+  }
+  return Object.freeze({ key:config.key, label:config.label, ID, VERSION:'1', patternIds:Object.freeze([...new Set(config.detectors.map(item => item.patternId))]), features:Object.freeze({ coupons:false, compactSearch:false, recommendationCleanup:false }), eligible, classify, detect, structuralSafety, theme:() => config.theme || null,
+    diagnose:() => ({ id:ID, version:'1', health, eligible:eligible(), pageType:eligible() ? classify() : 'unsupported', detectorCount:config.detectors.length, coverage, errors:errors.slice() }),
+    nextEpoch() { epoch++; coverage = null; health = eligible() ? 'healthy' : 'inactive'; return epoch; }, cleanup() { epoch++; coverage = null; health = 'inactive'; errors.length = 0; },
+    patterns:() => config.detectors.map(item => ({ id:`${config.key}.${item.id}`, patternId:item.patternId, complete:Boolean(item.complete), pages:item.pages.slice() }))
+  });
+};
+
+// Walmart's class names are hashed and change often, so this adapter leans on the
+// stable data-testid hooks the pages expose. Its badges share one testid and are
+// told apart by their wording, which is why detectors here may carry a text test.
+(() => {
+  const badge = '[data-testid="badgeTagComponent"]';
+  const purchaseWording = /check ?out|place (?:your )?order|add to cart|buy now|continue/i;
+  const hasPurchaseControl = node => [...node.querySelectorAll('button, a, input[type="submit"]')].some(control => purchaseWording.test(control.textContent || control.value || control.getAttribute('aria-label') || ''));
+  EXP.WalmartAdapter = EXP.createRetailerModule({
+    key: 'walmart', label: 'Walmart', hosts: ['www.walmart.com', 'walmart.com'], confidence: 'confirmed', purchaseWording,
+    essential: ['[data-testid*="add-to-cart" i]', '[data-testid="ugpp-main-price"]', '[data-testid="product-title"]', '[data-testid*="checkout" i]', '[data-testid*="fulfillment" i]', 'form[action*="cart" i]', 'button[type="submit"]'].join(','),
+    protectedRoots: '[data-testid="maincontent"], [data-testid="main-content-container"], [data-testid="layout-container"], [data-testid="item-stack"], main, [role~="main"]',
+    // Only whole badges and complete ad units are known to be self-contained.
+    safeUnits: [
+      [badge, 'known-badge'],
+      ['section', 'membership-banner', node => node.querySelector('[data-testid="wplus-banner-title-cart"]')],
+      ['[data-testid="item-addon-services-new"], [data-testid="oneDebitCardBannerLink"], [data-testid="save-with-walmart-plus-badge"], [data-testid="wplus-opt-out-banner"], [data-testid="more-ways-to-pay-component-wrapper"]', 'known-static'],
+      ['[data-testid="skyline-ad"], [data-testid="brand-box-ad"], [data-testid="sp"], [data-testid="sb-container"]', 'complete-sponsored-placement']
+    ],
+    classify(pathname = location.pathname) {
+      if (/^\/ip\//.test(pathname)) return 'product';
+      if (/^\/(?:search|browse|shop|cp)(?:\/|$)/.test(pathname)) return 'search';
+      if (/^\/cart(?:\/|$)/.test(pathname)) return 'cart';
+      if (/^\/checkout(?:\/|$)/.test(pathname)) return 'checkout';
+      if (/^\/(?:orders|account|purchase-history)(?:\/|$)/.test(pathname)) return 'orders';
+      if (pathname === '/' || pathname === '') return 'home';
+      return 'other';
+    },
+    detectors: [
+      { id: 'social-proof.badge', patternId: 'pressure.social-proof', pages: ['search', 'product', 'home', 'cart'], selectors: [badge], text: /\bbought since\b|\bin [\d.,]+k?\+? people'?s carts?\b|\bpeople (?:are )?(?:viewing|looking)\b|\b[\d.,]+k?\+? (?:viewed|bought)\b/i, complete: true },
+      { id: 'scarcity.badge', patternId: 'pressure.scarcity', pages: ['search', 'product', 'cart'], selectors: [badge], text: /\blow stock\b|\bonly \d+ left\b|\balmost gone\b/i, complete: true },
+      { id: 'urgency.badge', patternId: 'pressure.urgency', pages: ['search', 'product'], selectors: [badge], text: /^(?:deal|flash deal|ends (?:in|soon).*)$/i, complete: true },
+      { id: 'membership.badge', patternId: 'upsell.store-membership', pages: ['search', 'product', 'cart', 'home'], selectors: [badge], text: /^save with$|walmart\s?\+/i, complete: true },
+      { id: 'membership.cart-badge', patternId: 'upsell.store-membership', pages: ['cart', 'search', 'product'], selectors: ['[data-testid="save-with-walmart-plus-badge"]'], complete: true },
+      { id: 'membership.checkout-banner', patternId: 'upsell.store-membership', pages: ['checkout'], selectors: ['[data-testid="wplus-opt-out-banner"]'], complete: true },
+      { id: 'financial.more-ways-to-pay', patternId: 'upsell.financial-product', pages: ['checkout'], selectors: ['[data-testid="more-ways-to-pay-component-wrapper"]'], complete: true },
+      { id: 'membership.cart-banner', patternId: 'upsell.store-membership', pages: ['cart'], selectors: ['[data-testid="wplus-banner-title-cart"]'], unit: node => { const unit = node.closest('section'); return unit && !hasPurchaseControl(unit) ? unit : null; }, complete: true },
+      { id: 'plan.protection', patternId: 'upsell.protection-plan', pages: ['product', 'cart'], selectors: ['[data-testid="item-addon-services-new"]'], complete: true },
+      { id: 'financial.card', patternId: 'upsell.financial-product', pages: ['product', 'cart', 'checkout', 'home'], selectors: ['[data-testid="oneDebitCardBannerLink"]'], complete: true },
+      { id: 'sponsored.placement', patternId: 'sponsorship.placement', pages: ['search', 'product', 'home'], selectors: ['[data-testid="skyline-ad"]', '[data-testid="brand-box-ad"]', '[data-testid="sp"]', '[data-testid="sb-container"]', '[data-ad-component-type]'], complete: true },
+      { id: 'reference-price', patternId: 'pricing.reference-price', pages: ['search', 'product'], selectors: ['[data-testid="ugpp-was-price"]'] }
+    ]
+  });
+  EXP.Retailers.register(EXP.WalmartAdapter);
+})();
+
+// eBay's markup uses readable class names (s-card, su-styled-text, x-ebay-signal),
+// but its pressure cues are plain text spans inside shared containers, so most
+// detectors here match a container and then test the wording.
+(() => {
+  const cardBadge = '.s-card__attribute-row .su-styled-text';
+  const itemSignal = '.x-ebay-signal .ux-textspans, #qtyAvailability .ux-textspans';
+  const recommendationModule = '.srp-river-answer--ITEMS_CAROUSEL_WITH_COLOR';
+  // On the cart, "These are for you" is a headed section wrapping a carousel of other
+  // listings; it never contains the cart's own bucket.
+  const cartRecommendationModule = 'section:has(h2):has(.carousel):not(:has([data-test-id="cart-bucket"]))';
+  const moduleSelector = `${recommendationModule}, ${cartRecommendationModule}`;
+  const financing = '[data-testid="PAYMENTS_PROMOTIONS"]';
+  // A sponsored store banner above the results: an ad placement box whose link eBay tracks as advertising.
+  // Its class names are scrambled; the placement id and the ADV event family are what stay put.
+  const adPlacement = `div[id^="placement_"]:has([data-click*='"eventFamily":"ADV"'])`;
+  // eBay draws its "Sponsored" tag as a background image on a heading that points
+  // at a hidden label (aria-labelledby), so the word itself is never inside the card.
+  // A card counts only when one of those labels reads exactly "Sponsored".
+  function readsSponsored(id) { return /^sponsored$/i.test((document.getElementById(id)?.textContent || '').trim()); }
+  function carriesSponsoredLabel(card) {
+    return [...card.querySelectorAll('[aria-labelledby]')].some((label) => label.getAttribute('aria-labelledby').split(/\s+/).some(readsSponsored)) ||
+      [...card.querySelectorAll('span, div')].some((label) => !label.childElementCount && /^sponsored$/i.test((label.textContent || '').trim()));
+  }
+  EXP.EbayAdapter = EXP.createRetailerModule({
+    key: 'ebay', label: 'eBay', hosts: ['www.ebay.com', 'ebay.com', 'cart.ebay.com', 'pay.ebay.com'], confidence: 'confirmed',
+    essential: ['[data-testid="TOTAL"]', '[data-testid="SUB_TOTAL"]', '[data-testid="PAYMENT_METHODS"]', '[data-testid="KLARNA_BUTTON"]', '[data-testid="CTA_MESSAGE_WRAPPER"]', '#binBtn_btn', '#isCartBtn_btn', '#atcBtn_btn', '.x-bin-action', '.x-atc-action', '.x-msku', '.x-quantity__input', '#qtyTextBox', '[data-testid*="checkout" i]', 'form[action*="checkout" i]', 'button[type="submit"]'].join(','),
+    protectedRoots: '#mainContent, #CenterPanel, #RightSummaryPanel, .srp-main, .srp-river, ul.srp-results, main, [role~="main"]',
+    purchaseWording: /buy it now|place bid|add to cart|check ?out|make offer|confirm and pay|pay now|continue/i,
+    // Recommendation modules carry their own per-listing links; only the page's real controls count.
+    modules: moduleSelector,
+    // Text spans and complete result modules are self-contained; nothing else is known to be.
+    safeUnits: [[`${cardBadge}, ${itemSignal}`, 'known-text-signal'], [moduleSelector, 'complete-module'], [financing, 'known-static'], ['li.s-card', 'complete-sponsored-placement'], [adPlacement, 'complete-sponsored-placement']],
+    classify(pathname = location.pathname) {
+      if (location.hostname === 'pay.ebay.com') return 'checkout';
+      if (/^\/itm\//.test(pathname)) return 'product';
+      if (/^\/(?:sch|b)\//.test(pathname)) return 'search';
+      if (location.hostname === 'cart.ebay.com' || /^\/(?:cart|sc)(?:\/|$)/.test(pathname)) return 'cart';
+      if (/^\/(?:checkout|pay)(?:\/|$)/.test(pathname)) return 'checkout';
+      if (/^\/mye\//.test(pathname)) return 'orders';
+      if (pathname === '/' || pathname === '') return 'home';
+      return 'other';
+    },
+    detectors: [
+      { id: 'social-proof.card', patternId: 'pressure.social-proof', pages: ['search'], selectors: [cardBadge], text: /^[\d,.]+k?\+? (?:sold|watchers?|watching)$/i, complete: true },
+      { id: 'social-proof.item', patternId: 'pressure.social-proof', pages: ['product'], selectors: [itemSignal], text: /^(?:in [\d,.]+k?\+? carts?|[\d,.]+k?\+? (?:sold|watchers?|watching)|[\d,.]+k?\+? (?:people|viewers?) .*)$/i, complete: true },
+      { id: 'scarcity.card', patternId: 'pressure.scarcity', pages: ['search'], selectors: [cardBadge], text: /^(?:last one|only [\d,]+ left|[\d,]+ left)$/i, complete: true },
+      { id: 'scarcity.item', patternId: 'pressure.scarcity', pages: ['product'], selectors: [itemSignal], text: /^(?:last one|only [\d,]+ (?:left|available)|limited quantity)$/i, complete: true },
+      { id: 'financial.checkout', patternId: 'upsell.financial-product', pages: ['checkout'], selectors: [financing], complete: true },
+      { id: 'recommendation.cart', patternId: 'cross-sell.recommendation', pages: ['cart'], selectors: [cartRecommendationModule], complete: true },
+      { id: 'recommendation.module', patternId: 'cross-sell.recommendation', pages: ['search'], selectors: [recommendationModule], complete: true },
+      { id: 'sponsored.card', patternId: 'sponsorship.placement', pages: ['search'], selectors: ['li.s-card'], match: carriesSponsoredLabel, complete: true },
+      { id: 'sponsored.banner', patternId: 'sponsorship.placement', pages: ['search'], selectors: [adPlacement], complete: true }
+    ]
+  });
+  EXP.Retailers.register(EXP.EbayAdapter);
+})();
+
+// Etsy tags many page sections with data-appears-component-name, which is the most
+// stable hook it offers. Search cards are v2-listing-card units; an ad is a card
+// whose caption reads "Ad by Etsy seller" or "Ad・By <shop>".
+(() => {
+  const component = (name) => `[data-appears-component-name="${name}"]`;
+  const urgencySignal = component('Etsy-Modules-ListingPage-UrgencySignal-RecsRankingApiSpec');
+  const financing = component('klarna_osm_messaging');
+  const listingCard = '.v2-listing-card';
+  const gridCell = 'li.wt-block-grid__item, li.wt-list-unstyled';
+  const strikethrough = '.wt-text-strikethrough';
+  // Whole recommendation modules carry their own per-item Add to cart links; those
+  // are not the shopper's purchase controls, so only the page's real ones count.
+  const recommendationModules = [component('Cart_Recommendations_ApiSpec_List'), component('promoted_picks_for_you')].join(', ');
+  const adCaption = /^ad(?: by etsy seller|\s?・\s?by\b.*|\s?from shop\b.*)$/i;
+  function carriesAdCaption(card) {
+    return [...card.querySelectorAll('span, p')].some((label) => !label.childElementCount && adCaption.test((label.textContent || '').trim()));
+  }
+  // Hide the whole grid cell so no empty gap is left, but only when it holds just this card.
+  function adCell(card) { const cell = card.closest(gridCell); return cell && cell.querySelectorAll(listingCard).length === 1 ? cell : null; }
+  EXP.EtsyAdapter = EXP.createRetailerModule({
+    // Etsy's buttons draw inside their own shadow root from page-wide colour variables; the outlined
+    // (secondary) button's dark text and border would vanish on a dark page, so in Dark they take the palette's text.
+    theme: Object.freeze({ darkTextVars: ['text', 'border', 'hovered-text', 'hovered-border', 'pressed-text', 'pressed-border'].map((part) => `--clg-color-app-button-secondary-${part}`), darkVarRoots: ':root,[data-clg-mode],[data-clg-theme]' }),
+    key: 'etsy', label: 'Etsy', hosts: ['www.etsy.com', 'etsy.com'], confidence: 'confirmed',
+    essential: [component('add_to_cart_form'), component('express_checkout_button'), component('variations'), component('price'), 'form[action*="cart" i]', '[data-add-to-cart-button]', '[data-buy-box-region]', 'button[type="submit"]'].join(','),
+    protectedRoots: 'main, [role~="main"], #content, #gnav-header-inner, ul.wt-grid, ol.wt-grid',
+    purchaseWording: /add to cart|buy it now|check ?out|proceed to|place order|continue/i,
+    modules: recommendationModules,
+    safeUnits: [[`${urgencySignal}, ${financing}`, 'known-static'], [recommendationModules, 'complete-module'], [`${gridCell}, ${listingCard}`, 'complete-sponsored-placement'], [strikethrough, 'price-text']],
+    classify(pathname = location.pathname) {
+      if (/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?listing\//.test(pathname)) return 'product';
+      if (/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(?:search|c|market|featured)(?:\/|$)/.test(pathname)) return 'search';
+      if (/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?cart(?:\/|$)/.test(pathname)) return 'cart';
+      if (/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(?:checkout|cart\/checkout)(?:\/|$)/.test(pathname)) return 'checkout';
+      if (/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?your\/(?:purchases|orders)/.test(pathname)) return 'orders';
+      if (pathname === '/' || pathname === '') return 'home';
+      return 'other';
+    },
+    detectors: [
+      { id: 'sponsored.listing', patternId: 'sponsorship.placement', pages: ['search'], selectors: [listingCard], match: carriesAdCaption, unit: adCell, complete: true },
+      { id: 'reference-price.card', patternId: 'pricing.reference-price', pages: ['search'], selectors: [`${listingCard} ${strikethrough}`], complete: true },
+      { id: 'reference-price.item', patternId: 'pricing.reference-price', pages: ['product'], selectors: [`${component('price')} ${strikethrough}`], complete: true },
+      { id: 'social-proof.item', patternId: 'pressure.social-proof', pages: ['product'], selectors: [urgencySignal], text: /\bcarts?\b|\bpeople\b|\bviewing\b|\bbought\b|\bpopular now\b|\bbestseller\b/i, complete: true },
+      { id: 'scarcity.item', patternId: 'pressure.scarcity', pages: ['product'], selectors: [urgencySignal], text: /\bonly \d+ left\b|\blow in stock\b|\balmost gone\b|\bselling fast\b/i, complete: true },
+      { id: 'recommendation.module', patternId: 'cross-sell.recommendation', pages: ['cart'], selectors: [recommendationModules], complete: true },
+      { id: 'financial.klarna', patternId: 'upsell.financial-product', pages: ['product', 'cart'], selectors: [financing], complete: true }
+    ]
+  });
+  EXP.Retailers.register(EXP.EtsyAdapter);
+})();
+
+EXP.TargetAdapter = EXP.createRetailerModule({
+  key:'target', label:'Target', hosts:['www.target.com','target.com'],
+  // The cart icon is drawn from an external sprite whose dark grey no stylesheet can reach; in Dark it is inverted.
+  theme:Object.freeze({ darkInvert:['svg:has(> use[href*="/cart.svg#"])'] }),
+  routes:[[/^\/checkout(?:\/|$)/,'checkout'],[/^\/(?:cart|co-cart)(?:\/|$)/,'cart'],[/^\/p\//,'product'],[/^\/(?:s|c)(?:\/|$)/,'search']],
+  detectors:[
+    { id:'sponsored', patternId:'sponsorship.placement', pages:['home','search','product'], selectors:['[data-test="sponsoredLabel"]','[data-test="sponsored-label"]'], text:/^sponsored$/i },
+    { id:'scarcity', patternId:'pressure.scarcity', pages:['product','search','cart'], selectors:['[data-test="low-stock-message"]','[data-test="availabilityMessage"]'], text:/only \d+ left|low stock|almost gone/i },
+    { id:'urgency', patternId:'pressure.urgency', pages:['product','search'], selectors:['[data-test="promotion-message"]','[data-test="deal-end-message"]'], text:/limited time|ends? (?:today|soon|in)/i },
+    { id:'membership', patternId:'upsell.store-membership', pages:['home','product','cart'], selectors:['[data-test="circle360-promotion"]','[data-test="circle-card-promotion"]'], text:/target circle|circle 360/i, complete:true },
+    { id:'financing', patternId:'upsell.financial-product', pages:['product','cart'], selectors:['[data-test="affirm-message"]','[data-test="afterpay-message"]'], text:/affirm|afterpay|pay in/i },
+    { id:'recommendations', patternId:'cross-sell.recommendation', pages:['product','cart'], selectors:['[data-test="recommendation-module"]'], complete:true }
+  ]
+});
+EXP.Retailers.register(EXP.TargetAdapter);
+
+EXP.BestBuyAdapter = EXP.createRetailerModule({
+  key:'bestbuy', label:'Best Buy', hosts:['www.bestbuy.com','bestbuy.com'],
+  routes:[[/^\/checkout(?:\/|$)/,'checkout'],[/^\/cart(?:\/|$)/,'cart'],[/^\/site\/(?:[^/]+\/)*\d+\.p$/,'product'],[/^\/site\/searchpage\.jsp$/,'search']],
+  detectors:[
+    { id:'sponsored', patternId:'sponsorship.placement', pages:['home','search','product'], selectors:['.sponsored-label','[data-testid="sponsored-label"]'], text:/^sponsored$/i },
+    { id:'scarcity', patternId:'pressure.scarcity', pages:['product','search'], selectors:['.availability-message','[data-testid="low-stock-message"]'], text:/only \d+ left|low stock|almost gone/i },
+    { id:'urgency', patternId:'pressure.urgency', pages:['product','search'], selectors:['.offer-end-date','.deal-ending'], text:/limited time|ends? (?:today|soon|in)/i },
+    { id:'membership', patternId:'upsell.store-membership', pages:['home','product','cart'], selectors:['.my-best-buy-membership-promotion','[data-testid="membership-promotion"]'], text:/my best buy|membership|total|plus/i, complete:true },
+    { id:'financing', patternId:'upsell.financial-product', pages:['product','cart'], selectors:['.financing-offer','.credit-card-offer'], text:/financing|credit card|monthly|payments/i },
+    { id:'protection', patternId:'upsell.protection-plan', pages:['product','cart'], selectors:['.gsp-offer','[data-testid="protection-plan-promotion"]'], text:/protection|geek squad/i },
+    { id:'recommendations', patternId:'cross-sell.recommendation', pages:['product','cart'], selectors:['.recommendation-carousel','.shop-related-items'], complete:true },
+    { id:'reference-price', patternId:'pricing.reference-price', pages:['product','search'], selectors:['.pricing-price__regular-price'] }
+  ]
+});
+EXP.Retailers.register(EXP.BestBuyAdapter);
+
+// Shopify storefronts share no domain and no class names, so this adapter recognises the platform from the markers
+// Shopify writes into every storefront, and finds placements by theme section ids, structure and wording.
+EXP.ShopifyAdapter = (() => {
+  const STOREFRONT = '#shopify-features,meta[name="shopify-digital-wallet"],meta[name="shopify-checkout-api-token"]';
+  const CHECKOUT = /\/checkouts?\//;
+  const ALL_PAGES = ['home', 'search', 'product', 'cart', 'other'];
+  // Text detectors only accept short nodes, so a wrapper that happens to hold the words is never dimmed whole.
+  const short = (words) => new RegExp(`^(?=[\\s\\S]{1,160}$)[\\s\\S]*?(?:${words})`, 'i');
+  const PROMOTION = /sign ?up|subscribe|newsletter|join|\d+ ?% off|discount|unlock|exclusive|be the first|first order|vip|rewards/i;
+  const NOT_PROMOTION = /back in stock|notify me|restock|wait ?list|sign ?in|log ?in|password|track (?:your )?order|shipping address|payment/i;
+  const PURCHASE = /add to cart|buy now|checkout|place order/i;
+  let storefront = null;
+  function isStorefront() {
+    if (storefront !== null) return storefront;
+    const found = Boolean(document.querySelector(STOREFRONT));
+    if (document.readyState !== 'loading') storefront = found;
+    return found;
+  }
+  const base = EXP.createRetailerModule({
+    key:'shopify', label:'Shopify store', hosts:[],
+    eligible: () => !CHECKOUT.test(location.pathname) && isStorefront(),
+    routes:[[CHECKOUT,'checkout'],[/^\/cart(?:\/|$)/,'cart'],[/\/products\//,'product'],[/^\/(?:collections|search)(?:\/|$)/,'search']],
+    detectors:[
+      { id:'urgency', patternId:'pressure.urgency', pages:ALL_PAGES, selectors:['countdown-timer','[class*="countdown" i]','[class*="timer" i]'], text:short('ends? (?:today|soon|in)|limited time|hurry|offer ends|sale ends') },
+      { id:'scarcity', patternId:'pressure.scarcity', pages:['product','search','cart'], selectors:['[class*="inventory" i]','[class*="stock" i]'], text:short('only \\d+ left|low stock|almost gone|selling fast') },
+      { id:'social-proof', patternId:'pressure.social-proof', pages:ALL_PAGES, selectors:['[class*="sales-pop" i]','[class*="social-proof" i]','[class*="recent-sale" i]','[class*="viewers" i]'], text:short('\\d+ (?:people|others|customers|shoppers)|bought|viewing|in (?:their )?carts?') },
+      { id:'recommendations', patternId:'cross-sell.recommendation', pages:['product','cart'], selectors:['product-recommendations','.product-recommendations','complementary-products','.frequently-bought-section','[class*="frequently-bought" i]'], complete:true }
+    ]
+  });
+  const verified = new WeakSet();
+  let epoch = 0;
+  function query(root, selector) { try { return [...(root.matches?.(selector) ? [root] : []), ...(root.querySelectorAll?.(selector) || [])]; } catch { return []; } }
+  const purchaseControls = (node) => Boolean(node.querySelector('form[action*="/cart"],form[action*="/checkout"],form[action*="/account"]') || [...node.querySelectorAll('a,button,input[type="submit"]')].some((control) => PURCHASE.test(control.textContent || control.value || control.getAttribute('aria-label') || '')));
+  function evidence(node, id, patternId) {
+    verified.add(node);
+    const detectorId = `shopify.${id}`;
+    EXP.Audit?.detected?.(node, { detectorId, patternId, confidence:'confirmed', structuralSafe:true, structuralReason:'verified-placement' });
+    return Object.freeze({ detectorId, evidenceId:detectorId, patternId, pageType:base.classify(), node, signals:['shopify-structure'], exclusions:[], essentialOverlap:false, structuralSafe:true, structuralReason:'verified-placement', confidence:'confirmed', epoch });
+  }
+  // A theme's announcement section, or its announcement-bar element when the section id says nothing.
+  // Some themes name it a banner (allbirds: "…__global-banner"); only header-group sections count, so a hero image-banner in the page body never does.
+  const ANNOUNCEMENT_SECTION = '[id^="shopify-section-"][id*="announcement"],.shopify-section-group-header-group[id^="shopify-section-"][id*="banner"]';
+  function announcementBars(roots) {
+    const found = new Set();
+    for (const root of roots) {
+      for (const node of query(root, ANNOUNCEMENT_SECTION)) found.add(node);
+      for (const node of query(root, 'announcement-bar,.announcement-bar')) if (!node.closest(ANNOUNCEMENT_SECTION) && !node.parentElement?.closest('announcement-bar,.announcement-bar')) found.add(node);
+      for (const node of [root.closest?.(ANNOUNCEMENT_SECTION)]) if (node) found.add(node);
+    }
+    return [...found].filter((node) => node.isConnected && !node.querySelector('input,select,textarea') && !purchaseControls(node));
+  }
+  // The outermost fixed layer around an email or phone field, so the backdrop goes with the form.
+  function fixedLayer(field) {
+    let layer = null;
+    for (let node = field.parentElement; node && node !== document.body && node !== document.documentElement; node = node.parentElement) if (getComputedStyle(node).position === 'fixed') layer = node;
+    return layer;
+  }
+  // A pop-up hidden while the page is scroll-locked would leave the page stuck, unless the lock is a known provider's.
+  const scrollLocked = () => [document.body, document.documentElement].some((node) => node && /hidden|clip/.test(getComputedStyle(node).overflowY));
+  // Only a layer the visitor can see now: a template the theme opens later, or a drawer parked off screen, stays the theme's.
+  function onScreen(layer) {
+    const style = getComputedStyle(layer);
+    if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
+    const box = layer.getBoundingClientRect();
+    return box.width > 0 && box.height > 0 && box.right > 0 && box.bottom > 0 && box.left < innerWidth && box.top < innerHeight;
+  }
+  // Pop-ups often enter transparent and fade in, which changes no element WARD watches. A transparent layer that is
+  // already in place is looked at again a few times; one that never becomes visible is left alone.
+  const FADE_RECHECKS = [400, 1200, 3000];
+  const fadeChecks = new WeakMap();
+  function recheckFade(layer) {
+    const style = getComputedStyle(layer);
+    if (style.display === 'none' || !(Number(style.opacity) === 0 || style.visibility === 'hidden')) return;
+    const attempt = fadeChecks.get(layer) || 0;
+    if (attempt >= FADE_RECHECKS.length) return;
+    fadeChecks.set(layer, attempt + 1);
+    const at = epoch;
+    setTimeout(() => { if (at === epoch && layer.isConnected) EXP.Engine.processBatch([layer]); }, FADE_RECHECKS[attempt]);
+  }
+  // A menu drawer can carry a newsletter block; site navigation is never a sign-up pop-up.
+  const navigation = (layer) => Boolean(layer.querySelector('nav,[role="navigation"],[role="menu"]')) || layer.querySelectorAll('a[href]').length > 3;
+  // Sign-up providers that lock scrolling themselves when they open, and exactly what each writes (both captured live,
+  // October 2026). While WARD hides one of their pop-ups it takes back only that lock, and puts it back when the pop-up
+  // is shown again. Any other lock still hands the pop-up back.
+  const PROVIDERS = [
+    // Attentive draws its unit in a full-window iframe WARD cannot read, and writes the lock inline on <html> and <body>.
+    { id:'attentive', marker:'iframe#attentive_creative,iframe[src*=".attn.tv/"]', frame:true, styles:true },
+    // Klaviyo marks its modal pop-ups and locks with a body class; its first step often has no email field yet.
+    { id:'klaviyo', marker:'[data-kl-scroll-locking-modal="true"]', lockClass:'klaviyo-prevent-body-scrolling' }
+  ];
+  const providerOf = (layer) => PROVIDERS.find((provider) => layer.matches(provider.marker) || layer.querySelector(provider.marker));
+  // null means temporarily invisible: retain the saved lock without releasing or restoring it.
+  function providerActive(layer, provider) {
+    let transparent = false;
+    const active = layer.isConnected && query(layer, provider.marker).some((marker) => {
+      let fading = false;
+      for (let node = marker; node; node = node.parentElement) {
+        const style = getComputedStyle(node), wardHidden = node === layer && node.dataset.wardAction === 'hide';
+        if (!wardHidden && (node.hidden || node.getAttribute('aria-hidden') === 'true' || style.display === 'none')) return false;
+        if (wardHidden && node.style.display === 'none' && node.style.getPropertyPriority('display') !== 'important') return false;
+        if (style.visibility === 'hidden' || Number(style.opacity) === 0) fading = true;
+        if (node === layer) break;
+      }
+      if (fading) { transparent = true; return false; }
+      return true;
+    });
+    return active ? true : transparent ? null : false;
+  }
+  const outermostFixed = (node) => fixedLayer(node) || (getComputedStyle(node).position === 'fixed' ? node : null);
+  // Many stores lock scrolling after the pop-up appears. Once that happens, the hidden pop-up is handed back for good.
+  const hiddenLayers = new Set();
+  const returned = new WeakSet();
+  const released = new Map();
+  const MAX_RELEASES = 5;
+  let lockWatch = null;
+  const pageNodes = () => [document.documentElement, document.body].filter(Boolean);
+  const providerLocked = (provider) => provider.lockClass ? document.body.classList.contains(provider.lockClass) : pageNodes().some((node) => /hidden|clip/.test(`${node.style.overflow} ${node.style.overflowY}`));
+  function release(layer, provider) {
+    const record = released.get(layer) || { provider, count:0, saved:new Map(), removedClass:false };
+    released.set(layer, record);
+    if (!providerLocked(provider)) return true;
+    if (provider.styles && !(document.documentElement.style.overflow === 'hidden' && document.body.style.overflow === 'hidden' && document.body.style.position === 'absolute' && document.body.style.inset === '0px')) return false;
+    if (++record.count > MAX_RELEASES) return false;
+    if (provider.lockClass) { document.body.classList.remove(provider.lockClass); record.removedClass = true; }
+    if (provider.styles) for (const node of pageNodes()) {
+      const saved = record.saved.get(node) || new Map();
+      record.saved.set(node, saved);
+      for (const name of node === document.body ? ['overflow', 'position', 'inset'] : ['overflow']) {
+        const value = node.style.getPropertyValue(name);
+        if (!value) continue;
+        if (!saved.has(name)) saved.set(name, [value, node.style.getPropertyPriority(name)]);
+        node.style.removeProperty(name);
+      }
+    }
+    return true;
+  }
+  function relock(layer, stopping = false) {
+    const record = released.get(layer);
+    const active = record && providerActive(layer, record.provider);
+    if (active === null && !stopping) return;
+    released.delete(layer);
+    if (!record || active === false) return;
+    if (record.removedClass) document.body.classList.add(record.provider.lockClass);
+    for (const [node, saved] of record.saved) for (const [name, [value, priority]] of saved) {
+      if (node.style.getPropertyValue(name) || (name === 'inset' && ['top', 'right', 'bottom', 'left'].some((side) => node.style.getPropertyValue(side))) || (name === 'overflow' && (node.style.overflowX || node.style.overflowY))) continue;
+      node.style.setProperty(name, value, priority);
+    }
+  }
+  function giveBackAll() {
+    for (const layer of hiddenLayers) { returned.add(layer); EXP.Actions.restoreNode(layer); }
+    stopLockWatch();
+  }
+  // Runs on every class or style change of <html>, <body> and the hidden pop-ups.
+  function reconcile() {
+    for (const layer of hiddenLayers) {
+      const provider = providerOf(layer);
+      const active = provider ? providerActive(layer, provider) : false;
+      if (active === false) { released.delete(layer); continue; }
+      if (active === null) continue;
+      if (layer.dataset.wardAction !== 'hide') { relock(layer); continue; }
+      if (layer.dataset.wardAction === 'hide' && !release(layer, provider)) return giveBackAll();
+    }
+    if (scrollLocked() && [...hiddenLayers].some((layer) => layer.dataset.wardAction === 'hide')) giveBackAll();
+  }
+  function watchLock(layer) {
+    hiddenLayers.add(layer);
+    if (!lockWatch) {
+      lockWatch = new MutationObserver(reconcile);
+      for (const node of pageNodes()) lockWatch.observe(node, { attributes:true, attributeFilter:['style', 'class'] });
+    }
+    if (providerOf(layer)) lockWatch.observe(layer, { childList:true, subtree:true, attributes:true, attributeFilter:['data-ward-action', 'data-kl-scroll-locking-modal', 'style', 'class', 'hidden', 'aria-hidden', 'id', 'src'] });
+  }
+  function stopLockWatch() {
+    lockWatch?.disconnect(); lockWatch = null;
+    for (const layer of [...released.keys()]) relock(layer, true);
+    hiddenLayers.clear();
+  }
+  function signupPopups(roots) {
+    const found = new Set(), locked = scrollLocked();
+    const eligible = (layer) => layer && !found.has(layer) && !returned.has(layer) && !layer.closest('[data-exp-owned="1"]') && !navigation(layer) && !layer.querySelector('input[type="password"]') && !purchaseControls(layer);
+    const promotional = (layer) => { const text = (layer.textContent || '').replace(/\s+/g, ' '); return PROMOTION.test(text) && !NOT_PROMOTION.test(text); };
+    for (const root of roots) {
+      for (const field of query(root, 'input[type="email"],input[type="tel"],input[name*="email" i]')) {
+        const layer = fixedLayer(field);
+        if (!eligible(layer) || (locked && !providerOf(layer))) continue;
+        if (!onScreen(layer)) { recheckFade(layer); continue; }
+        if (promotional(layer)) found.add(layer);
+      }
+      for (const provider of PROVIDERS) for (const marker of query(root, provider.marker)) {
+        const layer = outermostFixed(marker), shown = provider.frame ? marker : layer;
+        // An iframe's words cannot be read; Attentive's frame is itself the evidence, and it must be on screen.
+        if (!eligible(layer)) continue;
+        // Our hidden ancestor gives the iframe an empty rectangle. Keep its detection until
+        // the provider actually closes; otherwise the next scan restores it and its scroll lock.
+        const managedHidden = hiddenLayers.has(layer) && layer.dataset.wardAction === 'hide' && providerActive(layer, provider) !== false;
+        if (!onScreen(shown) && !managedHidden) { recheckFade(shown); continue; }
+        if (provider.frame || promotional(layer)) found.add(layer);
+      }
+    }
+    return [...found];
+  }
+  function detect(roots = [document]) {
+    const found = base.detect(roots);
+    if (!base.eligible() || base.classify() === 'checkout') return found;
+    const seen = new Set(found.map((item) => item.node));
+    for (const node of announcementBars(roots)) if (!seen.has(node)) { seen.add(node); found.push(evidence(node, 'announcement-bar', 'promotion.announcement-bar')); }
+    for (const node of signupPopups(roots)) if (!seen.has(node)) { seen.add(node); watchLock(node); found.push(evidence(node, 'signup-popup', 'pressure.signup-popup')); }
+    return found;
+  }
+  return Object.freeze({ ...base,
+    patternIds:Object.freeze([...base.patternIds, 'pressure.signup-popup', 'promotion.announcement-bar']),
+    detect,
+    structuralSafety:(node) => verified.has(node) && node.isConnected ? { safe:true, reason:'verified-placement' } : base.structuralSafety(node),
+    nextEpoch() { epoch++; return base.nextEpoch(); },
+    cleanup() { epoch++; storefront = null; stopLockWatch(); base.cleanup(); },
+    patterns:() => [...base.patterns(), { id:'shopify.signup-popup', patternId:'pressure.signup-popup', complete:true, pages:ALL_PAGES.slice() }, { id:'shopify.announcement-bar', patternId:'promotion.announcement-bar', complete:true, pages:ALL_PAGES.slice() }]
+  });
+})();
+EXP.Retailers.register(EXP.ShopifyAdapter);
+
+EXP.Activity = (() => {
+  const active = new Map();
+  const totals = { interventions: 0, couponsConfirmed: 0, couponsSkipped: 0, couponsFailed: 0, structuralCollapseSkipped: 0 };
+  const reveals = [];
+  const structuralSkipReasons = {};
+  let structuralSkippedNodes = new WeakSet();
+  function apply(id, data) { const existing = active.get(id); active.set(id, { patternId: data.patternId, category: data.category, action: data.action, confidence: data.confidence, revealed: false }); if (!existing) totals.interventions += 1; }
+  function remove(id) { active.delete(id); }
+  function reveal(id) { const item = active.get(id); if (!item || item.revealed) return; item.revealed = true; reveals.push({ patternId: item.patternId, action: item.action, at: Date.now() }); if (reveals.length > 20) reveals.shift(); }
+  function conceal(id) { const item = active.get(id); if (item) item.revealed = false; }
+  function coupon(result) { if (result === 'confirmed') totals.couponsConfirmed += 1; else if (result === 'skipped') totals.couponsSkipped += 1; else totals.couponsFailed += 1; }
+  function structuralSkip(node, reason = 'unsafe-structural-target') { if (node && structuralSkippedNodes.has(node)) return; if (node) structuralSkippedNodes.add(node); totals.structuralCollapseSkipped += 1; structuralSkipReasons[reason] = (structuralSkipReasons[reason] || 0) + 1; }
+  function snapshot() { const breakdown = {}; for (const item of active.values()) { const key = `${item.category}:${item.action}`; breakdown[key] = (breakdown[key] || 0) + 1; } return { active: active.size, breakdown, totals: { ...totals }, structuralSkipsByReason: { ...structuralSkipReasons }, reveals: reveals.map((item) => ({ ...item })) }; }
+  function resetRoute() { active.clear(); structuralSkippedNodes = new WeakSet(); }
+  return Object.freeze({ apply, remove, reveal, conceal, coupon, structuralSkip, snapshot, resetRoute });
+})();
+
+EXP.PageStyles = (() => {
+  const handles = new Set();
+
+  function inject(cssText, data = {}) {
+    let css = String(cssText || '');
+    let disposed = false;
+    const node = EXP.Core.injectStyle(document, css, data);
+
+    const handle = {
+      get textContent() { return css; },
+      set textContent(value) {
+        css = String(value || '');
+        try { node.textContent = css; } catch (error) { EXP.Core.safeError(Object.assign(error, { code:'STYLE_UPDATE' }), 'ward.styles'); }
+      },
+      active() {
+        return !disposed && Boolean(node?.isConnected);
+      },
+      remove() {
+        if (disposed) return;
+        disposed = true;
+        try { node?.remove(); } catch {}
+        handles.delete(handle);
+      }
+    };
+    handles.add(handle);
+    return handle;
+  }
+
+  function cleanup() {
+    for (const handle of [...handles]) handle.remove();
+  }
+
+  return Object.freeze({ inject, cleanup });
+})();
+
+// Shared color math retained from the suite's existing theme engine.
+EXP.SiteColor = (() => {
+  const cache=new Map();
+  let context;
+  function parse(value) {
+    const raw = String(value || '').trim();
+    if (!raw || /^(transparent|none|inherit|initial|unset|currentcolor)$/i.test(raw)) return null;
+    const key = raw.toLowerCase();
+    if (cache.has(key)) return cache.get(key);
+    try {
+      context ||= (() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 1;
+        return canvas.getContext('2d', { willReadFrequently: true });
+      })();
+      if (!context) return null;
+      context.fillStyle = '#000';
+      context.fillStyle = raw;
+      const normalized = String(context.fillStyle);
+      let result = null;
+      if (/^#[0-9a-f]{6}$/i.test(normalized)) {
+        result = {
+          r: parseInt(normalized.slice(1, 3), 16),
+          g: parseInt(normalized.slice(3, 5), 16),
+          b: parseInt(normalized.slice(5, 7), 16),
+          a: 1,
+        };
+      } else {
+        const match = normalized.match(/^rgba?\(\s*([\d.]+)\s*[, ]\s*([\d.]+)\s*[, ]\s*([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)$/i);
+        if (match) result = { r: +match[1], g: +match[2], b: +match[3], a: match[4] === undefined ? 1 : +match[4] };
+        // The canvas keeps oklch()/oklab()/lab()/color() as written, so paint a pixel and read its sRGB value.
+        else if (/^(?:oklch|oklab|lch|lab|hwb|color)\(/i.test(normalized)) {
+          context.clearRect(0, 0, 1, 1);
+          context.fillRect(0, 0, 1, 1);
+          const [r, g, b, alpha] = context.getImageData(0, 0, 1, 1).data;
+          result = { r, g, b, a: Math.round(alpha / 255 * 1000) / 1000 };
+        }
+      }
+      cache.set(key, result);
+      if (cache.size > 512) cache.delete(cache.keys().next().value);
+      return result;
+    } catch {
+      return null;
+    }
+  }
+
+  const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+  const linear = (channel) => {
+    const value = channel / 255;
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  };
+  const luminance = (color) => color ? 0.2126 * linear(color.r) + 0.7152 * linear(color.g) + 0.0722 * linear(color.b) : 0;
+  const saturation = (color) => color ? (Math.max(color.r, color.g, color.b) - Math.min(color.r, color.g, color.b)) / 255 : 0;
+  const contrastRatio = (left, right) => {
+    const a = luminance(typeof left === 'string' ? parse(left) : left);
+    const b = luminance(typeof right === 'string' ? parse(right) : right);
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  };
+  const rgba = (color) => color.a < 0.999 ? `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.round(color.a * 1000) / 1000})` : `rgb(${color.r}, ${color.g}, ${color.b})`;
+
+  function mix(left, right, amount) {
+    const a = parse(left);
+    const b = parse(right);
+    if (!a || !b) return right || left;
+    const t = clamp(amount);
+    return rgba({
+      r: Math.round(a.r + (b.r - a.r) * t),
+      g: Math.round(a.g + (b.g - a.g) * t),
+      b: Math.round(a.b + (b.b - a.b) * t),
+      a: a.a + (b.a - a.a) * t,
+    });
+  }
+
+  function composite(foregroundColor, backgroundColor) {
+    const fg = typeof foregroundColor === 'string' ? parse(foregroundColor) : foregroundColor;
+    const bg = typeof backgroundColor === 'string' ? parse(backgroundColor) : backgroundColor;
+    if (!fg) return bg;
+    if (!bg || fg.a >= 0.999) return { ...fg, a: 1 };
+    const fa = clamp(fg.a), ba = clamp(bg.a);
+    const a = fa + ba * (1 - fa);
+    if (a <= 0.001) return { r: 0, g: 0, b: 0, a: 0 };
+    return {
+      r: Math.round((fg.r * fa + bg.r * ba * (1 - fa)) / a),
+      g: Math.round((fg.g * fa + bg.g * ba * (1 - fa)) / a),
+      b: Math.round((fg.b * fa + bg.b * ba * (1 - fa)) / a),
+      a,
+    };
+  }
+
+  function background(value, theme, parentBackground = theme.page) {
+    let source = parse(value);
+    if (!source || source.a < 0.08) return value;
+    // A translucent layer (an overlay scrim, a hover tint) is matched as it looks over its parent but keeps
+    // its own transparency, so the page under it stays visible.
+    const alpha = source.a;
+    if (alpha < 0.999) source = composite(source, parse(parentBackground) || parse(theme.page));
+    const keepAlpha = (color) => { if (alpha >= 0.999) return color; const parsed = parse(color); return parsed ? rgba({ ...parsed, a: alpha }) : color; };
+    const l = luminance(source);
+    const sat = saturation(source);
+    const low = parse(theme.page);
+    const high = parse(theme.overlay || theme.raised || theme.surface);
+    if (!low || !high) return keepAlpha(theme.surface);
+    const sourceDepth = clamp((l - 0.08) / 0.92);
+    // Keep structural depth visible even in very dark/high-contrast palettes.
+    const depth = 0.28 + sourceDepth * 0.66;
+    const neutralTarget = mix(theme.page, theme.overlay || theme.raised || theme.surface, depth);
+    // Structural backgrounds belong to the selected palette. Source saturation is
+    // useful for recognizing hierarchy, but must not tint whole interfaces toward the site's
+    // brand color. Semantic color is preserved by foreground/status/artwork paths instead.
+    if (sat < 0.12) return keepAlpha(neutralTarget);
+    const chromaLift = clamp(sat * 0.12, 0.02, 0.08);
+    return keepAlpha(mix(neutralTarget, theme.raised || theme.surface, chromaLift));
+  }
+
+  function ensureContrast(candidate, backgroundValue, theme, minimum = 4.5) {
+    const bg = parse(backgroundValue);
+    let fg = parse(candidate);
+    if (!bg || !fg || contrastRatio(fg, bg) >= minimum) return candidate;
+    const light = parse(theme.text || '#ffffff');
+    const dark = parse(theme.page || '#000000');
+    const lightRatio = light ? contrastRatio(light, bg) : 0;
+    const darkRatio = dark ? contrastRatio(dark, bg) : 0;
+    let target = lightRatio >= darkRatio ? theme.text : theme.page;
+    if (!parse(target)) return candidate;
+    // A colored fill the site keeps (a blue banner) can sit where neither palette end reaches the minimum;
+    // plain white or black is the furthest any text can go.
+    if (Math.max(lightRatio, darkRatio) < minimum) target = contrastRatio(parse('#ffffff'), bg) >= contrastRatio(parse('#000000'), bg) ? '#ffffff' : '#000000';
+    let best = target;
+    for (let step = 1; step <= 10; step += 1) {
+      const mixed = mix(candidate, target, step / 10);
+      best = mixed;
+      if (contrastRatio(mixed, bg) >= minimum) break;
+    }
+    return best;
+  }
+
+  function foreground(value, theme, backgroundValue = theme.page, minimum = 4.5) {
+    const source = parse(value);
+    if (!source || source.a < 0.08) return value;
+    const l = luminance(source);
+    const sat = saturation(source);
+    const candidate = sat > 0.2 && l > 0.08
+      ? mix(theme.muted, rgba({ ...source, a: 1 }), Math.min(0.38, sat * 0.42))
+      : (l < 0.5 ? theme.text : mix(theme.text, theme.muted, 0.22));
+    return ensureContrast(candidate, backgroundValue, theme, minimum);
+  }
+
+
+  return Object.freeze({parse,rgba,luminance,saturation,contrastRatio,mix,background,foreground,ensureContrast});
+})();
+
+// WARD's colour engine: recolours a store by rewriting its stylesheet rules instead of reading each element.
+// For every rule that sets a colour it emits a rule with the same selector and the palette's colour, in one
+// stylesheet placed after the store's own. The browser then applies hover states, lazy content and
+// pseudo-elements itself, so nothing is recomputed when the page scrolls or changes.
+EXP.SiteRules = (() => {
+  const C = EXP.SiteColor;
+  const STYLE_ID = 'exp-ward-rules', INLINE = 'data-exp-ward-inline', PREFIX = '--exp-ward-';
+  const BG = 'bg', FG = 'fg', LINE = 'ln';
+  // Longhands the engine re-emits, with the role their colours play.
+  const ROLE = new Map([
+    ['background-color', BG], ['background-image', BG],
+    ['color', FG], ['-webkit-text-fill-color', FG], ['caret-color', FG], ['text-decoration-color', FG], ['fill', FG], ['stroke', FG],
+    ['border-top-color', LINE], ['border-right-color', LINE], ['border-bottom-color', LINE], ['border-left-color', LINE],
+    ['border-block-start-color', LINE], ['border-block-end-color', LINE], ['border-inline-start-color', LINE], ['border-inline-end-color', LINE],
+    ['outline-color', LINE], ['column-rule-color', LINE],
+    ['box-shadow', 'shadow'], ['mix-blend-mode', 'blend'],
+  ]);
+  // A shorthand holding var() leaves its longhands empty, so it is re-emitted whole.
+  const SHORTHANDS = new Map([['background', BG], ['border', LINE], ['border-color', LINE], ['border-top', LINE], ['border-right', LINE], ['border-bottom', LINE], ['border-left', LINE], ['outline', LINE]]);
+  const KEYWORD = /^(inherit|initial|unset|revert|revert-layer|transparent|currentcolor|none|auto)$/i;
+  const COLOR_TOKEN = /#[0-9a-f]{3,8}\b|\b(?:rgb|hsl)a?\([^()]*\)/gi;
+  const CHANNELS = /^(\d{1,3})(\s*,\s*|\s+)(\d{1,3})\2(\d{1,3})$/;
+  const LINK = /(^|[\s>+~,(])a(?=[.:#\[\s,>+~)]|$)/i;
+  // Rules aimed at pictures keep the store's colours: a product photo needs its own white plate.
+  const MEDIA = /(^|[\s>+~,(])(img|picture|video|canvas)(?=[.:#\[\s,>+~)]|$)/i;
+  const CONTROL = /(^|[\s>+~,(])(button|select)(?=[.:#\[\s,>+~)]|$)|\[role=["']?button/i, FIELD = /(^|[\s>+~,(])(input|textarea)(?=[.:#\[\s,>+~)]|$)/i;
+
+  const BUTTON = /(^|[\s>+~,(])(button)(?=[.:#\[\s,>+~)]|$)|\[role=["']?button|[.#][\w-]*(?:button|btn)/i, KINDS = [LINK, MEDIA, CONTROL, FIELD, BUTTON];
+  // Splits a selector list at its top-level commas.
+  function splitList(text) {
+    const parts = []; let depth = 0, quote = '', start = 0;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = ''; }
+      else if (ch === '"' || ch === "'") quote = ch;
+      else if (ch === '(' || ch === '[') depth++;
+      else if (ch === ')' || ch === ']') depth--;
+      else if (ch === ',' && !depth) { parts.push(text.slice(start, i).trim()); start = i + 1; }
+    }
+    parts.push(text.slice(start).trim());
+    return parts.filter(Boolean);
+  }
+
+  let palette = null, theme = null, style = null, running = false, timer = 0, poll = 0, observer = null, signature = '', stopSystem = null;
+  const sheetText = new WeakMap(), copies = new Map();
+  // Remembers which inline colours were already converted; emptied by stop() because stop() undoes them.
+  let inlineSeen = new WeakMap();
+  const stats = { engine: 'rules', builds: 0, sheets: 0, rules: 0, blocked: 0, fetched: 0, inline: 0, lastMs: 0, maxMs: 0 };
+
+  // The shared parser reads an invalid value as black, so raw stylesheet text is checked first.
+  const isColor = text => !!text && !text.includes('var(') && !KEYWORD.test(text) && CSS.supports('color', text);
+  const color = text => isColor(text) ? C.parse(text) : null;
+  const names = new Map();
+  const named = word => { const key = word.toLowerCase(); if (!names.has(key)) names.set(key, isColor(key)); return names.get(key); };
+  const neutral = color => color && C.saturation(color) < .15;
+  const clear = color => !color || color.a < .001;
+  const withAlpha = (value, alpha) => { const c = C.parse(value); return c && alpha < .999 ? C.rgba({ ...c, a: alpha }) : value; };
+  // A saturated fill (a purchase button, a deal badge) is the store's meaning, not its chrome: it stays.
+  const kept = color => !clear(color) && !neutral(color) && C.luminance(color) < .8;
+
+  // A kept fill whose text is set by some other rule (a coloured header with links inside) cannot keep the
+  // store's exact shade: that text is recoloured for the palette, so the fill is moved, hue intact, to the
+  // side of the palette where recoloured text stays readable.
+  function fit(c) {
+    const dark = palette.mode === 'dark', toward = dark ? palette.bg : palette.panel, ok = l => dark ? l <= .18 : l >= .55;
+    let value = C.rgba({ ...c, a: 1 });
+    for (let step = 1; step <= 10 && !ok(C.luminance(C.parse(value))); step++) value = C.mix(C.rgba({ ...c, a: 1 }), toward, step / 10);
+    return withAlpha(value, c.a);
+  }
+  // `flag`: for text, the rule targets a link; for a fill, the same rule also sets its own text colour.
+  function mapColor(token, role, flag) {
+    const accent = flag, c = C.parse(token);
+    if (clear(c)) {
+      // A fully transparent stop still sets the hue a fade travels through (white to clear over review text).
+      if (role !== BG || !c || /^transparent$/i.test(token) || kept({ ...c, a: 1 })) return token;
+      const mapped = C.parse(C.background(C.rgba({ ...c, a: 1 }), theme, palette.bg));
+      return mapped ? `rgba(${Math.round(mapped.r)}, ${Math.round(mapped.g)}, ${Math.round(mapped.b)}, 0)` : token;
+    }
+    if (role === BG) return kept(c) ? (flag ? token : fit(c)) : withAlpha(C.background(C.rgba({ ...c, a: 1 }), theme, palette.bg), c.a);
+    if (role === FG) return accent && !kept(c) ? palette.accent : C.foreground(token, theme, palette.panel);
+    if (role === LINE) return neutral(c) ? withAlpha(palette.line, c.a) : token;
+    // Shadows: retailers use huge light shadows as backdrops; ordinary dark depth shadows stay.
+    return neutral(c) && C.luminance(c) > .6 ? withAlpha(C.background(C.rgba({ ...c, a: 1 }), theme, palette.bg), c.a) : token;
+  }
+  const typed = (name, role) => PREFIX + role + '-' + name.slice(2);
+
+  // Rewrites one declared value: colour literals are mapped, and each var(--x) first tries the variable's
+  // mapped twin for this role, falling back to the store's own variable.
+  function mapValue(value, role, base, accent) {
+    if (isColor(value)) return mapColor(value, role, accent);
+    let out = '', plain = '';
+    const flush = () => {
+      if (!plain) return;
+      out += plain.replace(/url\(\s*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^)]*)\s*\)|#[0-9a-f]{3,8}\b|\b(?:rgb|hsl)a?\([^()]*\)|(?<![-\w#.])[a-z]{3,22}(?![-\w(])/gi, token => {
+        // A colour name (white, in a gradient) counts; any other word (solid, inset, to, right) does not.
+        if (/^[a-z]+$/i.test(token)) return named(token) ? mapColor(token, role, accent) : token;
+        if (!/^url\(/i.test(token)) return mapColor(token, role, accent);
+        // The rule moves to another stylesheet, so a relative address must name the original's folder.
+        const address = token.slice(4, -1).trim().replace(/^["']|["']$/g, '');
+        if (!address || /^(data:|blob:|https?:|\/\/|#)/i.test(address)) return token;
+        try { return 'url("' + new URL(address, base).href + '")'; } catch { return token; }
+      });
+      plain = '';
+    };
+    for (let i = 0; i < value.length;) {
+      if (value.startsWith('var(', i)) {
+        let depth = 1, end = i + 4;
+        while (end < value.length && depth) { const ch = value[end++]; if (ch === '(') depth++; else if (ch === ')') depth--; }
+        const inner = value.slice(i + 4, end - 1), comma = inner.indexOf(','), name = (comma < 0 ? inner : inner.slice(0, comma)).trim();
+        const fallback = comma < 0 ? '' : ', ' + mapValue(inner.slice(comma + 1).trim(), role, base, accent);
+        flush();
+        out += name.startsWith('--') && !name.startsWith(PREFIX) ? `var(${typed(name, role)}, var(${name}${fallback}))` : value.slice(i, end);
+        i = end;
+      } else plain += value[i++];
+    }
+    flush();
+    return out;
+  }
+
+  // A colour held in a custom property has no role until it is used, so it gets one mapped twin per role.
+  function mapVariable(name, value, base) {
+    const text = value.trim(), triple = text.match(CHANNELS);
+    if (triple) {
+      // Bare channels, used as rgb(var(--x) / .5).
+      return [BG, FG, LINE].map(role => {
+        const c = C.parse(mapColor(`rgb(${triple[1]}, ${triple[3]}, ${triple[4]})`, role));
+        return c ? `${typed(name, role)}:${[c.r, c.g, c.b].map(Math.round).join(triple[2])}` : '';
+      }).filter(Boolean);
+    }
+    if (!isColor(text) && !text.includes('var(') && text.search(COLOR_TOKEN) < 0) return [];
+    return [BG, FG, LINE].map(role => `${typed(name, role)}:${mapValue(text, role, base)}`);
+  }
+
+  // The colour a var(--name, fallback) has on the page root, or null when it is not a plain colour.
+  let rootStyle = null;
+  function rootColor(value) {
+    const match = /^var\(\s*(--[\w-]+)\s*(?:,\s*([^()]+|[a-z]+\([^()]*\)))?\)$/i.exec(value.trim());
+    if (!match) return null;
+    rootStyle ||= getComputedStyle(document.documentElement);
+    return color(rootStyle.getPropertyValue(match[1]).trim()) || color((match[2] || '').trim());
+  }
+  // The store's own colour facts (EXP.Retailer.theme): chrome that keeps its colours in Light, drawings to invert in Dark.
+  const storeTheme = () => EXP.Retailer.theme?.() || null;
+  function invertRules(mode) {
+    const t = storeTheme();
+    if (mode !== 'dark' || !t) return '';
+    // Icons are plain shapes; pictures keep their hues when inverted for a dark background.
+    return (t.darkInvert?.length ? `:is(${t.darkInvert.join(',')}){filter:invert(1)!important}` : '')
+      + (t.darkInvertPicture?.length ? `:is(${t.darkInvertPicture.join(',')}){filter:invert(1) hue-rotate(180deg)!important}` : '')
+      // Components that draw inside their own shadow root read the store's colour variables; dark text ones take the palette's text,
+      // set on every element where the store declares them (`darkVarRoots`).
+      + (t.darkTextVars?.length ? `${t.darkVarRoots || ':root'}{${t.darkTextVars.map(name => `${name}:${palette.text}!important`).join(';')}}` : '');
+  }
+  function declarations(rule, base, selector = rule.selectorText || '') {
+    const css = rule.style, out = [];
+    // In Light, the store's own chrome rules are re-emitted exactly as written (cascade order intact).
+    const keep = palette.mode === 'light' && !!storeTheme()?.keepInLight?.test(selector);
+    let pending = false;
+    const fillValue = css.getPropertyValue('background-color'), textValue = css.getPropertyValue('color');
+    // Stores often name their button colours as page-wide variables; those are read from the page.
+    const own = color(fillValue) || rootColor(fillValue), paired = isColor(textValue) || !!rootColor(textValue);
+    const accent = LINK.test(selector), media = MEDIA.test(selector);
+    // Text on a picture belongs to the picture: a rule that draws an image, or light text laid over the page
+    // with no fill of its own (a caption on a photo), keeps the store's text colour.
+    const text = color(css.getPropertyValue('color'));
+    const artwork = /url\(/i.test(css.getPropertyValue('background-image')) || (/^(absolute|fixed)$/.test(css.getPropertyValue('position')) && clear(own) && text && C.luminance(text) > .8);
+    // A coloured button whose label is coloured by another rule keeps its exact colour, with a label to match.
+    const button = !keep && kept(own) && !paired && BUTTON.test(selector) ? (C.luminance(own) > .4 ? '#0f1111' : '#ffffff') : '';
+    // A plain (neutral) control is lifted off its surface, and a text field is set into it.
+    const controlFill = CONTROL.test(selector) ? (/:hover/.test(selector) ? C.mix(palette.raised, palette.text, .12) : palette.raised) : FIELD.test(selector) ? palette.inset : '';
+    for (let i = 0; i < css.length; i++) {
+      const property = css[i];
+      if (property.startsWith('--')) { if (!keep && !property.startsWith(PREFIX)) out.push(...mapVariable(property, css.getPropertyValue(property), base)); continue; }
+      const role = ROLE.get(property);
+      if (!role) continue;
+      const value = css.getPropertyValue(property);
+      if (!value) { pending = true; continue; }
+      const important = css.getPropertyPriority(property) ? '!important' : '';
+      if (keep) { out.push(property + ':' + value + important); continue; }
+      // Every colour declaration is re-emitted, changed or not, so the store's own cascade order between
+      // rules is carried into this stylesheet intact.
+      let next = value;
+      if (role === 'blend') {
+        next = 'normal';
+        // A photo multiplied into a light tile gets that light plate itself, so it is not darkened by a dark one.
+        if (media && value !== 'normal') out.push('background-color:rgb(255, 255, 255)');
+      }
+      else if (KEYWORD.test(value) || media) next = value;
+      else if (property === 'background-color' && controlFill && neutral(own) && !clear(own)) next = withAlpha(controlFill, own.a);
+      // Text set beside a kept fill belongs to that fill (white on a red button).
+      else if (role === FG && property !== 'fill' && property !== 'stroke' && (kept(own) || artwork)) next = value;
+      else if (property === 'background-color' && button) next = value;
+      else if (role === FG && (property === 'fill' || property === 'stroke')) { const c = color(value); next = c ? (neutral(c) ? C.ensureContrast(palette.text, palette.panel, theme, 3) : value) : value.includes('var(') ? mapValue(value, FG, base) : value; }
+      else next = mapValue(value, role, base, role === BG ? paired : role === FG && property === 'color' && accent);
+      out.push(property + ':' + next + important);
+    }
+    if (button) { out.push('color:' + button); out.after = `:is(${selector}) *{color:${button}!important}`; }
+    if (pending && !keep) for (const [shorthand, role] of SHORTHANDS) {
+      const value = css.getPropertyValue(shorthand);
+      if (value && value.includes('var(')) out.push(shorthand + ':' + mapValue(value, role, base) + (css.getPropertyPriority(shorthand) ? '!important' : ''));
+    }
+    return out;
+  }
+
+  function rulesText(rules, base) {
+    let text = '';
+    for (const rule of rules) {
+      if (rule instanceof CSSStyleRule) {
+        // A list such as "button, input" is split where its parts are treated differently.
+        const groups = new Map();
+        for (const part of rule.selectorText.includes(',') && KINDS.some(kind => kind.test(rule.selectorText)) ? splitList(rule.selectorText) : [rule.selectorText]) {
+          const kind = KINDS.map(test => test.test(part) ? 1 : 0).join('');
+          groups.set(kind, groups.has(kind) ? groups.get(kind) + ',' + part : part);
+        }
+        const nested = rule.cssRules?.length ? rulesText(rule.cssRules, base) : '';
+        let first = true;
+        for (const selector of groups.values()) {
+          const list = declarations(rule, base, selector), own = list.join(';'), inner = first ? nested : '';
+          first = false;
+          if (own || inner) { text += `${selector}{${own}${own && inner ? ';' : ''}${inner}}${list.after || ''}`; stats.rules++; }
+        }
+      } else if (rule instanceof CSSImportRule) {
+        let inner = '';
+        try { inner = rule.styleSheet ? rulesText(rule.styleSheet.cssRules, rule.styleSheet.href || base) : ''; } catch {}
+        if (!inner) continue;
+        if (rule.layerName) inner = `@layer ${rule.layerName}{${inner}}`;
+        text += rule.media?.mediaText ? `@media ${rule.media.mediaText}{${inner}}` : inner;
+      } else if (rule.cssRules && !(rule instanceof CSSKeyframesRule)) {
+        // @media, @supports, @container, @layer and @scope blocks keep their own condition.
+        const inner = rulesText(rule.cssRules, base), open = rule.cssText.indexOf('{');
+        if (inner && open > 0) text += rule.cssText.slice(0, open) + '{' + inner + '}';
+      }
+    }
+    return text;
+  }
+
+  const readable = sheet => { try { return sheet.cssRules; } catch { return null; } };
+  const sheetSignature = sheet => { const rules = readable(sheet); return (rules ? rules.length : 'x') + ':' + (sheet.ownerNode?.textContent?.length || 0) + ':' + (sheet.href || '') + ':' + (sheet.disabled ? 0 : 1) + ':' + (sheet.media?.mediaText || ''); };
+  // Core marks every sheet it injects, including one a userscript manager adds on its behalf.
+  const siteSheets = () => [...document.styleSheets].filter(sheet => sheet.ownerNode !== style && !sheet.ownerNode?.closest?.('[id^="exp-"],[data-exp-owned]') && !ExtraPotionsCore.isOwnedSheet(sheet));
+
+  // A stylesheet from another host cannot be read in place; its text is fetched once and parsed privately.
+  function borrow(sheet) {
+    const href = sheet.href;
+    if (!href) return null;
+    if (copies.has(href)) return copies.get(href);
+    copies.set(href, null);
+    fetch(href, { credentials: 'omit' }).then(response => response.ok ? response.text() : Promise.reject(new Error(String(response.status)))).then(text => {
+      const copy = new CSSStyleSheet();
+      copy.replaceSync(text);
+      copies.set(href, copy); stats.fetched++;
+      if (running) schedule();
+    }).catch(() => {});
+    return null;
+  }
+
+  function build() {
+    const start = performance.now(), parts = [];
+    rootStyle = null;
+    stats.sheets = stats.blocked = 0;
+    let rules = 0;
+    for (const sheet of siteSheets()) {
+      if (sheet.disabled) continue;
+      stats.sheets++;
+      let source = readable(sheet);
+      if (!source) { stats.blocked++; source = borrow(sheet)?.cssRules || null; if (!source) continue; }
+      const key = theme.id + '|' + sheetSignature(sheet) + '|' + source.length;
+      let entry = sheetText.get(sheet);
+      if (!entry || entry.key !== key) {
+        stats.rules = 0;
+        let text = rulesText(source, sheet.href || location.href);
+        if (text && sheet.media?.mediaText && sheet.media.mediaText !== 'all') text = `@media ${sheet.media.mediaText}{${text}}`;
+        entry = { key, text, rules: stats.rules };
+        sheetText.set(sheet, entry);
+      }
+      rules += entry.rules;
+      parts.push(entry.text);
+    }
+    stats.rules = rules;
+    const p = palette;
+    const base = `${MARK}{}html{color-scheme:${p.mode};background-color:${p.bg}!important;color:${p.text}!important}body{background-color:${p.bg}!important;color:${p.text}!important}::selection{background:${p.line};color:${p.text}}:where(a[href]){color:${p.accent}}:where(a[href]) :where(p,h1,h2,h3,h4,h5,h6,li,dt,dd,figcaption){color:${p.text}}main{background-color:${p.bg}!important}${invertRules(p.mode)}`
+      + `[${INLINE}~="bg"]{background-color:var(${PREFIX}inline-bg)!important}[${INLINE}~="fg"]{color:var(${PREFIX}inline-fg)!important}[${INLINE}~="ln"]{border-color:var(${PREFIX}inline-ln)!important}[${INLINE}~="fill"]{fill:var(${PREFIX}inline-fill)!important}[${INLINE}~="stroke"]{stroke:var(${PREFIX}inline-stroke)!important}[${INLINE}~="blend"]{mix-blend-mode:normal!important}[${NATIVE}]{color:var(${PREFIX}native-fg)!important}`;
+    const text = base + parts.join('');
+    const html = document.documentElement;
+    // Core's injection is used so the rules still apply where a page's policy blocks added <style> elements:
+    // it adopts a constructed sheet, which also sits after every store stylesheet, and falls back to the manager.
+    if (!style?.isConnected) {
+      style?.remove();
+      style = EXP.Core.injectStyle(document, text, { expWardRules: '1' });
+      style.id = STYLE_ID; style.dataset.expOwned = '1';
+      if (!style.isConnected) html.append(style);
+    }
+    if (style.textContent !== text) style.textContent = text;
+    // An adopted sheet always follows the page's own. When Core had to fall back to an element, that element
+    // is kept after the last store stylesheet, so a rule here follows the store rule it replaces.
+    const live = ownSheet()?.ownerNode, last = live ? siteSheets().map(sheet => sheet.ownerNode).filter(Boolean).pop() : null;
+    if (last && live.compareDocumentPosition(last) & Node.DOCUMENT_POSITION_FOLLOWING) html.append(live);
+    if (html.getAttribute('data-exp-site-colors') !== 'ward') html.setAttribute('data-exp-site-colors', 'ward');
+    html.dataset.expSitePalette = 'slate-blue-' + p.mode;
+    signature = siteSheets().map(sheetSignature).join('|');
+    nativeText();
+    stats.builds++; stats.lastMs = Math.round(performance.now() - start); stats.maxMs = Math.max(stats.maxMs, stats.lastMs);
+  }
+
+  // Colours written on an element itself beat any stylesheet, so those few elements are handled one by one.
+  function inlineColors(node) {
+    const css = node.style;
+    // The page root and body always take the palette's page colours, set in the base rules.
+    if (!css || node === document.documentElement || node === document.body || node.closest('[id^="exp-"],[data-exp-owned]')) return;
+    // Chrome the store keeps in Light keeps its inline colours too.
+    const keepRoot = palette.mode === 'light' && storeTheme()?.keepInLightRoot;
+    if (keepRoot && node.closest(keepRoot)) { if (node.hasAttribute(INLINE)) node.removeAttribute(INLINE); return; }
+    // A small icon's shapes often carry their colour as a fill or stroke attribute.
+    const shape = node instanceof SVGElement && isIcon(node.ownerSVGElement || node);
+    const paints = shape ? [node.getAttribute('fill') || '', node.getAttribute('stroke') || ''] : ['', ''];
+    const source = [css.backgroundColor, css.color, css.borderColor || css.borderTopColor, css.mixBlendMode, ...paints].join('|');
+    if (inlineSeen.get(node) === source + theme.id) return;
+    inlineSeen.set(node, source + theme.id);
+    const roles = [];
+    // Text multiplied into a light card would vanish into a dark one.
+    if (css.mixBlendMode && css.mixBlendMode !== 'normal' && !node.matches('img,picture,video,canvas')) roles.push('blend');
+    // An inline "!important" colour cannot be outranked by any stylesheet, so the value itself is replaced
+    // and the store's value kept for when the theme is switched off.
+    const held = forced.get(node) || new Map();
+    for (const [role, property] of [[BG, 'background-color'], [FG, 'color']]) {
+      const current = css.getPropertyValue(property), saved = held.get(property);
+      if (css.getPropertyPriority(property) !== 'important') { if (saved) held.delete(property); continue; }
+      const original = saved && saved.mapped === current ? saved.value : current;
+      const kind = role === BG ? color(original) : color(held.get('background-color')?.value || css.getPropertyValue('background-color'));
+      const mapped = original && !KEYWORD.test(original) && !(role === FG && kept(kind)) ? mapValue(original, role, location.href, role === BG && !!css.color) : '';
+      if (!mapped || mapped === original) { if (saved) { css.setProperty(property, saved.value, 'important'); held.delete(property); } continue; }
+      if (current !== mapped) css.setProperty(property, mapped, 'important');
+      held.set(property, { value: original, mapped: css.getPropertyValue(property) });
+    }
+    if (held.size) forced.set(node, held); else forced.delete(node);
+    inlineSeen.set(node, [css.backgroundColor, css.color, css.borderColor || css.borderTopColor, css.mixBlendMode, ...paints].join('|') + theme.id);
+    for (const [role, value] of [['fill', paints[0]], ['stroke', paints[1]]]) {
+      const name = PREFIX + 'inline-' + role, c = color(value);
+      if (c && neutral(c)) { const next = C.ensureContrast(palette.text, palette.panel, theme, 3); roles.push(role); if (css.getPropertyValue(name) !== next) css.setProperty(name, next); }
+      else if (css.getPropertyValue(name)) css.removeProperty(name);
+    }
+    for (const [role, value] of [[BG, css.backgroundColor], [FG, css.color], [LINE, css.borderColor || css.borderTopColor]]) {
+      const name = PREFIX + 'inline-' + role;
+      if (held.has(role === BG ? 'background-color' : role === FG ? 'color' : '')) { if (css.getPropertyValue(name)) css.removeProperty(name); continue; }
+      const next = value && !KEYWORD.test(value) && !(role === FG && kept(color(css.backgroundColor))) ? mapValue(value, role, location.href, role === BG && !!css.color) : '';
+      if (next && next !== value) { roles.push(role); if (css.getPropertyValue(name) !== next) css.setProperty(name, next); }
+      else if (css.getPropertyValue(name)) css.removeProperty(name);
+    }
+    // A background WARD moved can leave the store's text colour unreadable on it (Target's markers set their text
+    // through a custom property), so that text is brought to contrast with the new background.
+    if (roles.includes(BG) && !roles.includes(FG) && !held.has('color')) {
+      const marked = node.getAttribute(INLINE) || '';
+      if (/fg/.test(marked)) node.setAttribute(INLINE, marked.replace(/fg/, '').trim());
+      const text = getComputedStyle(node).color, next = C.ensureContrast(text, css.getPropertyValue(PREFIX + 'inline-' + BG), theme);
+      if (next && next !== text) { roles.push(FG); css.setProperty(PREFIX + 'inline-' + FG, next); }
+    }
+    if (roles.length) { if (node.getAttribute(INLINE) !== roles.join(' ')) node.setAttribute(INLINE, roles.join(' ')); }
+    else if (node.hasAttribute(INLINE)) node.removeAttribute(INLINE);
+  }
+  const forced = new Map();
+  function restoreForced() {
+    for (const [node, held] of forced) for (const [property, saved] of held) if (node.style.getPropertyValue(property) === saved.mapped) node.style.setProperty(property, saved.value, 'important');
+    forced.clear();
+  }
+  // Amazon's video cards choose black or white text to suit each video's artwork. That choice is read with
+  // this stylesheet switched off for a moment and then pinned, since no rule can know the artwork.
+  const NATIVE_TEXT = '[class*="single-video-card_style_themingTextColor"],[class*="live-events-streaming-widget_style_themingTextColor"]', NATIVE = 'data-exp-ward-native';
+  // Core injects the rules in whichever way the page allows, so the live sheet is found by its first rule.
+  const MARK = '.exp-ward-rules-mark';
+  function ownSheet() {
+    for (const sheet of [...document.adoptedStyleSheets, ...document.styleSheets]) {
+      try { for (let i = 0; i < Math.min(4, sheet.cssRules.length); i++) if (sheet.cssRules[i].selectorText === MARK) return sheet; } catch {}
+    }
+    return null;
+  }
+  function nativeText() {
+    const hosts = document.querySelectorAll(NATIVE_TEXT), sheet = hosts.length ? ownSheet() : null;
+    if (!hosts.length || !sheet) return;
+    const nodes = [];
+    for (const host of hosts) { nodes.push(host); for (const node of host.querySelectorAll('*')) if (nodes.length < 400) nodes.push(node); }
+    for (const node of nodes) node.removeAttribute(NATIVE);
+    sheet.disabled = true;
+    let colors;
+    try { colors = nodes.map(node => getComputedStyle(node).color); } finally { sheet.disabled = false; }
+    nodes.forEach((node, index) => { if (node.style.getPropertyValue(PREFIX + 'native-fg') !== colors[index]) node.style.setProperty(PREFIX + 'native-fg', colors[index]); node.setAttribute(NATIVE, ''); });
+  }
+  // An icon is a small drawing; an illustration with many shapes keeps its own colours.
+  const icons = new WeakMap();
+  const isIcon = svg => { if (!icons.has(svg)) icons.set(svg, svg.querySelectorAll('*').length <= 12); return icons.get(svg); };
+  const INLINE_SOURCES = '[style],[fill],[stroke]';
+  const inlineIn = root => { if (root.nodeType !== 1) return; if (root.matches(INLINE_SOURCES)) inlineColors(root); for (const node of root.querySelectorAll(INLINE_SOURCES)) inlineColors(node); };
+
+  function schedule() {
+    if (timer || !running) return;
+    timer = setTimeout(() => { timer = 0; if (running) build(); }, 120);
+  }
+  function watch() {
+    observer = new MutationObserver(records => {
+      let sheets = false;
+      for (const record of records) {
+        if (record.type === 'attributes') { if (record.target !== style) inlineColors(record.target); continue; }
+        const target = record.target.nodeType === 3 ? record.target.parentNode : record.target;
+        if (target === style) continue;
+        if (target?.nodeName === 'STYLE') { sheets = true; continue; }
+        for (const node of [...record.addedNodes, ...record.removedNodes]) {
+          if (node.nodeType !== 1 || node === style) continue;
+          if (node.matches('style,link') || node.querySelector('style,link[rel~="stylesheet"]')) sheets = true;
+          if (node.isConnected) { inlineIn(node); if (node.matches(NATIVE_TEXT) || node.querySelector(NATIVE_TEXT)) sheets = true; }
+        }
+      }
+      if (sheets) schedule();
+      // Rules added by script (CSS-in-JS) raise no event of their own, but arrive with page changes: after any
+      // change the rule counts are compared, at most once a second. Nothing runs while the page is still.
+      else if (!poll) poll = setTimeout(() => { poll = 0; if (running && siteSheets().map(sheetSignature).join('|') !== signature) schedule(); }, 1000);
+    });
+    observer.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['style', 'fill', 'stroke'] });
+    document.addEventListener('load', onLoad, true);
+  }
+  function onLoad(event) { if (event.target?.matches?.('link[rel~="stylesheet"]')) schedule(); }
+
+  function stop() {
+    running = false; clearTimeout(timer); timer = 0; clearTimeout(poll); poll = 0;
+    observer?.disconnect(); observer = null; document.removeEventListener('load', onLoad, true);
+    stopSystem?.(); stopSystem = null;
+    style?.remove(); style = null; signature = '';
+    restoreForced(); inlineSeen = new WeakMap();
+    for (const node of document.querySelectorAll(`[${NATIVE}]`)) { node.removeAttribute(NATIVE); node.style.removeProperty(PREFIX + 'native-fg'); }
+    for (const node of document.querySelectorAll(`[${INLINE}]`)) { node.removeAttribute(INLINE); for (const role of [BG, FG, LINE, 'fill', 'stroke']) node.style.removeProperty(PREFIX + 'inline-' + role); }
+    const html = document.documentElement;
+    if (html?.getAttribute('data-exp-site-colors') === 'ward') { html.removeAttribute('data-exp-site-colors'); delete html.dataset.expSitePalette; }
+  }
+  function start(mode) {
+    const next = ExtraPotionsCore.sitePalette(mode);
+    if (running && palette && palette.id === next.id && palette.mode === next.mode) return;
+    palette = next;
+    theme = { ...next, id: next.id + '-' + next.mode, page: next.bg, surface: next.panel, overlay: next.panel, input: next.inset };
+    if (!running) {
+      running = true; watch();
+      const query = matchMedia('(prefers-color-scheme: dark)'), change = () => { if (running && palette.id === 'system') { const id = palette.id; palette = null; start(id); } };
+      query.addEventListener('change', change); stopSystem = () => query.removeEventListener('change', change);
+    }
+    build();
+    inlineIn(document.documentElement);
+    stats.inline = document.querySelectorAll(`[${INLINE}]`).length;
+  }
+
+  // The rule-based engine is the default. The per-element engine remains for one release as a fallback:
+  // set localStorage['exp-ward-color-engine'] = 'old' on a site to use it there.
+  return Object.freeze({ apply: mode => start(mode), clear: stop, health: () => ({ ...stats, inline: document.querySelectorAll(`[${INLINE}]`).length }) });
+})();
+
+// What main.js calls: paint while WARD is on for this store and the page is not paused, otherwise clear.
+EXP.SiteTheme = Object.freeze({
+  apply(settings = EXP.Settings.snapshot()) {
+    if (settings.enabled && !settings.safeMode && EXP.Retailer.enabled(settings) && !ExtraPotionsCore.suiteSitePaused()) EXP.SiteRules.apply(settings.siteColors);
+    else EXP.SiteRules.clear();
+  },
+  clear: () => EXP.SiteRules.clear(),
+  health: () => EXP.SiteRules.health()
+});
+
+EXP.Actions = (() => {
+  const records = new Map();
+  const byNode = new WeakMap();
+  let sequence = 0;
+  let style;
+
+  function isProtectedRoot(node) {
+    return !(node instanceof Element) ||
+      node === document.documentElement ||
+      node === document.head ||
+      node === document.body ||
+      node === document.scrollingElement;
+  }
+
+  function ensureStyles() {
+    if (style?.active()) return;
+    style = EXP.PageStyles.inject(`
+      .exp-ward-dimmed{
+        opacity:.58!important;
+        filter:saturate(.72)!important;
+        transition:opacity .12s ease,filter .12s ease!important
+      }
+      .exp-ward-collapse,.exp-ward-reprotect{
+        display:flex!important;
+        align-items:center!important;
+        justify-content:space-between!important;
+        gap:10px!important;
+        width:100%!important;
+        min-height:28px!important;
+        margin:4px 0!important;
+        padding:5px 8px!important;
+        border:1px solid rgba(183,91,0,.38)!important;
+        border-radius:6px!important;
+        background:rgba(255,244,199,.72)!important;
+        color:#4a3518!important;
+        box-shadow:none!important;
+        font:600 11px/1.25 system-ui,sans-serif!important;
+        cursor:pointer!important;
+        text-align:left!important
+      }
+      .exp-ward-collapse:hover,.exp-ward-reprotect:hover{
+        background:rgba(255,244,199,.9)!important;
+        border-color:rgba(183,91,0,.6)!important
+      }
+      .exp-ward-collapse:focus-visible,.exp-ward-reprotect:focus-visible{
+        outline:2px solid #1b70c9!important;
+        outline-offset:2px!important
+      }
+      .exp-ward-collapse-label{
+        overflow:hidden!important;
+        text-overflow:ellipsis!important;
+        white-space:nowrap!important;
+        opacity:.82!important
+      }
+      .exp-ward-collapse-action{
+        flex:0 0 auto!important;
+        font-weight:800!important
+      }
+      .exp-ward-annotation{
+        display:inline-block!important;
+        margin:2px 4px!important;
+        padding:2px 5px!important;
+        border:1px solid rgba(183,91,0,.32)!important;
+        border-radius:5px!important;
+        background:rgba(255,244,199,.65)!important;
+        color:#5a421f!important;
+        font:700 12px/1.3 system-ui,sans-serif!important;white-space:normal!important;overflow-wrap:anywhere!important;max-width:100%!important;box-sizing:border-box!important
+      }
+      .exp-ward-reprotect{
+        width:auto!important;
+        margin:4px 0 4px auto!important;
+        color:#4a3518!important
+      }
+    `, { wardActions:'1' });
+  }
+
+  function idFor(node) {
+    const existing = byNode.get(node);
+    if (existing && records.get(existing.id) === existing) return existing.id;
+    if (existing) byNode.delete(node);
+    const id = `ward-${++sequence}`;
+    const record = {
+      id,
+      node,
+      action: 'allow',
+      patternId: '',
+      category: '',
+      confidence: '',
+      structuralSafe: null,
+      original: null,
+      companion: null,
+      revealed: false
+    };
+    records.set(id, record);
+    byNode.set(node, record);
+    node.dataset.wardInstance = id;
+    return id;
+  }
+
+  function capture(record) {
+    if (record.original) return;
+    const node = record.node;
+    record.original = {
+      hidden: node.hidden,
+      ariaHidden: node.getAttribute('aria-hidden'),
+      inert: node.hasAttribute('inert'),
+      display: node.style.getPropertyValue('display'),
+      displayPriority: node.style.getPropertyPriority('display'),
+      opacity: node.style.getPropertyValue('opacity'),
+      opacityPriority: node.style.getPropertyPriority('opacity'),
+      filter: node.style.getPropertyValue('filter'),
+      filterPriority: node.style.getPropertyPriority('filter'),
+      position: node.style.position
+    };
+  }
+
+  function clearPresentation(record) {
+    const { node, original } = record;
+    record.companion?.remove();
+    record.companion = null;
+    node.classList.remove('exp-ward-dimmed');
+
+    if (original) {
+      node.hidden = original.hidden;
+      original.ariaHidden === null
+        ? node.removeAttribute('aria-hidden')
+        : node.setAttribute('aria-hidden', original.ariaHidden);
+      original.inert ? node.setAttribute('inert', '') : node.removeAttribute('inert');
+      if (original.display) node.style.setProperty('display', original.display, original.displayPriority);
+      else node.style.removeProperty('display');
+      if (original.opacity) node.style.setProperty('opacity', original.opacity, original.opacityPriority);
+      else node.style.removeProperty('opacity');
+      if (original.filter) node.style.setProperty('filter', original.filter, original.filterPriority);
+      else node.style.removeProperty('filter');
+      node.style.position = original.position;
+    }
+
+    node.removeAttribute('data-ward-action');
+    ExtraPotionsCore.clearPresentationState(node, 'ward');
+  }
+
+  function publishPresentation(record) {
+    if (record.action === 'hide' || record.action === 'collapse' || record.action === 'dim') {
+      ExtraPotionsCore.setPresentationState(record.node, 'ward', { visibility: record.action });
+    } else {
+      ExtraPotionsCore.clearPresentationState(record.node, 'ward');
+    }
+  }
+
+  function presentationIntact(record, action) {
+    const node = record.node;
+    if (record.revealed) return node.dataset.wardRevealed === '1' && record.companion?.isConnected && record.companion.classList.contains('exp-ward-reprotect');
+    if (action === 'allow') return !node.hasAttribute('data-ward-action') && !record.companion && !node.classList.contains('exp-ward-dimmed');
+    if (action === 'dim') return node.dataset.wardAction === 'dim' && node.classList.contains('exp-ward-dimmed') && node.style.getPropertyValue('opacity') === '0.58' && node.style.getPropertyPriority('opacity') === 'important' && !record.companion;
+    if (action === 'annotate') return node.dataset.wardAction === 'annotate' && record.companion?.isConnected && record.companion.classList.contains('exp-ward-annotation');
+    if (action === 'collapse') return node.dataset.wardAction === 'collapse' && node.hidden && node.hasAttribute('inert') && node.style.getPropertyValue('display') === 'none' && node.style.getPropertyPriority('display') === 'important' && record.companion?.isConnected && record.companion.classList.contains('exp-ward-collapse');
+    if (action === 'hide') return node.dataset.wardAction === 'hide' && node.hidden && node.hasAttribute('inert') && node.style.getPropertyValue('display') === 'none' && node.style.getPropertyPriority('display') === 'important';
+    return false;
+  }
+
+  function makeCompanion(record, kind, text) {
+    const element = document.createElement(kind === 'collapse' || kind === 'reprotect' ? 'button' : 'span');
+    element.dataset.expOwned = '1';
+    element.className = `exp-ward-${kind}`;
+
+    if (kind === 'collapse') {
+      element.type = 'button';
+      element.setAttribute('aria-expanded', 'false');
+      element.setAttribute('aria-label', `${text}. Show content`);
+
+      const label = document.createElement('span');
+      label.className = 'exp-ward-collapse-label';
+      label.textContent = 'Protected by WARD';
+
+      const show = document.createElement('span');
+      show.className = 'exp-ward-collapse-action';
+      show.textContent = 'Show';
+
+      element.append(label, show);
+      element.addEventListener('click', () => reveal(record.id));
+    } else if (kind === 'reprotect') {
+      element.type = 'button';
+      element.textContent = 'Protect Again';
+      element.setAttribute('aria-label', `Protect ${text} again`);
+      element.addEventListener('click', () => endReveal(record.id));
+    } else {
+      element.textContent = text;
+    }
+
+    // A label beside a list item would become an item of its own (a full-height "card" in a results grid,
+    // or an orphan when a content blocker has hidden the item), so it goes inside the item instead.
+    if (kind === 'annotation' && record.node.localName === 'li') record.node.prepend(element);
+    else record.node.insertAdjacentElement('afterend', element);
+    record.companion = element;
+  }
+
+  function apply(node, proposal) {
+    if (isProtectedRoot(node)) {
+      EXP.Core.safeError(
+        Object.assign(
+          new Error('WARD refused an intervention against a protected document root'),
+          { code: 'ACTION_ROOT_GUARD' }
+        ),
+        'ward.actions'
+      );
+      return null;
+    }
+
+    ensureStyles();
+
+    const id = idFor(node);
+    const record = records.get(id);
+    capture(record);
+    record.guard ??= new MutationObserver(() => {
+      if (!records.has(id) || record.revealed || presentationIntact(record, record.action)) return;
+      apply(node, {
+        action: record.action,
+        pattern: { id:record.patternId, category:record.category, label:EXP.Patterns.get(record.patternId)?.label || 'protected content' },
+        confidence: record.confidence,
+        structuralSafe: record.structuralSafe,
+        reason: record.reason
+      });
+    });
+    record.guard.observe(node, { attributes:true, attributeFilter:['style','hidden','inert','class','data-ward-action'] });
+
+    const structuralAction = proposal.action === 'hide' || proposal.action === 'collapse';
+    const nextAction = structuralAction && proposal.structuralSafe === false ? 'dim' : proposal.action;
+    const sameDecision =
+      record.action === nextAction &&
+      record.patternId === proposal.pattern.id &&
+      record.category === proposal.pattern.category &&
+      record.confidence === proposal.confidence;
+
+    record.action = nextAction;
+    record.patternId = proposal.pattern.id;
+    record.category = proposal.pattern.category;
+    record.confidence = proposal.confidence;
+    record.reason = proposal.reason || 'protection-policy';
+    record.structuralSafe = proposal.structuralSafe ?? record.structuralSafe;
+
+    if (record.revealed) {
+      node.dataset.wardRevealed = '1';
+      if (!presentationIntact(record, nextAction)) makeCompanion(record, 'reprotect', proposal.pattern.label);
+      return id;
+    }
+
+    if (sameDecision && presentationIntact(record, nextAction)) return id;
+
+    clearPresentation(record);
+    node.removeAttribute('data-ward-revealed');
+    node.dataset.wardAction = record.action;
+
+    if (record.action === 'hide') {
+      if (node.contains(document.activeElement)) document.activeElement.blur();
+      node.hidden = true;
+      node.style.setProperty('display', 'none', 'important');
+      node.setAttribute('inert', '');
+    } else if (record.action === 'dim') {
+      node.classList.add('exp-ward-dimmed');
+      node.style.setProperty('opacity', '0.58', 'important');
+      node.style.setProperty('filter', 'saturate(0.72)', 'important');
+    } else if (record.action === 'collapse') {
+      const transferFocus = node.contains(document.activeElement);
+      node.hidden = true;
+      node.style.setProperty('display', 'none', 'important');
+      node.setAttribute('inert', '');
+      makeCompanion(record, 'collapse', `Show ${proposal.pattern.label}`);
+      if (transferFocus) record.companion.focus();
+    } else if (record.action === 'annotate') {
+      makeCompanion(record, 'annotation', `WARD: ${proposal.pattern.label}`);
+    } else {
+      record.action = 'allow';
+      node.removeAttribute('data-ward-action');
+    }
+
+    publishPresentation(record);
+    if (record.action === 'allow') EXP.Activity.remove(id);
+    else EXP.Activity.apply(id, record);
+
+    return id;
+  }
+
+  function reveal(id) {
+    const record = records.get(id);
+    if (!record || record.action === 'allow') return false;
+    clearPresentation(record);
+    record.revealed = true;
+    record.node.dataset.wardRevealed = '1';
+    makeCompanion(record, 'reprotect', EXP.Patterns.get(record.patternId)?.label || 'protected content');
+    EXP.Activity.reveal(id);
+    EXP.Audit?.revealed?.(record.node);
+    return true;
+  }
+
+  function endReveal(id) {
+    const record = records.get(id);
+    if (!record?.revealed) return false;
+    record.node.removeAttribute('data-ward-revealed');
+    record.revealed = false;
+    EXP.Activity.conceal(id);
+    EXP.Audit?.concealed?.(record.node);
+    apply(record.node, {
+      action: record.action,
+      pattern: {
+        id: record.patternId,
+        category: record.category,
+        label: EXP.Patterns.get(record.patternId)?.label || 'protected content'
+      },
+      confidence: record.confidence,
+      structuralSafe: record.structuralSafe,
+      reason: record.reason
+    });
+    return true;
+  }
+
+  function restore(id, forget = true) {
+    const record = records.get(id);
+    if (!record) return false;
+    record.guard?.disconnect();
+    clearPresentation(record);
+    record.node.removeAttribute('data-ward-revealed');
+    record.node.removeAttribute('data-ward-instance');
+    EXP.Activity.remove(id);
+    if (forget) {
+      records.delete(id);
+      byNode.delete(record.node);
+    }
+    return true;
+  }
+
+  function restoreNode(node) {
+    const record = byNode.get(node);
+    return record ? restore(record.id) : false;
+  }
+
+  function restoreAll() {
+    for (const id of [...records.keys()]) restore(id);
+  }
+
+  function reconcile(roots, detected) {
+    for (const [id, record] of records) {
+      if (!detected.has(record.node) && roots.some(root => root === record.node || root.contains?.(record.node))) restore(id);
+    }
+  }
+
+  function cleanup() {
+    restoreAll();
+    style?.remove();
+    style = null;
+  }
+
+  function snapshot() {
+    return [...records.values()].map(
+      ({ id, action, patternId, category, confidence, reason, revealed, node }) => ({
+        id,
+        action,
+        patternId,
+        category,
+        confidence,
+        reason,
+        revealed,
+        connected: node.isConnected
+      })
+    );
+  }
+
+  // A label for a message the page has since emptied (an Amazon deal-progress box) no longer describes anything.
+  const MESSAGE_PATTERNS = new Set(['pressure.urgency', 'pressure.scarcity']);
+  const emptied = (node) => ![...node.childNodes].filter((child) => !child.classList?.contains('exp-ward-annotation')).some((child) => child.textContent.trim()) && !node.getAttribute('aria-label')?.trim() && !node.querySelector('img,svg,[aria-label]');
+  function prune() {
+    for (const [id, record] of records) {
+      if (record.node.isConnected && record.action === 'annotate' && MESSAGE_PATTERNS.has(record.patternId) && emptied(record.node)) { restore(id); continue; }
+      if (record.node.isConnected) continue;
+      record.guard?.disconnect();
+      record.companion?.remove();
+      records.delete(id);
+      byNode.delete(record.node);
+      EXP.Activity.remove(id);
+    }
+  }
+
+  return Object.freeze({ apply, reveal, endReveal, restore, restoreNode, restoreAll, reconcile, cleanup, snapshot, prune });
+})();
+
+// Seller Clarity reads brand, seller, fulfillment and rating facts that the store
+// already shows and adds a short note when they deserve a second look. Everything is
+// read from the current page, nothing is sent anywhere, and diagnostics keep only
+// signal IDs and counts. Store adapters supply the facts; this module stays
+// store-neutral and never clicks, hides or changes store content.
+EXP.SellerClarity = (() => {
+  const OWNER = 'seller-clarity';
+  // Short all-caps names that are established brands rather than generated ones.
+  const ESTABLISHED = new Set(['SCHWINN', 'STRYKER', 'KRYPTONITE', 'BRITA', 'NZXT', 'SKLZ', 'TRXTRAINING', 'DEWALT', 'RYOBI', 'ZAGG', 'OTTERBOX', 'NETGEAR', 'SKULLCANDY', 'CRKT', 'KRK', 'SHURE', 'BLACKWING', 'VTECH']);
+  const SIGNALS = Object.freeze({
+    'seller.not-brand': { kind: 'hint', text: 'Sold by a third-party seller that is not the brand or the store.' },
+    'brand.generated-name': { kind: 'hint', text: 'The brand has an unusual all-caps name pattern. This alone says nothing about product quality or authenticity.' },
+    'ratings.polarized': { kind: 'hint', text: 'Ratings are split between many 5-star and many 1-star reviews.' },
+    'ratings.thin-high': { kind: 'hint', text: 'A very high score from only a few ratings.' }
+  });
+  let style;
+  let notes = new Set();
+  let counts = Object.create(null);
+
+  function normalize(value) { return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+
+  function generatedBrandName(raw) {
+    const name = String(raw || '').trim();
+    if (!/^[A-Z]{5,10}$/.test(name) || ESTABLISHED.has(name)) return false;
+    const runs = name.split(/[AEIOUY]/).map((part) => part.length);
+    if (!/[AEIOUY]/.test(name)) return true;
+    return Math.max(...runs) >= 4;
+  }
+
+  function sellerIsBrand(seller, brand) {
+    const a = normalize(seller), b = normalize(brand);
+    if (!a || !b) return false;
+    return a.includes(b) || b.includes(a);
+  }
+
+  function trusted(brand, settings) {
+    const key = normalize(brand);
+    return Boolean(key) && (settings.trustedBrands || []).includes(key);
+  }
+
+  // facts: { brand, seller, firstParty, shipsFrom, rating, ratingCount, distribution:{1..5 percent} }
+  function signalsFor(facts, settings) {
+    const found = [];
+    if (!facts) return found;
+    const brandTrusted = trusted(facts.brand, settings);
+    if (facts.seller && !facts.firstParty && facts.brand && !sellerIsBrand(facts.seller, facts.brand) && !brandTrusted) found.push('seller.not-brand');
+    if (facts.brand && !brandTrusted && generatedBrandName(facts.brand)) found.push('brand.generated-name');
+    const share = facts.distribution || {};
+    if (Number(share[5]) >= 55 && Number(share[1]) >= 15) found.push('ratings.polarized');
+    if (Number(facts.ratingCount) > 0 && Number(facts.ratingCount) < 25 && Number(facts.rating) >= 4.7) found.push('ratings.thin-high');
+    return found;
+  }
+
+  function ensureStyles() {
+    if (style?.active()) return;
+    style = EXP.PageStyles.inject(`
+      .exp-ward-clarity{
+        display:block!important;
+        box-sizing:border-box!important;
+        max-width:560px!important;
+        margin:8px 0!important;
+        padding:8px 10px!important;
+        border:1px solid #ffb000!important;
+        border-radius:6px!important;
+        background:#19191e!important;
+        color:#fffaf3!important;
+        font:500 14px/1.5 system-ui,sans-serif!important;
+        overflow-wrap:anywhere!important;
+        text-align:left!important
+      }
+      .exp-ward-clarity-title{display:block!important;margin:0 0 4px!important;font-weight:800!important;color:#ffb000!important}
+      .exp-ward-clarity-facts{display:block!important;margin:0 0 4px!important;color:#fffaf3!important}
+      .exp-ward-clarity-list li{color:#fffaf3!important}
+      .exp-ward-clarity-list{margin:0 0 6px!important;padding:0 0 0 16px!important;list-style:disc!important}
+      .exp-ward-clarity-list li{margin:2px 0!important}
+      .exp-ward-clarity-trust{
+        display:inline-block!important;
+        padding:3px 8px!important;
+        border:1px solid #ffb000!important;
+        border-radius:5px!important;
+        background:#101014!important;
+        color:#fffaf3!important;
+        font:700 14px/1.5 system-ui,sans-serif!important;
+        cursor:pointer!important
+      }
+      .exp-ward-clarity-trust:focus-visible{outline:2px solid #ffb000!important;outline-offset:2px!important}
+      .exp-ward-clarity-chip{
+        display:inline-block!important;
+        margin:2px 4px!important;
+        padding:2px 5px!important;
+        border:1px solid #ffb000!important;
+        border-radius:5px!important;
+        background:#19191e!important;
+        color:#fffaf3!important;
+        font:700 12px/1.4 system-ui,sans-serif!important
+      }
+    `, { wardSellerClarity: '1' });
+  }
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function own(node) {
+    node.dataset.expOwned = '1';
+    node.dataset.wardOwner = OWNER;
+    notes.add(node);
+    return node;
+  }
+
+  function count(id) { counts[id] = (counts[id] || 0) + 1; }
+
+  function trustBrand(brand) {
+    const key = normalize(brand);
+    if (!key) return;
+    const current = EXP.Settings.snapshot().trustedBrands || [];
+    if (current.includes(key)) return;
+    EXP.Settings.update({ trustedBrands: [...current, key] }, 'trusted-brand');
+  }
+
+  function renderProduct(facts, signals, settings) {
+    const showAll = settings.sellerClarityAlways === true;
+    const anchor = facts.anchor;
+    if (!anchor?.isConnected) return;
+    const digest = JSON.stringify([signals, facts.brand, facts.seller, facts.shipsFrom]);
+    const existing = anchor.nextElementSibling;
+    // One product note per page: drop any left beside an anchor the page has since replaced or moved.
+    for (const old of document.querySelectorAll(`.exp-ward-clarity[data-ward-owner="${OWNER}"]`)) {
+      if (old !== existing) { notes.delete(old); old.remove(); }
+    }
+    if (!signals.length && !showAll) {
+      if (existing?.dataset?.wardOwner === OWNER) { notes.delete(existing); existing.remove(); }
+      return;
+    }
+    if (existing?.dataset?.wardOwner === OWNER && existing.dataset.wardDigest === digest) return;
+    if (existing?.dataset?.wardOwner === OWNER) { notes.delete(existing); existing.remove(); }
+    ensureStyles();
+    const note = own(element('div', 'exp-ward-clarity'));
+    note.dataset.wardDigest = digest;
+    note.setAttribute('role', 'note');
+    note.setAttribute('aria-label', 'WARD Seller Clarity');
+    note.append(element('strong', 'exp-ward-clarity-title', signals.length ? 'Seller clarity: worth a second look' : 'Seller Clarity'));
+    const summary = [
+      facts.brand ? `Brand: ${facts.brand}` : '',
+      facts.seller ? `Sold by: ${facts.seller}` : '',
+      facts.shipsFrom ? `Ships from: ${facts.shipsFrom}` : ''
+    ].filter(Boolean);
+    if (summary.length) note.append(element('span', 'exp-ward-clarity-facts', summary.join(' · ')));
+    if (signals.length) {
+      const list = element('ul', 'exp-ward-clarity-list');
+      for (const id of signals) { const item = element('li', '', SIGNALS[id].text); item.dataset.wardSignal = id; list.append(item); }
+      note.append(list);
+    }
+    if (/^[a-z0-9]{1,60}$/.test(normalize(facts.brand)) && signals.some((id) => id === 'seller.not-brand' || id === 'brand.generated-name')) {
+      const button = element('button', 'exp-ward-clarity-trust', `Trust ${facts.brand}`);
+      button.type = 'button';
+      button.addEventListener('click', () => trustBrand(facts.brand));
+      note.append(button);
+    }
+    anchor.after(note);
+    for (const id of signals) count(id);
+  }
+
+  function renderListing(listing, settings) {
+    if (!listing?.brandNode?.isConnected) return;
+    const next = listing.brandNode.nextElementSibling;
+    if (trusted(listing.brand, settings) || !generatedBrandName(listing.brand)) {
+      if (next?.dataset?.wardOwner === OWNER) { notes.delete(next); next.remove(); }
+      return;
+    }
+    if (next?.dataset?.wardOwner === OWNER) return;
+    ensureStyles();
+    const chip = own(element('span', 'exp-ward-clarity-chip', 'Generated-Style Brand'));
+    chip.title = SIGNALS['brand.generated-name'].text;
+    chip.dataset.wardSignal = 'brand.generated-name';
+    listing.brandNode.after(chip);
+    count('brand.generated-name');
+  }
+
+  function active(settings) {
+    return EXP.Retailer.enabled(settings) && !settings.safeMode && settings.sellerClarity !== false && EXP.Retailer.supportsSellerClarity();
+  }
+
+  function process(roots, settings, pageType) {
+    if (!active(settings)) { clear(); return; }
+    if (pageType === 'product') {
+      const facts = EXP.Retailer.sellerFacts(document);
+      if (facts) renderProduct(facts, signalsFor(facts, settings), settings);
+      else clear();
+    } else if (pageType === 'search' && settings.sellerClaritySearch !== false) {
+      for (const listing of EXP.Retailer.listingBrands(roots)) renderListing(listing, settings);
+    } else clear();
+    for (const node of [...notes]) if (!node.isConnected) notes.delete(node);
+  }
+
+  function clear() {
+    for (const node of notes) node.remove();
+    for (const node of document.querySelectorAll(`[data-ward-owner="${OWNER}"]`)) node.remove();
+    notes = new Set();
+    counts = Object.create(null);
+  }
+
+  function cleanup() { clear(); style?.remove(); style = null; }
+
+  function snapshot() { return { notes: notes.size, signals: { ...counts } }; }
+
+  return Object.freeze({ SIGNALS, generatedBrandName, sellerIsBrand, signalsFor, process, clear, cleanup, snapshot, normalize });
+})();
+
+EXP.Layout = (() => {
+  let style;
+  function apply(settings, pageType) {
+    const enabled = EXP.Retailer.enabled(settings) && EXP.Retailer.features().compactSearch && !settings.safeMode && settings.compactSearch && pageType === 'search';
+    if (!enabled) { style?.remove(); style = null; return; }
+    if (style?.active()) return;
+    style = EXP.PageStyles.inject(`
+      [data-component-type="s-search-result"]{margin-block:4px!important;padding-block:6px!important}
+      [data-component-type="s-search-result"] .a-section{margin-bottom:4px!important}
+    `, { wardLayout:'compact-search' });
+  }
+  function cleanup() { style?.remove(); style = null; }
+  return Object.freeze({ apply, cleanup, active: () => Boolean(style?.active()) });
+})();
+
+EXP.Engine = (() => {
+  let active = false;
+  let routeEpoch = 0;
+  const recovery=ExtraPotionsCore.createRecoveryGuard();
+  let recoveryContext=location.href;
+  function retry(){return recovery.retry('protection',recoveryContext,()=>{const value=EXP.Settings.snapshot();if(!active||value.safeMode||!EXP.Retailer.enabled(value)||ExtraPotionsCore.suiteSitePaused())return false;return processBatch([document],true);});}
+  let couponQuarantined = false;
+  let couponStatus = { state:'ready', reason:'not-run', lastResult:null };
+  let lastActivityDigest = '';
+  const couponPending = new Set();
+
+  function activityDigest() {
+    const data = EXP.Activity.snapshot();
+    const adapter = EXP.Retailer.diagnose();
+    return JSON.stringify({ active: data.active, totals: data.totals, breakdown: data.breakdown, adapter:adapter.health, coupon:couponStatus, quarantined:couponQuarantined,recovery:recovery.snapshot('protection',recoveryContext) });
+  }
+
+  function syncActivityUi() {
+    const digest = activityDigest();
+    if (digest === lastActivityDigest) return;
+    lastActivityDigest = digest;
+    EXP.UI?.refreshActivity?.();
+  }
+
+  function structuralDowngrade(action, evidence, pattern) {
+    if ((action !== 'hide' && action !== 'collapse') || evidence.structuralSafe !== false) return action;
+    EXP.Activity.structuralSkip(evidence.node, evidence.structuralReason || 'unsafe-structural-target');
+    if (pattern.allowedActions.includes('dim')) return 'dim';
+    if (pattern.allowedActions.includes('annotate')) return 'annotate';
+    return 'allow';
+  }
+
+  function requestedDecision(evidence, pattern, settings) {
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode) return { action: 'allow', reason: 'protection-disabled' };
+    if(settings.pageExceptions?.some(v=>v.path===location.hostname+location.pathname&&v.patternId===pattern.id))return {action:'allow',reason:'remembered-page-exception'};
+    const patternMode = settings.patterns[pattern.id] || 'inherit';
+    const categoryMode = settings.categories[pattern.category] || 'inherit';
+    if (patternMode === 'off') return { action: 'allow', reason: 'pattern-disabled' };
+    if (patternMode === 'inherit' && categoryMode === 'off') return { action: 'allow', reason: 'category-disabled' };
+    if (evidence.confidence === 'blocked') return { action: 'allow', reason: 'blocked-confidence' };
+    if (evidence.essentialOverlap) return { action: pattern.allowedActions.includes('annotate') ? 'annotate' : 'allow', reason: 'essential-overlap' };
+    if (evidence.confidence === 'ambiguous') return { action: pattern.allowedActions.includes('annotate') ? 'annotate' : 'allow', reason: 'ambiguous-confidence' };
+    if (evidence.confidence === 'supported' && settings.confidencePolicy === 'confirmed') return { action: 'allow', reason: 'confidence-policy' };
+
+    if (settings.contentAction === 'automatic' && settings.protectionLevel !== 'custom' && pattern.id === 'cross-sell.recommendation' && settings.recommendationCleanup && evidence.structuralSafe === true) {
+      return { action: 'collapse', reason: 'recommendation-cleanup' };
+    }
+
+    let action;
+    let reason;
+    if (settings.contentAction === 'hide' || settings.contentAction === 'dim') {
+      action = pattern.allowedActions.includes(settings.contentAction) ? settings.contentAction : 'dim';
+      reason = 'content-action';
+    } else if (settings.protectionLevel === 'essential') {
+      if (pattern.essentialPolicy === 'complete-placement-only' && evidence.structuralSafe === true) {
+        action = pattern.defaultAction;
+        reason = 'essential-complete-placement';
+      } else if (pattern.defaultAction === 'annotate' && pattern.allowedActions.includes('annotate')) {
+        action = 'annotate';
+        reason = 'essential-annotate';
+      } else if (pattern.allowedActions.includes('dim')) {
+        action = 'dim';
+        reason = 'essential-dim';
+      } else if (pattern.allowedActions.includes('annotate')) {
+        action = 'annotate';
+        reason = 'essential-annotate';
+      } else {
+        action = 'allow';
+        reason = 'essential-allow';
+      }
+    } else if (settings.protectionLevel === 'custom') {
+      action = pattern.allowedActions.includes(settings.defaultAction) ? settings.defaultAction : pattern.defaultAction;
+      reason = 'custom-policy';
+    } else {
+      action = pattern.defaultAction;
+      reason = 'balanced-pattern-policy';
+    }
+
+    if (evidence.confidence === 'supported' && action === 'hide') {
+      action = pattern.allowedActions.includes('collapse') ? 'collapse' : 'annotate';
+      reason = 'supported-safe-action';
+    }
+    return { action, reason };
+  }
+
+  function processEvidence(evidence, settings) {
+    const pattern = EXP.Patterns.get(evidence.patternId);
+    if (!pattern) return;
+    const requested = requestedDecision(evidence, pattern, settings);
+    const appliedAction = structuralDowngrade(requested.action, evidence, pattern);
+    const reason = requested.action !== appliedAction
+      ? (evidence.structuralReason || 'unsafe-structural-target')
+      : requested.reason;
+    EXP.Audit?.decision?.(evidence.node, {
+      detectorId: evidence.detectorId,
+      patternId: evidence.patternId,
+      confidence: evidence.confidence,
+      requestedAction: requested.action,
+      appliedAction,
+      structuralSafe: evidence.structuralSafe,
+      reason
+    });
+    EXP.Actions.apply(evidence.node, { action: appliedAction, pattern, confidence: evidence.confidence, structuralSafe: evidence.structuralSafe, reason });
+  }
+
+  function verifyCoupon(control, component, epoch, href, kind = 'checkbox', attempt = 0, tile = null) {
+    setTimeout(() => {
+      couponPending.delete(control);
+      if (epoch !== routeEpoch || !active) return;
+      if (location.href !== href) { couponQuarantined = true; couponStatus = { state:'quarantined', reason:'unexpected-navigation', lastResult:'failed' }; EXP.Activity.coupon('failed'); control.dataset.wardCouponFailure = 'unexpected-navigation'; syncActivityUi(); return; }
+      const claimed = kind === 'redeem'
+        ? component.isConnected && /\b(redeemed|promotion applied|promo code applied)\b/i.test(component.textContent || '')
+        : component.isConnected && (control.isConnected && control.checked || tile?.isConnected && component.contains(tile) && tile.matches('.claimed, [data-claimed="true"]'));
+      if (!claimed && component.isConnected && attempt < 9) { couponPending.add(control); verifyCoupon(control, component, epoch, href, kind, attempt + 1, tile); return; }
+      if (claimed) { EXP.Activity.coupon('confirmed'); couponStatus = { state:'confirmed', reason:'coupon-confirmed', lastResult:'confirmed' }; }
+      else { const reason = component.isConnected ? 'no-confirmation' : 'detached'; EXP.Activity.coupon('failed'); control.dataset.wardCouponFailure = reason; couponStatus = { state:'attention', reason, lastResult:'failed' }; }
+      syncActivityUi();
+    }, 300);
+  }
+
+  function processCoupons(roots, settings) {
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode || !settings.autoClipCoupons || !EXP.Retailer.features().coupons) { couponStatus = { state:'disabled', reason:'coupon-setting', lastResult:couponStatus.lastResult }; return; }
+    if (couponQuarantined) { couponStatus = { state:'quarantined', reason:couponStatus.reason || 'coupon-quarantine', lastResult:couponStatus.lastResult }; return; }
+    const candidates = EXP.Retailer.couponCandidates(roots);
+    if (!candidates.length && couponStatus.state === 'ready') couponStatus = { state:'idle', reason:'no-eligible-coupon', lastResult:null };
+    for (const control of candidates) {
+      if (control.dataset.wardCouponAttempted === '1') continue;
+      const check = EXP.Retailer.verifyCouponTarget(control);
+      if (!check.eligible) { if (!control.dataset.wardCouponSkipped) { control.dataset.wardCouponSkipped = check.reason; EXP.Activity.coupon('skipped'); couponStatus = { state:'attention', reason:check.reason, lastResult:'skipped' }; } continue; }
+      if (couponPending.has(control)) continue;
+      couponStatus = { state:'checking', reason:'awaiting-confirmation', lastResult:couponStatus.lastResult };
+      control.dataset.wardCouponAttempted = '1'; couponPending.add(control);
+      try { const href = location.href; control.click(); verifyCoupon(control, check.component, routeEpoch, href, check.kind, 0, check.tile); }
+      catch (error) { couponPending.delete(control); couponQuarantined = true; couponStatus = { state:'quarantined', reason:'activation-error', lastResult:'failed' }; EXP.Activity.coupon('failed'); EXP.Core.safeError(Object.assign(error, { code: 'COUPON_ACTIVATION' }), 'ward.amazon.coupon'); }
+    }
+  }
+
+  function resumeCoupons() {
+    couponQuarantined = false;
+    couponPending.clear();
+    couponStatus = { state:'ready', reason:'manual-resume', lastResult:couponStatus.lastResult };
+    for (const control of document.querySelectorAll('[data-ward-coupon-attempted],[data-ward-coupon-failure],[data-ward-coupon-skipped]')) {
+      delete control.dataset.wardCouponAttempted;
+      delete control.dataset.wardCouponFailure;
+      delete control.dataset.wardCouponSkipped;
+    }
+    if (active) processBatch([document]);
+    syncActivityUi();
+    return true;
+  }
+
+  function publishSuiteState(pageType = 'unknown') {
+    const records = EXP.Actions.snapshot();
+    const counts = { hide: 0, dim: 0, collapse: 0, annotate: 0 };
+    for (const record of records) if (Object.hasOwn(counts, record.action)) counts[record.action] += 1;
+    ExtraPotionsCore.publishSuiteState('ward', 'ward.state-changed', {
+      active: Boolean(active),
+      pageType: String(pageType || 'unknown'),
+      interventions: records.length,
+      hide: counts.hide,
+      dim: counts.dim,
+      collapse: counts.collapse,
+      annotate: counts.annotate,
+    });
+  }
+
+  function processBatch(roots = [document],force=false) {
+    if(location.href!==recoveryContext){recovery.clearContext(recoveryContext);recoveryContext=location.href;}
+    if(!active||ExtraPotionsCore.suiteSitePaused())return false;
+    if(!force&&recovery.snapshot('protection',recoveryContext).suspended)return false;
+    try {processBatchUnprotected(roots);recovery.succeeded('protection',recoveryContext);return true;}
+    catch(error){if(force)throw error;recovery.failed('protection',recoveryContext);syncActivityUi();EXP.Core.safeError(error,'ward.protection');return false;}
+  }
+  function processBatchUnprotected(roots = [document]) {
+    if (!active) return;
+    roots = [...new Set(roots.map(root => root.closest?.('[data-ward-instance]') || root))];
+    const settings = EXP.Settings.snapshot();
+    if (!EXP.Retailer.enabled(settings) || settings.safeMode) { EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.UI?.restack?.(); syncActivityUi(); publishSuiteState('inactive'); return; }
+    const pageType = EXP.Retailer.classify();
+    EXP.Layout.apply(settings, pageType);
+    const evidenceList = EXP.Retailer.detect(roots);
+    const seenNodes = new Set();
+    for (const evidence of evidenceList) {
+      seenNodes.add(evidence.node);
+      processEvidence(evidence, settings);
+    }
+    if (settings.recommendationCleanup && EXP.Retailer.features().recommendationCleanup) {
+      for (const node of EXP.Retailer.cosmeticRecommendationCandidates(roots)) {
+        if (seenNodes.has(node)) continue;
+        const structural = EXP.Retailer.structuralSafety(node);
+        const evidence = {
+          detectorId: `${EXP.Retailer.key()}.cross-sell.recommendation`,
+          patternId: 'cross-sell.recommendation',
+          pageType,
+          node,
+          signals: ['recommendation-cleanup'],
+          exclusions: [],
+          essentialOverlap: false,
+          structuralSafe: structural.safe,
+          structuralReason: structural.reason,
+          confidence: 'confirmed'
+        };
+        EXP.Audit?.detected?.(node, {
+          detectorId: evidence.detectorId,
+          patternId: evidence.patternId,
+          confidence: evidence.confidence,
+          structuralSafe: evidence.structuralSafe,
+          structuralReason: evidence.structuralReason
+        });
+        processEvidence(evidence, settings);
+        seenNodes.add(node);
+      }
+    }
+    EXP.Actions.reconcile(roots, seenNodes);
+    try { EXP.SellerClarity?.process(roots, settings, pageType); } catch (error) { EXP.Core.safeError(Object.assign(error, { code: 'SELLER_CLARITY' }), 'ward.seller-clarity'); }
+    processCoupons(roots, settings);
+    EXP.Actions.prune();
+    EXP.Audit?.prune?.();
+    EXP.UI?.restack?.();
+    syncActivityUi();
+    publishSuiteState(pageType);
+  }
+
+  function rebuild() { EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.Layout.cleanup(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
+  function navigation() { routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'navigation', lastResult:null }; couponPending.clear(); EXP.Retailer.nextEpoch(); EXP.Actions.restoreAll(); EXP.SellerClarity?.clear(); EXP.Layout.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); if (active) processBatch([document]); }
+  function start() { if (active) return; active = true; routeEpoch += 1; couponQuarantined = false; couponStatus = { state:'ready', reason:'start', lastResult:null }; EXP.Retailer.nextEpoch(); EXP.Audit?.resetRoute?.(); processBatch([document]); }
+  function stop() { active = false; couponPending.clear(); couponStatus = { state:'disabled', reason:'engine-stopped', lastResult:couponStatus.lastResult }; EXP.Actions.restoreAll(); EXP.Retailer.cleanup(); EXP.SellerClarity?.clear(); EXP.Layout.cleanup(); publishSuiteState('inactive'); }
+  function cleanup() { stop(); EXP.Actions.cleanup(); EXP.SellerClarity?.cleanup(); EXP.PageStyles.cleanup(); EXP.Activity.resetRoute(); EXP.Audit?.resetRoute?.(); }
+  function diagnostics() { return { product: { id: 'ward', version: EXP.VERSION, active }, recovery:recovery.snapshot('protection',recoveryContext),adapter: EXP.Retailer.diagnose(), coupon: { ...couponStatus, quarantined:couponQuarantined, pending:couponPending.size }, activity: EXP.Activity.snapshot(), sellerClarity: EXP.SellerClarity?.snapshot() || null, audit: EXP.Audit?.snapshot?.() || null, interventions: EXP.Actions.snapshot(), core: EXP.Core.diagnosticSnapshot() }; }
+  return Object.freeze({ retry, start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
+})();
+
+EXP.VERSION = '3.12.6';
+
+EXP.ReleaseNotes = (() => {
+  const notes = Object.freeze({
+    '3.12.6': ["WARD now ships as readable code instead of minified, so problems are easier to find and fix.","On Reddit, the WARD tab sits on the right edge of the window with the other product tabs."],
+    '3.12.5': ["The launcher is a tab on the right edge of the window instead of a badge in the corner.","With other ExtraPotions products on the page, each has its own tab; drag to move them, Shift+drag to reorder."],
+    '3.12.4': ["On Etsy, a labelled ad stays inside its listing, so result rows keep their shape.","Shopify announcement bars named as header banners are dimmed, and eBay’s sponsored store banner above results is recognised.","In Dark, Target’s cart icon and badges and Etsy’s outlined buttons are readable.","Built on Core 3.17.4."],
+    '3.12.3': ["WARD's tile in the shared launcher is green, matching its menus and gem.","Built on Core 3.17.3."],
+    '3.12.2': ["WARD has a new green emerald gem, and its menus use the matching green.","Built on Core 3.17.2."],
+    '3.12.1': ["Release notes show in full in the changelog card.","Built on Core 3.17.1."],
+    '3.12.0': ["Labels are in Title Case.","Built on Core 3.17.0."],
+    '3.11.1': ["In Light, Amazon's header keeps its own colours, so its logo and search button stay clear.","In Dark, department headings drawn as pictures, such as Electronics, read on the dark bar."],
+    '3.11.0': ["Walmart, eBay and Etsy now run on the same store module as Target, Best Buy and Shopify, so every store treats purchase controls alike: a cue that touches one is labelled, never hidden.","The Coverage card lists what WARD can act on at Walmart, eBay and Etsy instead of None.","The old colour engine is gone; the current one is the only engine.","Built on Core 3.16.0."],
+    '3.10.1': ["Protect again keeps the reason the menu showed before.","The seller note never shows twice when the store page changes around it.","Built on Core 3.15.1: menu lists and scrollbars are light in Light, and update cards take turns."],
+    '3.10.0': ["Remove the floating page-actions bar; its actions stay in the menu.","Drop hover tips from settings that explain themselves, such as Seller notes, Active protections and the per-store switches."],
+    '3.9.0': ["Show menu sections as drawers in charcoal with WARD amber; the menu reopens on the drawer you used last.","Keep product photos at their own brightness on dark site colours.","Place Amazon seller notes below the byline and rating row instead of inside it.","Restore page colours correctly after Safe Mode is turned off and on again."],
+    '3.8.0': ["Recolor stores with a new, lighter engine that restyles a page once instead of after every change.","Keep purchase buttons their true colors with a readable label, and keep small icons visible, in Dark.","Tidy the update and changelog notices to match the other products."],
+    '3.7.0': ["Soften product photos on dark site colors; hover or focus a photo to see it at full brightness.","Fix unreadable dark-on-dark text on Amazon with dark site colors.","Use less processor time while scrolling and on pages that keep changing.","Use sentence-case wording in update and changelog notices."],
+    '3.6.0': ["Remove repeated retailer and coupon headings from the menu.","Give every retailer tab its own shopping-bag icon.","Keep Diagnostics on one row with Show and Copy, and outline Reset all settings.","Use sentence-case labels and a refreshed menu header."],
+    '3.5.0': ["Use Slate Blue Light, Dark or System for menus and supported site themes.","Migrate retired color choices to System and remove extra theme and opacity controls.","Show product-only Light, Dark and current changelog screenshots."],
+    '3.4.49': ["Clear store colors on checkout pages and restore the saved palette on return.","Keep protected ads hidden when the site resets their presentation.","Apply saved site colors at document start, before the page body loads.","Coalesce subtree repaint work and skip unchanged palette requests."],
+    '3.4.48': [],
+    '3.4.47': [],
+    '3.4.46': [],
+    '3.4.45': [],
+    '3.4.44': [],
+    '3.4.43': [],
+    '3.4.42': [],
+    '3.4.41': [],
+    '3.4.40': [],
+    '3.4.39': [],
+    '3.4.38': [],
+    '3.4.37': [],
+    '3.4.36': [],
+    '3.4.35': [],
+    '3.4.34': [],
+    '3.4.33': [],
+    '3.4.32': ["Maintenance release; product features and settings are unchanged.","Includes the current shared foundation."],
+    '3.4.31': [],
+    '3.4.30': [],
+    '3.4.29': [],
+    '3.4.28': [],
+    '3.4.27': [],
+    '3.4.26': [],
+    '3.4.25': [],
+    '3.4.24': [],
+    '3.4.23': [],
+    '3.4.22': [],
+    '3.4.21': [],
+    '3.4.20': [],
+    '3.4.19': [],
+    '3.4.18': [],
+    '3.4.17': [],
+    '3.4.16': ["Captures README screenshots with the shared ExtraPotions tool.","Keeps the README screenshot list in step with the README."],
+    '3.4.15': [],
+    '3.4.14': [],
+    '3.4.13': [],
+    '3.4.12': [],
+    '3.4.11': [],
+    '3.4.10': [],
+    '3.4.9': [],
+    '3.4.8': [],
+    '3.4.7': [],
+    '3.4.6': [],
+    '3.4.5': [],
+    '3.4.4': [],
+    '3.4.3': [],
+    '3.4.2': [],
+    '3.4.1': [],
+    '3.4.0': [],
+    '3.3.11': [],
+    '3.3.10': [],
+    '3.3.9': [],
+    '3.3.8': [],
+    '3.3.7': [],
+    '3.3.6': [],
+    '3.3.5': [],
+    '3.3.4': [],
+    '3.3.3': [],
+    '3.3.2': [],
+    '3.3.1': [],
+    '3.3.0': [],
+    '3.2.31': [],
+    '3.2.30': [],
+    '3.2.29': [],
+    '3.2.28': [],
+    '3.2.27': [],
+    '3.2.26': [],
+    '3.2.25': [],
+    '3.2.24': [],
+    '3.2.23': [],
+    '3.2.22': [],
+    '3.2.21': [],
+    '3.2.20': [],
+    '3.2.19': [],
+    '3.2.18': [],
+    '3.2.17': [],
+    '3.2.16': [],
+    '3.2.15': [],
+    '3.2.14': [],
+    '3.2.13': [],
+    '3.2.12': [],
+    '3.2.11': [],
+    '3.2.10': [],
+    '3.2.9': [],
+    '3.2.8': [],
+    '3.2.7': [],
+    '3.2.6': [],
+    '3.2.5': [],
+    '3.2.4': [],
+    '3.2.3': [],
+    '3.2.2': [],
+    '3.2.1': [],
+    '3.2.0': []
+  });
+  function current() { return notes[EXP.VERSION] || Object.freeze(['Current WARD improvements and fixes.']); }
+  const QUIET_RELEASES = Object.freeze(["3.4.32","3.4.16"]);
+  function isQuietUpgrade(previous) { return ExtraPotionsCore.isQuietUpgrade(previous, EXP.VERSION, Object.keys(notes), QUIET_RELEASES); }
+  return Object.freeze({ current, isQuietUpgrade, QUIET_RELEASES });
+})();
+
+// exp-core owns the canonical shared UI; WARD-specific color stays declarative.
+EXP.MenuChrome = Object.freeze({ create: options => ExtraPotionsCore.create({ ...options, launcherSrc: 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg', productTheme: {"id":"ward","name":"WARD gem","swatch":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","bg":"#101014","panel":"#19191e","line":"#3a3532","text":"#fffaf3","muted":"#b9afa7","accent":"#ffb000","accent2":"#ff4a35","skin":"linear-gradient(135deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)","skinVertical":"linear-gradient(180deg,#fff58a 0 34%,#ffad25 34% 67%,#ee4450 67%)"} }) });
+
+EXP.UI = (() => {
+  let healthControl;
+  function systemHealthSnapshot() {
+    const storage=EXP.Settings.storageStatus();
+    if(storage.error)return {state:'attention',reason:storage.error,checkedAt:Date.now(),action:{label:storage.recovery?'Use Safe Defaults':'Retry Saving',run:()=>EXP.Settings.retrySave()}};
+    const settings=EXP.Settings.snapshot(),data=EXP.Engine.diagnostics(),checkedAt=Date.now();
+    if(settings.safeMode||settings.enabled===false||ExtraPotionsCore.suiteSitePaused())return {state:'paused',reason:'Protection and coupon actions are paused.',checkedAt};
+    if(data.adapter.health==='inactive')return {state:'waiting',reason:'This page has no supported retailer module.',checkedAt};
+    if(!EXP.Retailer.enabled(settings))return {state:'paused',reason:'Protection is disabled for this retailer.',checkedAt};
+    if(data.coupon.state==='attention')return {state:'attention',reason:'A coupon action could not be confirmed. Review its status before attempting it again.',checkedAt};
+    if(data.coupon.quarantined||data.recovery?.suspended)return {state:'attention',reason:data.coupon.quarantined?'Coupon collection stopped after an unsafe or failed attempt.':'Protection processing stopped after repeated failures.',checkedAt,action:{label:'Retry',run:()=>{if(!EXP.Settings.snapshot().safeMode&&!ExtraPotionsCore.suiteSitePaused())return data.coupon.quarantined?EXP.Engine.resumeCoupons():EXP.Engine.retry();}}};
+    if(data.adapter.health==='degraded')return {state:'attention',reason:'Some retailer detection is unavailable. Essential content is kept visible.',checkedAt};
+    return {state:'working',reason:'Protection is active for supported content. Coverage varies by category.',checkedAt};
+  }
+  const ICON_URL = 'https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg';
+  const BADGE = ICON_URL;
+
+  const UI_THEMES = ExtraPotionsCore.themes();
+
+  let host, shadow, launcher, shell, nav, content, toast, chrome, updateCard, noticeController;
+  let toastTimer, launcherCleanup, escapeHandler;
+  let activeView = '';
+  let patternsOpen = false;
+
+  const views = [
+    ['page', 'Protection'],
+    ['look', 'Appearance'],
+    ['tools', EXP.Retailer.label()],
+    ['system', 'System']
+  ];
+
+  const sourceToggles = [
+    ['signup-popup', 'Email Sign-Up Pop-Ups', 'pressure.signup-popup'],
+    ['announcement', 'Announcement Bars', 'promotion.announcement-bar'],
+    ['prime', 'Prime Upsells', 'upsell.membership.prime'],
+    ['urgency', 'Urgency Messages', 'pressure.urgency'],
+    ['scarcity', 'Scarcity Messages', 'pressure.scarcity'],
+    ['subscription', 'Subscribe & Save Pressure', 'pressure.subscription'],
+    ['credit', 'Credit and Installment Promotions', 'upsell.financial-product'],
+    ['protection-plan', 'Protection Plans', 'upsell.protection-plan'],
+    ['business', 'Amazon Business Promotions', 'upsell.business-membership'],
+    ['sponsored', 'Sponsored Placements', 'sponsorship.placement'],
+    ['recommendations', 'Cross-Sell Recommendations', 'cross-sell.recommendation'],
+    ['services', 'Amazon Service Promotions', 'upsell.amazon-service'],
+    ['ai', 'Amazon AI Shopping Prompts', 'pressure.shopping-assistant'],
+    ['social-proof', 'Popularity Claims', 'pressure.social-proof'],
+    ['store-membership', 'Store Membership Promotions', 'upsell.store-membership'],
+    ['reference-price', 'Reference Prices', 'pricing.reference-price']
+  ];
+
+  const categoryControls = [
+    ['signup-popup', 'Email Sign-Up Pop-Ups'],
+    ['announcement', 'Announcement Bars'],
+    ['upsell', 'Upsells'],
+    ['urgency', 'Urgency'],
+    ['scarcity', 'Scarcity'],
+    ['subscription', 'Subscriptions'],
+    ['sponsored', 'Sponsored Placements'],
+    ['cross-sell', 'Cross-Sell Recommendations'],
+    ['shopping-assistant', 'Shopping Assistants'],
+    ['social-proof', 'Popularity Claims'],
+    ['pricing', 'Reference Prices']
+  ];
+
+  const css = `
+    .ward-shell{display:contents}
+    .row-help{display:block;margin-top:4px;color:var(--muted);font:400 var(--exp-font-size-small,12px)/1.5 "Segoe UI",system-ui,sans-serif}
+    .activity-breakdown{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0}
+    .activity-reasons,.current-protections{display:grid;gap:4px;margin-top:6px}
+    .health-healthy,.coupon-confirmed{color:light-dark(#21643b,#95e6ae)!important}
+    .health-attention,.coupon-attention,.coupon-quarantined{color:light-dark(#7a4b00,#ffd17a)!important}
+    .health-inactive,.coupon-disabled{color:var(--muted)!important}
+    :host([data-exp-non-color="1"]) .health-healthy::before{content:'✓ ';font-weight:900}
+    :host([data-exp-non-color="1"]) :is(.health-attention,.coupon-attention,.coupon-quarantined)::before{content:'! ';font-weight:900}
+    :host([data-exp-non-color="1"]) .health-inactive::before{content:'– ';font-weight:900}
+  `;
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function hideUpdateCard() {
+    noticeController?.hide();
+    chrome?.layout();
+  }
+
+  function markLauncherUpdate(result = {}) {
+    if (!launcher) return;
+    const ready = Boolean(result.available && result.latest);
+    launcher.classList.toggle('update-available', ready);
+    // With several products on the page the shared flyout launcher carries the marker.
+    ExtraPotionsCore.setLauncherUpdate?.('ward', ready);
+    launcher.setAttribute('aria-label', ready ? `Open WARD · Update v${result.latest} available` : 'Open WARD');
+  }
+  function showUpdateCard(result = {}, complete = false, previous = '', current = false) {
+    if (!noticeController) return;
+    const version = complete || current ? EXP.VERSION : result.latest;
+    if (!complete && !current && !EXP.Core.claimNotice('ward', `available:${version}`)) return;
+
+    const fallback = ['A newer WARD build is available.', 'Install the latest userscript for the newest fixes and improvements.'];
+    const details = (current || complete
+      ? EXP.ReleaseNotes.current()
+      : Array.isArray(result.details) && result.details.length ? result.details : fallback).slice(0, 4);
+
+    noticeController.show({
+      kicker: current ? 'Current Version' : complete ? 'Update Complete' : 'Update Available',
+      title: current ? 'WARD Changelog' : complete ? 'WARD Updated' : 'New WARD Version Available',
+      version,
+      text: current
+        ? `What's new in v${EXP.VERSION}.`
+        : complete
+          ? `Updated from v${previous} to v${EXP.VERSION}.`
+          : `v${result.latest} is ready to install.`,
+      details,
+      releaseUrl: EXP.Updates.RELEASE_URL,
+      actionUrl: EXP.Updates.INSTALL_URL,
+      showAction: !(complete || current),
+      kind: current ? 'current' : complete ? 'complete' : 'available',
+    });
+    chrome?.layout();
+  }
+
+  function badge(alt = '') {
+    const image = el('img');
+    image.src = BADGE;
+    image.alt = alt;
+    return image;
+  }
+
+  function section(title) {
+    const box = el('section','section');
+    if (title) box.append(el('h3','',title));
+    return box;
+  }
+
+  function row(label, _help, control) {
+    const line = el(control.matches('button[role="switch"],select,input,textarea')?'label':'div','row');
+    const copy = el('span','row-copy');
+    const title=el('strong','',label);ExtraPotionsCore.setMenuHelp(control,_help);copy.append(title);
+    line.append(copy, control);
+    return line;
+  }
+
+  function switchControl(value, label, handler) {
+    const button = el('button','switch');
+    button.type = 'button';
+    button.setAttribute('role','switch');
+    button.setAttribute('aria-label',label);
+    button.setAttribute('aria-checked',String(Boolean(value)));
+    button.addEventListener('click', () => handler(button.getAttribute('aria-checked') !== 'true'));
+    return button;
+  }
+
+  function selectControl(value, label, choices, handler) {
+    const select = el('select','select');
+    select.setAttribute('aria-label',label);
+    for (const [optionValue, optionLabel] of choices) {
+      const option = el('option','',optionLabel);
+      option.value = optionValue;
+      option.selected = optionValue === value;
+      select.append(option);
+    }
+    select.addEventListener('change', () => handler(select.value));
+    return select;
+  }
+
+  function action(label, handler, kind = '') {
+    const button = el('button',`action ${kind}`.trim(),label);
+    button.type = 'button';
+    button.addEventListener('click',handler);
+    return button;
+  }
+
+  function notify(message) {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.hidden = false;
+    toast.style.top = `${Math.max(8,(launcher?.getBoundingClientRect().top || 60) - 48)}px`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      if (toast) toast.hidden = true;
+    }, 3000);
+  }
+
+  function applyUiTheme(id) { ExtraPotionsCore.applyTheme(host, id, UI_THEMES); }
+
+  function update(patch, reason) {
+    const next = EXP.Settings.update(patch, reason);
+    if(EXP.Settings.storageStatus().error)notify(EXP.Settings.storageStatus().error);
+    
+    if (shell?.classList.contains('open')) renderView();
+    else chrome?.update();
+    return next;
+  }
+
+  function overrideMode(record, id) {
+    return record[id] || 'inherit';
+  }
+
+  function updatePatternMode(id, mode) {
+    const settings = EXP.Settings.snapshot();
+    update(
+      { patterns:{...settings.patterns,[id]:mode} },
+      `pattern:${id}`
+    );
+  }
+
+  function updateCategoryMode(id, mode) {
+    const settings = EXP.Settings.snapshot();
+    update(
+      { categories:{...settings.categories,[id]:mode} },
+      `category:${id}`
+    );
+  }
+
+  function adapterHealthState() {
+    const diagnostics = EXP.Engine.diagnostics();
+    if (diagnostics.adapter.health === 'degraded' || diagnostics.coupon.quarantined) return { id:'attention', label:'Attention' };
+    if (diagnostics.adapter.health === 'inactive') return { id:'inactive', label:'Inactive' };
+    return { id:'healthy', label:'Healthy' };
+  }
+
+  function adapterHealthControl() {
+    const state = adapterHealthState();
+    const tag = el('span',`tag health-${state.id}`,state.label);
+    tag.setAttribute('data-exp-adapter-health',state.id);
+    return tag;
+  }
+
+  function reasonLabel(reason) {
+    return ({
+      'balanced-pattern-policy':'Balanced Policy',
+      'custom-policy':'Custom Policy',
+      'content-action':'Content Action Preference',
+      'essential-complete-placement':'Essential Policy',
+      'essential-annotate':'Essential Policy',
+      'essential-dim':'Essential Policy',
+      'recommendation-cleanup':'Recommendation Cleanup',
+      'dynamic-widget':'Dynamic Widget Safety',
+      'unverified-container':'Container Safety',
+      'essential-overlap':'Purchase-Control Safety',
+      'ambiguous-confidence':'Ambiguous Detection'
+    })[reason] || 'Protection Policy';
+  }
+
+  function renderActivitySummary(container) {
+    if (!container) return;
+    const settings = EXP.Settings.snapshot();
+    const activity = EXP.Activity.snapshot();
+    const audit = EXP.Audit.snapshot();
+    const interventions = EXP.Actions.snapshot().filter((item) => item.connected && item.action !== 'allow');
+    const revealed = interventions.filter((item) => item.revealed);
+    const box = section('Activity');
+    box.append(
+      row('Active Protections','',el('span','tag',String(activity.active))),
+      row('Temporarily Revealed','',el('span','tag',String(revealed.length)))
+    );
+
+    const actionCounts = Object.entries(activity.breakdown).sort(([a],[b]) => a.localeCompare(b));
+    if (actionCounts.length) {
+      const summary = el('div','activity-breakdown');
+      for (const [key, count] of actionCounts) {
+        const [, actionName] = key.split(':');
+        summary.append(el('span','tag',`${count} ${actionName}`));
+      }
+      box.append(summary);
+    }
+
+    const reasonCounts = new Map();
+    for (const target of audit.targets) {
+      if (!target.appliedAction || target.appliedAction === 'allow') continue;
+      const label = reasonLabel(target.reason);
+      reasonCounts.set(label,(reasonCounts.get(label) || 0) + 1);
+    }
+    if (settings.explanationDetail === 'detailed' && reasonCounts.size) {
+      const reasons = el('div','activity-reasons');
+      for (const [label, count] of reasonCounts) reasons.append(row(label,'Why WARD acted.',el('span','tag',String(count))));
+      box.append(reasons);
+    }
+
+    const pageActions = el('div','settings-transfer');
+    const reapply = action('Reapply Protection',() => {
+      for (const item of EXP.Actions.snapshot()) EXP.Actions.endReveal(item.id);
+      refreshActivity();
+    });
+    reapply.dataset.expPrimary = '1';
+    pageActions.append(
+      action('Reveal This Page',() => {
+        for (const item of EXP.Actions.snapshot()) EXP.Actions.reveal(item.id);
+        refreshActivity();
+      },'primary'),
+      reapply
+    );
+    box.append(pageActions);
+
+    if (interventions.length) {
+      const current = el('div','current-protections');
+      for (const item of interventions.slice(0,8)) {
+        const pattern = EXP.Patterns.get(item.patternId);
+        current.append(row(
+          pattern?.label || 'Protected Content',
+          `${item.action}${item.confidence ? ` · ${item.confidence}` : ''} · ${reasonLabel(item.reason)}`,
+          action(item.revealed ? 'Protect Again' : 'Show',() => {
+            if (item.revealed) EXP.Actions.endReveal(item.id);
+            else EXP.Actions.reveal(item.id);
+            refreshActivity();
+          })
+        ));
+      }
+      const explain=el('p','','Show temporarily restores the content. Allow here remembers this protection type for this page only.');current.prepend(explain);
+      for(const item of interventions.slice(0,8))current.append(action('Allow '+(EXP.Patterns.get(item.patternId)?.label||'content')+' here',()=>{const state=EXP.Settings.snapshot();const path=location.hostname+location.pathname;const pageExceptions=[...(state.pageExceptions||[]).filter(v=>v.path!==path||v.patternId!==item.patternId),{path,patternId:item.patternId}];update({pageExceptions},'page-exception');notify('This protection type is now allowed on this page.');refreshActivity();}));
+      box.append(current);
+    }
+    container.replaceChildren(box);
+    const sponsored = Object.entries(activity.breakdown).reduce((sum,[key,count]) => key.startsWith('sponsored:') ? sum + count : sum,0);
+    container.dataset.wardActivityText = [[sponsored,'sponsored'],[activity.active - sponsored,'other']].filter(([count]) => count > 0).map(([count,label]) => `${count} ${label}`).join(' · ');
+    setTimeout(() => syncActivityCount(container),0);
+  }
+
+  // Keep the protection count visible while its inline details are closed.
+  function syncActivityCount(summary) {
+    const button = summary.closest('details')?.querySelector(':scope > summary');
+    if (!button) return;
+    let count = button.querySelector('[data-ward-activity-count]');
+    const text = summary.dataset.wardActivityText || '';
+    if (!text) { count?.remove(); return; }
+    if (!count) {
+      count = el('span');
+      count.dataset.wardActivityCount = '1';
+      count.style.cssText = 'display:inline-block;margin-left:4px;padding:2px 4px;border:1px solid var(--theme-line);border-radius:4px;color:var(--theme-text);font:500 11px/1.2 "Segoe UI",system-ui,sans-serif;white-space:nowrap';
+      button.append(count);
+    }
+    count.textContent = ' '+text;
+  }
+
+  function couponStateLabel(coupon) {
+    return ({ ready:'Ready', idle:'Ready', checking:'Checking', confirmed:'Confirmed', attention:'Attention', quarantined:'Paused', disabled:'Off' })[coupon.state] || 'Ready';
+  }
+
+  function renderCouponStatus(container) {
+    if (!container) return;
+    const coupon = EXP.Engine.diagnostics().coupon;
+    const box = section('');box.setAttribute('aria-label','Coupon Activity');
+    box.append(row('Coupon Status','',el('span',`tag coupon-${coupon.state}`,couponStateLabel(coupon))));
+    if (coupon.quarantined) box.append(row('Safety Pause','Coupon automation stopped after an unsafe result.',action('Resume Coupon Clipping',() => { EXP.Engine.resumeCoupons(); refreshActivity(); })));
+    container.replaceChildren(box);
+  }
+
+  function pageView(settings) {
+    const fragment = document.createDocumentFragment();
+    const general = section();
+
+    general.append(
+      row('Enable WARD','',
+        switchControl(settings.enabled,'Enable WARD',
+          value => update({enabled:value},'enabled')))
+    );
+
+    general.append(
+      row('Protection Level','',
+        selectControl(
+          settings.protectionLevel,
+          'Protection Level',
+          [['essential','Essential'],['balanced','Balanced'],['custom','Custom']],
+          value => update({protectionLevel:value},'level')
+        ))
+    );
+    general.append(row('Content Action','',
+      selectControl(settings.contentAction,'Content Action',[['automatic','Automatic'],['hide','Hide'],['dim','Dim']],
+        value => update({contentAction:value},'content-action'))));
+    general.append(row(`${EXP.Retailer.label()} adapter`,'',adapterHealthControl()));
+
+    const summary = el('div');
+    summary.setAttribute('data-exp-activity-summary','1');
+    renderActivitySummary(summary);
+    general.append(row('Calm Shopping','Dims pressure cues and collapses safe promotional modules.',action('Apply Preset',()=>{update({protectionLevel:'balanced',contentAction:'automatic',recommendationCleanup:true,confidencePolicy:'confirmed-supported'},'calm-shopping');notify('Calm shopping preset applied.');})));
+    fragment.append(general,ExtraPotionsCore.createDisclosure('Page Activity',summary),protectionReview());
+    return fragment;
+  }
+
+  function protectionReview() {
+    const card=ExtraPotionsCore.createDisclosure('Protection Review');
+    card.dataset.wardReview='1';
+    const record=(verdict,patternId)=>{const state=EXP.Settings.snapshot();update({protectionReviews:[...(state.protectionReviews||[]),{verdict,patternId,retailer:EXP.Retailer.key(),at:Date.now()}].slice(-100)},'protection-review');notify(EXP.Settings.storageStatus().unsaved?EXP.Settings.storageStatus().error:'Local review saved.');};
+    for(const item of EXP.Actions.snapshot().filter(value=>value.connected&&value.action!=='allow').slice(0,8)){
+      const line=section();const title=el('div','',EXP.Patterns.get(item.patternId)?.label||item.patternId);title.style.cssText='padding:4px 8px 0;font-weight:600';title.title=`${item.action} · ${item.confidence} · ${reasonLabel(item.reason)}`;line.append(title);
+      const controls=el('div','settings-transfer');controls.append(action('Correct',()=>record('correct',item.patternId)),action('Wrong Target',()=>{record('wrong',item.patternId);if(!confirm('Allow this protection type for this page?'))return;const state=EXP.Settings.snapshot(),path=location.hostname+location.pathname;update({pageExceptions:[...state.pageExceptions.filter(value=>value.path!==path||value.patternId!==item.patternId),{path,patternId:item.patternId}]},'review-page-correction');notify(EXP.Settings.storageStatus().unsaved?EXP.Settings.storageStatus().error:'Page correction saved.');}));line.append(controls);card.append(line);
+    }
+    let missed=EXP.Retailer.patternIds().values().next().value||'';
+    const choices=[...EXP.Retailer.patternIds()].map(id=>[id,EXP.Patterns.get(id)?.label||id]);
+    const missedField=el('label','');missedField.style.cssText='display:flex;flex-direction:column;gap:2px;padding:4px 8px';const missedChoice=selectControl(missed,'Missed Protection Type',choices,value=>{missed=value;});missedChoice.dataset.expFullWidth='1';missedField.append(el('span','','Missed Content'),missedChoice);
+    card.append(missedField,action('Record',()=>{if(missed)record('missed',missed);}));
+    const count=el('div','',`${EXP.Settings.snapshot().protectionReviews.length} reviews saved`);count.style.cssText='padding:4px 8px';card.append(count);return card;
+  }
+
+  function lookView(settings) {
+    const fragment = document.createDocumentFragment();
+    fragment.append(ExtraPotionsCore.createThemeModeControl({value:settings.uiTheme,onChange:uiTheme=>update({uiTheme},'menu-theme')}),ExtraPotionsCore.createSiteColorControl({value:settings.siteColors,onChange:siteColors=>update({siteColors},'site-theme')}));
+    const accessibility = section('Accessibility');
+    accessibility.append(
+      row('Reduce Motion','',
+        selectControl(
+          settings.reducedMotion,
+          'Reduce Motion',
+          [['system','Follow System'],['reduce','Reduce'],['allow','Allow']],
+          value => update({reducedMotion:value},'reduced-motion')
+        ))
+    );
+    accessibility.append(
+      row('Non-Color Indicators','',
+        switchControl(
+          settings.nonColorIndicators,
+          'Non-Color Indicators',
+          value => update({nonColorIndicators:value},'non-color')
+        ))
+    );
+    fragment.append(accessibility, menuPreferences(settings));
+
+    return fragment;
+  }
+
+  function amazonView(settings) {
+    const fragment = document.createDocumentFragment();
+    // The tab already carries the retailer name; the card needs no second heading.
+    const amazon = section('');amazon.setAttribute('aria-label',EXP.Retailer.label());
+    const features = EXP.Retailer.features();
+    const coverage=EXP.Retailer.coverage(),coverageCard=ExtraPotionsCore.createDisclosure('Coverage');
+    for(const [field,label] of [['supportedCategories','Supported Complete Units'],['conservativeCategories','Conservative Detection'],['unsupportedCategories','Not Covered']]){
+      const text=el('p');text.textContent=`${label}: ${coverage[field].map(id=>EXP.Patterns.get(id)?.label||id).join(', ')||'None'}`;coverageCard.append(text);
+    }
+    const coverageNote=el('p');coverageNote.textContent='Coverage applies to recognized page patterns. Mixed content and essential purchasing controls remain visible.';coverageCard.append(coverageNote);fragment.append(coverageCard);
+    const storeKey = EXP.Retailer.key();
+
+    amazon.append(
+      row(`Protect ${EXP.Retailer.label()}`,'',
+        switchControl(
+          settings.retailers?.[storeKey] !== false,
+          `Protect ${EXP.Retailer.label()}`,
+          value => update({retailers:{...settings.retailers,[storeKey]:value}},'store-setting')
+        ))
+    );
+
+    if (features.coupons) amazon.append(
+      row('Auto-Clip Coupons','',
+        switchControl(
+          settings.autoClipCoupons,
+          'Auto-Clip Coupons',
+          value => update({autoClipCoupons:value},'coupon-setting')
+        ))
+    );
+
+    if (features.compactSearch) amazon.append(
+      row('Compact Search','',
+        switchControl(
+          settings.compactSearch,
+          'Compact Search',
+          value => update({compactSearch:value},'compact-search')
+        ))
+    );
+
+    if (features.recommendationCleanup) amazon.append(
+      row('Recommendation Cleanup','',
+        switchControl(
+          settings.recommendationCleanup,
+          'Recommendation Cleanup',
+          value => update({recommendationCleanup:value},'recommendation-cleanup')
+        ))
+    );
+
+    fragment.append(amazon);
+    if (EXP.Retailer.supportsSellerClarity()) {
+      // Seller clarity opens as its own detail view, where its descriptions have room.
+      const clarity = ExtraPotionsCore.createDisclosure('Seller Clarity');
+      clarity.append(
+        row('Seller Notes','',
+          switchControl(settings.sellerClarity,'Seller Notes',value => update({sellerClarity:value},'seller-clarity'))),
+        row('Search Brand Labels','Labels generated-style brand names in search results.',
+          switchControl(settings.sellerClaritySearch,'Search Brand Labels',value => update({sellerClaritySearch:value},'seller-clarity-search'))),
+        row('Always Show Seller Summary','',
+          switchControl(settings.sellerClarityAlways,'Always Show Seller Summary',value => update({sellerClarityAlways:value},'seller-clarity-always')))
+      );
+      const trustedCount = (settings.trustedBrands || []).length;
+      if (trustedCount) clarity.append(row('Trusted Brands',`${trustedCount} brand${trustedCount === 1 ? '' : 's'} trusted on this device.`,
+        action('Clear',() => { update({trustedBrands:[]},'trusted-brands-cleared'); notify('Trusted brands cleared.'); })));
+      fragment.append(clarity);
+    }
+    if (features.coupons) {
+      const couponStatus = el('div');
+      couponStatus.setAttribute('data-exp-coupon-status','1');
+      renderCouponStatus(couponStatus);
+      fragment.append(couponStatus);
+    }
+    return fragment;
+  }
+
+  function patternsView(settings) {
+    const box = section(`${EXP.Retailer.label()} patterns`);
+    box.classList.add('advanced-patterns');
+    const available = EXP.Retailer.patternIds();
+    for (const [,label,id] of sourceToggles) {
+      if (!available.has(id)) continue;
+      box.append(
+        row(label,'',
+          selectControl(
+            overrideMode(settings.patterns,id),
+            label,
+            [['inherit','Inherit'],['on','On'],['off','Off']],
+            value => updatePatternMode(id,value)
+          ))
+      );
+    }
+    return box;
+  }
+
+  function customPolicyView(settings) {
+    const fragment = document.createDocumentFragment();
+    const policy = section('Custom Policy');
+    policy.append(
+      row('Default Action','Used when Content action is Automatic and the pattern supports it.',selectControl(settings.defaultAction,'Default Action', [['hide','Hide'],['dim','Dim'],['collapse','Collapse'],['annotate','Annotate'],['allow','Allow']], value => update({defaultAction:value},'default-action'))),
+      row('Confidence Policy','Controls whether supported detections may be acted on.',selectControl(settings.confidencePolicy,'Confidence Policy', [['confirmed','Confirmed Only'],['confirmed-supported','Confirmed + supported'],['custom','Custom Overrides']], value => update({confidencePolicy:value},'confidence-policy'))),
+      row('Explanation Detail','Controls how much decision context appears in Activity.',selectControl(settings.explanationDetail,'Explanation Detail', [['concise','Concise'],['detailed','Detailed']], value => update({explanationDetail:value},'explanation-detail')))
+    );
+    const categories = section('Category Controls');
+    for (const [id,label] of categoryControls) categories.append(row(label,'',selectControl(overrideMode(settings.categories,id),label,[['inherit','Inherit'],['on','On'],['off','Off']],value => updateCategoryMode(id,value))));
+    fragment.append(policy,categories);
+    return fragment;
+  }
+
+  function toolsView(settings) {
+    const fragment = document.createDocumentFragment();
+    fragment.append(amazonView(settings));
+    const stores=ExtraPotionsCore.createDisclosure('Retailer Modules');
+    for(const adapter of EXP.Retailers.all())stores.append(row(adapter.label,'',switchControl(settings.retailers[adapter.key]!==false,`Protect ${adapter.label}`,value=>update({retailers:{...EXP.Settings.snapshot().retailers,[adapter.key]:value}},'retailer-module'))));
+    fragment.append(stores);
+
+    const advanced = ExtraPotionsCore.createDisclosure(`Advanced ${EXP.Retailer.label()}`);
+    const controls = section('Pattern Controls');
+    controls.append(
+      row('Individual Patterns','',
+        action(patternsOpen ? 'Hide' : 'Customize',() => {
+          patternsOpen = !patternsOpen;
+          renderView();
+        }))
+    );
+    advanced.append(controls);
+    if (settings.protectionLevel === 'custom') advanced.append(customPolicyView(settings));
+    if (patternsOpen) advanced.append(patternsView(settings));
+    fragment.append(advanced,settingsTransferView(),pageToolsView());
+    return fragment;
+  }
+
+  function pageToolsView() {
+    const tools=ExtraPotionsCore.createDisclosure('Page Tools');
+    tools.append(row('Safe Mode','Pause protection and coupon actions without changing saved preferences.',switchControl(EXP.Settings.snapshot().safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'))));
+    for(const exception of EXP.Settings.snapshot().pageExceptions||[])tools.append(row(exception.path,exception.patternId,action('Remove Exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
+    return tools;
+  }
+  function settingsTransferView() {
+    const transfers = el('div','settings-transfer');
+    transfers.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0';
+
+    transfers.append(
+      action('Export',async () => {
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(EXP.Settings.storageStatus().recovery?EXP.Settings.recoveryData():EXP.Settings.exportData(),null,2));
+          notify('WARD settings copied.');
+        } catch (error) {
+          EXP.Core.safeError(Object.assign(error,{code:'EXPORT_COPY'}),'ward.ui');
+          notify('Copy failed.');
+        }
+      })
+    );
+
+    transfers.append(
+      action('Import',() => {
+        const raw = prompt('Paste a WARD settings export');
+        if (raw === null) return;
+        try {
+          const prepared = EXP.Settings.prepareImport(JSON.parse(raw));
+          EXP.Settings.replace(prepared,'import');
+          notify(EXP.Settings.storageStatus().unsaved||EXP.Settings.storageStatus().recovery?EXP.Settings.storageStatus().error:'WARD settings imported.');
+          renderView();
+        } catch (error) {
+          EXP.Core.safeError(error,'ward.import');
+          alert('WARD could not import that settings file.');
+        }
+      })
+    );
+
+    const data = ExtraPotionsCore.createDisclosure('Settings Transfer',transfers);
+    return data;
+  }
+  function menuPreferences(settings) {
+    const preferences = document.createElement('div');
+    preferences.append(ExtraPotionsCore.createMenuSizeControls());
+    for (const [key,label] of [['menuAutoClose','Auto-Close Menu'],['updateNotifications','Update Notifications']]) {
+      preferences.append(row(label,'',switchControl(settings[key],label,value=>{
+        update({[key]:value},key);
+        if(key==='updateNotifications' && value) EXP.Updates.check(true).then(result=>{markLauncherUpdate(result);notify(result.available?'A WARD update is available.':'WARD update check complete.');});
+      })));
+    }
+    return preferences;
+  }
+  function systemView() {
+    healthControl?.dispose();healthControl=ExtraPotionsCore.createProductTimeline('ward',systemHealthSnapshot,notify,{layout:'grouped',showActivity:false});
+    return ExtraPotionsCore.createProductSystem({id:'ward',version:EXP.VERSION,issueSettings:()=>({current:EXP.Settings.diagnosticSnapshot(),defaults:EXP.Settings.diagnosticSnapshot(EXP.Settings.defaults)}),timeline:healthControl.element,layout:'grouped',
+      diagnostics:EXP.Diagnostics.createDiagnosticsControls(()=>EXP.Diagnostics.createDiagnosticsReport('WARD',{host,product:{id:'ward',version:EXP.VERSION},settings:EXP.Settings.diagnosticSnapshot(),...EXP.Engine.diagnostics()}),notify),
+      onReset:()=>{EXP.Settings.resetAll();renderView();location.reload();},notify
+    });
+  }
+
+  function renderView() {
+    if (!nav) return;
+
+    const settings = EXP.Settings.snapshot();
+    applyUiTheme(EXP.Settings.snapshot().uiTheme);
+    host.dataset.expNonColor = settings.nonColorIndicators ? '1' : '0';
+
+    for (const button of nav.querySelectorAll('.tool-panel > .route')) {
+      const active = button.dataset.view === activeView;
+      const body = button.parentElement.querySelector('.route-body');
+
+      button.setAttribute('aria-current',active ? 'page' : 'false');
+      button.setAttribute('aria-expanded',String(active));
+      body.hidden = !active;
+
+      if (!active) continue;
+
+      content = body;
+
+      const renderer = {
+        page:() => pageView(settings),
+        look:() => lookView(settings),
+        tools:() => toolsView(settings),
+        system:() => systemView()
+      }[activeView];
+
+      if (renderer) ExtraPotionsCore.replaceMenuContent(content,renderer());
+    }
+
+    chrome?.update();
+  }
+
+  function refreshActivity() {
+    healthControl?.refresh();
+    if (!shell?.classList.contains('open') || !content) return;
+    renderActivitySummary(content.querySelector('[data-exp-activity-summary]'));
+    renderCouponStatus(content.querySelector('[data-exp-coupon-status]'));
+    const health = content.querySelector('[data-exp-adapter-health]');
+    if (health) health.replaceWith(adapterHealthControl());
+    chrome?.layout();
+  }
+
+  function restack() {
+    if (!host || host.parentNode !== document.documentElement || !host.nextSibling) return;
+    // Moving a popover closes it; Core owns the top-layer order.
+    if (host.hasAttribute('popover')) return;
+    if (shadow?.activeElement) return;
+    document.documentElement.append(host);
+  }
+
+  function refresh() {
+    if (shell?.classList.contains('open')) renderView();
+  }
+
+  function setOpen(value, focus = true) {
+    if (value) {
+      activeView = '';
+      shell.classList.add('open');
+      shell.setAttribute('aria-hidden','false');
+      launcher.setAttribute('aria-expanded','true');
+      renderView();
+      if (focus) EXP.Core.focusMenuSurface(shell);
+    } else {
+      shell.classList.remove('open');
+      shell.setAttribute('aria-hidden','true');
+      launcher.setAttribute('aria-expanded','false');
+      if (focus) launcher.focus();
+    }
+    chrome?.state(Boolean(value));
+  }
+
+  function open() { setOpen(true); }
+  function close() { setOpen(false); }
+
+  function init() {
+    if (window.top !== window.self || host) return;
+
+    host = el('div');
+    host.dataset.expOwned = '1';
+    host.id = 'exp-ward-root';
+
+    shadow = host.attachShadow({mode:'open'});
+    ExtraPotionsCore.injectStyle(shadow,css,{wardUiStyle:'1'});
+
+    launcher = el('button','ward-launcher');
+    launcher.append(badge(''));
+    launcher.type = 'button';
+    launcher.dataset.help = 'Drag To Move · Click To Open WARD';
+    launcher.setAttribute('aria-label','Open WARD');
+    launcher.setAttribute('aria-haspopup','dialog');
+    launcher.setAttribute('aria-expanded','false');
+    launcher.addEventListener('click',() => shell.classList.contains('open') ? close() : open());
+
+    shell = el('aside','ward');
+    shell.setAttribute('role','dialog');
+    shell.setAttribute('aria-modal','true');
+    shell.setAttribute('aria-label','WARD Menu');
+    shell.setAttribute('aria-hidden','true');
+
+    const frame = el('div','ward-shell');
+    const header = el('header','ward-header');
+    const brand = el('div','brand');
+    const mark = el('div','brand-mark');
+    mark.append(badge(''));
+
+    const title = el('div');
+    const titleRow = el('div');
+    titleRow.append(el('strong','','WARD'));
+
+    titleRow.append(
+      action(`v${EXP.VERSION}`,() => { if (updateCard?.hidden !== false || updateCard.dataset.noticeKind !== 'current') showUpdateCard({}, false, '', true); else hideUpdateCard(); },'version')
+    );
+
+    title.append(titleRow);
+    brand.append(mark,title);
+
+    const closeButton = el('button','close','×');
+    closeButton.type = 'button';
+    closeButton.setAttribute('aria-label','Close WARD');
+    closeButton.addEventListener('click',close);
+    header.append(brand,closeButton);
+
+    nav = el('nav','ward-nav');
+    nav.setAttribute('aria-label','WARD Sections');
+
+    for (const [id,label] of views) {
+      const panel = el('section','tool-panel');
+      const button = el('button','route',label);
+      button.type = 'button';
+      button.dataset.view = id;
+      button.setAttribute('aria-controls',`exp-ward-view-${id}`);
+      button.addEventListener('click',() => {
+        activeView = activeView === id ? '' : id;
+        renderView();
+      });
+
+      const body = el('div','route-body');
+      body.id = `exp-ward-view-${id}`;
+      body.hidden = true;
+
+      panel.append(button,body);
+      nav.append(panel);
+    }
+
+    frame.append(
+      header,
+      el('div','header-divider'),
+      nav
+    );
+    shell.append(frame);
+
+    toast = el('div','toast');
+    toast.hidden = true;
+
+    shadow.append(launcher,shell,toast);
+    document.documentElement.append(host);
+
+    ExtraPotionsCore.setMenuStatus('ward',systemHealthSnapshot);
+    launcherCleanup = EXP.Core.registerLauncher(host,{productId:'ward'});
+    chrome = EXP.MenuChrome.create({
+      id:'ward',
+      host,
+      shadow,
+      launcher,
+      panel:shell,
+      getSettings:() => EXP.Settings.snapshot(),
+      setOpen,
+      shortcutKey:'w'
+    });
+    // MenuChrome replaces initial sheets; install this state rule after its shell is mounted.
+    ExtraPotionsCore.injectStyle(shadow,':host .row:has([data-exp-adapter-health="healthy"]){display:none!important}',{wardMenuState:'1'});
+    
+    noticeController = ExtraPotionsCore.createProductNotice({
+      host,
+      shadow,
+      panel:shell,
+      durationMs:30000,returnFocus:shell.querySelector('.version'),
+      releaseUrl:EXP.Updates.RELEASE_URL,
+      installUrl:EXP.Updates.INSTALL_URL
+    });
+    updateCard = noticeController.element;
+    const previous=EXP.Core.consumeVersionChange('ward',EXP.VERSION,'exp:v3:ward:last-version-v2');
+    if(previous&&!EXP.ReleaseNotes.isQuietUpgrade(previous))showUpdateCard({},true,previous);
+    if(EXP.Settings.snapshot().updateNotifications)EXP.Updates.check(false).then(r=>{markLauncherUpdate(r);if(r.available&&!r.quiet)showUpdateCard(r);});
+
+    escapeHandler = event => {
+      if (!shell.classList.contains('open')) return;
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const focusable = [
+        ...shell.querySelectorAll(
+          'button:not(:disabled),select:not(:disabled),input:not(:disabled),[tabindex]:not([tabindex="-1"])'
+        )
+      ].filter(node => !node.hidden && node.getClientRects().length);
+
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      const active = shadow.activeElement;
+
+      if (active === shell) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown',escapeHandler);
+    renderView();
+  }
+
+  function cleanup() {healthControl?.dispose();
+    
+    noticeController?.destroy();
+    launcherCleanup?.();
+    chrome?.destroy();
+    clearTimeout(toastTimer);
+    document.removeEventListener('keydown',escapeHandler);
+    host?.remove();
+    host = shadow = launcher = shell = nav = content = toast = chrome = updateCard = noticeController = null;
+  }
+
+  return Object.freeze({
+    init:() => {
+      init();
+    },
+    cleanup,
+    open,
+    close,
+    refresh,
+    refreshActivity,
+    restack
+  });
+})();
+
+EXP.VERSION = '3.12.6';
+ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
+EXP.App = (() => {
+  let scheduler, navigationCleanup, settingsCleanup, lifecycle;
+  const ready = () => document.body ? Promise.resolve() : new Promise(resolve => {
+    const finish = () => { observer.disconnect(); removeEventListener('DOMContentLoaded',finish); resolve(); };
+    const observer = new MutationObserver(() => { if(document.body)finish(); });
+    observer.observe(document,{ childList:true, subtree:true });
+    addEventListener('DOMContentLoaded',finish,{ once:true });
+  });
+
+  async function initialize() {
+    EXP.Settings.load();
+    if(document.documentElement)EXP.SiteTheme.apply();
+    await ready();
+    EXP.SiteTheme.apply();
+    scheduler = EXP.Core.createScheduler(
+      roots => EXP.Engine.processBatch(roots),
+      { source:'ward' }
+    );
+    navigationCleanup = EXP.Core.onNavigation(() => { EXP.SiteTheme.apply(); EXP.Engine.navigation(); });
+    settingsCleanup = EXP.Settings.subscribe(() => {
+      EXP.SiteTheme.apply();
+      if (lifecycle?.state === 'enabled' && !ExtraPotionsCore.suiteSitePaused() && EXP.Retailer.enabled(EXP.Settings.snapshot()) && !EXP.Engine.active) {
+        EXP.Engine.start();
+        scheduler.start();
+      } else EXP.Engine.rebuild();
+    });
+    try { EXP.UI.init(); } catch (error) { error.code = error.code || 'UI_INIT_FAILED'; throw error; }
+  }
+
+  async function enable() {
+    const settings = EXP.Settings.snapshot();
+    EXP.SiteTheme.apply(settings);
+    if (!EXP.Retailer.enabled(settings)) {
+      scheduler.stop();
+      EXP.Engine.stop();
+      EXP.UI.refresh();
+      return;
+    }
+    try { EXP.Engine.start(); } catch (error) { error.code = error.code || 'ENGINE_START_FAILED'; throw error; }
+    scheduler.start();
+    if (settings.updateNotifications) EXP.Updates.check();
+    EXP.UI.refresh();
+  }
+
+  async function disable() {
+    EXP.SiteTheme.clear();
+    scheduler.stop();
+    EXP.Engine.stop();
+    EXP.UI.refresh();
+  }
+
+  async function cleanup() {
+    EXP.SiteTheme.clear();
+    scheduler?.stop();
+    settingsCleanup?.();
+    navigationCleanup?.();
+    EXP.UI.cleanup();
+    EXP.Engine.cleanup();
+  }
+
+  function start() {
+    lifecycle = EXP.Core.register(
+      {
+        id:'ward',
+        version:EXP.VERSION,
+        capabilities:[
+          'lifecycle',
+          'settings',
+          'diagnostics',
+          'dom-scheduler',
+          'navigation',
+          'launcher',
+          'ui'
+        ]
+      },
+      { initialize, enable, disable, cleanup }
+    );
+    lifecycle.initialize()
+      .then(() => lifecycle.enable())
+      .catch(error => EXP.Core.safeError(error,'ward'));
+    return lifecycle;
+  }
+
+  return Object.freeze({
+    start,
+    get lifecycle() { return lifecycle; }
+  });
+})();
+EXP.App.start();
+});
+})();

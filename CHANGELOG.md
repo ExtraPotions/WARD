@@ -1,3 +1,8 @@
+## 3.12.6 - 2026-11-21
+
+- WARD now ships as readable code instead of minified, so problems are easier to find and fix.
+- On Reddit, the WARD tab sits on the right edge of the window with the other product tabs.
+
 ## 3.12.5 - 2026-11-20
 
 - The launcher is a tab on the right edge of the window instead of a badge in the corner.
