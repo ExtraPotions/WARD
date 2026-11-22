@@ -19,7 +19,7 @@
 
 ## Shared menu
 
-Each section is a drawer: opening one closes the others, and the menu reopens on the one you used last. Open **System** for status, diagnostics, troubleshooting and Reset. Menu sizing is in **Look**. With multiple ExtraPotions products on the same page, open the shared launcher and choose a product. Donations are available from the header heart.
+Each section is a drawer: opening one closes the others, and the menu reopens on the one you used last. Open **System** for status, diagnostics, troubleshooting and Reset. Menu sizing is in **Look**. With multiple ExtraPotions products on the same page, their tabs stack on the right edge of the window. Donations are available from the header heart.
 
 ## Support and verification
 

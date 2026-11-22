@@ -4,7 +4,7 @@ Hide or dim sponsored placements, upsells and urgency messages on supported stor
 
 [Install WARD](https://github.com/ExtraPotions/WARD/releases/latest/download/ward.user.js) · Requires [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/).
 
-After installing, refresh a supported store and open the WARD gem. [Setup and controls →](docs/usage.md)
+After installing, refresh a supported store and open WARD from its tab on the right edge of the window. [Setup and controls →](docs/usage.md)
 
 ## Features
 
