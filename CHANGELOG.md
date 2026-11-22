@@ -1,3 +1,8 @@
+## 3.12.7 - 2026-11-21
+
+- Removed hovertips that only repeated a control's label.
+- Built on Core 3.18.2.
+
 ## 3.12.6 - 2026-11-21
 
 - WARD now ships as readable code instead of minified, so problems are easier to find and fix.

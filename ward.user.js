@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WARD
 // @namespace    https://github.com/ExtraPotions
-// @version      3.12.6
+// @version      3.12.7
 // @run-at       document-start
 // @description  Local retail-pressure protection for Amazon, eBay, Etsy, Walmart, Target, Best Buy and Shopify stores.
 // @icon         https://raw.githubusercontent.com/ExtraPotions/WARD/main/assets/ward-launcher.svg
@@ -1625,7 +1625,6 @@ const ExtraPotionsTools = (() => {
       finally{report.disabled=false;}
     }));
     report.dataset.expSystemReport='1';
-    ExpMenuHelp.setMenuHelp(report,'Attaches fresh diagnostics to a GitHub issue. GitHub issues are public; remove private data before submitting.');
     const support=document.createElement('section');support.setAttribute('aria-label','Diagnostics and Support');support.append(diagnostics,report);
     // Reset: one tap arms, a second tap within a few seconds confirms. No browser dialogs.
     const resetStatus=note('');resetStatus.setAttribute('role','status');resetStatus.setAttribute('aria-live','polite');
@@ -1643,7 +1642,6 @@ const ExtraPotionsTools = (() => {
     reset.dataset.expDestructive='1';
     function disarm(){clearTimeout(armTimer);armedUntil=0;reset.textContent='Reset All Settings';delete reset.dataset.expResetArmed;resetStatus.textContent='';}
     reset.style.cssText+=';font-weight:600';
-    ExpMenuHelp.setMenuHelp(reset,`Clears ${product} settings and stored data on this browser. This cannot be undone. Tap twice within 4 seconds to confirm.`);
     const resetCard=document.createElement('section');resetCard.setAttribute('aria-label','Reset Settings');resetCard.style.cssText='margin-block-start:12px;padding-block-start:8px';resetCard.append(reset,resetStatus);
     reset.addEventListener('blur',disarm);
     for(const [key,node] of [['status',timeline],['support',support],['preferences',preferences],['reset',resetCard]]){
@@ -2534,7 +2532,7 @@ const ExpLauncherFlyout = (() => {
 // exp-core owns shared UI, launcher, diagnostics, update, and coordination behavior.
 const ExtraPotionsCore = (() => {
   'use strict';
-  const version = '3.18.1';
+  const version = '3.18.2';
   const sourceVersion = version; // Backward-compatible alias for Core's own foundation version.
   const SUPPORT_URL = 'https://ko-fi.com/expdare';
   const protocol = 'exp-core-coordination-v1';
@@ -4291,7 +4289,7 @@ const ExtraPotionsCore = (() => {
       hub.addEventListener('click', event => { const opening = document.documentElement.dataset.expFlyoutOpen !== '1'; setFlyoutOpen(opening); if (opening && event.detail === 0) focusFlyout(flyoutState().order[0]); });
       hub.addEventListener('keydown', onHubKey);
       // The corner launcher keeps vertical drag and its saved position; a site slot cannot be dragged.
-      hub.expDragCleanup = bindLauncherDrag(hub, host.dataset.productId, { reorder:false, canDrag:() => !flyoutHubBox().site, title:'Drag to move the launcher.', layout:syncFlyout });
+      hub.expDragCleanup = bindLauncherDrag(hub, host.dataset.productId, { reorder:false, canDrag:() => !flyoutHubBox().site, layout:syncFlyout });
       shadow.append(panel, hub);
     }
     const icon = hub.querySelector('.exp-flyout-icon');
@@ -4351,7 +4349,7 @@ const ExtraPotionsCore = (() => {
     const removers = [];
     const on = (node,type,fn,opts) => { node.addEventListener(type,fn,opts); removers.push(() => node.removeEventListener(type,fn,opts)); };
     let startX=0,startY=0,startDelta=0,pointer=null,dragged=false,mode='',axis='',order=[];
-    launcher.title = launcher.title || title || 'Drag to move the launchers. Shift+drag or Alt+Arrow keys reorder.';
+    if (reorder || title) launcher.title = launcher.title || title || 'Drag to move the launchers. Shift+drag or Alt+Arrow keys reorder.';
     on(launcher,'pointerdown',e=>{if(e.button!==0||(reorder&&(flyoutState().active||singleSlot()))||(!reorder&&e.shiftKey)||!canDrag())return;pointer=e.pointerId;startX=e.clientX;startY=e.clientY;startDelta=savedDelta();mode=e.shiftKey?'order':'group';order=interactionGridOrder();if(!order.includes(id))order.push(id);dragged=false;axis='';e.preventDefault();try{launcher.setPointerCapture(e.pointerId);}catch{}});
     // Listen on window in the capture phase so host pages that stop pointer events (Twitch's player) cannot stall a drag.
     on(launcher,'dragstart',e=>e.preventDefault());
@@ -7980,10 +7978,11 @@ EXP.Engine = (() => {
   return Object.freeze({ retry, start, stop, cleanup, navigation, rebuild, processBatch, resumeCoupons, diagnostics, get active() { return active; }, get couponQuarantined() { return couponQuarantined; } });
 })();
 
-EXP.VERSION = '3.12.6';
+EXP.VERSION = '3.12.7';
 
 EXP.ReleaseNotes = (() => {
   const notes = Object.freeze({
+    '3.12.7': ["Removed hovertips that only repeated a control's label.","Built on Core 3.18.2."],
     '3.12.6': ["WARD now ships as readable code instead of minified, so problems are easier to find and fix.","On Reddit, the WARD tab sits on the right edge of the window with the other product tabs."],
     '3.12.5': ["The launcher is a tab on the right edge of the window instead of a badge in the corner.","With other ExtraPotions products on the page, each has its own tab; drag to move them, Shift+drag to reorder."],
     '3.12.4': ["On Etsy, a labelled ad stays inside its listing, so result rows keep their shape.","Shopify announcement bars named as header banners are dimmed, and eBay’s sponsored store banner above results is recognised.","In Dark, Target’s cart icon and badges and Etsy’s outlined buttons are readable.","Built on Core 3.17.4."],
@@ -8383,7 +8382,7 @@ EXP.UI = (() => {
     }
     if (settings.explanationDetail === 'detailed' && reasonCounts.size) {
       const reasons = el('div','activity-reasons');
-      for (const [label, count] of reasonCounts) reasons.append(row(label,'Why WARD acted.',el('span','tag',String(count))));
+      for (const [label, count] of reasonCounts) reasons.append(row(label,'',el('span','tag',String(count))));
       box.append(reasons);
     }
 
@@ -8451,7 +8450,7 @@ EXP.UI = (() => {
     const coupon = EXP.Engine.diagnostics().coupon;
     const box = section('');box.setAttribute('aria-label','Coupon Activity');
     box.append(row('Coupon Status','',el('span',`tag coupon-${coupon.state}`,couponStateLabel(coupon))));
-    if (coupon.quarantined) box.append(row('Safety Pause','Coupon automation stopped after an unsafe result.',action('Resume Coupon Clipping',() => { EXP.Engine.resumeCoupons(); refreshActivity(); })));
+    if (coupon.quarantined) box.append(row('Safety Pause','',action('Resume Coupon Clipping',() => { EXP.Engine.resumeCoupons(); refreshActivity(); })));
     container.replaceChildren(box);
   }
 
@@ -8482,7 +8481,7 @@ EXP.UI = (() => {
     const summary = el('div');
     summary.setAttribute('data-exp-activity-summary','1');
     renderActivitySummary(summary);
-    general.append(row('Calm Shopping','Dims pressure cues and collapses safe promotional modules.',action('Apply Preset',()=>{update({protectionLevel:'balanced',contentAction:'automatic',recommendationCleanup:true,confidencePolicy:'confirmed-supported'},'calm-shopping');notify('Calm shopping preset applied.');})));
+    general.append(row('Calm Shopping','',action('Apply Preset',()=>{update({protectionLevel:'balanced',contentAction:'automatic',recommendationCleanup:true,confidencePolicy:'confirmed-supported'},'calm-shopping');notify('Calm shopping preset applied.');})));
     fragment.append(general,ExtraPotionsCore.createDisclosure('Page Activity',summary),protectionReview());
     return fragment;
   }
@@ -8583,7 +8582,7 @@ EXP.UI = (() => {
       clarity.append(
         row('Seller Notes','',
           switchControl(settings.sellerClarity,'Seller Notes',value => update({sellerClarity:value},'seller-clarity'))),
-        row('Search Brand Labels','Labels generated-style brand names in search results.',
+        row('Search Brand Labels','',
           switchControl(settings.sellerClaritySearch,'Search Brand Labels',value => update({sellerClaritySearch:value},'seller-clarity-search'))),
         row('Always Show Seller Summary','',
           switchControl(settings.sellerClarityAlways,'Always Show Seller Summary',value => update({sellerClarityAlways:value},'seller-clarity-always')))
@@ -8625,9 +8624,9 @@ EXP.UI = (() => {
     const fragment = document.createDocumentFragment();
     const policy = section('Custom Policy');
     policy.append(
-      row('Default Action','Used when Content action is Automatic and the pattern supports it.',selectControl(settings.defaultAction,'Default Action', [['hide','Hide'],['dim','Dim'],['collapse','Collapse'],['annotate','Annotate'],['allow','Allow']], value => update({defaultAction:value},'default-action'))),
-      row('Confidence Policy','Controls whether supported detections may be acted on.',selectControl(settings.confidencePolicy,'Confidence Policy', [['confirmed','Confirmed Only'],['confirmed-supported','Confirmed + supported'],['custom','Custom Overrides']], value => update({confidencePolicy:value},'confidence-policy'))),
-      row('Explanation Detail','Controls how much decision context appears in Activity.',selectControl(settings.explanationDetail,'Explanation Detail', [['concise','Concise'],['detailed','Detailed']], value => update({explanationDetail:value},'explanation-detail')))
+      row('Default Action','',selectControl(settings.defaultAction,'Default Action', [['hide','Hide'],['dim','Dim'],['collapse','Collapse'],['annotate','Annotate'],['allow','Allow']], value => update({defaultAction:value},'default-action'))),
+      row('Confidence Policy','',selectControl(settings.confidencePolicy,'Confidence Policy', [['confirmed','Confirmed Only'],['confirmed-supported','Confirmed + supported'],['custom','Custom Overrides']], value => update({confidencePolicy:value},'confidence-policy'))),
+      row('Explanation Detail','',selectControl(settings.explanationDetail,'Explanation Detail', [['concise','Concise'],['detailed','Detailed']], value => update({explanationDetail:value},'explanation-detail')))
     );
     const categories = section('Category Controls');
     for (const [id,label] of categoryControls) categories.append(row(label,'',selectControl(overrideMode(settings.categories,id),label,[['inherit','Inherit'],['on','On'],['off','Off']],value => updateCategoryMode(id,value))));
@@ -8660,7 +8659,7 @@ EXP.UI = (() => {
 
   function pageToolsView() {
     const tools=ExtraPotionsCore.createDisclosure('Page Tools');
-    tools.append(row('Safe Mode','Pause protection and coupon actions without changing saved preferences.',switchControl(EXP.Settings.snapshot().safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'))));
+    tools.append(row('Safe Mode','',switchControl(EXP.Settings.snapshot().safeMode,'Safe Mode',value=>update({safeMode:value},'safe-mode'))));
     for(const exception of EXP.Settings.snapshot().pageExceptions||[])tools.append(row(exception.path,exception.patternId,action('Remove Exception',()=>{update({pageExceptions:EXP.Settings.snapshot().pageExceptions.filter(v=>v.path!==exception.path||v.patternId!==exception.patternId)},'remove-page-exception');renderView();})));
     return tools;
   }
@@ -8805,7 +8804,6 @@ EXP.UI = (() => {
     launcher = el('button','ward-launcher');
     launcher.append(badge(''));
     launcher.type = 'button';
-    launcher.dataset.help = 'Drag To Move · Click To Open WARD';
     launcher.setAttribute('aria-label','Open WARD');
     launcher.setAttribute('aria-haspopup','dialog');
     launcher.setAttribute('aria-expanded','false');
@@ -8966,7 +8964,7 @@ EXP.UI = (() => {
   });
 })();
 
-EXP.VERSION = '3.12.6';
+EXP.VERSION = '3.12.7';
 ExtraPotionsCore.registerDiagnosticsProduct('ward', EXP.VERSION);
 EXP.App = (() => {
   let scheduler, navigationCleanup, settingsCleanup, lifecycle;
