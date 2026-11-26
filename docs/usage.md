@@ -10,7 +10,7 @@
 
 ## Features and controls
 
-- **Site theme:** choose Slate Blue Light, Dark or System in **Look → Site Theme**. Product photos and artwork retain their colors. Neutral surfaces, forms and review fades follow the mode. Purchase and status colors remain meaningful.
+- **Site theme:** choose Light, Dark or System in **Look → Site Theme**. Product photos and artwork retain their colors. Neutral surfaces, forms and review fades follow the mode. Purchase and status colors remain meaningful.
 - **Calm the page:** hide or dim sponsored placements, upsells, urgency messages, and pushy recommendations at the level you choose. Essential purchasing information stays visible.
 - **Shop six stores and Shopify shops:** Amazon, eBay, Etsy, Walmart, Target, Best Buy, and any store built on Shopify, each with its own controls. On Shopify stores, WARD hides email sign-up pop-ups and dims announcement bars.
 - **Undo changes:** reveal hidden content, allow a pattern on a page, or pause WARD entirely.
@@ -27,4 +27,4 @@ Each section is a drawer: opening one closes the others, and the menu reopens on
 
 ## Look
 
-The menu is charcoal with green highlights, in Light, Dark and System. System follows your device and updates when its appearance changes. Site theme uses Slate Blue with the same three choices and is independent of the menu. Legacy palette settings migrate to System. Gem themes, palette choices and custom menu opacity are no longer available.
+The menu is charcoal with green highlights, in Light, Dark and System. System follows your device and updates when its appearance changes. Site theme uses the same charcoal with green highlights and the same three choices and is independent of the menu. Legacy palette settings migrate to System. Gem themes, palette choices and custom menu opacity are no longer available.

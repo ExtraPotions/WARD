@@ -1,3 +1,8 @@
+## 3.12.8 - 2026-11-25
+
+- The store theme uses charcoal with WARD's green instead of Slate Blue.
+- Built on Core 3.18.3.
+
 ## 3.12.7 - 2026-11-21
 
 - Removed hovertips that only repeated a control's label.
